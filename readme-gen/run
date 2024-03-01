@@ -1,0 +1,50 @@
+#!/bin/sh
+
+# Directories
+GEN_DIR="$(dirname "$0")"
+ROOT_DIR="$(dirname "$GEN_DIR")"
+
+# Filenames
+README_PATH="$ROOT_DIR/README.md"
+BASE_README_PATH="$GEN_DIR/BASE.md"
+SCRIPT_PATH="$(basename "$0")"
+
+# Todo table settings
+TODO_FORMATTER="$GEN_DIR/fmt-todo"
+TODO_HEADER="|Path|Line|Description|"
+TODO_HEADER_SEP="|-|-|-|"
+
+from_template() {
+	rm -f "$README_PATH"
+	cp "$BASE_README_PATH" "$README_PATH"
+}
+
+gen_lines_of_code(){
+	printf "\n# Lines of code\n\n" >> "$README_PATH"
+	scc -f html-table \
+		-s lines \
+		-x LICENSE \
+		--exclude-dir target \
+		"$ROOT_DIR" \
+			>> "$README_PATH"
+}
+
+gen_todo() {
+	printf "\n# Todo\n%s\n%s\n" "$TODO_HEADER" "$TODO_HEADER_SEP" \
+		>> "$README_PATH"
+	grep -rn \
+		--exclude "$SCRIPT_PATH" \
+		--exclude-dir .git \
+		--exclude-dir target "TODO" . \
+			| "$TODO_FORMATTER" \
+			>> "$README_PATH"
+}
+
+main() {
+	from_template &&
+	gen_lines_of_code &&
+	gen_todo &&
+	echo "$README_PATH generated succesfully."
+}
+
+main
