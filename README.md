@@ -2,6 +2,8 @@
 
 A simple text editor without dependencies.
 
+The name comes from the [star Vega](https://en.wikipedia.org/wiki/Vega).
+
 # Lines of code
 
 <table id="scc-table">
@@ -54,12 +56,12 @@ A simple text editor without dependencies.
 	</tr><tr>
 		<th>Markdown</th>
 		<th>2</th>
-		<th>9</th>
-		<th>4</th>
+		<th>13</th>
+		<th>6</th>
 		<th>0</th>
-		<th>5</th>
+		<th>7</th>
 		<th>0</th>
-		<th>120</th>
+		<th>268</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>1</th>
@@ -82,12 +84,12 @@ A simple text editor without dependencies.
 	<tfoot><tr>
 		<th>Total</th>
 		<th>10</th>
-		<th>171</th>
-		<th>38</th>
+		<th>175</th>
+		<th>40</th>
 		<th>18</th>
-		<th>115</th>
+		<th>117</th>
 		<th>2</th>
-    	<th>2842</th>
+    	<th>2990</th>
 	</tr></tfoot>
 	</table>
 
