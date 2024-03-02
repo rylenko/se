@@ -3,7 +3,7 @@
 include config.mk
 
 # Code files
-SRC = src/main.c src/res.c src/term.c
+SRC = src/err.c src/main.c src/term.c
 OBJ = $(SRC:.c=.o)
 
 # Paths
@@ -23,9 +23,9 @@ else
 endif
 
 # Object file dependencies
-src/main.o: src/res.h src/term.h
-src/term.o: src/res.h src/term.h
-src/res.o: src/res.h
+src/main.o: src/err.h src/term.h
+src/term.o: src/err.h src/term.h
+src/err.o: src/err.h
 
 # Clean all after build
 clean:
