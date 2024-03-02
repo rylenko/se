@@ -25,7 +25,7 @@ The name comes from the [star Vega](https://en.wikipedia.org/wiki/Vega).
 		<th>20</th>
 		<th>68</th>
 		<th>11</th>
-		<th>2386</th>
+		<th>2385</th>
 	</tr><tr>
 		<th>Makefile</th>
 		<th>2</th>
@@ -89,7 +89,7 @@ The name comes from the [star Vega](https://en.wikipedia.org/wiki/Vega).
 		<th>41</th>
 		<th>170</th>
 		<th>11</th>
-    	<th>5298</th>
+    	<th>5297</th>
 	</tr></tfoot>
 	</table>
 

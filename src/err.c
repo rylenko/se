@@ -17,7 +17,7 @@ err(const char *fmt, ...)
 	vfprintf(stderr, fmt, args);
 	va_end(args);
 
-	/* Print errno message if there is a ":" at the end. */
+	/* Print errno message if there is a ":" at the end */
 	if (fmt[0] && fmt[strlen(fmt) - 1] == ':') {
 		fputc(' ', stderr);
 		perror(NULL);
