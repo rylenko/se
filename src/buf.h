@@ -1,6 +1,8 @@
 #ifndef _BUF_H
 #define _BUF_H
 
+#include <stdlib.h>
+
 /*
 During redrawing cursor may flicker because `printf` buffers the output but
 flushes it to the terminal after receiving '\n'.

@@ -1,28 +1,38 @@
 #include <termios.h>
+#include "buf.h"
 #include "err.h"
 #include "term.h"
 
 #define TIMEOUT_TENTHS_OF_SECOND 1
 
+static struct {
+	int ifd;
+	int ofd;
+	struct termios orig;
+} term;
+
 void
-term_disable_raw_mode(int fd, const struct termios* orig)
+term_disable_raw_mode(void)
 {
 	/* Restore original termios parameters */
-	if (tcsetattr(fd, TCSAFLUSH, orig) < 0)
+	if (tcsetattr(term.ifd, TCSAFLUSH, &term.orig) < 0)
 		err("Failed to restore original termios parameters:");
 }
 
 void
-term_enable_raw_mode(int fd, struct termios* orig)
+term_enable_raw_mode(void)
 {
 	struct termios raw;
 
 	/* Get the original termios parameters */
-	if (tcgetattr(fd, orig) < 0)
+	if (tcgetattr(term.ifd, &term.orig) < 0)
 		err("Failed to get original termios parameters:");
+	/* Disable raw mode at exit */
+	else if (atexit(term_disable_raw_mode) < 0)
+		err("Failed to set raw mode's disabler at exit.");
 
 	/* Not `NULL` because we got it earlier */
-	raw = *orig;
+	raw = term.orig;
 	/*
 	Input: no break, no CR to NL, no parity check, no char stripping, no start
 	and stop of output control
@@ -40,6 +50,37 @@ term_enable_raw_mode(int fd, struct termios* orig)
 	raw.c_cc[VTIME] = TIMEOUT_TENTHS_OF_SECOND;
 
 	/* Set new parameters */
-	if (tcsetattr(fd, TCSAFLUSH, &raw) < 0)
+	if (tcsetattr(term.ifd, TCSAFLUSH, &raw) < 0)
 		err("Failed to set raw termios parameters:");
+}
+
+void
+term_flush(const Buf *buf)
+{
+	buf_flush(buf, term.ofd);
+}
+
+void
+term_go_home(Buf *buf)
+{
+	buf_write(buf, "\x1b[H", 3);
+}
+
+void
+term_hide_cur(Buf *buf)
+{
+	buf_write(buf, "\x1b[?25l", 6);
+}
+
+void
+term_init(const int ifd, const int ofd)
+{
+	term.ifd = ifd;
+	term.ofd = ofd;
+}
+
+void
+term_show_cur(Buf *buf)
+{
+	buf_write(buf, "\x1b[?2gh", 6);
 }
