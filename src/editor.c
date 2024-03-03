@@ -10,9 +10,19 @@ static struct {
 	struct winsize win_size;
 } editor;
 
+
+/* Updates the size and checks that everything fits on the screen. */
+static void editor_handle_sig_win_ch(int num);
+
+/*
+Requests the size from the terminal and sets it in the appropriate field.
+
+To update the window size after it has been changed, use the handler
+`editor_handle_sig_win_ch`.
+*/
 static void editor_update_win_size(void);
 
-void
+static void
 editor_handle_sig_win_ch(int num)
 {
 	(void)num;
