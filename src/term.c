@@ -2,8 +2,7 @@
 #include "err.h"
 #include "term.h"
 
-/* 1 is 100ms */
-#define TIMEOUT_TENS_OF_SECOND 1
+#define TIMEOUT_TENTHS_OF_SECOND 1
 
 void
 term_disable_raw_mode(int fd, const struct termios* orig)
@@ -37,8 +36,8 @@ term_enable_raw_mode(int fd, struct termios* orig)
 	raw.c_lflag &= ~(ECHO | ICANON | IEXTEN | ISIG);
 	/* Return zero byte on input timeout */
 	raw.c_cc[VMIN] = 0;
-	/* Timeout. 1 is 100ms */
-	raw.c_cc[VTIME] = TIMEOUT_TENS_OF_SECOND;
+	/* Timeout in tenths of a second */
+	raw.c_cc[VTIME] = TIMEOUT_TENTHS_OF_SECOND;
 
 	/* Set new parameters */
 	if (tcsetattr(fd, TCSAFLUSH, &raw) < 0)
