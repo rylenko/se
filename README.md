@@ -20,21 +20,21 @@ The name comes from the [star Vega](https://en.wikipedia.org/wiki/Vega).
 	<tbody><tr>
 		<th>C</th>
 		<th>5</th>
-		<th>239</th>
-		<th>37</th>
-		<th>31</th>
-		<th>171</th>
-		<th>13</th>
-		<th>4657</th>
+		<th>279</th>
+		<th>42</th>
+		<th>32</th>
+		<th>205</th>
+		<th>14</th>
+		<th>5425</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>4</th>
-		<th>90</th>
-		<th>25</th>
-		<th>27</th>
-		<th>38</th>
+		<th>88</th>
+		<th>24</th>
+		<th>28</th>
+		<th>36</th>
 		<th>0</th>
-		<th>1905</th>
+		<th>1943</th>
 	</tr><tr>
 		<th>Makefile</th>
 		<th>2</th>
@@ -84,12 +84,12 @@ The name comes from the [star Vega](https://en.wikipedia.org/wiki/Vega).
 	<tfoot><tr>
 		<th>Total</th>
 		<th>16</th>
-		<th>466</th>
-		<th>89</th>
-		<th>73</th>
-		<th>304</th>
-		<th>13</th>
-    	<th>9177</th>
+		<th>504</th>
+		<th>93</th>
+		<th>75</th>
+		<th>336</th>
+		<th>14</th>
+    	<th>9983</th>
 	</tr></tfoot>
 	</table>
 
@@ -98,3 +98,4 @@ The name comes from the [star Vega](https://en.wikipedia.org/wiki/Vega).
 |Path|Line|Description|
 |-|-|-|
 |**src/buf.c**|**32**|**choose a more efficient memory allocation strategy**|
+|**src/editor.c**|**20**|**check cursor position fits on the screen**|

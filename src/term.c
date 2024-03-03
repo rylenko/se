@@ -1,3 +1,4 @@
+#include <sys/ioctl.h>
 #include <termios.h>
 #include "buf.h"
 #include "err.h"
@@ -58,6 +59,13 @@ void
 term_flush(const Buf *buf)
 {
 	buf_flush(buf, term.ofd);
+}
+
+void
+term_get_win_size(struct winsize *win_size)
+{
+	if (ioctl(term.ofd, TIOCGWINSZ, win_size) < 0)
+		err("Failed to get window size for fd %d:", term.ofd);
 }
 
 void

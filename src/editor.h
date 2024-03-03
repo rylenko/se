@@ -1,16 +1,13 @@
 #ifndef _EDITOR_H
 #define _EDITOR_H
 
-#include "term.h"
+/* Initializes the editor. Use it before opening the file. */
+void editor_init(void);
 
-typedef struct {
-	const char *path;
-} Editor;
-
-/* Creates new editor from terminal struct. */
-Editor editor_new(const char *);
+/* Opens new file in the editor. */
+void editor_open(const char *);
 
 /* Refreshes the screen with editor's state. */
-void editor_refresh_scr(const Editor *);
+void editor_refresh_scr(void);
 
 #endif /* _EDITOR_H */
