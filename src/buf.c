@@ -29,6 +29,7 @@ buf_free(Buf buf)
 void
 buf_write(Buf *buf, const char *part, size_t len)
 {
+	/* TODO: choose a more efficient memory allocation strategy */
 	/* Reallocate with new length */
 	size_t new_len = buf->len + len;
 	char *new_data = realloc(buf->data, new_len);
