@@ -1,17 +1,14 @@
 #!/bin/awk -f
 
 {
-	split($1, path, ":");
 	printf "|**";
-
-	printf substr(path[1], 3, length(path[1]));
+	printf substr($1, 3, length($1) - 3)
 	printf "**|**";
-
-	printf path[2];
+	printf substr($2, 1, length($2) - 1)
 	printf "**|**";
-
-	$1=$2="";
-	gsub(/^[ \t]+/, "", $0)
+	$1=$2=$3=$4="";
+	--NF;
+	gsub(/^[ \t]+/, "", $0);
 	printf $0;
 	print "**|";
 }

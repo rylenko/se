@@ -30,9 +30,11 @@ gen_lines_of_code(){
 }
 
 gen_todo() {
-	printf "\n# Todo\n%s\n%s\n" "$TODO_HEADER" "$TODO_HEADER_SEP" \
+	printf "\n# Todo\n\n%s\n%s\n" "$TODO_HEADER" "$TODO_HEADER_SEP" \
 		>> "$README_PATH"
-	grep -rn \
+	# shellcheck disable=SC2094
+	grep -Trn \
+		--exclude "$README_PATH" \
 		--exclude "$SCRIPT_PATH" \
 		--exclude-dir .git \
 		--exclude-dir target "TODO" . \
