@@ -1,5 +1,4 @@
 #include <termios.h>
-#include <unistd.h>
 #include "err.h"
 #include "term.h"
 
@@ -7,23 +6,20 @@
 #define TIMEOUT_TENS_OF_SECOND 1
 
 void
-term_disable_raw_mode(const struct termios* orig)
+term_disable_raw_mode(int fd, const struct termios* orig)
 {
 	/* Restore original termios parameters */
-	if (tcsetattr(STDIN_FILENO, TCSAFLUSH, orig) < 0)
+	if (tcsetattr(fd, TCSAFLUSH, orig) < 0)
 		err("Failed to restore original termios parameters:");
 }
 
 void
-term_enable_raw_mode(struct termios* orig)
+term_enable_raw_mode(int fd, struct termios* orig)
 {
 	struct termios raw;
 
-	/* Check stdin refers to terminal */
-	if (!isatty(STDIN_FILENO))
-		err("stdin does not refer to the terminal.");
 	/* Get the original termios parameters */
-	else if (tcgetattr(STDIN_FILENO, orig) < 0)
+	if (tcgetattr(fd, orig) < 0)
 		err("Failed to get original termios parameters:");
 
 	/* Not `NULL` because we got it earlier */
@@ -45,6 +41,6 @@ term_enable_raw_mode(struct termios* orig)
 	raw.c_cc[VTIME] = TIMEOUT_TENS_OF_SECOND;
 
 	/* Set new parameters */
-	if (tcsetattr(STDIN_FILENO, TCSAFLUSH, &raw) < 0)
+	if (tcsetattr(fd, TCSAFLUSH, &raw) < 0)
 		err("Failed to set raw termios parameters:");
 }

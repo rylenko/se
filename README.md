@@ -19,13 +19,22 @@ The name comes from the [star Vega](https://en.wikipedia.org/wiki/Vega).
 	</tr></thead>
 	<tbody><tr>
 		<th>C</th>
+		<th>4</th>
+		<th>169</th>
+		<th>25</th>
+		<th>25</th>
+		<th>119</th>
+		<th>10</th>
+		<th>3658</th>
+	</tr><tr>
+		<th>C Header</th>
 		<th>3</th>
-		<th>105</th>
-		<th>17</th>
-		<th>20</th>
-		<th>68</th>
-		<th>11</th>
-		<th>2385</th>
+		<th>54</th>
+		<th>13</th>
+		<th>19</th>
+		<th>22</th>
+		<th>0</th>
+		<th>1216</th>
 	</tr><tr>
 		<th>Makefile</th>
 		<th>2</th>
@@ -34,7 +43,7 @@ The name comes from the [star Vega](https://en.wikipedia.org/wiki/Vega).
 		<th>9</th>
 		<th>33</th>
 		<th>0</th>
-		<th>991</th>
+		<th>1021</th>
 	</tr><tr>
 		<th>Shell</th>
 		<th>1</th>
@@ -44,15 +53,6 @@ The name comes from the [star Vega](https://en.wikipedia.org/wiki/Vega).
 		<th>38</th>
 		<th>0</th>
 		<th>947</th>
-	</tr><tr>
-		<th>C Header</th>
-		<th>2</th>
-		<th>23</th>
-		<th>6</th>
-		<th>7</th>
-		<th>10</th>
-		<th>0</th>
-		<th>475</th>
 	</tr><tr>
 		<th>AWK</th>
 		<th>1</th>
@@ -83,13 +83,13 @@ The name comes from the [star Vega](https://en.wikipedia.org/wiki/Vega).
 	</tr></tbody>
 	<tfoot><tr>
 		<th>Total</th>
-		<th>12</th>
-		<th>264</th>
-		<th>53</th>
-		<th>41</th>
-		<th>170</th>
-		<th>11</th>
-    	<th>5297</th>
+		<th>14</th>
+		<th>359</th>
+		<th>68</th>
+		<th>58</th>
+		<th>233</th>
+		<th>10</th>
+    	<th>7341</th>
 	</tr></tfoot>
 	</table>
 

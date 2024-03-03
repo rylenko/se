@@ -5,8 +5,6 @@
 #include <string.h>
 #include "err.h"
 
-#define EXIT_CODE (1)
-
 void
 err(const char *fmt, ...)
 {
@@ -25,5 +23,5 @@ err(const char *fmt, ...)
 		fputc('\n', stderr);
 	}
 
-	exit(EXIT_CODE);
+	exit(EXIT_FAILURE);
 }
