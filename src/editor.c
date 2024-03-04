@@ -6,6 +6,7 @@
 #include "editor.h"
 #include "term.h"
 
+/* Structure with editor parameters. */
 static struct {
 	char need_to_quit;
 	const char *path;
@@ -26,7 +27,6 @@ To update the window size after it has been changed, use the handler
 */
 static void editor_update_win_size(void);
 
-/* Clears the screen. */
 static void
 editor_clear_scr(void)
 {
