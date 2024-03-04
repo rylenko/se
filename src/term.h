@@ -28,4 +28,7 @@ void term_init(const int, const int);
 /* Shows the cursor on screen. */
 void term_show_cur(Buf *buf);
 
+/* Waits for the key press. */
+char term_wait_key_press(void);
+
 #endif /* _TERM_H */

@@ -20,21 +20,21 @@ The name comes from the [star Vega](https://en.wikipedia.org/wiki/Vega).
 	<tbody><tr>
 		<th>C</th>
 		<th>5</th>
-		<th>290</th>
-		<th>44</th>
-		<th>41</th>
-		<th>205</th>
-		<th>15</th>
-		<th>5684</th>
+		<th>348</th>
+		<th>54</th>
+		<th>51</th>
+		<th>243</th>
+		<th>21</th>
+		<th>6938</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>4</th>
-		<th>88</th>
-		<th>24</th>
-		<th>28</th>
-		<th>36</th>
+		<th>94</th>
+		<th>26</th>
+		<th>30</th>
+		<th>38</th>
 		<th>0</th>
-		<th>1943</th>
+		<th>2122</th>
 	</tr><tr>
 		<th>Makefile</th>
 		<th>2</th>
@@ -84,12 +84,12 @@ The name comes from the [star Vega](https://en.wikipedia.org/wiki/Vega).
 	<tfoot><tr>
 		<th>Total</th>
 		<th>16</th>
-		<th>515</th>
-		<th>95</th>
-		<th>84</th>
-		<th>336</th>
-		<th>15</th>
-    	<th>10242</th>
+		<th>579</th>
+		<th>107</th>
+		<th>96</th>
+		<th>376</th>
+		<th>21</th>
+    	<th>11675</th>
 	</tr></tfoot>
 	</table>
 
@@ -97,6 +97,6 @@ The name comes from the [star Vega](https://en.wikipedia.org/wiki/Vega).
 
 |Path|Line|Description|
 |-|-|-|
-|**src/main.c**|**27**|**refresh screen only if key pressed**|
 |**src/buf.c**|**32**|**choose a more efficient memory allocation strategy**|
-|**src/editor.c**|**30**|**check cursor position fits on the screen**|
+|**src/editor.c**|**40**|**Avoid many reallocations in `buf_write`**|
+|**src/editor.c**|**55**|**check cursor position fits on the screen**|

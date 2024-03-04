@@ -1,5 +1,6 @@
 #include <sys/ioctl.h>
 #include <termios.h>
+#include <unistd.h>
 #include "buf.h"
 #include "err.h"
 #include "term.h"
@@ -91,4 +92,18 @@ void
 term_show_cur(Buf *buf)
 {
 	buf_write(buf, "\x1b[?25h", 6);
+}
+
+char
+term_wait_key_press(void)
+{
+	char key;
+	int readed_count;
+
+	/* Wait a key or an error */
+	while (0 == (readed_count = read(term.ifd, &key, 1)));
+	if (readed_count < 0)
+		err("Failed to read key press:");
+
+	return key;
 }

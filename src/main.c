@@ -15,17 +15,15 @@ main(const int argc, const char *const *const argv)
 		err(USAGE);
 	/* Initialize terminal and editor and enable raw mode */
 	term_init(STDIN_FILENO, STDOUT_FILENO);
-	editor_init();
 	term_enable_raw_mode();
 
 	/* Open editor with file */
 	editor_open(argv[1]);
 	/* Main cycle */
-	while (1) {
-		/* Refresh editor's screen */
+	while (!editor_need_to_quit()) {
+		/* Refresh editor's screen and process key presses */
 		editor_refresh_scr();
-		/* TODO: refresh screen only if key pressed */
-		sleep(0.1);
+		editor_wait_and_proc_key_press();
 	}
 
 	/* Disable raw mode, free buffer and exit */
