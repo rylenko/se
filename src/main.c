@@ -24,6 +24,8 @@ main(const int argc, const char *const *const argv)
 	while (1) {
 		/* Refresh editor's screen */
 		editor_refresh_scr();
+		/* TODO: refresh screen only if key pressed */
+		sleep(0.1);
 	}
 
 	/* Disable raw mode, free buffer and exit */

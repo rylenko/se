@@ -48,17 +48,16 @@ editor_open(const char *path)
 void
 editor_refresh_scr(void)
 {
+	unsigned short row_i;
 	Buf buf = buf_alloc();
 
 	/* Prepare for file content */
 	term_hide_cur(&buf);
 	term_go_home(&buf);
 
-	buf_write(&buf, "Hello,", 6);
-	buf_write(&buf, " world!\r\n", 9);
-	buf_writef(&buf, "Filename: %s\r\n", editor.path);
-	buf_writef(&buf, "Rows: %hu\r\n", editor.win_size.ws_row);
-	buf_writef(&buf, "Cols: %hu\r\n", editor.win_size.ws_col);
+	/* Print lines */
+	for (row_i = 0; row_i < editor.win_size.ws_row; row_i++)
+		buf_write(&buf, "~\r\n", 3);
 
 	/* Recovery after file content */
 	term_show_cur(&buf);

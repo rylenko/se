@@ -90,5 +90,5 @@ term_init(const int ifd, const int ofd)
 void
 term_show_cur(Buf *buf)
 {
-	buf_write(buf, "\x1b[?2gh", 6);
+	buf_write(buf, "\x1b[?25h", 6);
 }
