@@ -33,15 +33,17 @@ editor_clear_scr(void)
 	unsigned short col_i;
 	unsigned short row_i;
 	Buf buf = buf_alloc();
+	/* Go home before clearing */
+	term_go_home(&buf);
 
 	/* Clear the screen */
 	for (row_i = 0; row_i < editor.win_size.ws_row; row_i++)
 		for (col_i = 0; col_i < editor.win_size.ws_col; col_i++)
 			/* TODO: Avoid many reallocations in `buf_write` */
 			buf_write(&buf, " ", 1);
+
 	/* Go home after clearing */
 	term_go_home(&buf);
-
 	/* Flush and free the buffer */
 	term_flush(&buf);
 	buf_free(buf);
