@@ -20,12 +20,12 @@ The name comes from the [star Vega](https://en.wikipedia.org/wiki/Vega).
 	<tbody><tr>
 		<th>C</th>
 		<th>5</th>
-		<th>348</th>
+		<th>350</th>
 		<th>54</th>
-		<th>51</th>
-		<th>243</th>
+		<th>52</th>
+		<th>244</th>
 		<th>21</th>
-		<th>6938</th>
+		<th>6990</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>4</th>
@@ -84,12 +84,12 @@ The name comes from the [star Vega](https://en.wikipedia.org/wiki/Vega).
 	<tfoot><tr>
 		<th>Total</th>
 		<th>16</th>
-		<th>579</th>
+		<th>581</th>
 		<th>107</th>
-		<th>96</th>
-		<th>376</th>
+		<th>97</th>
+		<th>377</th>
 		<th>21</th>
-    	<th>11675</th>
+    	<th>11727</th>
 	</tr></tfoot>
 	</table>
 
@@ -98,5 +98,5 @@ The name comes from the [star Vega](https://en.wikipedia.org/wiki/Vega).
 |Path|Line|Description|
 |-|-|-|
 |**src/buf.c**|**32**|**choose a more efficient memory allocation strategy**|
-|**src/editor.c**|**40**|**Avoid many reallocations in `buf_write`**|
-|**src/editor.c**|**55**|**check cursor position fits on the screen**|
+|**src/editor.c**|**42**|**Avoid many reallocations in `buf_write`**|
+|**src/editor.c**|**57**|**check cursor position fits on the screen**|
