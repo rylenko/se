@@ -5,6 +5,7 @@
 #include "buf.h"
 #include "color.h"
 #include "editor.h"
+#include "key.h"
 #include "term.h"
 
 /* Structure with editor parameters. */
@@ -112,7 +113,7 @@ editor_wait_and_proc_key_press(void)
 
 	switch (term_wait_key_press()) {
 	/* Quit */
-	case 'q':
+	case KEY_CTRL_Q:
 		editor.need_to_quit = 1;
 		break;
 	}

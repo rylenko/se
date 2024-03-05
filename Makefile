@@ -25,7 +25,7 @@ endif
 # Object file dependencies
 src/buf.o: src/buf.h src/err.h
 src/color.o: src/buf.h src/color.h
-src/editor.o: src/color.h src/editor.h src/term.h
+src/editor.o: src/color.h src/editor.h src/key.h src/term.h
 src/err.o: src/err.h
 src/main.o: src/buf.h src/editor.h src/err.h src/term.h
 src/term.o: src/err.h src/term.h

@@ -24,21 +24,21 @@ Not implemented yet. Perhaps this feature will be optional and presented as a pa
 	<tbody><tr>
 		<th>C</th>
 		<th>6</th>
-		<th>393</th>
+		<th>394</th>
 		<th>58</th>
 		<th>54</th>
-		<th>281</th>
+		<th>282</th>
 		<th>24</th>
-		<th>8039</th>
+		<th>8063</th>
 	</tr><tr>
 		<th>C Header</th>
-		<th>5</th>
-		<th>117</th>
-		<th>31</th>
-		<th>38</th>
-		<th>48</th>
+		<th>6</th>
+		<th>126</th>
+		<th>33</th>
+		<th>39</th>
+		<th>54</th>
 		<th>0</th>
-		<th>2552</th>
+		<th>2703</th>
 	</tr><tr>
 		<th>Makefile</th>
 		<th>2</th>
@@ -47,7 +47,7 @@ Not implemented yet. Perhaps this feature will be optional and presented as a pa
 		<th>9</th>
 		<th>36</th>
 		<th>0</th>
-		<th>1165</th>
+		<th>1175</th>
 	</tr><tr>
 		<th>Shell</th>
 		<th>1</th>
@@ -87,13 +87,13 @@ Not implemented yet. Perhaps this feature will be optional and presented as a pa
 	</tr></tbody>
 	<tfoot><tr>
 		<th>Total</th>
-		<th>18</th>
-		<th>656</th>
-		<th>120</th>
-		<th>107</th>
-		<th>429</th>
+		<th>19</th>
+		<th>666</th>
+		<th>122</th>
+		<th>108</th>
+		<th>436</th>
 		<th>24</th>
-    	<th>13523</th>
+    	<th>13708</th>
 	</tr></tfoot>
 	</table>
 
@@ -102,5 +102,5 @@ Not implemented yet. Perhaps this feature will be optional and presented as a pa
 |Path|Line|Description|
 |-|-|-|
 |**src/buf.c**|**32**|**choose a more efficient memory allocation strategy**|
-|**src/editor.c**|**47**|**Avoid many reallocations in `buf_write`**|
-|**src/editor.c**|**58**|**check cursor position fits on the screen**|
+|**src/editor.c**|**48**|**Avoid many reallocations in `buf_write`**|
+|**src/editor.c**|**59**|**check cursor position fits on the screen**|
