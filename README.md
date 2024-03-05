@@ -91,7 +91,7 @@ Later.
 		<th>14</th>
 		<th>48</th>
 		<th>0</th>
-		<th>1635</th>
+		<th>1629</th>
 	</tr><tr>
 		<th>Shell</th>
 		<th>1</th>
@@ -128,7 +128,7 @@ Later.
 		<th>121</th>
 		<th>507</th>
 		<th>26</th>
-    	<th>16302</th>
+    	<th>16296</th>
 	</tr></tfoot>
 	</table>
 

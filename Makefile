@@ -44,14 +44,14 @@ gen-readme:
 	$(GEN_README_PATH)
 
 # Install after build
-install: $(NAME)
+install: all
 	mkdir -p $(PREFIX)/bin
-	cp -f $< $(PREFIX)/bin/$<
-	chmod 755 $(PREFIX)/bin/$<
+	cp $(NAME) $(PREFIX)/bin/$(NAME)
+	chmod 755 $(PREFIX)/bin/$(NAME)
 
 # Uninstall
 uninstall:
-	rm -f $(PREFIX)/bin/$(NAME)
+	rm $(PREFIX)/bin/$(NAME)
 
 # Valgrind
 valgrind: all
@@ -64,7 +64,7 @@ valgrind: all
 		--track-origins=yes \
 		--verbose \
 		--log-file=$(VALGRIND_OUT) \
-		./vega $(VALGRIND_TEMP)
+		./$(NAME) $(VALGRIND_TEMP)
 
 	# Show valgrind output and remove temp and out files
 	less $(VALGRIND_OUT)
