@@ -84,8 +84,6 @@ editor_open(const char *path)
 	if (!(f = fopen(path, "r")))
 		err("Failed to open \"%s\":", path);
 
-	/* TODO: do not read all file. Instead read chunks */
-
 	/* Close the file after read */
 	fclose(f);
 }
