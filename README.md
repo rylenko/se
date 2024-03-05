@@ -68,22 +68,22 @@ Later.
 	</tr></thead>
 	<tbody><tr>
 		<th>C</th>
-		<th>6</th>
-		<th>470</th>
-		<th>68</th>
-		<th>69</th>
-		<th>333</th>
-		<th>29</th>
-		<th>9445</th>
+		<th>7</th>
+		<th>516</th>
+		<th>75</th>
+		<th>75</th>
+		<th>366</th>
+		<th>40</th>
+		<th>10380</th>
 	</tr><tr>
 		<th>C Header</th>
-		<th>6</th>
-		<th>129</th>
-		<th>33</th>
-		<th>39</th>
-		<th>57</th>
+		<th>7</th>
+		<th>140</th>
+		<th>35</th>
+		<th>44</th>
+		<th>61</th>
 		<th>0</th>
-		<th>2750</th>
+		<th>2969</th>
 	</tr><tr>
 		<th>Markdown</th>
 		<th>2</th>
@@ -96,12 +96,12 @@ Later.
 	</tr><tr>
 		<th>Makefile</th>
 		<th>2</th>
-		<th>78</th>
+		<th>79</th>
 		<th>16</th>
 		<th>14</th>
-		<th>48</th>
+		<th>49</th>
 		<th>0</th>
-		<th>1643</th>
+		<th>1698</th>
 	</tr><tr>
 		<th>Shell</th>
 		<th>1</th>
@@ -132,13 +132,13 @@ Later.
 	</tr></tbody>
 	<tfoot><tr>
 		<th>Total</th>
-		<th>19</th>
-		<th>856</th>
-		<th>164</th>
-		<th>128</th>
-		<th>564</th>
-		<th>29</th>
-    	<th>17535</th>
+		<th>21</th>
+		<th>914</th>
+		<th>173</th>
+		<th>139</th>
+		<th>602</th>
+		<th>40</th>
+    	<th>18744</th>
 	</tr></tfoot>
 	</table>
 
@@ -147,5 +147,7 @@ Later.
 |Path|Line|Description|
 |-|-|-|
 |**src/buf.c**|**32**|**choose a more efficient memory allocation strategy**|
-|**src/editor.c**|**64**|**Avoid many reallocations in `buf_write`**|
-|**src/editor.c**|**75**|**check cursor position fits on the screen**|
+|**src/main.c**|**1**|**comment includes**|
+|**src/editor.c**|**65**|**Avoid many reallocations in `buf_write`**|
+|**src/editor.c**|**76**|**check cursor position fits on the screen**|
+|**src/editor.c**|**97**|**should we need to copy it?**|

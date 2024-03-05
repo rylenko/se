@@ -1,4 +1,5 @@
 #include <assert.h>
+#include <limits.h>
 #include <signal.h>
 #include <stdio.h>
 #include <string.h>
@@ -86,11 +87,14 @@ void
 editor_open(const char *path)
 {
 	FILE *f;
+	char *line;
+	size_t line_len;
 
 	/* Initialize */
 	editor.mode = MODE_NORM;
 	editor.msg[0] = 0;
 	editor.need_to_quit = 0;
+	/* TODO: should we need to copy it? */
 	editor.path = path;
 
 	/* Update window size and register the handler of window size changing */
@@ -101,7 +105,14 @@ editor_open(const char *path)
 	if (!(f = fopen(path, "r")))
 		err("Failed to open \"%s\":", path);
 
-	/* Close the file after read */
+	/* Read lines */
+	while (read_line(f, &line, &line_len)) {
+		editor_insert(editor.rows_count, line, line_len);
+		free(line);
+	}
+
+	/* Deallocate lose the file after read */
+	free(line);
 	fclose(f);
 }
 
