@@ -1,6 +1,6 @@
 # Vega
 
-A simple text editor without dependencies.
+A simple text editor without dependencies. Supports syntax highlighting.
 
 The name comes from the [star Vega](https://en.wikipedia.org/wiki/Vega).
 
@@ -70,7 +70,7 @@ The name comes from the [star Vega](https://en.wikipedia.org/wiki/Vega).
 		<th>0</th>
 		<th>7</th>
 		<th>0</th>
-		<th>268</th>
+		<th>328</th>
 	</tr><tr>
 		<th>gitignore</th>
 		<th>1</th>
@@ -89,7 +89,7 @@ The name comes from the [star Vega](https://en.wikipedia.org/wiki/Vega).
 		<th>107</th>
 		<th>425</th>
 		<th>24</th>
-    	<th>13265</th>
+    	<th>13325</th>
 	</tr></tfoot>
 	</table>
 
