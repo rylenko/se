@@ -19,10 +19,12 @@ main(const int argc, const char *const *const argv)
 
 	/* Open editor with file */
 	editor_open(argv[1]);
-	/* Main cycle */
-	while (!editor_need_to_quit()) {
-		/* Refresh editor's screen and process key presses */
+	/* Refresh editor's screen and process key presses */
+	while (1) {
 		editor_refresh_scr();
+		/* This is needed here to clear the screen after quit in the key processor */
+		if (editor_need_to_quit())
+			break;
 		editor_wait_and_proc_key_press();
 	}
 

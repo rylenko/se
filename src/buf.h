@@ -4,7 +4,7 @@
 #include <stdlib.h>
 
 /*
-During redrawing cursor may flicker because `printf` buffers the output but
+During redrawing content may flicker because `printf` buffers the output but
 flushes it to the terminal after receiving '\n'.
 
 This buffer is needed to write strings into one large buffer and print them on

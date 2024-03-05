@@ -14,7 +14,7 @@ static struct {
 } editor;
 
 /* Clears the screen. Then sets the cursor to the beginning of the screen. */
-static void editor_clear_scr(void);
+static void editor_clear_scr(Buf *buf);
 
 /* Updates the size and checks that everything fits on the screen. */
 static void editor_handle_sig_win_ch(int num);
@@ -27,26 +27,23 @@ To update the window size after it has been changed, use the handler
 */
 static void editor_update_win_size(void);
 
+/* Write lines in the buffer. */
+static void editor_write_lines(Buf *buf);
+
 static void
-editor_clear_scr(void)
+editor_clear_scr(Buf *buf)
 {
 	unsigned short col_i;
 	unsigned short row_i;
-	Buf buf = buf_alloc();
 	/* Go home before clearing */
-	term_go_home(&buf);
-
+	term_go_home(buf);
 	/* Clear the screen */
 	for (row_i = 0; row_i < editor.win_size.ws_row; row_i++)
 		for (col_i = 0; col_i < editor.win_size.ws_col; col_i++)
 			/* TODO: Avoid many reallocations in `buf_write` */
-			buf_write(&buf, " ", 1);
-
+			buf_write(buf, " ", 1);
 	/* Go home after clearing */
-	term_go_home(&buf);
-	/* Flush and free the buffer */
-	term_flush(&buf);
-	buf_free(buf);
+	term_go_home(buf);
 }
 
 static void
@@ -80,21 +77,18 @@ editor_open(const char *path)
 void
 editor_refresh_scr(void)
 {
+	/* Allocate new buffer, hide cursor and clear the screen */
 	Buf buf = buf_alloc();
-
-	/* Assert that we do not need to quit */
-	assert(!editor.need_to_quit);
-	/* Hide cursor */
 	term_hide_cur(&buf);
+	editor_clear_scr(&buf);
 
-	/* Print lines */
-	editor_clear_scr();
-	buf_writef(&buf, "Rows: %d\r\n", editor.win_size.ws_row);
-	buf_writef(&buf, "Path: \"%s\"\r\n", editor.path);
+	/* Write content if we do not quit yet */
+	if (!editor.need_to_quit) {
+		editor_write_lines(&buf);
+	}
 
-	/* Show cursor */
+	/* Show cursor, flush and free the buffer */
 	term_show_cur(&buf);
-	/* Flush and free the buffer */
 	term_flush(&buf);
 	buf_free(buf);
 }
@@ -108,14 +102,26 @@ editor_update_win_size(void)
 void
 editor_wait_and_proc_key_press(void)
 {
-	char key = term_wait_key_press();
-
 	/* Assert that we do not need to quit */
 	assert(!editor.need_to_quit);
 
-	/* Quit key */
-	if (key == 'q') {
+	switch (term_wait_key_press()) {
+	/* Quit */
+	case 'q':
 		editor.need_to_quit = 1;
-		editor_clear_scr();
+		break;
 	}
+}
+
+static void
+editor_write_lines(Buf *buf)
+{
+	unsigned short row_i;
+	/* Assert that we do not need to quit */
+	assert(!editor.need_to_quit);
+
+	buf_writef(buf, "Rows: %d\r\n", editor.win_size.ws_row);
+	buf_writef(buf, "Path: \"%s\"\r\n", editor.path);
+	for (row_i = 3; row_i < editor.win_size.ws_row; row_i++)
+		buf_write(buf, "~\r\n", 3);
 }

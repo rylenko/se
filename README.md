@@ -20,12 +20,12 @@ The name comes from the [star Vega](https://en.wikipedia.org/wiki/Vega).
 	<tbody><tr>
 		<th>C</th>
 		<th>5</th>
-		<th>353</th>
-		<th>54</th>
-		<th>52</th>
-		<th>247</th>
-		<th>22</th>
-		<th>7183</th>
+		<th>358</th>
+		<th>53</th>
+		<th>51</th>
+		<th>254</th>
+		<th>23</th>
+		<th>7376</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>4</th>
@@ -34,7 +34,7 @@ The name comes from the [star Vega](https://en.wikipedia.org/wiki/Vega).
 		<th>30</th>
 		<th>38</th>
 		<th>0</th>
-		<th>2122</th>
+		<th>2123</th>
 	</tr><tr>
 		<th>Makefile</th>
 		<th>2</th>
@@ -84,12 +84,12 @@ The name comes from the [star Vega](https://en.wikipedia.org/wiki/Vega).
 	<tfoot><tr>
 		<th>Total</th>
 		<th>16</th>
-		<th>584</th>
-		<th>107</th>
-		<th>97</th>
-		<th>380</th>
-		<th>22</th>
-    	<th>11920</th>
+		<th>589</th>
+		<th>106</th>
+		<th>96</th>
+		<th>387</th>
+		<th>23</th>
+    	<th>12114</th>
 	</tr></tfoot>
 	</table>
 
@@ -98,5 +98,5 @@ The name comes from the [star Vega](https://en.wikipedia.org/wiki/Vega).
 |Path|Line|Description|
 |-|-|-|
 |**src/buf.c**|**32**|**choose a more efficient memory allocation strategy**|
-|**src/editor.c**|**42**|**Avoid many reallocations in `buf_write`**|
-|**src/editor.c**|**57**|**check cursor position fits on the screen**|
+|**src/editor.c**|**43**|**Avoid many reallocations in `buf_write`**|
+|**src/editor.c**|**54**|**check cursor position fits on the screen**|
