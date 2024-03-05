@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <sys/ioctl.h>
 #include "buf.h"
+#include "color.h"
 #include "editor.h"
 #include "term.h"
 
@@ -29,6 +30,9 @@ static void editor_update_win_size(void);
 
 /* Write lines in the buffer. */
 static void editor_write_lines(Buf *buf);
+
+/* Write static in the buffer. */
+static void editor_write_status(Buf *buf);
 
 static void
 editor_clear_scr(Buf *buf)
@@ -85,6 +89,7 @@ editor_refresh_scr(void)
 	/* Write content if we do not quit yet */
 	if (!editor.need_to_quit) {
 		editor_write_lines(&buf);
+		editor_write_status(&buf);
 	}
 
 	/* Show cursor, flush and free the buffer */
@@ -124,4 +129,19 @@ editor_write_lines(Buf *buf)
 	buf_writef(buf, "Path: \"%s\"\r\n", editor.path);
 	for (row_i = 3; row_i < editor.win_size.ws_row; row_i++)
 		buf_write(buf, "~\r\n", 3);
+}
+
+static void
+editor_write_status(Buf *buf)
+{
+	size_t col_i;
+	size_t len;
+
+	color_begin(buf, COLOR_WHITE, COLOR_BLACK);
+	/* Write file path */
+	len = buf_writef(buf, " %s", editor.path);
+	/* Fill colored empty space */
+	for (col_i = len; col_i < editor.win_size.ws_col; col_i++)
+		buf_write(buf, " ", 1);
+	color_end(buf);
 }

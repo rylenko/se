@@ -3,7 +3,7 @@
 include config.mk
 
 # Code files
-SRC = src/buf.c src/editor.c src/err.c src/main.c src/term.c
+SRC = src/buf.c src/color.c src/editor.c src/err.c src/main.c src/term.c
 OBJ = $(SRC:.c=.o)
 
 # Paths
@@ -24,7 +24,8 @@ endif
 
 # Object file dependencies
 src/buf.o: src/buf.h src/err.h
-src/editor.o: src/editor.h src/term.h
+src/color.o: src/buf.h src/color.h
+src/editor.o: src/color.h src/editor.h src/term.h
 src/err.o: src/err.h
 src/main.o: src/buf.h src/editor.h src/err.h src/term.h
 src/term.o: src/err.h src/term.h

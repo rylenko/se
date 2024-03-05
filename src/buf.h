@@ -28,6 +28,6 @@ void buf_free(Buf);
 void buf_write(Buf *, const char *, size_t);
 
 /* Appends a formatted string to a buffer. */
-void buf_writef(Buf *, const char *, ...);
+size_t buf_writef(Buf *, const char *, ...);
 
 #endif /* _BUF_H */

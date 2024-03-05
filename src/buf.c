@@ -44,7 +44,7 @@ buf_write(Buf *buf, const char *part, size_t len)
 	buf->len = new_len;
 }
 
-void
+size_t
 buf_writef(Buf *buf, const char *fmt, ...)
 {
 	va_list args;
@@ -58,4 +58,5 @@ buf_writef(Buf *buf, const char *fmt, ...)
 
 	/* Write new formatted part */
 	buf_write(buf, part, len);
+	return len;
 }
