@@ -1,8 +1,12 @@
 # Vega
 
-A simple text editor without dependencies. Supports syntax highlighting.
+A simple text editor without dependencies.
 
 The name comes from the [star Vega](https://en.wikipedia.org/wiki/Vega).
+
+# Syntax highlighting
+
+Not implemented yet. Perhaps this feature will be optional and presented as a patch that can be applied.
 
 # Lines of code
 
@@ -54,6 +58,15 @@ The name comes from the [star Vega](https://en.wikipedia.org/wiki/Vega).
 		<th>0</th>
 		<th>1008</th>
 	</tr><tr>
+		<th>Markdown</th>
+		<th>2</th>
+		<th>21</th>
+		<th>10</th>
+		<th>0</th>
+		<th>11</th>
+		<th>0</th>
+		<th>526</th>
+	</tr><tr>
 		<th>AWK</th>
 		<th>1</th>
 		<th>14</th>
@@ -62,15 +75,6 @@ The name comes from the [star Vega](https://en.wikipedia.org/wiki/Vega).
 		<th>12</th>
 		<th>0</th>
 		<th>220</th>
-	</tr><tr>
-		<th>Markdown</th>
-		<th>2</th>
-		<th>13</th>
-		<th>6</th>
-		<th>0</th>
-		<th>7</th>
-		<th>0</th>
-		<th>328</th>
 	</tr><tr>
 		<th>gitignore</th>
 		<th>1</th>
@@ -84,12 +88,12 @@ The name comes from the [star Vega](https://en.wikipedia.org/wiki/Vega).
 	<tfoot><tr>
 		<th>Total</th>
 		<th>18</th>
-		<th>648</th>
-		<th>116</th>
+		<th>656</th>
+		<th>120</th>
 		<th>107</th>
-		<th>425</th>
+		<th>429</th>
 		<th>24</th>
-    	<th>13325</th>
+    	<th>13523</th>
 	</tr></tfoot>
 	</table>
 
