@@ -19,12 +19,15 @@ $ touch <path>
 $ vega <path>
 ```
 
-The control keys are very simple:
+General keys:
 
-- `CTRL+s` for save.
-- `CTRL+q` for exit. If you changed the file, you will need to either save it or press this key several times.
-- `CTRL+/` for search.
-- `ESC` to stop searching.
+- `CTRL+s` - save.
+- `CTRL+q` - quit. If you changed the file, you will need to either save it or press this key several times.
+
+Navigation keys:
+
+- `CTRL+g` - go to line by its number.
+- `CTRL+/` - start or end search.
 
 # Why
 
@@ -74,12 +77,12 @@ Later.
 	</tr><tr>
 		<th>Markdown</th>
 		<th>2</th>
-		<th>85</th>
-		<th>34</th>
+		<th>91</th>
+		<th>38</th>
 		<th>0</th>
-		<th>51</th>
+		<th>53</th>
 		<th>0</th>
-		<th>1954</th>
+		<th>1990</th>
 	</tr><tr>
 		<th>Makefile</th>
 		<th>2</th>
@@ -120,12 +123,12 @@ Later.
 	<tfoot><tr>
 		<th>Total</th>
 		<th>19</th>
-		<th>761</th>
-		<th>152</th>
+		<th>767</th>
+		<th>156</th>
 		<th>116</th>
-		<th>493</th>
+		<th>495</th>
 		<th>26</th>
-    	<th>15806</th>
+    	<th>15842</th>
 	</tr></tfoot>
 	</table>
 

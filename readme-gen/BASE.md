@@ -19,12 +19,15 @@ $ touch <path>
 $ vega <path>
 ```
 
-The control keys are very simple:
+General keys:
 
-- `CTRL+s` for save.
-- `CTRL+q` for exit. If you changed the file, you will need to either save it or press this key several times.
-- `CTRL+/` for search.
-- `ESC` to stop searching.
+- `CTRL+s` - save.
+- `CTRL+q` - quit. If you changed the file, you will need to either save it or press this key several times.
+
+Navigation keys:
+
+- `CTRL+g` - go to line by its number.
+- `CTRL+/` - start or end search.
 
 # Why
 
