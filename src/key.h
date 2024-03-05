@@ -5,6 +5,8 @@
 typedef enum {
 	KEY_CTRL_Q = 17,
 	KEY_CTRL_S = 19,
+	KEY_ESC = 27,
+	KEY_I = 105,
 } Key;
 
 #endif /* _KEY_H */

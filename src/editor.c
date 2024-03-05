@@ -14,9 +14,15 @@
 #define MSG_BUF_LEN (64)
 #define MSG_SAVED ("The file has been saved.")
 
+typedef enum {
+	MODE_INSERT,
+	MODE_NORMAL,
+} Mode;
+
 /* Structure with editor parameters. */
 static struct {
 	char need_to_quit;
+	Mode mode;
 	char msg[MSG_BUF_LEN];
 	const char *path;
 	struct winsize win_size;
@@ -79,6 +85,7 @@ editor_open(const char *path)
 	FILE *f;
 
 	/* Initialize */
+	editor.mode = MODE_NORMAL;
 	editor.msg[0] = 0;
 	editor.need_to_quit = 0;
 	editor.path = path;
@@ -124,17 +131,40 @@ editor_update_win_size(void)
 void
 editor_wait_and_proc_key_press(void)
 {
+	char key;
 	/* Assert that we do not need to quit */
 	assert(!editor.need_to_quit);
 
-	switch (term_wait_key_press()) {
-	/* Quit */
-	case KEY_CTRL_Q:
-		editor.need_to_quit = 1;
+	/* Wait key */
+	key = term_wait_key_press();
+
+	/* Process pressed key */
+	switch (editor.mode) {
+	case MODE_NORMAL:
+		/* Normal mode keys */
+		switch (key) {
+		/* Quit */
+		case KEY_CTRL_Q:
+			editor.need_to_quit = 1;
+			break;
+		/* Save */
+		case KEY_CTRL_S:
+			strcpy(editor.msg, MSG_SAVED);
+			break;
+		/* Switch to insert mode */
+		case KEY_I:
+			editor.mode = MODE_INSERT;
+			break;
+		}
 		break;
-	/* Save */
-	case KEY_CTRL_S:
-		strcpy(editor.msg, MSG_SAVED);
+	case MODE_INSERT:
+		/* Insert mode keys */
+		switch (key) {
+		/* Switch to normal mode */
+		case KEY_ESC:
+			editor.mode = MODE_NORMAL;
+			break;
+		}
 		break;
 	}
 }

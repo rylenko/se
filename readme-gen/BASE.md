@@ -19,15 +19,20 @@ $ touch <path>
 $ vega <path>
 ```
 
-General keys:
+Normal mode keys:
 
+- `e` - end of line.
+- `h` - go left.
+- `j` - go down.
+- `k` - go up.
+- `l` - go right.
+- `q` - start of line.
+- `s` - end of file.
+- `w` - start of file.
+- `/` - start or end search.
 - `CTRL+s` - save.
 - `CTRL+q` - quit. If you changed the file, you will need to either save it or press this key several times.
-
-Navigation keys:
-
-- `CTRL+g` - go to line by its number.
-- `CTRL+/` - start or end search.
+- `<number>g` - Go to line by its number `<number>`.
 
 # Why
 
