@@ -1,6 +1,7 @@
 #include <assert.h>
 #include <signal.h>
 #include <stdio.h>
+#include <string.h>
 #include <sys/ioctl.h>
 #include "buf.h"
 #include "color.h"
@@ -9,9 +10,14 @@
 #include "key.h"
 #include "term.h"
 
+/* Length of message's buffer must be greater than all message lengths */
+#define MSG_BUF_LEN (64)
+#define MSG_SAVED ("The file has been saved.")
+
 /* Structure with editor parameters. */
 static struct {
 	char need_to_quit;
+	char msg[MSG_BUF_LEN];
 	const char *path;
 	struct winsize win_size;
 } editor;
@@ -73,6 +79,7 @@ editor_open(const char *path)
 	FILE *f;
 
 	/* Initialize */
+	editor.msg[0] = 0;
 	editor.need_to_quit = 0;
 	editor.path = path;
 
@@ -125,6 +132,10 @@ editor_wait_and_proc_key_press(void)
 	case KEY_CTRL_Q:
 		editor.need_to_quit = 1;
 		break;
+	/* Save */
+	case KEY_CTRL_S:
+		strcpy(editor.msg, MSG_SAVED);
+		break;
 	}
 }
 
@@ -145,11 +156,19 @@ static void
 editor_write_status(Buf *buf)
 {
 	size_t col_i;
-	size_t len;
-
+	size_t len = 0;
 	color_begin(buf, COLOR_WHITE, COLOR_BLACK);
+
 	/* Write file path */
-	len = buf_writef(buf, " %s", editor.path);
+	len += buf_writef(buf, " %s", editor.path);
+
+	/* Write message if exists */
+	if (editor.msg[0]) {
+		len += buf_writef(buf, ": %s", editor.msg);
+		/* That is, the message will disappear after the next key */
+		editor.msg[0] = 0;
+	}
+
 	/* Fill colored empty space */
 	for (col_i = len; col_i < editor.win_size.ws_col; col_i++)
 		buf_write(buf, " ", 1);

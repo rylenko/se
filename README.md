@@ -56,21 +56,21 @@ Later.
 	<tbody><tr>
 		<th>C</th>
 		<th>6</th>
-		<th>405</th>
-		<th>61</th>
-		<th>58</th>
-		<th>286</th>
-		<th>25</th>
-		<th>8239</th>
+		<th>424</th>
+		<th>64</th>
+		<th>62</th>
+		<th>298</th>
+		<th>26</th>
+		<th>8715</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>6</th>
-		<th>126</th>
+		<th>127</th>
 		<th>33</th>
 		<th>39</th>
-		<th>54</th>
+		<th>55</th>
 		<th>0</th>
-		<th>2703</th>
+		<th>2721</th>
 	</tr><tr>
 		<th>Markdown</th>
 		<th>2</th>
@@ -120,12 +120,12 @@ Later.
 	<tfoot><tr>
 		<th>Total</th>
 		<th>19</th>
-		<th>741</th>
-		<th>149</th>
-		<th>112</th>
-		<th>480</th>
-		<th>25</th>
-    	<th>15312</th>
+		<th>761</th>
+		<th>152</th>
+		<th>116</th>
+		<th>493</th>
+		<th>26</th>
+    	<th>15806</th>
 	</tr></tfoot>
 	</table>
 
@@ -134,5 +134,5 @@ Later.
 |Path|Line|Description|
 |-|-|-|
 |**src/buf.c**|**32**|**choose a more efficient memory allocation strategy**|
-|**src/editor.c**|**49**|**Avoid many reallocations in `buf_write`**|
-|**src/editor.c**|**60**|**check cursor position fits on the screen**|
+|**src/editor.c**|**55**|**Avoid many reallocations in `buf_write`**|
+|**src/editor.c**|**66**|**check cursor position fits on the screen**|
