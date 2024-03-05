@@ -91,16 +91,7 @@ Later.
 		<th>14</th>
 		<th>48</th>
 		<th>0</th>
-		<th>1610</th>
-	</tr><tr>
-		<th>Plain Text</th>
-		<th>1</th>
-		<th>77</th>
-		<th>0</th>
-		<th>0</th>
-		<th>77</th>
-		<th>0</th>
-		<th>4453</th>
+		<th>1635</th>
 	</tr><tr>
 		<th>Shell</th>
 		<th>1</th>
@@ -131,13 +122,13 @@ Later.
 	</tr></tbody>
 	<tfoot><tr>
 		<th>Total</th>
-		<th>20</th>
-		<th>865</th>
+		<th>19</th>
+		<th>788</th>
 		<th>160</th>
 		<th>121</th>
-		<th>584</th>
+		<th>507</th>
 		<th>26</th>
-    	<th>20730</th>
+    	<th>16302</th>
 	</tr></tfoot>
 	</table>
 
