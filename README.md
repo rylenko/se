@@ -25,7 +25,7 @@ The name comes from the [star Vega](https://en.wikipedia.org/wiki/Vega).
 		<th>54</th>
 		<th>281</th>
 		<th>24</th>
-		<th>8035</th>
+		<th>8039</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>5</th>
@@ -89,7 +89,7 @@ The name comes from the [star Vega](https://en.wikipedia.org/wiki/Vega).
 		<th>107</th>
 		<th>425</th>
 		<th>24</th>
-    	<th>13261</th>
+    	<th>13265</th>
 	</tr></tfoot>
 	</table>
 

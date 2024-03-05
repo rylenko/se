@@ -127,7 +127,7 @@ editor_write_lines(Buf *buf)
 
 	buf_writef(buf, "Rows: %d\r\n", editor.win_size.ws_row);
 	buf_writef(buf, "Path: \"%s\"\r\n", editor.path);
-	for (row_i = 3; row_i < editor.win_size.ws_row; row_i++)
+	for (row_i = 2; row_i < editor.win_size.ws_row - 1; row_i++)
 		buf_write(buf, "~\r\n", 3);
 }
 
