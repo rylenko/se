@@ -10,8 +10,12 @@ OBJ = $(SRC:.c=.o)
 ROOT_DIR = $(dir $(realpath $(lastword $(MAKEFILE_LIST))))
 GEN_README_PATH = $(ROOT_DIR)readme-gen/run
 
+# Valgrind
+VALGRIND_OUT = "valgrind-out"
+VALGRIND_TEMP = "valgrind-temp"
+
 # Build executable
-all: $(OBJ) gen-readme
+all: $(OBJ)
 	$(CC) $(CFLAGS) -o $(NAME) $(OBJ)
 
 # Build object file from source file
@@ -49,4 +53,21 @@ install: $(NAME)
 uninstall:
 	rm -f $(PREFIX)/bin/$(NAME)
 
-.PHONY: all clean install uninstall
+# Valgrind
+valgrind: all
+	# Create temp file
+	touch $(VALGRIND_TEMP)
+
+	# Use valgrind to check memory leaks
+	valgrind --leak-check=full \
+		--show-leak-kinds=all \
+		--track-origins=yes \
+		--verbose \
+		--log-file=$(VALGRIND_OUT) \
+		./vega $(VALGRIND_TEMP)
+
+	# Show valgrind output and remove temp and out files
+	less $(VALGRIND_OUT)
+	rm -f $(VALGRIND_TEMP) $(VALGRIND_OUT)
+
+.PHONY: all clean gen-readme install valgrind uninstall

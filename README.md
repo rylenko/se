@@ -86,12 +86,21 @@ Later.
 	</tr><tr>
 		<th>Makefile</th>
 		<th>2</th>
-		<th>57</th>
-		<th>12</th>
-		<th>9</th>
-		<th>36</th>
+		<th>78</th>
+		<th>16</th>
+		<th>14</th>
+		<th>48</th>
 		<th>0</th>
-		<th>1175</th>
+		<th>1610</th>
+	</tr><tr>
+		<th>Plain Text</th>
+		<th>1</th>
+		<th>77</th>
+		<th>0</th>
+		<th>0</th>
+		<th>77</th>
+		<th>0</th>
+		<th>4453</th>
 	</tr><tr>
 		<th>Shell</th>
 		<th>1</th>
@@ -122,13 +131,13 @@ Later.
 	</tr></tbody>
 	<tfoot><tr>
 		<th>Total</th>
-		<th>19</th>
-		<th>767</th>
-		<th>156</th>
-		<th>116</th>
-		<th>495</th>
+		<th>20</th>
+		<th>865</th>
+		<th>160</th>
+		<th>121</th>
+		<th>584</th>
 		<th>26</th>
-    	<th>15842</th>
+    	<th>20730</th>
 	</tr></tfoot>
 	</table>
 
