@@ -5,6 +5,7 @@
 #include "buf.h"
 #include "color.h"
 #include "editor.h"
+#include "err.h"
 #include "key.h"
 #include "term.h"
 
@@ -69,14 +70,24 @@ editor_need_to_quit(void)
 void
 editor_open(const char *path)
 {
-	assert(path);
+	FILE *f;
 
+	/* Initialize */
 	editor.need_to_quit = 0;
 	editor.path = path;
 
 	/* Update window size and register the handler of window size changing */
 	editor_update_win_size();
 	signal(SIGWINCH, editor_handle_sig_win_ch);
+
+	/* Open the file  */
+	if (!(f = fopen(path, "r")))
+		err("Failed to open \"%s\":", path);
+
+	/* TODO: do not read all file. Instead read chunks */
+
+	/* Close the file after read */
+	fclose(f);
 }
 
 void

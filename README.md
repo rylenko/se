@@ -1,12 +1,44 @@
 # Vega
 
-A simple text editor without dependencies.
+A simple text editor.
 
 The name comes from the [star Vega](https://en.wikipedia.org/wiki/Vega).
 
-# Syntax highlighting
+# Why
 
-Not implemented yet. Perhaps this feature will be optional and presented as a patch that can be applied.
+For a simple text editor without dependencies that can edit, save, search in a file and nothing more.
+
+There is no support for multiple windows. Use [tmux](https://github.com/tmux/tmux).
+
+There is no support for plugins written in [Lua](https://en.wikipedia.org/wiki/Lua_(programming_language)) or [Python](https://en.wikipedia.org/wiki/Python_(programming_language)) or anything like that.
+
+Support for syntax highlighting is optional and can be enabled by applying patches.
+
+# Usage
+
+Open a file:
+
+```
+$ vega <path>
+```
+
+If the file has not yet been created:
+
+```
+$ touch <path>
+$ vega <path>
+```
+
+The control keys are very simple:
+
+- `CTRL+s` for save.
+- `CTRL+q` for exit. If you changed the file, you will need to either save it or press this key several times.
+- `CTRL+/` for search.
+- `ESC` to stop searching.
+
+# Syntax highlighting patches
+
+Later.
 
 # Lines of code
 
@@ -24,12 +56,12 @@ Not implemented yet. Perhaps this feature will be optional and presented as a pa
 	<tbody><tr>
 		<th>C</th>
 		<th>6</th>
-		<th>394</th>
-		<th>58</th>
-		<th>54</th>
-		<th>282</th>
-		<th>24</th>
-		<th>8063</th>
+		<th>407</th>
+		<th>62</th>
+		<th>59</th>
+		<th>286</th>
+		<th>25</th>
+		<th>8295</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>6</th>
@@ -39,6 +71,15 @@ Not implemented yet. Perhaps this feature will be optional and presented as a pa
 		<th>54</th>
 		<th>0</th>
 		<th>2703</th>
+	</tr><tr>
+		<th>Markdown</th>
+		<th>2</th>
+		<th>85</th>
+		<th>34</th>
+		<th>0</th>
+		<th>51</th>
+		<th>0</th>
+		<th>1954</th>
 	</tr><tr>
 		<th>Makefile</th>
 		<th>2</th>
@@ -57,15 +98,6 @@ Not implemented yet. Perhaps this feature will be optional and presented as a pa
 		<th>39</th>
 		<th>0</th>
 		<th>1008</th>
-	</tr><tr>
-		<th>Markdown</th>
-		<th>2</th>
-		<th>21</th>
-		<th>10</th>
-		<th>0</th>
-		<th>11</th>
-		<th>0</th>
-		<th>526</th>
 	</tr><tr>
 		<th>AWK</th>
 		<th>1</th>
@@ -88,12 +120,12 @@ Not implemented yet. Perhaps this feature will be optional and presented as a pa
 	<tfoot><tr>
 		<th>Total</th>
 		<th>19</th>
-		<th>666</th>
-		<th>122</th>
-		<th>108</th>
-		<th>436</th>
-		<th>24</th>
-    	<th>13708</th>
+		<th>743</th>
+		<th>150</th>
+		<th>113</th>
+		<th>480</th>
+		<th>25</th>
+    	<th>15368</th>
 	</tr></tfoot>
 	</table>
 
@@ -102,5 +134,6 @@ Not implemented yet. Perhaps this feature will be optional and presented as a pa
 |Path|Line|Description|
 |-|-|-|
 |**src/buf.c**|**32**|**choose a more efficient memory allocation strategy**|
-|**src/editor.c**|**48**|**Avoid many reallocations in `buf_write`**|
-|**src/editor.c**|**59**|**check cursor position fits on the screen**|
+|**src/editor.c**|**49**|**Avoid many reallocations in `buf_write`**|
+|**src/editor.c**|**60**|**check cursor position fits on the screen**|
+|**src/editor.c**|**87**|**do not read all file. Instead read chunks**|

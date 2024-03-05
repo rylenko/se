@@ -13,12 +13,14 @@ main(const int argc, const char *const *const argv)
 	/* Check arguments count */
 	if (argc != 2)
 		err(USAGE);
-	/* Initialize terminal and editor and enable raw mode */
+
+	/* Initialize terminal */
 	term_init(STDIN_FILENO, STDOUT_FILENO);
+	/* Try open editor with file */
+	editor_open(argv[1]);
+	/* Enable terminal's raw mode */
 	term_enable_raw_mode();
 
-	/* Open editor with file */
-	editor_open(argv[1]);
 	/* Refresh editor's screen and process key presses */
 	while (1) {
 		editor_refresh_scr();
