@@ -13,7 +13,7 @@ static struct {
 	struct winsize win_size;
 } editor;
 
-/* Clears the screen. */
+/* Clears the screen. Then sets the cursor to the beginning of the screen. */
 static void editor_clear_scr(void);
 
 /* Updates the size and checks that everything fits on the screen. */

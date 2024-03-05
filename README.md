@@ -20,12 +20,12 @@ The name comes from the [star Vega](https://en.wikipedia.org/wiki/Vega).
 	<tbody><tr>
 		<th>C</th>
 		<th>5</th>
-		<th>350</th>
+		<th>353</th>
 		<th>54</th>
 		<th>52</th>
-		<th>244</th>
-		<th>21</th>
-		<th>6990</th>
+		<th>247</th>
+		<th>22</th>
+		<th>7183</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>4</th>
@@ -84,12 +84,12 @@ The name comes from the [star Vega](https://en.wikipedia.org/wiki/Vega).
 	<tfoot><tr>
 		<th>Total</th>
 		<th>16</th>
-		<th>581</th>
+		<th>584</th>
 		<th>107</th>
 		<th>97</th>
-		<th>377</th>
-		<th>21</th>
-    	<th>11727</th>
+		<th>380</th>
+		<th>22</th>
+    	<th>11920</th>
 	</tr></tfoot>
 	</table>
 
