@@ -19,15 +19,25 @@ $ touch <path>
 $ vega <path>
 ```
 
-General keys:
+Normal mode keys:
 
+- `e` - end of line.
+- `h` - go left.
+- `i` - switch to insert mode.
+- `j` - go down.
+- `k` - go up.
+- `l` - go right.
+- `q` - start of line.
+- `s` - end of file.
+- `w` - start of file.
+- `/` - start or end search.
 - `CTRL+s` - save.
 - `CTRL+q` - quit. If you changed the file, you will need to either save it or press this key several times.
+- `<number>g` - Go to line by its number `<number>`.
 
-Navigation keys:
+Insert mode keys:
 
-- `CTRL+g` - go to line by its number.
-- `CTRL+/` - start or end search.
+- `ESC` - switch to normal mode.
 
 # Why
 
@@ -59,30 +69,30 @@ Later.
 	<tbody><tr>
 		<th>C</th>
 		<th>6</th>
-		<th>424</th>
-		<th>64</th>
-		<th>62</th>
-		<th>298</th>
-		<th>26</th>
-		<th>8715</th>
+		<th>454</th>
+		<th>66</th>
+		<th>68</th>
+		<th>320</th>
+		<th>28</th>
+		<th>9208</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>6</th>
-		<th>127</th>
+		<th>129</th>
 		<th>33</th>
 		<th>39</th>
-		<th>55</th>
+		<th>57</th>
 		<th>0</th>
-		<th>2721</th>
+		<th>2750</th>
 	</tr><tr>
 		<th>Markdown</th>
 		<th>2</th>
-		<th>91</th>
+		<th>111</th>
 		<th>38</th>
 		<th>0</th>
-		<th>53</th>
+		<th>73</th>
 		<th>0</th>
-		<th>1990</th>
+		<th>2456</th>
 	</tr><tr>
 		<th>Makefile</th>
 		<th>2</th>
@@ -123,12 +133,12 @@ Later.
 	<tfoot><tr>
 		<th>Total</th>
 		<th>19</th>
-		<th>788</th>
-		<th>160</th>
-		<th>121</th>
-		<th>507</th>
-		<th>26</th>
-    	<th>16310</th>
+		<th>840</th>
+		<th>162</th>
+		<th>127</th>
+		<th>551</th>
+		<th>28</th>
+    	<th>17298</th>
 	</tr></tfoot>
 	</table>
 
@@ -137,5 +147,5 @@ Later.
 |Path|Line|Description|
 |-|-|-|
 |**src/buf.c**|**32**|**choose a more efficient memory allocation strategy**|
-|**src/editor.c**|**55**|**Avoid many reallocations in `buf_write`**|
-|**src/editor.c**|**66**|**check cursor position fits on the screen**|
+|**src/editor.c**|**61**|**Avoid many reallocations in `buf_write`**|
+|**src/editor.c**|**72**|**check cursor position fits on the screen**|

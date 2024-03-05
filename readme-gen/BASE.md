@@ -23,6 +23,7 @@ Normal mode keys:
 
 - `e` - end of line.
 - `h` - go left.
+- `i` - switch to insert mode.
 - `j` - go down.
 - `k` - go up.
 - `l` - go right.
@@ -33,6 +34,10 @@ Normal mode keys:
 - `CTRL+s` - save.
 - `CTRL+q` - quit. If you changed the file, you will need to either save it or press this key several times.
 - `<number>g` - Go to line by its number `<number>`.
+
+Insert mode keys:
+
+- `ESC` - switch to normal mode.
 
 # Why
 
