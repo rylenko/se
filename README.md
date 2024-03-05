@@ -69,12 +69,12 @@ Later.
 	<tbody><tr>
 		<th>C</th>
 		<th>6</th>
-		<th>454</th>
-		<th>66</th>
+		<th>470</th>
 		<th>68</th>
-		<th>320</th>
-		<th>28</th>
-		<th>9208</th>
+		<th>69</th>
+		<th>333</th>
+		<th>29</th>
+		<th>9445</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>6</th>
@@ -133,12 +133,12 @@ Later.
 	<tfoot><tr>
 		<th>Total</th>
 		<th>19</th>
-		<th>840</th>
-		<th>162</th>
-		<th>127</th>
-		<th>551</th>
-		<th>28</th>
-    	<th>17298</th>
+		<th>856</th>
+		<th>164</th>
+		<th>128</th>
+		<th>564</th>
+		<th>29</th>
+    	<th>17535</th>
 	</tr></tfoot>
 	</table>
 
@@ -147,5 +147,5 @@ Later.
 |Path|Line|Description|
 |-|-|-|
 |**src/buf.c**|**32**|**choose a more efficient memory allocation strategy**|
-|**src/editor.c**|**61**|**Avoid many reallocations in `buf_write`**|
-|**src/editor.c**|**72**|**check cursor position fits on the screen**|
+|**src/editor.c**|**64**|**Avoid many reallocations in `buf_write`**|
+|**src/editor.c**|**75**|**check cursor position fits on the screen**|

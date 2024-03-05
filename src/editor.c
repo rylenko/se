@@ -15,8 +15,8 @@
 #define MSG_SAVED ("The file has been saved.")
 
 typedef enum {
-	MODE_INSERT,
-	MODE_NORMAL,
+	MODE_INS,
+	MODE_NORM,
 } Mode;
 
 /* Structure with editor parameters. */
@@ -47,6 +47,9 @@ static void editor_write_lines(Buf *buf);
 
 /* Write static in the buffer. */
 static void editor_write_status(Buf *buf);
+
+/* Converts mode to the string. */
+static char *mode_str(Mode mode);
 
 static void
 editor_clear_scr(Buf *buf)
@@ -85,7 +88,7 @@ editor_open(const char *path)
 	FILE *f;
 
 	/* Initialize */
-	editor.mode = MODE_NORMAL;
+	editor.mode = MODE_NORM;
 	editor.msg[0] = 0;
 	editor.need_to_quit = 0;
 	editor.path = path;
@@ -140,7 +143,7 @@ editor_wait_and_proc_key_press(void)
 
 	/* Process pressed key */
 	switch (editor.mode) {
-	case MODE_NORMAL:
+	case MODE_NORM:
 		/* Normal mode keys */
 		switch (key) {
 		/* Quit */
@@ -153,16 +156,16 @@ editor_wait_and_proc_key_press(void)
 			break;
 		/* Switch to insert mode */
 		case KEY_I:
-			editor.mode = MODE_INSERT;
+			editor.mode = MODE_INS;
 			break;
 		}
 		break;
-	case MODE_INSERT:
+	case MODE_INS:
 		/* Insert mode keys */
 		switch (key) {
 		/* Switch to normal mode */
 		case KEY_ESC:
-			editor.mode = MODE_NORMAL;
+			editor.mode = MODE_NORM;
 			break;
 		}
 		break;
@@ -189,8 +192,8 @@ editor_write_status(Buf *buf)
 	size_t len = 0;
 	color_begin(buf, COLOR_WHITE, COLOR_BLACK);
 
-	/* Write file path */
-	len += buf_writef(buf, " %s", editor.path);
+	/* Write base status */
+	len += buf_writef(buf, " (%s) %s", mode_str(editor.mode), editor.path);
 
 	/* Write message if exists */
 	if (editor.msg[0]) {
@@ -203,4 +206,17 @@ editor_write_status(Buf *buf)
 	for (col_i = len; col_i < editor.win_size.ws_col; col_i++)
 		buf_write(buf, " ", 1);
 	color_end(buf);
+}
+
+static char*
+mode_str(Mode mode)
+{
+	switch (mode) {
+	case MODE_INS:
+		return "INSERT";
+	case MODE_NORM:
+		return "NORMAL";
+	default:
+		return NULL;
+	}
 }
