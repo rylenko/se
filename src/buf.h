@@ -11,6 +11,7 @@ This buffer is needed to write strings into one large buffer and print them on
 the screen in one call.
 */
 typedef struct {
+	size_t cap;
 	char *data;
 	size_t len;
 } Buf;

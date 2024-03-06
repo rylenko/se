@@ -5,13 +5,18 @@
 #include <unistd.h>
 #include "buf.h"
 #include "err.h"
+#include "math.h"
 
+#define REALLOC_STEP (4096)
 #define FMT_STR_LEN (256)
+
+/* Grows buffer capacity. */
+static void buf_grow(Buf *buf, size_t by);
 
 Buf
 buf_alloc(void)
 {
-	return (Buf){ .data = NULL, .len = 0 };
+	return (Buf){ .data = NULL, .len = 0, .cap = 0 };
 }
 
 void
@@ -26,21 +31,24 @@ buf_free(Buf buf)
 	free(buf.data);
 }
 
+static void
+buf_grow(Buf *buf, size_t by)
+{
+	buf->cap += by;
+	if (!(buf->data = realloc(buf->data, buf->cap)))
+		err("Failed to reallocate buffer with capacity %zu:", buf->cap);
+}
+
 void
 buf_write(Buf *buf, const char *part, size_t len)
 {
-	/* TODO: choose a more efficient memory allocation strategy */
-	/* Reallocate with new length */
+	/* Check that we need to grow */
 	size_t new_len = buf->len + len;
-	char *new_data = realloc(buf->data, new_len);
-	if (!new_data)
-		err("Failed to reallocate buffer data with length %zu:", new_len);
+	if (new_len > buf->cap)
+		buf_grow(buf, MAX(new_len - buf->cap, REALLOC_STEP));
 
-	/* Copy the part to buffer */
-	memcpy(new_data + buf->len, part, len);
-
-	/* Update buffer with reallocated data and new length */
-	buf->data = new_data;
+	/* Append the part to buffer */
+	memcpy(buf->data + buf->len, part, len);
 	buf->len = new_len;
 }
 

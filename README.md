@@ -69,21 +69,21 @@ Later.
 	<tbody><tr>
 		<th>C</th>
 		<th>7</th>
-		<th>635</th>
-		<th>90</th>
-		<th>96</th>
-		<th>449</th>
-		<th>54</th>
-		<th>12678</th>
+		<th>643</th>
+		<th>91</th>
+		<th>95</th>
+		<th>457</th>
+		<th>55</th>
+		<th>12796</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>8</th>
-		<th>161</th>
+		<th>163</th>
 		<th>41</th>
 		<th>44</th>
-		<th>76</th>
+		<th>78</th>
 		<th>0</th>
-		<th>3277</th>
+		<th>3332</th>
 	</tr><tr>
 		<th>Markdown</th>
 		<th>2</th>
@@ -96,12 +96,12 @@ Later.
 	</tr><tr>
 		<th>Makefile</th>
 		<th>2</th>
-		<th>79</th>
+		<th>80</th>
 		<th>16</th>
 		<th>14</th>
-		<th>49</th>
+		<th>50</th>
 		<th>0</th>
-		<th>1705</th>
+		<th>1769</th>
 	</tr><tr>
 		<th>Shell</th>
 		<th>1</th>
@@ -133,12 +133,12 @@ Later.
 	<tfoot><tr>
 		<th>Total</th>
 		<th>22</th>
-		<th>1054</th>
-		<th>194</th>
-		<th>160</th>
-		<th>700</th>
-		<th>54</th>
-    	<th>21357</th>
+		<th>1065</th>
+		<th>195</th>
+		<th>159</th>
+		<th>711</th>
+		<th>55</th>
+    	<th>21594</th>
 	</tr></tfoot>
 	</table>
 
@@ -146,7 +146,6 @@ Later.
 
 |Path|Line|Description|
 |-|-|-|
-|**src/buf.c**|**32**|**choose a more efficient memory allocation strategy**|
 |**src/main.c**|**1**|**comment includes**|
 |**src/editor.c**|**71**|**Avoid many reallocations in `buf_write`**|
 |**src/editor.c**|**82**|**check cursor position fits on the screen**|
