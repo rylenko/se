@@ -11,6 +11,8 @@
 #include "key.h"
 #include "math.h"
 #include "row.h"
+/* str_clone */
+#include "str_util.h"
 #include "term.h"
 
 /* Length of message's buffer must be greater than all message lengths */
@@ -27,7 +29,7 @@ static struct {
 	char need_to_quit;
 	Mode mode;
 	char msg[MSG_BUF_LEN];
-	const char *path;
+	char *path;
 	Rows rows;
 	struct winsize win_size;
 } editor;
@@ -68,7 +70,6 @@ editor_clr_scr(Buf *buf)
 	/* Clear the screen */
 	for (row_i = 0; row_i < editor.win_size.ws_row; row_i++)
 		for (col_i = 0; col_i < editor.win_size.ws_col; col_i++)
-			/* TODO: Avoid many reallocations in `buf_write` */
 			buf_write(buf, " ", 1);
 	/* Go home after clearing */
 	term_go_home(buf);
@@ -98,8 +99,7 @@ editor_open(const char *path)
 	editor.mode = MODE_NORM;
 	editor.msg[0] = 0;
 	editor.need_to_quit = 0;
-	/* TODO: should we need to copy it? */
-	editor.path = path;
+	editor.path = str_clone(path);
 	editor.rows = rows_alloc();
 	/* Update window size and register the handler of window size changing */
 	editor_update_win_size();
@@ -116,6 +116,8 @@ static void
 editor_quit(void)
 {
 	editor.need_to_quit = 1;
+	/* Free memory */
+	free(editor.path);
 	rows_free(&editor.rows);
 }
 

@@ -68,22 +68,22 @@ Later.
 	</tr></thead>
 	<tbody><tr>
 		<th>C</th>
-		<th>7</th>
-		<th>643</th>
-		<th>91</th>
-		<th>95</th>
-		<th>457</th>
-		<th>55</th>
-		<th>12796</th>
+		<th>8</th>
+		<th>664</th>
+		<th>92</th>
+		<th>99</th>
+		<th>473</th>
+		<th>56</th>
+		<th>13115</th>
 	</tr><tr>
 		<th>C Header</th>
-		<th>8</th>
-		<th>163</th>
-		<th>41</th>
+		<th>9</th>
+		<th>169</th>
+		<th>43</th>
 		<th>44</th>
-		<th>78</th>
+		<th>82</th>
 		<th>0</th>
-		<th>3332</th>
+		<th>3430</th>
 	</tr><tr>
 		<th>Markdown</th>
 		<th>2</th>
@@ -96,12 +96,12 @@ Later.
 	</tr><tr>
 		<th>Makefile</th>
 		<th>2</th>
-		<th>80</th>
-		<th>16</th>
-		<th>14</th>
-		<th>50</th>
+		<th>79</th>
+		<th>15</th>
+		<th>13</th>
+		<th>51</th>
 		<th>0</th>
-		<th>1769</th>
+		<th>1742</th>
 	</tr><tr>
 		<th>Shell</th>
 		<th>1</th>
@@ -132,13 +132,13 @@ Later.
 	</tr></tbody>
 	<tfoot><tr>
 		<th>Total</th>
-		<th>22</th>
-		<th>1065</th>
-		<th>195</th>
-		<th>159</th>
-		<th>711</th>
-		<th>55</th>
-    	<th>21594</th>
+		<th>24</th>
+		<th>1091</th>
+		<th>197</th>
+		<th>162</th>
+		<th>732</th>
+		<th>56</th>
+    	<th>21984</th>
 	</tr></tfoot>
 	</table>
 
@@ -147,8 +147,6 @@ Later.
 |Path|Line|Description|
 |-|-|-|
 |**src/main.c**|**1**|**comment includes**|
-|**src/editor.c**|**71**|**Avoid many reallocations in `buf_write`**|
-|**src/editor.c**|**82**|**check cursor position fits on the screen**|
-|**src/editor.c**|**101**|**should we need to copy it?**|
+|**src/editor.c**|**83**|**check cursor position fits on the screen**|
 |**src/row.c**|**124**|**Linked list is better for creating new rows**|
 |**src/row.c**|**143**|**create shrink_to_fit for rows_remove**|
