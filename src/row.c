@@ -66,14 +66,14 @@ row_read(Row *row, FILE *f)
 
 		/* Write readed character */
 		if ('\n' == ch || EOF == ch) {
-			row->cont[row->len++] = 0;
+			row->cont[row->len] = 0;
 			break;
 		}
 		row->cont[row->len++] = ch;
 	}
 
 	/* Shrink row's content to fit */
-	if (!(row->cont = realloc(row->cont, row->len)))
+	if (!(row->cont = realloc(row->cont, row->len + 1)))
 		err("Failed to shrink to fit a row from %zu to %zu bytes:", cap, row->len);
 	return row;
 }
