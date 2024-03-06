@@ -9,6 +9,8 @@
 #include "editor.h"
 #include "err.h"
 #include "key.h"
+#include "math.h"
+#include "row.h"
 #include "term.h"
 
 /* Length of message's buffer must be greater than all message lengths */
@@ -26,14 +28,18 @@ static struct {
 	Mode mode;
 	char msg[MSG_BUF_LEN];
 	const char *path;
+	Rows rows;
 	struct winsize win_size;
 } editor;
 
 /* Clears the screen. Then sets the cursor to the beginning of the screen. */
-static void editor_clear_scr(Buf *buf);
+static void editor_clr_scr(Buf *buf);
 
 /* Updates the size and checks that everything fits on the screen. */
 static void editor_handle_sig_win_ch(int num);
+
+/* Quits the editor. */
+static void editor_quit(void);
 
 /*
 Requests the size from the terminal and sets it in the appropriate field.
@@ -43,8 +49,8 @@ To update the window size after it has been changed, use the handler
 */
 static void editor_update_win_size(void);
 
-/* Write lines in the buffer. */
-static void editor_write_lines(Buf *buf);
+/* Write rows in the buffer. */
+static void editor_write_rows(Buf *buf);
 
 /* Write static in the buffer. */
 static void editor_write_status(Buf *buf);
@@ -53,7 +59,7 @@ static void editor_write_status(Buf *buf);
 static char *mode_str(Mode mode);
 
 static void
-editor_clear_scr(Buf *buf)
+editor_clr_scr(Buf *buf)
 {
 	unsigned short col_i;
 	unsigned short row_i;
@@ -87,8 +93,6 @@ void
 editor_open(const char *path)
 {
 	FILE *f;
-	char *line;
-	size_t line_len;
 
 	/* Initialize */
 	editor.mode = MODE_NORM;
@@ -96,24 +100,23 @@ editor_open(const char *path)
 	editor.need_to_quit = 0;
 	/* TODO: should we need to copy it? */
 	editor.path = path;
-
+	editor.rows = rows_alloc();
 	/* Update window size and register the handler of window size changing */
 	editor_update_win_size();
 	signal(SIGWINCH, editor_handle_sig_win_ch);
 
-	/* Open the file  */
+	/* Read rows from file  */
 	if (!(f = fopen(path, "r")))
 		err("Failed to open \"%s\":", path);
-
-	/* Read lines */
-	while (read_line(f, &line, &line_len)) {
-		editor_insert(editor.rows_count, line, line_len);
-		free(line);
-	}
-
-	/* Deallocate lose the file after read */
-	free(line);
+	rows_read(&editor.rows, f);
 	fclose(f);
+}
+
+static void
+editor_quit(void)
+{
+	editor.need_to_quit = 1;
+	rows_free(&editor.rows);
 }
 
 void
@@ -122,11 +125,11 @@ editor_refresh_scr(void)
 	/* Allocate new buffer, hide cursor and clear the screen */
 	Buf buf = buf_alloc();
 	term_hide_cur(&buf);
-	editor_clear_scr(&buf);
+	editor_clr_scr(&buf);
 
 	/* Write content if we do not quit yet */
 	if (!editor.need_to_quit) {
-		editor_write_lines(&buf);
+		editor_write_rows(&buf);
 		editor_write_status(&buf);
 	}
 
@@ -159,7 +162,7 @@ editor_wait_and_proc_key_press(void)
 		switch (key) {
 		/* Quit */
 		case KEY_CTRL_Q:
-			editor.need_to_quit = 1;
+			editor_quit();
 			break;
 		/* Save */
 		case KEY_CTRL_S:
@@ -184,16 +187,22 @@ editor_wait_and_proc_key_press(void)
 }
 
 static void
-editor_write_lines(Buf *buf)
+editor_write_rows(Buf *buf)
 {
+	Row *row;
 	unsigned short row_i;
 	/* Assert that we do not need to quit */
 	assert(!editor.need_to_quit);
 
-	buf_writef(buf, "Rows: %d\r\n", editor.win_size.ws_row);
-	buf_writef(buf, "Path: \"%s\"\r\n", editor.path);
-	for (row_i = 2; row_i < editor.win_size.ws_row - 1; row_i++)
-		buf_write(buf, "~\r\n", 3);
+	for (row_i = 0; row_i < editor.win_size.ws_row - 1; row_i++) {
+		if (row_i >= editor.rows.cnt) {
+			buf_write(buf, "~\r\n", 3);
+		} else {
+			row = &editor.rows.arr[row_i];
+			buf_write(buf, row->cont, MIN(editor.win_size.ws_col, row->len));
+			buf_write(buf, "\r\n", 2);
+		}
+	}
 }
 
 static void

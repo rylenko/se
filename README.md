@@ -69,21 +69,21 @@ Later.
 	<tbody><tr>
 		<th>C</th>
 		<th>7</th>
-		<th>516</th>
-		<th>75</th>
-		<th>75</th>
-		<th>366</th>
-		<th>40</th>
-		<th>10380</th>
+		<th>635</th>
+		<th>90</th>
+		<th>96</th>
+		<th>449</th>
+		<th>54</th>
+		<th>12678</th>
 	</tr><tr>
 		<th>C Header</th>
-		<th>7</th>
-		<th>140</th>
-		<th>35</th>
+		<th>8</th>
+		<th>161</th>
+		<th>41</th>
 		<th>44</th>
-		<th>61</th>
+		<th>76</th>
 		<th>0</th>
-		<th>2969</th>
+		<th>3277</th>
 	</tr><tr>
 		<th>Markdown</th>
 		<th>2</th>
@@ -101,7 +101,7 @@ Later.
 		<th>14</th>
 		<th>49</th>
 		<th>0</th>
-		<th>1698</th>
+		<th>1705</th>
 	</tr><tr>
 		<th>Shell</th>
 		<th>1</th>
@@ -132,13 +132,13 @@ Later.
 	</tr></tbody>
 	<tfoot><tr>
 		<th>Total</th>
-		<th>21</th>
-		<th>914</th>
-		<th>173</th>
-		<th>139</th>
-		<th>602</th>
-		<th>40</th>
-    	<th>18744</th>
+		<th>22</th>
+		<th>1054</th>
+		<th>194</th>
+		<th>160</th>
+		<th>700</th>
+		<th>54</th>
+    	<th>21357</th>
 	</tr></tfoot>
 	</table>
 
@@ -148,6 +148,8 @@ Later.
 |-|-|-|
 |**src/buf.c**|**32**|**choose a more efficient memory allocation strategy**|
 |**src/main.c**|**1**|**comment includes**|
-|**src/editor.c**|**65**|**Avoid many reallocations in `buf_write`**|
-|**src/editor.c**|**76**|**check cursor position fits on the screen**|
-|**src/editor.c**|**97**|**should we need to copy it?**|
+|**src/editor.c**|**71**|**Avoid many reallocations in `buf_write`**|
+|**src/editor.c**|**82**|**check cursor position fits on the screen**|
+|**src/editor.c**|**101**|**should we need to copy it?**|
+|**src/row.c**|**124**|**Linked list is better for creating new rows**|
+|**src/row.c**|**143**|**create shrink_to_fit for rows_remove**|

@@ -98,11 +98,11 @@ char
 term_wait_key_press(void)
 {
 	char key;
-	int readed_count;
+	int readed_cnt;
 
 	/* Wait a key or an error */
-	while (0 == (readed_count = read(term.ifd, &key, 1)));
-	if (readed_count < 0)
+	while (0 == (readed_cnt = read(term.ifd, &key, 1)));
+	if (readed_cnt < 0)
 		err("Failed to read key press:");
 
 	return key;
