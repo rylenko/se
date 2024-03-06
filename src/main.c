@@ -1,5 +1,3 @@
-/* TODO: comment includes */
-
 #include <stdlib.h>
 #include <unistd.h>
 #include "buf.h"
@@ -13,8 +11,9 @@ int
 main(const int argc, const char *const *const argv)
 {
 	/* Check arguments count */
-	if (argc != 2)
+	if (argc != 2) {
 		err(USAGE);
+	}
 
 	/* Initialize terminal */
 	term_init(STDIN_FILENO, STDOUT_FILENO);
@@ -27,8 +26,9 @@ main(const int argc, const char *const *const argv)
 	while (1) {
 		editor_refresh_scr();
 		/* This is needed here to clear the screen after quit in the key processor */
-		if (editor_need_to_quit())
+		if (editor_need_to_quit()) {
 			break;
+		}
 		editor_wait_and_proc_key_press();
 	}
 

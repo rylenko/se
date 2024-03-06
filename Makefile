@@ -1,10 +1,10 @@
 .POSIX:
 
-include config.mk
+include cfg.mk
 
 # Code files
-SRC = src/buf.c src/color.c src/editor.c src/err.c src/main.c src/row.c \
-	src/str_util.c src/term.c
+SRC = src/buf.c src/color.c src/cur.c src/editor.c src/err.c src/main.c \
+	src/row.c src/str_util.c src/term.c
 OBJ = $(SRC:.c=.o)
 
 # Paths
@@ -30,8 +30,9 @@ endif
 # Object file dependencies
 src/buf.o: src/buf.h src/err.h src/math.h
 src/color.o: src/buf.h src/color.h
-src/editor.o: src/color.h src/editor.h src/key.h src/math.h src/row.h \
-	src/str_util.h src/term.h
+src/cur.o: src/buf.h src/cur.h
+src/editor.o: src/color.h src/cfg.h src/cur.h src/editor.h src/key.h \
+	src/math.h src/row.h src/str_util.h src/term.h
 src/err.o: src/err.h
 src/main.o: src/buf.h src/editor.h src/err.h src/term.h
 src/row.o: src/err.h src/row.h

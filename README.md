@@ -21,16 +21,20 @@ $ vega <path>
 
 Normal mode keys:
 
-- `e` - end of line.
+- `a` - start of line.
+- `d` - end of line.
+- `e` - go to begin of next word.
 - `h` - go left.
 - `i` - switch to insert mode.
 - `j` - go down.
 - `k` - go up.
 - `l` - go right.
-- `q` - start of line.
-- `s` - end of file.
-- `w` - start of file.
+- `n` - create a line below the current line and move to it.
+- `q` - go to begin of previous word.
+- `s` - go to end of file.
+- `w` - go to begin of file.
 - `/` - start or end search.
+- `CTRL+n` - create a line above the current line and move to it.
 - `CTRL+s` - save.
 - `CTRL+q` - quit. If you changed the file, you will need to either save it or press this key several times.
 - `<number>g` - Go to line by its number `<number>`.
@@ -68,40 +72,40 @@ Later.
 	</tr></thead>
 	<tbody><tr>
 		<th>C</th>
-		<th>8</th>
-		<th>664</th>
-		<th>92</th>
-		<th>99</th>
-		<th>473</th>
-		<th>56</th>
-		<th>13115</th>
+		<th>9</th>
+		<th>837</th>
+		<th>106</th>
+		<th>122</th>
+		<th>609</th>
+		<th>75</th>
+		<th>16371</th>
 	</tr><tr>
 		<th>C Header</th>
-		<th>9</th>
-		<th>169</th>
-		<th>43</th>
-		<th>44</th>
-		<th>82</th>
+		<th>11</th>
+		<th>196</th>
+		<th>49</th>
+		<th>48</th>
+		<th>99</th>
 		<th>0</th>
-		<th>3430</th>
+		<th>3890</th>
 	</tr><tr>
 		<th>Markdown</th>
 		<th>2</th>
-		<th>111</th>
+		<th>119</th>
 		<th>38</th>
 		<th>0</th>
-		<th>73</th>
+		<th>81</th>
 		<th>0</th>
-		<th>2456</th>
+		<th>2878</th>
 	</tr><tr>
 		<th>Makefile</th>
 		<th>2</th>
-		<th>79</th>
+		<th>80</th>
 		<th>15</th>
 		<th>13</th>
-		<th>51</th>
+		<th>52</th>
 		<th>0</th>
-		<th>1742</th>
+		<th>1800</th>
 	</tr><tr>
 		<th>Shell</th>
 		<th>1</th>
@@ -132,13 +136,13 @@ Later.
 	</tr></tbody>
 	<tfoot><tr>
 		<th>Total</th>
-		<th>24</th>
-		<th>1091</th>
-		<th>197</th>
-		<th>162</th>
-		<th>732</th>
-		<th>56</th>
-    	<th>21984</th>
+		<th>27</th>
+		<th>1300</th>
+		<th>217</th>
+		<th>189</th>
+		<th>894</th>
+		<th>75</th>
+    	<th>26180</th>
 	</tr></tfoot>
 	</table>
 
@@ -146,7 +150,6 @@ Later.
 
 |Path|Line|Description|
 |-|-|-|
-|**src/main.c**|**1**|**comment includes**|
-|**src/editor.c**|**83**|**check cursor position fits on the screen**|
-|**src/row.c**|**124**|**Linked list is better for creating new rows**|
-|**src/row.c**|**143**|**create shrink_to_fit for rows_remove**|
+|**src/row.c**|**132**|**Linked list is better for creating new rows**|
+|**src/row.c**|**152**|**create shrink_to_fit for rows_remove**|
+|**src/cfg.h**|**4**|**Fix it for another values**|

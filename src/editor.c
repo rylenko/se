@@ -5,6 +5,8 @@
 #include <sys/ioctl.h>
 #include "buf.h"
 #include "color.h"
+#include "cfg.h"
+#include "cur.h"
 #include "editor.h"
 #include "err.h"
 #include "key.h"
@@ -25,9 +27,12 @@ typedef enum {
 
 /* Structure with editor parameters. */
 static struct {
+	Cur cur;
 	char need_to_quit;
 	Mode mode;
 	char msg[MSG_BUF_LEN];
+	size_t offset_col;
+	size_t offset_row;
 	char *path;
 	Rows rows;
 	struct winsize win_size;
@@ -39,6 +44,21 @@ static void editor_clr_scr(Buf *buf);
 /* Updates the size and checks that everything fits on the screen. */
 static void editor_handle_sig_win_ch(int num);
 
+/* Move cursor down. */
+static void editor_mv_down(void);
+
+/* Fixes cursor's coordinates. */
+static void editor_fix_cur(void);
+
+/* Move cursor left. */
+static void editor_mv_left(void);
+
+/* Move cursor right. */
+static void editor_mv_right(void);
+
+/* Move cursor up. */
+static void editor_mv_up(void);
+
 /* Quits the editor. */
 static void editor_quit(void);
 
@@ -48,7 +68,10 @@ Requests the size from the terminal and sets it in the appropriate field.
 To update the window size after it has been changed, use the handler
 `editor_handle_sig_win_ch`.
 */
-static void editor_update_win_size(void);
+static void editor_upd_win_size(void);
+
+/* Writes cursor position including tabs. */
+static void editor_write_cur(Buf *buf);
 
 /* Write rows in the buffer. */
 static void editor_write_rows(Buf *buf);
@@ -67,20 +90,93 @@ editor_clr_scr(Buf *buf)
 	/* Go home before clearing */
 	term_go_home(buf);
 	/* Clear the screen */
-	for (row_i = 0; row_i < editor.win_size.ws_row; row_i++)
-		for (col_i = 0; col_i < editor.win_size.ws_col; col_i++)
+	for (row_i = 0; row_i < editor.win_size.ws_row; row_i++) {
+		for (col_i = 0; col_i < editor.win_size.ws_col; col_i++) {
 			buf_write(buf, " ", 1);
+		}
+	}
 	/* Go home after clearing */
 	term_go_home(buf);
+}
+
+static void
+editor_fix_cur(void)
+{
+	/* Fix y coordinate. Must have after window resizing */
+	editor.cur.y = MIN(editor.cur.y, editor.win_size.ws_row - 2);
+	/* Fix x coordinate. Must have after window resizing and moving over lines */
+	editor.cur.x = MIN(
+		editor.cur.x,
+		editor.rows.arr[editor.cur.y + editor.offset_row].len - editor.offset_col
+	);
 }
 
 static void
 editor_handle_sig_win_ch(int num)
 {
 	(void)num;
-	editor_update_win_size();
-	/* TODO: check cursor position fits on the screen */
+	editor_upd_win_size();
 	editor_refresh_scr();
+}
+
+static void
+editor_mv_down(void)
+{
+	/* Check that we need space to move down */
+	if (editor.offset_row + editor.cur.y < editor.rows.cnt - 1) {
+		if (editor.win_size.ws_row - 2 == editor.cur.y) {
+			/* We are at the bottom of window */
+			editor.offset_row++;
+		} else {
+			/* We are have enough space to move down on the screen */
+			editor.cur.y++;
+		}
+	}
+}
+
+static void
+editor_mv_left(void)
+{
+	if (0 == editor.cur.x) {
+		if (editor.offset_col > 0) {
+			/* We are at the top of window */
+			editor.offset_col--;
+		}
+	} else {
+		/* We are have enough space to move left on the screen */
+		editor.cur.x--;
+	}
+}
+
+static void
+editor_mv_right(void)
+{
+	/* Get current row */
+	const Row *row = &editor.rows.arr[editor.offset_row + editor.cur.y];
+	/* Check that we need space to move right */
+	if (editor.offset_col + editor.cur.x < row->len) {
+		if (editor.win_size.ws_col - 1 == editor.cur.y) {
+			/* We are at the right of window */
+			editor.offset_col++;
+		} else {
+			/* We are have enough space to move right on the screen */
+			editor.cur.x++;
+		}
+	}
+}
+
+static void
+editor_mv_up(void)
+{
+	if (0 == editor.cur.y) {
+		if (editor.offset_row > 0) {
+			/* We are at the top of window */
+			editor.offset_row--;
+		}
+	} else {
+		/* We are have enough space to move up on the screen */
+		editor.cur.y--;
+	}
 }
 
 char
@@ -95,18 +191,22 @@ editor_open(const char *path)
 	FILE *f;
 
 	/* Initialize */
+	editor.cur = cur_new(0, 0);
 	editor.mode = MODE_NORM;
 	editor.msg[0] = 0;
 	editor.need_to_quit = 0;
+	editor.offset_col = 0;
+	editor.offset_row = 0;
 	editor.path = str_clone(path);
 	editor.rows = rows_alloc();
 	/* Update window size and register the handler of window size changing */
-	editor_update_win_size();
+	editor_upd_win_size();
 	signal(SIGWINCH, editor_handle_sig_win_ch);
 
 	/* Read rows from file  */
-	if (!(f = fopen(path, "r")))
+	if (!(f = fopen(path, "r"))) {
 		err("Failed to open \"%s\":", path);
+	}
 	rows_read(&editor.rows, f);
 	fclose(f);
 }
@@ -125,25 +225,51 @@ editor_refresh_scr(void)
 {
 	/* Allocate new buffer, hide cursor and clear the screen */
 	Buf buf = buf_alloc();
-	term_hide_cur(&buf);
+	cur_hide(&buf);
 	editor_clr_scr(&buf);
 
 	/* Write content if we do not quit yet */
 	if (!editor.need_to_quit) {
+		/* Write main components */
 		editor_write_rows(&buf);
 		editor_write_status(&buf);
+
+		/* Fix cursor and write it to buffer */
+		editor_fix_cur();
+		editor_write_cur(&buf);
 	}
 
 	/* Show cursor, flush and free the buffer */
-	term_show_cur(&buf);
+	cur_show(&buf);
 	term_flush(&buf);
 	buf_free(buf);
 }
 
 static void
-editor_update_win_size(void)
+editor_upd_win_size(void)
 {
 	term_get_win_size(&editor.win_size);
+}
+
+static void
+editor_write_cur(Buf *buf)
+{
+	unsigned short cont_i;
+	size_t x = 0;
+	const Row *row = &editor.rows.arr[editor.cur.y + editor.offset_row];
+	/* Calculate tabs */
+	for (
+		cont_i = editor.offset_col;
+		cont_i < editor.offset_col + editor.cur.x;
+		cont_i++
+	) {
+		if (row->cont[cont_i] == '\t') {
+			x += CFG_TAB_SIZE - x % CFG_TAB_SIZE - 1;
+		}
+		x++;
+	}
+	/* Write cursor */
+	cur_write(cur_new(x, editor.cur.y), buf);
 }
 
 void
@@ -161,6 +287,22 @@ editor_wait_and_proc_key_press(void)
 	case MODE_NORM:
 		/* Normal mode keys */
 		switch (key) {
+		/* Move left */
+		case KEY_H:
+			editor_mv_left();
+			break;
+		/* Move down */
+		case KEY_J:
+			editor_mv_down();
+			break;
+		/* Move up */
+		case KEY_K:
+			editor_mv_up();
+			break;
+		/* Move right */
+		case KEY_L:
+			editor_mv_right();
+			break;
 		/* Quit */
 		case KEY_CTRL_Q:
 			editor_quit();
@@ -190,16 +332,20 @@ editor_wait_and_proc_key_press(void)
 static void
 editor_write_rows(Buf *buf)
 {
-	Row *row;
+	const Row *row;
 	unsigned short row_i;
 	/* Assert that we do not need to quit */
 	assert(!editor.need_to_quit);
 
 	for (row_i = 0; row_i < editor.win_size.ws_row - 1; row_i++) {
-		if (row_i >= editor.rows.cnt) {
+		const size_t f_row_i = row_i + editor.offset_row;
+
+		if (f_row_i >= editor.rows.cnt) {
+			/* No row */
 			buf_write(buf, "~\r\n", 3);
 		} else {
-			row = &editor.rows.arr[row_i];
+			/* Write row */
+			row = &editor.rows.arr[f_row_i];
 			buf_write(buf, row->cont, MIN(editor.win_size.ws_col, row->len));
 			buf_write(buf, "\r\n", 2);
 		}
@@ -224,8 +370,9 @@ editor_write_status(Buf *buf)
 	}
 
 	/* Fill colored empty space */
-	for (col_i = len; col_i < editor.win_size.ws_col; col_i++)
+	for (col_i = len; col_i < editor.win_size.ws_col; col_i++) {
 		buf_write(buf, " ", 1);
+	}
 	color_end(buf);
 }
 

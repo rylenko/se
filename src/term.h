@@ -19,14 +19,8 @@ void term_go_home(Buf *buf);
 /* Flushes buffer to terminal */
 void term_flush(const Buf *);
 
-/* Hides the cursor on screen. */
-void term_hide_cur(Buf *);
-
 /* Creates new terminal controller. */
 void term_init(const int, const int);
-
-/* Shows the cursor on screen. */
-void term_show_cur(Buf *);
 
 /* Waits for the key press. */
 char term_wait_key_press(void);

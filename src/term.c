@@ -17,8 +17,9 @@ void
 term_disable_raw_mode(void)
 {
 	/* Restore original termios parameters */
-	if (tcsetattr(term.ifd, TCSAFLUSH, &term.orig) < 0)
+	if (tcsetattr(term.ifd, TCSAFLUSH, &term.orig) < 0) {
 		err("Failed to restore original termios parameters:");
+	}
 }
 
 void
@@ -27,11 +28,13 @@ term_enable_raw_mode(void)
 	struct termios raw;
 
 	/* Get the original termios parameters */
-	if (tcgetattr(term.ifd, &term.orig) < 0)
+	if (tcgetattr(term.ifd, &term.orig) < 0) {
 		err("Failed to get original termios parameters:");
+	}
 	/* Disable raw mode at exit */
-	else if (atexit(term_disable_raw_mode) < 0)
+	else if (atexit(term_disable_raw_mode) < 0) {
 		err("Failed to set raw mode's disabler at exit.");
+	}
 
 	/* Not `NULL` because we got it earlier */
 	raw = term.orig;
@@ -52,8 +55,9 @@ term_enable_raw_mode(void)
 	raw.c_cc[VTIME] = TIMEOUT_TENTHS_OF_SECOND;
 
 	/* Set new parameters */
-	if (tcsetattr(term.ifd, TCSAFLUSH, &raw) < 0)
+	if (tcsetattr(term.ifd, TCSAFLUSH, &raw) < 0) {
 		err("Failed to set raw termios parameters:");
+	}
 }
 
 void
@@ -65,8 +69,9 @@ term_flush(const Buf *buf)
 void
 term_get_win_size(struct winsize *win_size)
 {
-	if (ioctl(term.ofd, TIOCGWINSZ, win_size) < 0)
+	if (ioctl(term.ofd, TIOCGWINSZ, win_size) < 0) {
 		err("Failed to get window size for fd %d:", term.ofd);
+	}
 }
 
 void
@@ -76,22 +81,10 @@ term_go_home(Buf *buf)
 }
 
 void
-term_hide_cur(Buf *buf)
-{
-	buf_write(buf, "\x1b[?25l", 6);
-}
-
-void
 term_init(const int ifd, const int ofd)
 {
 	term.ifd = ifd;
 	term.ofd = ofd;
-}
-
-void
-term_show_cur(Buf *buf)
-{
-	buf_write(buf, "\x1b[?25h", 6);
 }
 
 char
@@ -102,8 +95,8 @@ term_wait_key_press(void)
 
 	/* Wait a key or an error */
 	while (0 == (readed_cnt = read(term.ifd, &key, 1)));
-	if (readed_cnt < 0)
+	if (readed_cnt < 0) {
 		err("Failed to read key press:");
-
+	}
 	return key;
 }

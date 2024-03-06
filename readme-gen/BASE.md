@@ -21,16 +21,20 @@ $ vega <path>
 
 Normal mode keys:
 
-- `e` - end of line.
+- `a` - start of line.
+- `d` - end of line.
+- `e` - go to begin of next word.
 - `h` - go left.
 - `i` - switch to insert mode.
 - `j` - go down.
 - `k` - go up.
 - `l` - go right.
-- `q` - start of line.
-- `s` - end of file.
-- `w` - start of file.
+- `n` - create a line below the current line and move to it.
+- `q` - go to begin of previous word.
+- `s` - go to end of file.
+- `w` - go to begin of file.
 - `/` - start or end search.
+- `CTRL+n` - create a line above the current line and move to it.
 - `CTRL+s` - save.
 - `CTRL+q` - quit. If you changed the file, you will need to either save it or press this key several times.
 - `<number>g` - Go to line by its number `<number>`.
