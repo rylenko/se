@@ -1,5 +1,4 @@
 #include <assert.h>
-#include <limits.h>
 #include <signal.h>
 #include <stdio.h>
 #include <string.h>
@@ -11,7 +10,6 @@
 #include "key.h"
 #include "math.h"
 #include "row.h"
-/* str_clone */
 #include "str_util.h"
 #include "term.h"
 
@@ -19,6 +17,7 @@
 #define MSG_BUF_LEN (64)
 #define MSG_SAVED ("The file has been saved.")
 
+/* Editing mode */
 typedef enum {
 	MODE_INS,
 	MODE_NORM,

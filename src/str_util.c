@@ -1,10 +1,6 @@
-/* malloc */
 #include <stdlib.h>
-/* strcpy, strlen */
 #include <string.h>
-/* err */
 #include "err.h"
-/* str_clone */
 #include "str_util.h"
 
 char*
