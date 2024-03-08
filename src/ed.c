@@ -39,11 +39,17 @@ static void ed_clr_scr(Buf *buf);
 /* Updates the size and checks that everything fits on the screen. */
 static void ed_handle_sig_win_ch(int num);
 
+/* Move to begin of file. */
+static void ed_mv_begin_of_f(void);
+
 /* Move to begin of row. */
 static void ed_mv_begin_of_row(void);
 
 /* Move cursor down. */
 static void ed_mv_down(void);
+
+/* Move to end of file. */
+static void ed_mv_end_of_f(void);
 
 /* Move to end of row. */
 static void ed_mv_end_of_row(void);
@@ -129,6 +135,22 @@ ed_handle_sig_win_ch(int num)
 	ed_upd_win_size();
 	ed_refresh_scr();
 	ed_fix_cur();
+}
+
+static void
+ed_mv_begin_of_f(void)
+{
+	ed.offset_row = 0;
+	ed.cur.x = 0;
+	ed.cur.y = 0;
+}
+
+static void
+ed_mv_end_of_f(void)
+{
+	ed.offset_row = ed.rows.cnt - ed.win_size.ws_row + 1;
+	ed.cur.x = 0;
+	ed.cur.y = ed.win_size.ws_row - 2;
 }
 
 static void
@@ -318,12 +340,18 @@ ed_wait_and_proc_key(void)
 	case MODE_NORM:
 		/* Normal mode keys */
 		switch (key) {
+		case KEY_BEGIN_OF_F:
+			ed_mv_begin_of_f();
+			break;
 		case KEY_BEGIN_OF_ROW:
 			ed_mv_begin_of_row();
 			break;
 		case KEY_DOWN:
 			ed_mv_down();
 			ed_fix_cur();
+			break;
+		case KEY_END_OF_F:
+			ed_mv_end_of_f();
 			break;
 		case KEY_END_OF_ROW:
 			ed_mv_end_of_row();
@@ -399,11 +427,11 @@ ed_write_status(Buf *buf)
 	/* Write base status */
 	len += buf_writef(
 		buf,
-		" (%s) %s [%zu; %zu]",
+		" [%s] %s (%zu, %zu)",
 		mode_str(ed.mode),
 		basename(ed.path),
-		ed.offset_row + ed.cur.y + 1,
-		ed.offset_col + ed.cur.x + 1
+		ed.offset_col + ed.cur.x + 1,
+		ed.offset_row + ed.cur.y + 1
 	);
 	/* Write message if exists */
 	if (ed.msg[0]) {
