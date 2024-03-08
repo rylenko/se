@@ -73,12 +73,12 @@ Later.
 	<tbody><tr>
 		<th>C</th>
 		<th>10</th>
-		<th>902</th>
-		<th>113</th>
-		<th>119</th>
-		<th>670</th>
-		<th>82</th>
-		<th>17236</th>
+		<th>905</th>
+		<th>112</th>
+		<th>120</th>
+		<th>673</th>
+		<th>83</th>
+		<th>17326</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>12</th>
@@ -137,12 +137,12 @@ Later.
 	<tfoot><tr>
 		<th>Total</th>
 		<th>29</th>
-		<th>1400</th>
-		<th>229</th>
-		<th>188</th>
-		<th>983</th>
-		<th>82</th>
-    	<th>27691</th>
+		<th>1403</th>
+		<th>228</th>
+		<th>189</th>
+		<th>986</th>
+		<th>83</th>
+    	<th>27781</th>
 	</tr></tfoot>
 	</table>
 
@@ -150,7 +150,7 @@ Later.
 
 |Path|Line|Description|
 |-|-|-|
-|**src/ed.c**|**267**|**add empty line if there is not lines readed**|
+|**src/ed.c**|**272**|**add empty line if there is not lines readed**|
 |**src/row.c**|**132**|**Linked list is better for creating new rows**|
 |**src/row.c**|**152**|**create shrink_to_fit for rows_remove**|
 |**src/cfg.h**|**6**|**Fix it for another values**|
