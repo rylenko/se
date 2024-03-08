@@ -9,7 +9,6 @@
 #include "cur.h"
 #include "ed.h"
 #include "err.h"
-#include "key.h"
 #include "math.h"
 #include "row.h"
 #include "str_util.h"
@@ -287,33 +286,33 @@ ed_wait_and_proc_key(void)
 	case MODE_NORM:
 		/* Normal mode keys */
 		switch (key) {
-		/* Move left */
-		case KEY_H:
-			ed_mv_left();
-			break;
 		/* Move down */
-		case KEY_J:
+		case KEY_DOWN:
 			ed_mv_down();
 			break;
-		/* Move up */
-		case KEY_K:
-			ed_mv_up();
+		/* Switch to insert mode */
+		case KEY_INS_MODE:
+			ed.mode = MODE_INS;
 			break;
-		/* Move right */
-		case KEY_L:
-			ed_mv_right();
+		/* Move left */
+		case KEY_LEFT:
+			ed_mv_left();
 			break;
 		/* Quit */
-		case KEY_CTRL_Q:
+		case KEY_QUIT:
 			ed_quit();
 			break;
+		/* Move right */
+		case KEY_RIGHT:
+			ed_mv_right();
+			break;
 		/* Save */
-		case KEY_CTRL_S:
+		case KEY_SAVE:
 			strcpy(ed.msg, MSG_SAVED);
 			break;
-		/* Switch to insert mode */
-		case KEY_I:
-			ed.mode = MODE_INS;
+		/* Move up */
+		case KEY_UP:
+			ed_mv_up();
 			break;
 		}
 		break;
@@ -321,7 +320,7 @@ ed_wait_and_proc_key(void)
 		/* Insert mode keys */
 		switch (key) {
 		/* Switch to normal mode */
-		case KEY_ESC:
+		case KEY_NORM_MODE:
 			ed.mode = MODE_NORM;
 			break;
 		}

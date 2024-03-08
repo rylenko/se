@@ -31,7 +31,7 @@ endif
 src/buf.o: src/buf.h src/err.h src/math.h
 src/color.o: src/buf.h src/color.h
 src/cur.o: src/buf.h src/cur.h
-src/ed.o: src/color.h src/cfg.h src/cur.h src/ed.h src/key.h src/math.h \
+src/ed.o: src/color.h src/cfg.h src/cur.h src/ed.h src/math.h src/raw_key.h \
 	src/row.h src/str_util.h src/term.h
 src/err.o: src/err.h
 src/main.o: src/buf.h src/ed.h src/err.h src/term.h

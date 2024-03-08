@@ -13,4 +13,4 @@ void ed_refresh_scr(void);
 /* Waits and processes key presses from terminal's input. */
 void ed_wait_and_proc_key(void);
 
-#endif /* _EDITOR_H */
+#endif /* _ED_H */
