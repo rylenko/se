@@ -394,20 +394,16 @@ ed_write_status(Buf *buf)
 {
 	size_t col_i;
 	size_t len = 0;
-	size_t row_i = ed.offset_row + ed.cur.y;
-	const Row *row = &ed.rows.arr[row_i];
 	color_begin(buf, COLOR_WHITE, COLOR_BLACK);
 
 	/* Write base status */
 	len += buf_writef(
 		buf,
-		" (%s) %s [%zu/%zu row] [%zu/%zu col]",
+		" (%s) %s [%zu; %zu]",
 		mode_str(ed.mode),
 		basename(ed.path),
-		row_i + 1,
-		ed.rows.cnt,
-		ed.offset_col + ed.cur.x + 1,
-		row->len
+		ed.offset_row + ed.cur.y + 1,
+		ed.offset_col + ed.cur.x + 1
 	);
 	/* Write message if exists */
 	if (ed.msg[0]) {
