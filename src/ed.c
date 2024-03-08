@@ -49,6 +49,9 @@ static void ed_mv_begin_of_line(void);
 /* Move cursor down. */
 static void ed_mv_down(void);
 
+/* Move to end of line. */
+static void ed_mv_end_of_line(void);
+
 /* Fixes cursor's coordinates. */
 static void ed_fix_cur(void);
 
@@ -141,6 +144,14 @@ ed_mv_down(void)
 			ed.cur.y++;
 		}
 	}
+}
+
+static void
+ed_mv_end_of_line(void)
+{
+	const Row *row = &ed.rows.arr[ed.offset_col + ed.cur.x];
+	ed.offset_col = row->len - ed.win_size.ws_col + 1;
+	ed.cur.x = ed.win_size.ws_col - 1;
 }
 
 static void
@@ -296,8 +307,14 @@ ed_wait_and_proc_key(void)
 	case MODE_NORM:
 		/* Normal mode keys */
 		switch (key) {
+		case KEY_BEGIN_OF_LINE:
+			ed_mv_begin_of_line();
+			break;
 		case KEY_DOWN:
 			ed_mv_down();
+			break;
+		case KEY_END_OF_LINE:
+			ed_mv_end_of_line();
 			break;
 		case KEY_INS_MODE:
 			ed.mode = MODE_INS;
@@ -313,9 +330,6 @@ ed_wait_and_proc_key(void)
 			break;
 		case KEY_SAVE:
 			strcpy(ed.msg, MSG_SAVED);
-			break;
-		case KEY_BEGIN_OF_LINE:
-			ed_mv_begin_of_line();
 			break;
 		case KEY_UP:
 			ed_mv_up();
