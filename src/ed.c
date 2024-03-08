@@ -157,7 +157,6 @@ static void
 ed_mv_end_of_row(void)
 {
 	const Row *row = &ed.rows.arr[ed.offset_row + ed.cur.y];
-
 	if (row->len < ed.offset_col + ed.win_size.ws_col) {
 		/* End of row on the screen */
 		ed.cur.x = row->len - ed.offset_col;
@@ -243,6 +242,7 @@ ed_open(const char *path)
 		err("Failed to open \"%s\":", path);
 	}
 	rows_read(&ed.rows, f);
+	/* TODO: add empty line if there is not lines readed */
 	fclose(f);
 }
 
