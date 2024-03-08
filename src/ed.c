@@ -119,8 +119,12 @@ ed_fix_cur(void)
 
 		if (ed.cur.x < col_diff) {
 			/* Return row on the screen */
-			ed.offset_col -= col_diff - ed.cur.x + 1;
-			ed.cur.x = 1;
+			ed.offset_col -= col_diff - ed.cur.x;
+			ed.cur.x = 0;
+			/* Show last character of the row if exists */
+			if (row->len > 0) {
+				ed.offset_col--;
+			}
 		} else {
 			/* Offset the cursor */
 			ed.cur.x -= col_diff;
@@ -173,6 +177,7 @@ ed_mv_down(void)
 			ed.cur.y++;
 		}
 	}
+	ed_fix_cur();
 }
 
 static void
@@ -232,7 +237,7 @@ ed_mv_up(void)
 		/* We are have enough space to move up on the screen */
 		ed.cur.y--;
 	}
-
+	ed_fix_cur();
 }
 
 char
@@ -348,7 +353,6 @@ ed_wait_and_proc_key(void)
 			break;
 		case KEY_DOWN:
 			ed_mv_down();
-			ed_fix_cur();
 			break;
 		case KEY_END_OF_F:
 			ed_mv_end_of_f();
@@ -373,7 +377,6 @@ ed_wait_and_proc_key(void)
 			break;
 		case KEY_UP:
 			ed_mv_up();
-			ed_fix_cur();
 			break;
 		}
 		break;
