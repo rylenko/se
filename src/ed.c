@@ -43,6 +43,9 @@ static void ed_clr_scr(Buf *buf);
 /* Updates the size and checks that everything fits on the screen. */
 static void ed_handle_sig_win_ch(int num);
 
+/* Move to begin of line. */
+static void ed_mv_begin_of_line(void);
+
 /* Move cursor down. */
 static void ed_mv_down(void);
 
@@ -119,6 +122,13 @@ ed_handle_sig_win_ch(int num)
 }
 
 static void
+ed_mv_begin_of_line(void)
+{
+	ed.offset_col = 0;
+	ed.cur.x = 0;
+}
+
+static void
 ed_mv_down(void)
 {
 	/* Check that we need space to move down */
@@ -154,7 +164,7 @@ ed_mv_right(void)
 	const Row *row = &ed.rows.arr[ed.offset_row + ed.cur.y];
 	/* Check that we need space to move right */
 	if (ed.offset_col + ed.cur.x < row->len) {
-		if (ed.win_size.ws_col - 1 == ed.cur.y) {
+		if (ed.win_size.ws_col - 1 == ed.cur.x) {
 			/* We are at the right of window */
 			ed.offset_col++;
 		} else {
@@ -286,31 +296,27 @@ ed_wait_and_proc_key(void)
 	case MODE_NORM:
 		/* Normal mode keys */
 		switch (key) {
-		/* Move down */
 		case KEY_DOWN:
 			ed_mv_down();
 			break;
-		/* Switch to insert mode */
 		case KEY_INS_MODE:
 			ed.mode = MODE_INS;
 			break;
-		/* Move left */
 		case KEY_LEFT:
 			ed_mv_left();
 			break;
-		/* Quit */
 		case KEY_QUIT:
 			ed_quit();
 			break;
-		/* Move right */
 		case KEY_RIGHT:
 			ed_mv_right();
 			break;
-		/* Save */
 		case KEY_SAVE:
 			strcpy(ed.msg, MSG_SAVED);
 			break;
-		/* Move up */
+		case KEY_BEGIN_OF_LINE:
+			ed_mv_begin_of_line();
+			break;
 		case KEY_UP:
 			ed_mv_up();
 			break;
@@ -319,7 +325,6 @@ ed_wait_and_proc_key(void)
 	case MODE_INS:
 		/* Insert mode keys */
 		switch (key) {
-		/* Switch to normal mode */
 		case KEY_NORM_MODE:
 			ed.mode = MODE_NORM;
 			break;
@@ -345,7 +350,11 @@ ed_write_rows(Buf *buf)
 		} else {
 			/* Write row */
 			row = &ed.rows.arr[f_row_i];
-			buf_write(buf, row->cont, MIN(ed.win_size.ws_col, row->len));
+			buf_write(
+				buf,
+				row->cont + ed.offset_col,
+				MIN(ed.win_size.ws_col, row->len - ed.offset_col)
+			);
 			buf_write(buf, "\r\n", 2);
 		}
 	}
