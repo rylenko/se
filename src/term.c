@@ -88,7 +88,7 @@ term_init(const int ifd, const int ofd)
 }
 
 char
-term_wait_key_press(void)
+term_wait_key(void)
 {
 	char key;
 	int readed_cnt;

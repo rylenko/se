@@ -23,6 +23,6 @@ void term_flush(const Buf *);
 void term_init(const int, const int);
 
 /* Waits for the key press. */
-char term_wait_key_press(void);
+char term_wait_key(void);
 
 #endif /* _TERM_H */
