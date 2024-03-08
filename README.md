@@ -73,21 +73,21 @@ Later.
 	<tbody><tr>
 		<th>C</th>
 		<th>9</th>
-		<th>837</th>
-		<th>106</th>
-		<th>122</th>
-		<th>609</th>
-		<th>75</th>
-		<th>16371</th>
+		<th>891</th>
+		<th>112</th>
+		<th>118</th>
+		<th>661</th>
+		<th>81</th>
+		<th>16942</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>11</th>
-		<th>196</th>
-		<th>49</th>
+		<th>213</th>
+		<th>51</th>
 		<th>48</th>
-		<th>99</th>
+		<th>114</th>
 		<th>0</th>
-		<th>3890</th>
+		<th>4245</th>
 	</tr><tr>
 		<th>Markdown</th>
 		<th>2</th>
@@ -105,7 +105,7 @@ Later.
 		<th>13</th>
 		<th>52</th>
 		<th>0</th>
-		<th>1800</th>
+		<th>1788</th>
 	</tr><tr>
 		<th>Shell</th>
 		<th>1</th>
@@ -137,12 +137,12 @@ Later.
 	<tfoot><tr>
 		<th>Total</th>
 		<th>27</th>
-		<th>1300</th>
-		<th>217</th>
-		<th>189</th>
-		<th>894</th>
-		<th>75</th>
-    	<th>26180</th>
+		<th>1371</th>
+		<th>225</th>
+		<th>185</th>
+		<th>961</th>
+		<th>81</th>
+    	<th>27094</th>
 	</tr></tfoot>
 	</table>
 
@@ -152,4 +152,4 @@ Later.
 |-|-|-|
 |**src/row.c**|**132**|**Linked list is better for creating new rows**|
 |**src/row.c**|**152**|**create shrink_to_fit for rows_remove**|
-|**src/cfg.h**|**4**|**Fix it for another values**|
+|**src/cfg.h**|**6**|**Fix it for another values**|

@@ -1,4 +1,5 @@
 #include <assert.h>
+#include <libgen.h>
 #include <signal.h>
 #include <stdio.h>
 #include <string.h>
@@ -15,7 +16,7 @@
 #include "term.h"
 
 /* Length of message's buffer must be greater than all message lengths */
-#define MSG_BUF_LEN (64)
+#define MSG_BUF_LEN (32)
 #define MSG_SAVED ("The file has been saved.")
 
 /* Editing mode */
@@ -43,14 +44,14 @@ static void ed_clr_scr(Buf *buf);
 /* Updates the size and checks that everything fits on the screen. */
 static void ed_handle_sig_win_ch(int num);
 
-/* Move to begin of line. */
-static void ed_mv_begin_of_line(void);
+/* Move to begin of row. */
+static void ed_mv_begin_of_row(void);
 
 /* Move cursor down. */
 static void ed_mv_down(void);
 
-/* Move to end of line. */
-static void ed_mv_end_of_line(void);
+/* Move to end of row. */
+static void ed_mv_end_of_row(void);
 
 /* Fixes cursor's coordinates. */
 static void ed_fix_cur(void);
@@ -107,13 +108,26 @@ ed_clr_scr(Buf *buf)
 static void
 ed_fix_cur(void)
 {
+	const Row *row = &ed.rows.arr[ed.cur.y + ed.offset_row];
+	size_t f_col_i = ed.offset_col + ed.cur.x;
+	size_t col_diff;
+
 	/* Fix y coordinate. Must have after window resizing */
 	ed.cur.y = MIN(ed.cur.y, ed.win_size.ws_row - 2);
-	/* Fix x coordinate. Must have after window resizing and moving over lines */
-	ed.cur.x = MIN(
-		ed.cur.x,
-		ed.rows.arr[ed.cur.y + ed.offset_row].len - ed.offset_col
-	);
+
+	/* Fix x coordinate if current row does not has enough length */
+	if (f_col_i > row->len) {
+		col_diff = f_col_i - row->len;
+
+		if (ed.cur.x < col_diff) {
+			/* Return row on the screen */
+			ed.offset_col -= col_diff - ed.cur.x + 1;
+			ed.cur.x = 1;
+		} else {
+			/* Offset the cursor */
+			ed.cur.x -= col_diff;
+		}
+	}
 }
 
 static void
@@ -122,10 +136,11 @@ ed_handle_sig_win_ch(int num)
 	(void)num;
 	ed_upd_win_size();
 	ed_refresh_scr();
+	ed_fix_cur();
 }
 
 static void
-ed_mv_begin_of_line(void)
+ed_mv_begin_of_row(void)
 {
 	ed.offset_col = 0;
 	ed.cur.x = 0;
@@ -147,11 +162,18 @@ ed_mv_down(void)
 }
 
 static void
-ed_mv_end_of_line(void)
+ed_mv_end_of_row(void)
 {
-	const Row *row = &ed.rows.arr[ed.offset_col + ed.cur.x];
-	ed.offset_col = row->len - ed.win_size.ws_col + 1;
-	ed.cur.x = ed.win_size.ws_col - 1;
+	const Row *row = &ed.rows.arr[ed.offset_row + ed.cur.y];
+
+	if (row->len < ed.offset_col + ed.win_size.ws_col) {
+		/* End of row on the screen */
+		ed.cur.x = row->len - ed.offset_col;
+	} else {
+		/* Offset to see end of row on the screen */
+		ed.offset_col = row->len - ed.win_size.ws_col + 1;
+		ed.cur.x = ed.win_size.ws_col - 1;
+	}
 }
 
 static void
@@ -197,6 +219,7 @@ ed_mv_up(void)
 		/* We are have enough space to move up on the screen */
 		ed.cur.y--;
 	}
+
 }
 
 char
@@ -250,12 +273,8 @@ ed_refresh_scr(void)
 
 	/* Write content if we do not quit yet */
 	if (!ed.need_to_quit) {
-		/* Write main components */
 		ed_write_rows(&buf);
 		ed_write_status(&buf);
-
-		/* Fix cursor and write it to buffer */
-		ed_fix_cur();
 		ed_write_cur(&buf);
 	}
 
@@ -307,14 +326,15 @@ ed_wait_and_proc_key(void)
 	case MODE_NORM:
 		/* Normal mode keys */
 		switch (key) {
-		case KEY_BEGIN_OF_LINE:
-			ed_mv_begin_of_line();
+		case KEY_BEGIN_OF_ROW:
+			ed_mv_begin_of_row();
 			break;
 		case KEY_DOWN:
 			ed_mv_down();
+			ed_fix_cur();
 			break;
-		case KEY_END_OF_LINE:
-			ed_mv_end_of_line();
+		case KEY_END_OF_ROW:
+			ed_mv_end_of_row();
 			break;
 		case KEY_INS_MODE:
 			ed.mode = MODE_INS;
@@ -333,6 +353,7 @@ ed_wait_and_proc_key(void)
 			break;
 		case KEY_UP:
 			ed_mv_up();
+			ed_fix_cur();
 			break;
 		}
 		break;
@@ -364,11 +385,13 @@ ed_write_rows(Buf *buf)
 		} else {
 			/* Write row */
 			row = &ed.rows.arr[f_row_i];
-			buf_write(
-				buf,
-				row->cont + ed.offset_col,
-				MIN(ed.win_size.ws_col, row->len - ed.offset_col)
-			);
+			if (row->len > ed.offset_col) {
+				buf_write(
+					buf,
+					row->cont + ed.offset_col,
+					MIN(ed.win_size.ws_col, row->len - ed.offset_col)
+				);
+			}
 			buf_write(buf, "\r\n", 2);
 		}
 	}
@@ -379,18 +402,27 @@ ed_write_status(Buf *buf)
 {
 	size_t col_i;
 	size_t len = 0;
+	size_t row_i = ed.offset_row + ed.cur.y;
+	const Row *row = &ed.rows.arr[row_i];
 	color_begin(buf, COLOR_WHITE, COLOR_BLACK);
 
 	/* Write base status */
-	len += buf_writef(buf, " (%s) %s", mode_str(ed.mode), ed.path);
-
+	len += buf_writef(
+		buf,
+		" (%s) %s [%zu/%zu row] [%zu/%zu col]",
+		mode_str(ed.mode),
+		basename(ed.path),
+		row_i + 1,
+		ed.rows.cnt,
+		ed.offset_col + ed.cur.x + 1,
+		row->len
+	);
 	/* Write message if exists */
 	if (ed.msg[0]) {
 		len += buf_writef(buf, ": %s", ed.msg);
 		/* That is, the message will disappear after the next key */
 		ed.msg[0] = 0;
 	}
-
 	/* Fill colored empty space */
 	for (col_i = len; col_i < ed.win_size.ws_col; col_i++) {
 		buf_write(buf, " ", 1);
