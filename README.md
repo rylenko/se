@@ -72,22 +72,22 @@ Later.
 	</tr></thead>
 	<tbody><tr>
 		<th>C</th>
-		<th>9</th>
-		<th>891</th>
-		<th>112</th>
-		<th>118</th>
-		<th>661</th>
-		<th>81</th>
-		<th>16942</th>
+		<th>10</th>
+		<th>878</th>
+		<th>110</th>
+		<th>116</th>
+		<th>652</th>
+		<th>82</th>
+		<th>16816</th>
 	</tr><tr>
 		<th>C Header</th>
-		<th>11</th>
-		<th>213</th>
-		<th>51</th>
-		<th>48</th>
-		<th>114</th>
+		<th>12</th>
+		<th>226</th>
+		<th>54</th>
+		<th>50</th>
+		<th>122</th>
 		<th>0</th>
-		<th>4245</th>
+		<th>4423</th>
 	</tr><tr>
 		<th>Markdown</th>
 		<th>2</th>
@@ -100,12 +100,12 @@ Later.
 	</tr><tr>
 		<th>Makefile</th>
 		<th>2</th>
-		<th>80</th>
+		<th>81</th>
 		<th>15</th>
 		<th>13</th>
-		<th>52</th>
+		<th>53</th>
 		<th>0</th>
-		<th>1788</th>
+		<th>1833</th>
 	</tr><tr>
 		<th>Shell</th>
 		<th>1</th>
@@ -136,13 +136,13 @@ Later.
 	</tr></tbody>
 	<tfoot><tr>
 		<th>Total</th>
-		<th>27</th>
-		<th>1371</th>
-		<th>225</th>
+		<th>29</th>
+		<th>1372</th>
+		<th>226</th>
 		<th>185</th>
 		<th>961</th>
-		<th>81</th>
-    	<th>27082</th>
+		<th>82</th>
+    	<th>27179</th>
 	</tr></tfoot>
 	</table>
 

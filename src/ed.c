@@ -11,6 +11,7 @@
 #include "ed.h"
 #include "err.h"
 #include "math.h"
+#include "mode.h"
 #include "row.h"
 #include "str_util.h"
 #include "term.h"
@@ -18,12 +19,6 @@
 /* Length of message's buffer must be greater than all message lengths */
 #define MSG_BUF_LEN (32)
 #define MSG_SAVED ("The file has been saved.")
-
-/* Editing mode */
-typedef enum {
-	MODE_INS,
-	MODE_NORM,
-} Mode;
 
 /* Structure with editor parameters. */
 static struct {
@@ -84,9 +79,6 @@ static void ed_write_rows(Buf *buf);
 
 /* Write static in the buffer. */
 static void ed_write_status(Buf *buf);
-
-/* Converts mode to the string. */
-static char *mode_str(Mode mode);
 
 static void
 ed_clr_scr(Buf *buf)
@@ -428,17 +420,4 @@ ed_write_status(Buf *buf)
 		buf_write(buf, " ", 1);
 	}
 	color_end(buf);
-}
-
-static char*
-mode_str(Mode mode)
-{
-	switch (mode) {
-	case MODE_INS:
-		return "INSERT";
-	case MODE_NORM:
-		return "NORMAL";
-	default:
-		return NULL;
-	}
 }
