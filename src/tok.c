@@ -11,18 +11,19 @@ is_sep(char ch)
 	return ispunct(ch) || isspace(ch);
 }
 
-char*
-tok_next(const char *str)
+size_t
+tok_next(const char *s)
 {
+	size_t i;
 	char first_is_sep;
 
-	if (*str) {
-		first_is_sep = is_sep(*str);
-		for (str++; *str; str++) {
-			if (first_is_sep ^ is_sep(*str)) {
-				return (char*)str;
+	if (s[0]) {
+		first_is_sep = is_sep(s[0]);
+		for (i = 1; s[i]; i++) {
+			if (first_is_sep ^ is_sep(s[i])) {
+				return i;
 			}
 		}
 	}
-	return NULL;
+	return 0;
 }

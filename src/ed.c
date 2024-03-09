@@ -225,19 +225,16 @@ ed_mv_left(void)
 static void
 ed_mv_next_tok(void)
 {
-	char *tok;
-	size_t step;
+	/* Find next token */
 	size_t f_col_i = ed.offset_col + ed.cur.x;
-	/* Get string after cursor */
-	const char *point = ed_get_curr_row()->cont + f_col_i;
-	/* TODO: check next line for the next token */
-	if ((tok = tok_next(point)) != NULL) {
-		step = tok - point;
+	size_t tok_i = tok_next(ed_get_curr_row()->cont + f_col_i);
+
+	if (tok_i) {
 		/* Check token on the screen */
-		if (step + ed.cur.x < ed.win_size.ws_col) {
-			ed.cur.x += step;
+		if (tok_i + ed.cur.x < ed.win_size.ws_col) {
+			ed.cur.x += tok_i;
 		} else {
-			ed.offset_col = f_col_i + step - ed.win_size.ws_col + 1;
+			ed.offset_col = f_col_i + tok_i - ed.win_size.ws_col + 1;
 			ed.cur.x = ed.win_size.ws_col - 1;
 		}
 	}
