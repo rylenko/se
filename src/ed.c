@@ -120,9 +120,9 @@ ed_fix_cur(void)
 	size_t f_col_i = ed.offset_col + ed.cur.x;
 	size_t col_diff;
 
-	/* TODO check x coordinate after window resizing */
-	/* Fix y coordinate. Must have after window resizing */
+	/* Fixes after window resizing */
 	ed.cur.y = MIN(ed.cur.y, ed.win_size.ws_row - 2);
+	ed.cur.x = MIN(ed.cur.x, ed.win_size.ws_col - 1);
 
 	/* Fix x coordinate if current row does not has enough length */
 	if (f_col_i > row->len) {
