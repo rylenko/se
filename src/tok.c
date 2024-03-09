@@ -25,5 +25,21 @@ tok_next(const char *s, size_t len)
 			}
 		}
 	}
-	return 0;
+	return len;
+}
+
+size_t
+tok_rnext(const char *s, size_t len)
+{
+	char first_is_sep;
+
+	if (len > 0) {
+		first_is_sep = is_sep(s[len - 1]);
+		for (; len > 0; len--) {
+			if (first_is_sep ^ is_sep(s[len - 1])) {
+				return len - 1;
+			}
+		}
+	}
+	return len;
 }

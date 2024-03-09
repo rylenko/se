@@ -14,6 +14,7 @@ typedef enum {
 	RAW_KEY_J = 106,
 	RAW_KEY_K = 107,
 	RAW_KEY_L = 108,
+	RAW_KEY_Q = 113,
 	RAW_KEY_S = 115,
 	RAW_KEY_W = 119,
 } RawKey;

@@ -67,6 +67,9 @@ static void ed_mv_left(void);
 /* Move to next token if exists. */
 static void ed_mv_next_tok(void);
 
+/* Move to previous token if exists. */
+static void ed_mv_prev_tok(void);
+
 /* Move cursor right. */
 static void ed_mv_right(void);
 
@@ -228,15 +231,34 @@ ed_mv_next_tok(void)
 	/* Find next token */
 	const Row *row = ed_get_curr_row();
 	size_t f_col_i = ed.offset_col + ed.cur.x;
+	size_t len = row->len - f_col_i;
 	size_t tok_i = tok_next(row->cont + f_col_i, row->len - f_col_i);
 
-	if (tok_i) {
+	if (tok_i < len) {
 		/* Check token on the screen */
 		if (tok_i + ed.cur.x < ed.win_size.ws_col) {
 			ed.cur.x += tok_i;
 		} else {
 			ed.offset_col = f_col_i + tok_i - ed.win_size.ws_col + 1;
 			ed.cur.x = ed.win_size.ws_col - 1;
+		}
+	}
+}
+
+static void
+ed_mv_prev_tok(void)
+{
+	/* Find previous token */
+	size_t f_col_i = ed.offset_col + ed.cur.x;
+	size_t tok_i = tok_rnext(ed_get_curr_row()->cont, f_col_i);
+
+	if (tok_i < f_col_i) {
+		/* Check token on the screen */
+		if (tok_i >= ed.offset_col) {
+			ed.cur.x = tok_i - ed.offset_col;
+		} else {
+			ed.offset_col = tok_i;
+			ed.cur.x = 1;
 		}
 	}
 }
@@ -376,48 +398,51 @@ ed_wait_and_proc_key(void)
 	case MODE_NORM:
 		/* Normal mode keys */
 		switch (key) {
-		case KEY_BEGIN_OF_F:
-			ed_mv_begin_of_f();
-			break;
-		case KEY_BEGIN_OF_ROW:
-			ed_mv_begin_of_row();
-			break;
-		case KEY_DOWN:
-			ed_mv_down();
-			break;
-		case KEY_END_OF_F:
-			ed_mv_end_of_f();
-			break;
-		case KEY_END_OF_ROW:
-			ed_mv_end_of_row();
-			break;
-		case KEY_INS_MODE:
+		case KEY_MODE_INS:
 			ed.mode = MODE_INS;
 			break;
-		case KEY_LEFT:
+		case KEY_MV_BEGIN_OF_F:
+			ed_mv_begin_of_f();
+			break;
+		case KEY_MV_BEGIN_OF_ROW:
+			ed_mv_begin_of_row();
+			break;
+		case KEY_MV_DOWN:
+			ed_mv_down();
+			break;
+		case KEY_MV_END_OF_F:
+			ed_mv_end_of_f();
+			break;
+		case KEY_MV_END_OF_ROW:
+			ed_mv_end_of_row();
+			break;
+		case KEY_MV_LEFT:
 			ed_mv_left();
 			break;
-		case KEY_NEXT_TOK:
+		case KEY_MV_NEXT_TOK:
 			ed_mv_next_tok();
+			break;
+		case KEY_MV_PREV_TOK:
+			ed_mv_prev_tok();
+			break;
+		case KEY_MV_RIGHT:
+			ed_mv_right();
+			break;
+		case KEY_MV_UP:
+			ed_mv_up();
 			break;
 		case KEY_QUIT:
 			ed_quit();
 			break;
-		case KEY_RIGHT:
-			ed_mv_right();
-			break;
 		case KEY_SAVE:
 			strcpy(ed.msg, MSG_SAVED);
-			break;
-		case KEY_UP:
-			ed_mv_up();
 			break;
 		}
 		break;
 	case MODE_INS:
 		/* Insert mode keys */
 		switch (key) {
-		case KEY_NORM_MODE:
+		case KEY_MODE_NORM:
 			ed.mode = MODE_NORM;
 			break;
 		}
