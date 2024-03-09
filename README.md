@@ -73,12 +73,12 @@ Later.
 	<tbody><tr>
 		<th>C</th>
 		<th>11</th>
-		<th>967</th>
+		<th>968</th>
 		<th>121</th>
 		<th>125</th>
-		<th>721</th>
+		<th>722</th>
 		<th>90</th>
-		<th>18342</th>
+		<th>18403</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>13</th>
@@ -87,7 +87,7 @@ Later.
 		<th>51</th>
 		<th>132</th>
 		<th>0</th>
-		<th>4714</th>
+		<th>4722</th>
 	</tr><tr>
 		<th>Markdown</th>
 		<th>2</th>
@@ -137,12 +137,12 @@ Later.
 	<tfoot><tr>
 		<th>Total</th>
 		<th>31</th>
-		<th>1475</th>
+		<th>1476</th>
 		<th>239</th>
 		<th>195</th>
-		<th>1041</th>
+		<th>1042</th>
 		<th>90</th>
-    	<th>29031</th>
+    	<th>29100</th>
 	</tr></tfoot>
 	</table>
 
@@ -151,7 +151,7 @@ Later.
 |Path|Line|Description|
 |-|-|-|
 |**src/ed.c**|**120**|**check x coordinate after window resizing**|
-|**src/ed.c**|**302**|**add empty line if there is not lines readed**|
+|**src/ed.c**|**303**|**add empty line if there is not lines readed**|
 |**src/row.c**|**132**|**Linked list is better for creating new rows**|
 |**src/row.c**|**152**|**create shrink_to_fit for rows_remove**|
 |**src/cfg.h**|**6**|**Fix it for another values**|

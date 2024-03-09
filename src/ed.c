@@ -226,8 +226,9 @@ static void
 ed_mv_next_tok(void)
 {
 	/* Find next token */
+	const Row *row = ed_get_curr_row();
 	size_t f_col_i = ed.offset_col + ed.cur.x;
-	size_t tok_i = tok_next(ed_get_curr_row()->cont + f_col_i);
+	size_t tok_i = tok_next(row->cont + f_col_i, row->len - f_col_i);
 
 	if (tok_i) {
 		/* Check token on the screen */
