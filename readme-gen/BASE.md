@@ -23,14 +23,14 @@ Normal mode keys:
 
 - `a` - start of row.
 - `d` - end of row.
-- `e` - go to begin of next word.
+- `e` - go to begin of next token.
 - `h` - go left.
 - `i` - switch to insert mode.
 - `j` - go down.
 - `k` - go up.
 - `l` - go right.
 - `n` - create a row  below the current row and move to it.
-- `q` - go to begin of previous word.
+- `q` - go to begin of previous token.
 - `s` - go to end of file.
 - `w` - go to begin of file.
 - `/` - start or end search.

@@ -1,3 +1,5 @@
+/* TODO: `Row *ed_get_cur_row(void)` */
+
 #include <assert.h>
 #include <libgen.h>
 #include <signal.h>
@@ -15,6 +17,7 @@
 #include "row.h"
 #include "str_util.h"
 #include "term.h"
+#include "tok.h"
 
 /* Length of message's buffer must be greater than all message lengths */
 #define MSG_BUF_LEN (32)
@@ -59,6 +62,9 @@ static void ed_fix_cur(void);
 
 /* Move cursor left. */
 static void ed_mv_left(void);
+
+/* Move to next token if exists. */
+static void ed_mv_next_tok(void);
 
 /* Move cursor right. */
 static void ed_mv_right(void);
@@ -110,6 +116,7 @@ ed_fix_cur(void)
 	size_t f_col_i = ed.offset_col + ed.cur.x;
 	size_t col_diff;
 
+	/* TODO check x coordinate after window resizing */
 	/* Fix y coordinate. Must have after window resizing */
 	ed.cur.y = MIN(ed.cur.y, ed.win_size.ws_row - 2);
 
@@ -205,6 +212,27 @@ ed_mv_left(void)
 	} else {
 		/* We are have enough space to move left on the screen */
 		ed.cur.x--;
+	}
+}
+
+static void
+ed_mv_next_tok(void)
+{
+	char *tok;
+	size_t step;
+	size_t f_col_i = ed.offset_col + ed.cur.x;
+	/* Get string after cursor */
+	const char *point = &ed.rows.arr[ed.offset_row + ed.cur.y].cont[f_col_i];
+	/* TODO: check next line for the next token */
+	if ((tok = tok_next(point)) != NULL) {
+		step = tok - point;
+		/* Check token on the screen */
+		if (step + ed.cur.x < ed.win_size.ws_col) {
+			ed.cur.x += step;
+		} else {
+			ed.offset_col = f_col_i + step - ed.win_size.ws_col + 1;
+			ed.cur.x = ed.win_size.ws_col - 1;
+		}
 	}
 }
 
@@ -365,6 +393,9 @@ ed_wait_and_proc_key(void)
 			break;
 		case KEY_LEFT:
 			ed_mv_left();
+			break;
+		case KEY_NEXT_TOK:
+			ed_mv_next_tok();
 			break;
 		case KEY_QUIT:
 			ed_quit();

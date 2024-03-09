@@ -4,7 +4,7 @@ include cfg.mk
 
 # Code files
 SRC = src/buf.c src/color.c src/cur.c src/ed.c src/err.c src/main.c \
-	src/mode.c src/row.c src/str_util.c src/term.c
+	src/mode.c src/row.c src/str_util.c src/term.c src/tok.c
 OBJ = $(SRC:.c=.o)
 
 # Paths
@@ -37,8 +37,9 @@ src/err.o: src/err.h
 src/main.o: src/buf.h src/ed.h src/err.h src/term.h
 src/mode.c: src/mode.h
 src/row.o: src/err.h src/row.h
-src/term.o: src/err.h src/term.h
 src/str_util.o: src/str_util.h
+src/term.o: src/err.h src/term.h
+src/tok.o: src/tok.h
 
 # Clean all after build
 clean:

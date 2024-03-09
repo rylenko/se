@@ -8,6 +8,7 @@ typedef enum {
 	RAW_KEY_ESC = 27,
 	RAW_KEY_A = 97,
 	RAW_KEY_D = 100,
+	RAW_KEY_E = 101,
 	RAW_KEY_H = 104,
 	RAW_KEY_I = 105,
 	RAW_KEY_J = 106,

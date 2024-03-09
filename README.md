@@ -23,14 +23,14 @@ Normal mode keys:
 
 - `a` - start of row.
 - `d` - end of row.
-- `e` - go to begin of next word.
+- `e` - go to begin of next token.
 - `h` - go left.
 - `i` - switch to insert mode.
 - `j` - go down.
 - `k` - go up.
 - `l` - go right.
 - `n` - create a row  below the current row and move to it.
-- `q` - go to begin of previous word.
+- `q` - go to begin of previous token.
 - `s` - go to end of file.
 - `w` - go to begin of file.
 - `/` - start or end search.
@@ -72,22 +72,22 @@ Later.
 	</tr></thead>
 	<tbody><tr>
 		<th>C</th>
-		<th>10</th>
-		<th>905</th>
-		<th>112</th>
-		<th>120</th>
-		<th>673</th>
-		<th>83</th>
-		<th>17326</th>
+		<th>11</th>
+		<th>955</th>
+		<th>117</th>
+		<th>126</th>
+		<th>712</th>
+		<th>90</th>
+		<th>18383</th>
 	</tr><tr>
 		<th>C Header</th>
-		<th>12</th>
-		<th>230</th>
+		<th>13</th>
+		<th>242</th>
+		<th>56</th>
 		<th>54</th>
-		<th>50</th>
-		<th>126</th>
+		<th>132</th>
 		<th>0</th>
-		<th>4515</th>
+		<th>4742</th>
 	</tr><tr>
 		<th>Markdown</th>
 		<th>2</th>
@@ -96,16 +96,16 @@ Later.
 		<th>0</th>
 		<th>81</th>
 		<th>0</th>
-		<th>2866</th>
+		<th>2870</th>
 	</tr><tr>
 		<th>Makefile</th>
 		<th>2</th>
-		<th>81</th>
+		<th>82</th>
 		<th>15</th>
 		<th>13</th>
-		<th>53</th>
+		<th>54</th>
 		<th>0</th>
-		<th>1833</th>
+		<th>1864</th>
 	</tr><tr>
 		<th>Shell</th>
 		<th>1</th>
@@ -136,13 +136,13 @@ Later.
 	</tr></tbody>
 	<tfoot><tr>
 		<th>Total</th>
-		<th>29</th>
-		<th>1403</th>
-		<th>228</th>
-		<th>189</th>
-		<th>986</th>
-		<th>83</th>
-    	<th>27781</th>
+		<th>31</th>
+		<th>1466</th>
+		<th>235</th>
+		<th>199</th>
+		<th>1032</th>
+		<th>90</th>
+    	<th>29100</th>
 	</tr></tfoot>
 	</table>
 
@@ -150,7 +150,10 @@ Later.
 
 |Path|Line|Description|
 |-|-|-|
-|**src/ed.c**|**272**|**add empty line if there is not lines readed**|
+|**src/ed.c**|**1**|**`Row *ed_get_cur_row(void)`**|
+|**src/ed.c**|**119**|**check x coordinate after window resizing**|
+|**src/ed.c**|**226**|**check next line for the next token**|
+|**src/ed.c**|**300**|**add empty line if there is not lines readed**|
 |**src/row.c**|**132**|**Linked list is better for creating new rows**|
 |**src/row.c**|**152**|**create shrink_to_fit for rows_remove**|
 |**src/cfg.h**|**6**|**Fix it for another values**|
