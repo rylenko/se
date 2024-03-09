@@ -75,10 +75,10 @@ Later.
 		<th>11</th>
 		<th>1009</th>
 		<th>126</th>
-		<th>128</th>
-		<th>755</th>
+		<th>127</th>
+		<th>756</th>
 		<th>96</th>
-		<th>19200</th>
+		<th>19176</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>13</th>
@@ -139,10 +139,10 @@ Later.
 		<th>31</th>
 		<th>1522</th>
 		<th>245</th>
-		<th>199</th>
-		<th>1078</th>
+		<th>198</th>
+		<th>1079</th>
 		<th>96</th>
-    	<th>30049</th>
+    	<th>30025</th>
 	</tr></tfoot>
 	</table>
 
@@ -150,7 +150,6 @@ Later.
 
 |Path|Line|Description|
 |-|-|-|
-|**src/ed.c**|**123**|**check x coordinate after window resizing**|
 |**src/ed.c**|**325**|**add empty line if there is not lines readed**|
 |**src/row.c**|**132**|**Linked list is better for creating new rows**|
 |**src/row.c**|**152**|**create shrink_to_fit for rows_remove**|
