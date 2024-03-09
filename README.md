@@ -73,12 +73,12 @@ Later.
 	<tbody><tr>
 		<th>C</th>
 		<th>11</th>
-		<th>955</th>
-		<th>117</th>
-		<th>126</th>
-		<th>712</th>
+		<th>960</th>
+		<th>118</th>
+		<th>125</th>
+		<th>717</th>
 		<th>90</th>
-		<th>18383</th>
+		<th>18340</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>13</th>
@@ -137,12 +137,12 @@ Later.
 	<tfoot><tr>
 		<th>Total</th>
 		<th>31</th>
-		<th>1466</th>
-		<th>235</th>
-		<th>199</th>
-		<th>1032</th>
+		<th>1471</th>
+		<th>236</th>
+		<th>198</th>
+		<th>1037</th>
 		<th>90</th>
-    	<th>29100</th>
+    	<th>29057</th>
 	</tr></tfoot>
 	</table>
 
@@ -150,10 +150,9 @@ Later.
 
 |Path|Line|Description|
 |-|-|-|
-|**src/ed.c**|**1**|**`Row *ed_get_cur_row(void)`**|
-|**src/ed.c**|**119**|**check x coordinate after window resizing**|
-|**src/ed.c**|**226**|**check next line for the next token**|
-|**src/ed.c**|**300**|**add empty line if there is not lines readed**|
+|**src/ed.c**|**120**|**check x coordinate after window resizing**|
+|**src/ed.c**|**233**|**check next line for the next token**|
+|**src/ed.c**|**305**|**add empty line if there is not lines readed**|
 |**src/row.c**|**132**|**Linked list is better for creating new rows**|
 |**src/row.c**|**152**|**create shrink_to_fit for rows_remove**|
 |**src/cfg.h**|**6**|**Fix it for another values**|

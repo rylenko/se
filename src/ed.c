@@ -1,5 +1,3 @@
-/* TODO: `Row *ed_get_cur_row(void)` */
-
 #include <assert.h>
 #include <libgen.h>
 #include <signal.h>
@@ -39,6 +37,12 @@ static struct {
 /* Clears the screen. Then sets the cursor to the beginning of the screen. */
 static void ed_clr_scr(Buf *buf);
 
+/* Fixes cursor's coordinates. */
+static void ed_fix_cur(void);
+
+/* Gets current row. */
+static Row *ed_get_curr_row(void);
+
 /* Updates the size and checks that everything fits on the screen. */
 static void ed_handle_sig_win_ch(int num);
 
@@ -56,9 +60,6 @@ static void ed_mv_end_of_f(void);
 
 /* Move to end of row. */
 static void ed_mv_end_of_row(void);
-
-/* Fixes cursor's coordinates. */
-static void ed_fix_cur(void);
 
 /* Move cursor left. */
 static void ed_mv_left(void);
@@ -112,7 +113,7 @@ ed_clr_scr(Buf *buf)
 static void
 ed_fix_cur(void)
 {
-	const Row *row = &ed.rows.arr[ed.cur.y + ed.offset_row];
+	const Row *row = ed_get_curr_row();
 	size_t f_col_i = ed.offset_col + ed.cur.x;
 	size_t col_diff;
 
@@ -137,6 +138,12 @@ ed_fix_cur(void)
 			ed.cur.x -= col_diff;
 		}
 	}
+}
+
+static Row*
+ed_get_curr_row(void)
+{
+	return &ed.rows.arr[ed.cur.y + ed.offset_row];
 }
 
 static void
@@ -190,7 +197,7 @@ ed_mv_down(void)
 static void
 ed_mv_end_of_row(void)
 {
-	const Row *row = &ed.rows.arr[ed.offset_row + ed.cur.y];
+	const Row *row = ed_get_curr_row();
 	if (row->len < ed.offset_col + ed.win_size.ws_col) {
 		/* End of row on the screen */
 		ed.cur.x = row->len - ed.offset_col;
@@ -222,7 +229,7 @@ ed_mv_next_tok(void)
 	size_t step;
 	size_t f_col_i = ed.offset_col + ed.cur.x;
 	/* Get string after cursor */
-	const char *point = &ed.rows.arr[ed.offset_row + ed.cur.y].cont[f_col_i];
+	const char *point = ed_get_curr_row()->cont + f_col_i;
 	/* TODO: check next line for the next token */
 	if ((tok = tok_next(point)) != NULL) {
 		step = tok - point;
@@ -239,10 +246,8 @@ ed_mv_next_tok(void)
 static void
 ed_mv_right(void)
 {
-	/* Get current row */
-	const Row *row = &ed.rows.arr[ed.offset_row + ed.cur.y];
 	/* Check that we need space to move right */
-	if (ed.offset_col + ed.cur.x < row->len) {
+	if (ed.offset_col + ed.cur.x < ed_get_curr_row()->len) {
 		if (ed.win_size.ws_col - 1 == ed.cur.x) {
 			/* We are at the right of window */
 			ed.offset_col++;
@@ -342,7 +347,7 @@ ed_write_cur(Buf *buf)
 {
 	unsigned short cont_i;
 	size_t x = 0;
-	const Row *row = &ed.rows.arr[ed.cur.y + ed.offset_row];
+	const Row *row = ed_get_curr_row();
 	/* Calculate tabs */
 	for (
 		cont_i = ed.offset_col;
