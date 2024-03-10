@@ -161,6 +161,7 @@ ed_handle_sig_win_ch(int num)
 static void
 ed_mv_begin_of_f(void)
 {
+	ed.offset_col = 0;
 	ed.offset_row = 0;
 	ed.cur.x = 0;
 	ed.cur.y = 0;
@@ -193,6 +194,7 @@ static void
 ed_mv_end_of_f(void)
 {
 	ed.cur.x = 0;
+	ed.offset_col = 0;
 	if (ed.rows.cnt < ed.win_size.ws_row) {
 		/* End of file on screen without offset */
 		ed.cur.y = ed.rows.cnt - 1;
