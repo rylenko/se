@@ -328,8 +328,12 @@ ed_open(const char *path)
 		err("Failed to open \"%s\":", path);
 	}
 	rows_read(&ed.rows, f);
-	/* TODO: add empty line if there is not lines readed */
 	fclose(f);
+
+	/* Add empty line if there is no lines */
+	if (ed.rows.cnt == 0) {
+		rows_ins(&ed.rows, 0, row_empty());
+	}
 }
 
 static void

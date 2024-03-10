@@ -8,9 +8,6 @@
 #define ROWS_REALLOC_STEP (32)
 #define ROW_REALLOC_STEP (256)
 
-/* Allocates new row. */
-static Row row_alloc(void);
-
 /* Frees row's content. */
 static void row_free(Row *row);
 
@@ -24,11 +21,8 @@ static Row *row_read(Row *row, FILE *f);
 /* Grows rows capacity. */
 static void rows_grow(Rows *rows);
 
-/* Inserts new row at index. */
-static void rows_ins(Rows *rows, size_t idx, Row row);
-
-static Row
-row_alloc(void)
+Row
+row_empty(void)
 {
 	return (Row){ .cont = NULL, .len = 0 };
 }
@@ -37,6 +31,7 @@ static void
 row_free(Row *row)
 {
 	free(row->cont);
+	row->cont = NULL;
 	row->len = 0;
 }
 
@@ -54,10 +49,14 @@ row_read(Row *row, FILE *f)
 	while (1) {
 		/* Read new character */
 		ch = fgetc(f);
-		if (EOF == ch && 0 == row->len) {
-			return NULL;
+		if (0 == row->len) {
+			/* Return early if starting character is EOF or newline */
+			if (EOF == ch) {
+				return NULL;
+			} else if ('\n' == ch) {
+				return row;
+			}
 		}
-
 		/* Reallocate row with new capacity */
 		if (row->len == cap) {
 			cap += ROW_REALLOC_STEP;
@@ -65,7 +64,6 @@ row_read(Row *row, FILE *f)
 				err("Failed to reallocate row with %zu bytes:", cap);
 			}
 		}
-
 		/* Write readed character */
 		if ('\n' == ch || EOF == ch) {
 			row->cont[row->len] = 0;
@@ -116,7 +114,7 @@ rows_grow(Rows *rows)
 	}
 }
 
-static void
+void
 rows_ins(Rows *rows, size_t idx, Row row)
 {
 	/* Validate index */
@@ -144,7 +142,7 @@ rows_ins(Rows *rows, size_t idx, Row row)
 void
 rows_read(Rows *rows, FILE *f)
 {
-	Row row = row_alloc();
+	Row row = row_empty();
 	while (row_read(&row, f) != NULL)
 		rows_ins(rows, rows->cnt, row);
 }

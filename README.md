@@ -78,21 +78,21 @@ Later.
 	<tbody><tr>
 		<th>C</th>
 		<th>11</th>
-		<th>1015</th>
-		<th>126</th>
-		<th>129</th>
-		<th>760</th>
-		<th>98</th>
-		<th>19345</th>
+		<th>1017</th>
+		<th>123</th>
+		<th>128</th>
+		<th>766</th>
+		<th>103</th>
+		<th>19378</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>13</th>
-		<th>244</th>
-		<th>57</th>
-		<th>52</th>
-		<th>135</th>
+		<th>251</th>
+		<th>59</th>
+		<th>55</th>
+		<th>137</th>
 		<th>0</th>
-		<th>4874</th>
+		<th>5022</th>
 	</tr><tr>
 		<th>Markdown</th>
 		<th>2</th>
@@ -142,12 +142,12 @@ Later.
 	<tfoot><tr>
 		<th>Total</th>
 		<th>31</th>
-		<th>1538</th>
-		<th>249</th>
-		<th>200</th>
-		<th>1089</th>
-		<th>98</th>
-    	<th>30068</th>
+		<th>1547</th>
+		<th>248</th>
+		<th>202</th>
+		<th>1097</th>
+		<th>103</th>
+    	<th>30249</th>
 	</tr></tfoot>
 	</table>
 
@@ -156,6 +156,5 @@ Later.
 |Path|Line|Description|
 |-|-|-|
 |**src/cfg.h**|**6**|**Fix it for another values**|
-|**src/row.c**|**132**|**Linked list is better for creating new rows**|
-|**src/row.c**|**152**|**create shrink_to_fit for rows_remove**|
-|**src/ed.c**|**331**|**add empty line if there is not lines readed**|
+|**src/row.c**|**130**|**Linked list is better for creating new rows**|
+|**src/row.c**|**150**|**create shrink_to_fit for rows_remove**|
