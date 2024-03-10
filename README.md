@@ -1,22 +1,37 @@
-# Vega
+# Edelweiss
 
 A simple text editor.
 
-The name comes from the [star Vega](https://en.wikipedia.org/wiki/Vega).
+# Why
+
+For a simple text editor without dependencies that can edit, save, search in a file and nothing more.
+
+There is no support for multiple windows. Use [tmux](https://github.com/tmux/tmux).
+
+There is no support for plugins written in [Lua](https://en.wikipedia.org/wiki/Lua_(programming_language)) or [Python](https://en.wikipedia.org/wiki/Python_(programming_language)) or anything like that.
+
+Support for syntax highlighting is optional and can be enabled by applying patches.
+
+# Build and install
+
+Build binary:
+
+```
+$ make
+```
+
+Install:
+
+```
+$ make install
+```
 
 # Usage
 
 Open a file:
 
 ```
-$ vega <path>
-```
-
-If the file has not yet been created:
-
-```
-$ touch <path>
-$ vega <path>
+$ ew <path>
 ```
 
 Normal mode keys:
@@ -43,16 +58,6 @@ Insert mode keys:
 
 - `ESC` - switch to normal mode.
 
-# Why
-
-For a simple text editor without dependencies that can edit, save, search in a file and nothing more.
-
-There is no support for multiple windows. Use [tmux](https://github.com/tmux/tmux).
-
-There is no support for plugins written in [Lua](https://en.wikipedia.org/wiki/Lua_(programming_language)) or [Python](https://en.wikipedia.org/wiki/Python_(programming_language)) or anything like that.
-
-Support for syntax highlighting is optional and can be enabled by applying patches.
-
 # Syntax highlighting patches
 
 Later.
@@ -78,7 +83,7 @@ Later.
 		<th>129</th>
 		<th>760</th>
 		<th>98</th>
-		<th>19347</th>
+		<th>19345</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>13</th>
@@ -91,12 +96,12 @@ Later.
 	</tr><tr>
 		<th>Markdown</th>
 		<th>2</th>
-		<th>119</th>
-		<th>38</th>
+		<th>129</th>
+		<th>42</th>
 		<th>0</th>
-		<th>81</th>
+		<th>87</th>
 		<th>0</th>
-		<th>2870</th>
+		<th>2746</th>
 	</tr><tr>
 		<th>Makefile</th>
 		<th>2</th>
@@ -105,7 +110,7 @@ Later.
 		<th>13</th>
 		<th>54</th>
 		<th>0</th>
-		<th>1864</th>
+		<th>1862</th>
 	</tr><tr>
 		<th>Shell</th>
 		<th>1</th>
@@ -137,12 +142,12 @@ Later.
 	<tfoot><tr>
 		<th>Total</th>
 		<th>31</th>
-		<th>1528</th>
-		<th>245</th>
+		<th>1538</th>
+		<th>249</th>
 		<th>200</th>
-		<th>1083</th>
+		<th>1089</th>
 		<th>98</th>
-    	<th>30196</th>
+    	<th>30068</th>
 	</tr></tfoot>
 	</table>
 

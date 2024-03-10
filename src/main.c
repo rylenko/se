@@ -5,7 +5,7 @@
 #include "err.h"
 #include "term.h"
 
-#define USAGE ("Usage:\n\t$ vega <filename>")
+#define USAGE ("Usage:\n\t$ ew <filename>")
 
 int
 main(const int argc, const char *const *const argv)
