@@ -1,11 +1,19 @@
 #ifndef _CFG_H
 #define _CFG_H
 
+#include "raw_color.h"
 #include "raw_key.h"
 
 /* TODO: Fix it for another values */
 #define CFG_TAB_SIZE (8)
 
+/* Colors */
+typedef enum {
+	COLOR_STAT_BG = RAW_COLOR_BLUE,
+	COLOR_STAT_FG = RAW_COLOR_BRIGHT_WHITE,
+} Color;
+
+/* Editor keys */
 typedef enum {
 	KEY_MODE_INS = RAW_KEY_I,
 	KEY_MODE_NORM = RAW_KEY_ESC,

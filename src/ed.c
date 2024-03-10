@@ -5,13 +5,13 @@
 #include <string.h>
 #include <sys/ioctl.h>
 #include "buf.h"
-#include "color.h"
 #include "cfg.h"
 #include "cur.h"
 #include "ed.h"
 #include "err.h"
 #include "math.h"
 #include "mode.h"
+#include "raw_color.h"
 #include "row.h"
 #include "str_util.h"
 #include "term.h"
@@ -94,7 +94,7 @@ static void ed_write_cur(Buf *buf);
 static void ed_write_rows(Buf *buf);
 
 /* Write static in the buffer. */
-static void ed_write_status(Buf *buf);
+static void ed_write_stat(Buf *buf);
 
 static void
 ed_clr_scr(Buf *buf)
@@ -358,7 +358,7 @@ ed_refresh_scr(void)
 	/* Write content if we do not quit yet */
 	if (!ed.need_to_quit) {
 		ed_write_rows(&buf);
-		ed_write_status(&buf);
+		ed_write_stat(&buf);
 		ed_write_cur(&buf);
 	}
 
@@ -492,11 +492,11 @@ ed_write_rows(Buf *buf)
 }
 
 static void
-ed_write_status(Buf *buf)
+ed_write_stat(Buf *buf)
 {
 	size_t col_i;
 	size_t len = 0;
-	color_begin(buf, COLOR_WHITE, COLOR_BLACK);
+	raw_color_begin(buf, (RawColor)COLOR_STAT_BG, (RawColor)COLOR_STAT_FG);
 
 	/* Write base status */
 	len += buf_writef(
@@ -517,5 +517,5 @@ ed_write_status(Buf *buf)
 	for (col_i = len; col_i < ed.win_size.ws_col; col_i++) {
 		buf_write(buf, " ", 1);
 	}
-	color_end(buf);
+	raw_color_end(buf);
 }

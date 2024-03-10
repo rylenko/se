@@ -78,21 +78,21 @@ Later.
 	<tbody><tr>
 		<th>C</th>
 		<th>11</th>
-		<th>1019</th>
-		<th>123</th>
+		<th>1021</th>
+		<th>124</th>
 		<th>128</th>
-		<th>768</th>
+		<th>769</th>
 		<th>103</th>
-		<th>19418</th>
+		<th>19497</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>13</th>
-		<th>251</th>
-		<th>59</th>
-		<th>55</th>
-		<th>137</th>
+		<th>272</th>
+		<th>60</th>
+		<th>56</th>
+		<th>156</th>
 		<th>0</th>
-		<th>5022</th>
+		<th>5731</th>
 	</tr><tr>
 		<th>Markdown</th>
 		<th>2</th>
@@ -110,7 +110,7 @@ Later.
 		<th>13</th>
 		<th>54</th>
 		<th>0</th>
-		<th>1862</th>
+		<th>1878</th>
 	</tr><tr>
 		<th>Shell</th>
 		<th>1</th>
@@ -142,12 +142,12 @@ Later.
 	<tfoot><tr>
 		<th>Total</th>
 		<th>31</th>
-		<th>1549</th>
-		<th>248</th>
-		<th>202</th>
-		<th>1099</th>
+		<th>1572</th>
+		<th>250</th>
+		<th>203</th>
+		<th>1119</th>
 		<th>103</th>
-    	<th>30289</th>
+    	<th>31093</th>
 	</tr></tfoot>
 	</table>
 
@@ -155,6 +155,6 @@ Later.
 
 |Path|Line|Description|
 |-|-|-|
-|**src/cfg.h**|**6**|**Fix it for another values**|
+|**src/cfg.h**|**7**|**Fix it for another values**|
 |**src/row.c**|**130**|**Linked list is better for creating new rows**|
 |**src/row.c**|**150**|**create shrink_to_fit for rows_remove**|
