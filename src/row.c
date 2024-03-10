@@ -25,7 +25,7 @@ static Row *row_read(Row *row, FILE *f);
 static void rows_grow(Rows *rows);
 
 /* Inserts new row at index. */
-void rows_ins(Rows *rows, size_t idx, Row row);
+static void rows_ins(Rows *rows, size_t idx, Row row);
 
 static Row
 row_alloc(void)
@@ -116,7 +116,7 @@ rows_grow(Rows *rows)
 	}
 }
 
-void
+static void
 rows_ins(Rows *rows, size_t idx, Row row)
 {
 	/* Validate index */
