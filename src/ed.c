@@ -501,11 +501,11 @@ ed_write_stat(Buf *buf)
 	/* Write base status */
 	len += buf_writef(
 		buf,
-		" [%s] %s (%zu, %zu)",
+		" [%s; (%zu, %zu)] %s",
 		mode_str(ed.mode),
-		basename(ed.path),
 		ed.offset_col + ed.cur.x,
-		ed.offset_row + ed.cur.y
+		ed.offset_row + ed.cur.y,
+		basename(ed.path)
 	);
 	/* Write message if exists */
 	if (ed.msg[0]) {

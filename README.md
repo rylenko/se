@@ -83,7 +83,7 @@ Later.
 		<th>128</th>
 		<th>769</th>
 		<th>103</th>
-		<th>19497</th>
+		<th>19498</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>13</th>
@@ -147,7 +147,7 @@ Later.
 		<th>203</th>
 		<th>1119</th>
 		<th>103</th>
-    	<th>31093</th>
+    	<th>31094</th>
 	</tr></tfoot>
 	</table>
 
