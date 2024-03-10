@@ -76,7 +76,7 @@ row_read(Row *row, FILE *f)
 
 	/* Shrink row's content to fit */
 	if (!(row->cont = realloc(row->cont, row->len + 1))) {
-		err("Failed to shrink to fit a row from %zu to %zu bytes:", cap, row->len);
+		err("Failed to shrink a row from %zu to %zu bytes:", cap, row->len + 1);
 	}
 	return row;
 }
