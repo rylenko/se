@@ -167,14 +167,6 @@ ed_mv_begin_of_f(void)
 }
 
 static void
-ed_mv_end_of_f(void)
-{
-	ed.offset_row = ed.rows.cnt - ed.win_size.ws_row + 1;
-	ed.cur.x = 0;
-	ed.cur.y = ed.win_size.ws_row - 2;
-}
-
-static void
 ed_mv_begin_of_row(void)
 {
 	ed.offset_col = 0;
@@ -195,6 +187,20 @@ ed_mv_down(void)
 		}
 	}
 	ed_fix_cur();
+}
+
+static void
+ed_mv_end_of_f(void)
+{
+	ed.cur.x = 0;
+	if (ed.rows.cnt < ed.win_size.ws_row) {
+		/* End of file on screen without offset */
+		ed.cur.y = ed.rows.cnt - 1;
+	} else {
+		/* End of file not on the screen */
+		ed.offset_row = ed.rows.cnt - ed.win_size.ws_row + 1;
+		ed.cur.y = ed.win_size.ws_row - 2;
+	}
 }
 
 static void
@@ -492,8 +498,8 @@ ed_write_status(Buf *buf)
 		" [%s] %s (%zu, %zu)",
 		mode_str(ed.mode),
 		basename(ed.path),
-		ed.offset_col + ed.cur.x + 1,
-		ed.offset_row + ed.cur.y + 1
+		ed.offset_col + ed.cur.x,
+		ed.offset_row + ed.cur.y
 	);
 	/* Write message if exists */
 	if (ed.msg[0]) {
