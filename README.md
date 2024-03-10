@@ -78,7 +78,7 @@ Later.
 		<th>129</th>
 		<th>760</th>
 		<th>98</th>
-		<th>19334</th>
+		<th>19333</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>13</th>
@@ -142,7 +142,7 @@ Later.
 		<th>200</th>
 		<th>1083</th>
 		<th>98</th>
-    	<th>30183</th>
+    	<th>30182</th>
 	</tr></tfoot>
 	</table>
 
@@ -150,7 +150,7 @@ Later.
 
 |Path|Line|Description|
 |-|-|-|
-|**src/ed.c**|**331**|**add empty line if there is not lines readed**|
+|**src/cfg.h**|**6**|**Fix it for another values**|
 |**src/row.c**|**132**|**Linked list is better for creating new rows**|
 |**src/row.c**|**152**|**create shrink_to_fit for rows_remove**|
-|**src/cfg.h**|**6**|**Fix it for another values**|
+|**src/ed.c**|**331**|**add empty line if there is not lines readed**|
