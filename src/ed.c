@@ -79,6 +79,9 @@ static void ed_mv_up(void);
 /* Quits the editor. */
 static void ed_quit(void);
 
+/* Saves file. */
+static void ed_save(void);
+
 /*
 Requests the size from the terminal and sets it in the appropriate field.
 
@@ -369,6 +372,32 @@ ed_refresh_scr(void)
 }
 
 static void
+ed_save(void)
+{
+	size_t row_i;
+	FILE *f;
+	Row *row;
+
+	/* Open file */
+	if (!(f = fopen(ed.path, "w"))) {
+		err("Failed to open %s for save.", ed.path);
+	}
+
+	/* Write rows */
+	for (row_i = 0; row_i < ed.rows.cnt; row_i++) {
+		row = &ed.rows.arr[row_i];
+		/* Write row's content and newline character */
+		fwrite(row->cont, sizeof(char), row->len, f);
+		fputc('\n', f);
+	}
+
+	/* Flush and close file and show message */
+	fflush(f);
+	fclose(f);
+	strcpy(ed.msg, MSG_SAVED);
+}
+
+static void
 ed_upd_win_size(void)
 {
 	term_get_win_size(&ed.win_size);
@@ -447,7 +476,7 @@ ed_wait_and_proc_key(void)
 			ed_quit();
 			break;
 		case KEY_SAVE:
-			strcpy(ed.msg, MSG_SAVED);
+			ed_save();
 			break;
 		}
 		break;
@@ -477,8 +506,8 @@ ed_write_rows(Buf *buf)
 			/* No row */
 			buf_write(buf, "~\r\n", 3);
 		} else {
-			/* Write row */
 			row = &ed.rows.arr[f_row_i];
+			/* This condition also skips empty lines */
 			if (row->len > ed.offset_col) {
 				buf_write(
 					buf,
@@ -505,6 +534,7 @@ ed_write_stat(Buf *buf)
 		mode_str(ed.mode),
 		ed.offset_col + ed.cur.x,
 		ed.offset_row + ed.cur.y,
+		/* TODO: save basename to not execute each refresh */
 		basename(ed.path)
 	);
 	/* Write message if exists */
