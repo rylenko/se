@@ -78,12 +78,12 @@ Later.
 	<tbody><tr>
 		<th>C</th>
 		<th>11</th>
-		<th>1042</th>
+		<th>1039</th>
 		<th>128</th>
 		<th>132</th>
-		<th>782</th>
+		<th>779</th>
 		<th>103</th>
-		<th>19801</th>
+		<th>19741</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>13</th>
@@ -142,12 +142,12 @@ Later.
 	<tfoot><tr>
 		<th>Total</th>
 		<th>31</th>
-		<th>1596</th>
+		<th>1593</th>
 		<th>255</th>
 		<th>208</th>
-		<th>1133</th>
+		<th>1130</th>
 		<th>103</th>
-    	<th>31464</th>
+    	<th>31404</th>
 	</tr></tfoot>
 	</table>
 
@@ -158,4 +158,4 @@ Later.
 |**src/cfg.h**|**7**|**Fix it for another values**|
 |**src/row.c**|**130**|**Linked list is better for creating new rows**|
 |**src/row.c**|**150**|**create shrink_to_fit for rows_remove**|
-|**src/ed.c**|**408**|**<number>(h|j|k|l) using VT100 codes**|
+|**src/ed.c**|**406**|**<number>(h|j|k|l) using VT100 codes**|

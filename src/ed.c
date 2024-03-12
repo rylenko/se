@@ -1,9 +1,7 @@
 #include <assert.h>
-#include <libgen.h>
 #include <signal.h>
 #include <stdio.h>
 #include <string.h>
-#include <sys/ioctl.h>
 #include "buf.h"
 #include "cfg.h"
 #include "cur.h"

@@ -1,6 +1,5 @@
 #include <stdlib.h>
 #include <unistd.h>
-#include "buf.h"
 #include "ed.h"
 #include "err.h"
 #include "term.h"
