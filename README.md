@@ -110,7 +110,7 @@ Later.
 		<th>13</th>
 		<th>55</th>
 		<th>0</th>
-		<th>1911</th>
+		<th>1900</th>
 	</tr><tr>
 		<th>Shell</th>
 		<th>1</th>
@@ -147,7 +147,7 @@ Later.
 		<th>231</th>
 		<th>1264</th>
 		<th>119</th>
-    	<th>35050</th>
+    	<th>35039</th>
 	</tr></tfoot>
 	</table>
 
