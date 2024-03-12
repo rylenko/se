@@ -12,20 +12,6 @@ There is no support for plugins written in [Lua](https://en.wikipedia.org/wiki/L
 
 Support for syntax highlighting is optional and can be enabled by applying patches.
 
-# Build and install
-
-Build binary:
-
-```
-$ make
-```
-
-Install:
-
-```
-$ make install
-```
-
 # Usage
 
 Open a file:
@@ -59,6 +45,44 @@ Normal mode keys:
 Insert mode keys:
 
 - `ESC` - switch to normal mode.
+
+# Build and install
+
+Build binary:
+
+```
+$ make
+```
+
+Install:
+
+```
+$ make install
+```
+
+Build with debug:
+
+```
+$ DEBUG=1 make
+```
+
+Build and use valgrind:
+
+```
+$ make valgrind
+```
+
+Clean all build files:
+
+```
+$ make clean
+```
+
+Regenerate README.md:
+
+```
+$ make gen-readme
+```
 
 # Syntax highlighting patches
 
@@ -98,12 +122,12 @@ Later.
 	</tr><tr>
 		<th>Markdown</th>
 		<th>2</th>
-		<th>133</th>
-		<th>42</th>
+		<th>181</th>
+		<th>58</th>
 		<th>0</th>
-		<th>91</th>
+		<th>123</th>
 		<th>0</th>
-		<th>2874</th>
+		<th>3252</th>
 	</tr><tr>
 		<th>Makefile</th>
 		<th>2</th>
@@ -144,12 +168,12 @@ Later.
 	<tfoot><tr>
 		<th>Total</th>
 		<th>32</th>
-		<th>1847</th>
-		<th>278</th>
+		<th>1895</th>
+		<th>294</th>
 		<th>242</th>
-		<th>1327</th>
+		<th>1359</th>
 		<th>132</th>
-    	<th>36917</th>
+    	<th>37295</th>
 	</tr></tfoot>
 	</table>
 
