@@ -6,7 +6,7 @@
 
 /* Memory reallocation steps */
 #define ROWS_REALLOC_STEP (32)
-#define ROW_REALLOC_STEP (256)
+#define ROW_REALLOC_STEP (128)
 
 /* Frees row's content. */
 static void row_free(Row *row);

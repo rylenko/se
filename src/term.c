@@ -14,6 +14,12 @@ static struct {
 } term;
 
 void
+term_clr_row_on_right(Buf *buf)
+{
+	buf_write(buf, "\x1b[0K", 4);
+}
+
+void
 term_disable_raw_mode(void)
 {
 	/* Restore original termios parameters */

@@ -34,9 +34,6 @@ static struct {
 	struct winsize win_size;
 } ed;
 
-/* Clears the screen. Then sets the cursor to the beginning of the screen. */
-static void ed_clr_scr(Buf *buf);
-
 /* Fixes cursor's coordinates. */
 static void ed_fix_cur(void);
 
@@ -98,23 +95,6 @@ static void ed_write_rows(Buf *buf);
 
 /* Write static in the buffer. */
 static void ed_write_stat(Buf *buf);
-
-static void
-ed_clr_scr(Buf *buf)
-{
-	unsigned short col_i;
-	unsigned short row_i;
-	/* Go home before clearing */
-	term_go_home(buf);
-	/* Clear the screen */
-	for (row_i = 0; row_i < ed.win_size.ws_row; row_i++) {
-		for (col_i = 0; col_i < ed.win_size.ws_col; col_i++) {
-			buf_write(buf, " ", 1);
-		}
-	}
-	/* Go home after clearing */
-	term_go_home(buf);
-}
 
 static void
 ed_fix_cur(void)
@@ -335,7 +315,7 @@ ed_open(const char *path)
 	rows_read(&ed.rows, f);
 	fclose(f);
 
-	/* Add empty line if there is no lines */
+	/* Add empty row if there is no rows */
 	if (ed.rows.cnt == 0) {
 		rows_ins(&ed.rows, 0, row_empty());
 	}
@@ -353,10 +333,10 @@ ed_quit(void)
 void
 ed_refresh_scr(void)
 {
-	/* Allocate new buffer, hide cursor and clear the screen */
+	/* Allocate new buffer, hide cursor and go home */
 	Buf buf = buf_alloc();
 	cur_hide(&buf);
-	ed_clr_scr(&buf);
+	term_go_home(&buf);
 
 	/* Write content if we do not quit yet */
 	if (!ed.need_to_quit) {
@@ -382,7 +362,6 @@ ed_save(void)
 	if (!(f = fopen(ed.path, "w"))) {
 		err("Failed to open %s for save.", ed.path);
 	}
-
 	/* Write rows */
 	for (row_i = 0; row_i < ed.rows.cnt; row_i++) {
 		row = &ed.rows.arr[row_i];
@@ -390,7 +369,6 @@ ed_save(void)
 		fwrite(row->cont, sizeof(char), row->len, f);
 		fputc('\n', f);
 	}
-
 	/* Flush and close file and show message */
 	fflush(f);
 	fclose(f);
@@ -427,6 +405,8 @@ ed_write_cur(Buf *buf)
 void
 ed_wait_and_proc_key(void)
 {
+	/* TODO: <number>(h|j|k|l) using VT100 codes */
+
 	char key;
 	/* Assert that we do not need to quit */
 	assert(!ed.need_to_quit);
@@ -494,20 +474,23 @@ ed_wait_and_proc_key(void)
 static void
 ed_write_rows(Buf *buf)
 {
+	size_t f_row_i;
 	const Row *row;
 	unsigned short row_i;
 	/* Assert that we do not need to quit */
 	assert(!ed.need_to_quit);
 
 	for (row_i = 0; row_i < ed.win_size.ws_row - 1; row_i++) {
-		const size_t f_row_i = row_i + ed.offset_row;
+		term_clr_row_on_right(buf);
 
+		/* Write row */
+		f_row_i = row_i + ed.offset_row;
 		if (f_row_i >= ed.rows.cnt) {
 			/* No row */
-			buf_write(buf, "~\r\n", 3);
+			buf_write(buf, "~", 1);
 		} else {
 			row = &ed.rows.arr[f_row_i];
-			/* This condition also skips empty lines */
+			/* This condition also skips empty rows */
 			if (row->len > ed.offset_col) {
 				buf_write(
 					buf,
@@ -515,8 +498,8 @@ ed_write_rows(Buf *buf)
 					MIN(ed.win_size.ws_col, row->len - ed.offset_col)
 				);
 			}
-			buf_write(buf, "\r\n", 2);
 		}
+		buf_write(buf, "\r\n", 2);
 	}
 }
 
@@ -525,6 +508,9 @@ ed_write_stat(Buf *buf)
 {
 	size_t col_i;
 	size_t len = 0;
+
+	/* Clear row on the right and begin colored output */
+	term_clr_row_on_right(buf);
 	raw_color_begin(buf, (RawColor)COLOR_STAT_BG, (RawColor)COLOR_STAT_FG);
 
 	/* Write base status */

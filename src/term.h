@@ -4,6 +4,9 @@
 #include <sys/ioctl.h>
 #include "buf.h"
 
+/* Clears a row on the right. */
+void term_clr_row_on_right(Buf *);
+
 /* Disables raw mode. Accepts original parameters. */
 void term_disable_raw_mode(void);
 
