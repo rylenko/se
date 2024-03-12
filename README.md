@@ -47,8 +47,9 @@ Normal mode keys:
 - `n` - create a row  below the current row and move to it.
 - `q` - go to begin of previous token.
 - `s` - go to end of file.
+- (X) `u` - undo last change.
 - `w` - go to begin of file.
-- `/` - start or end search.
+- (X) `/` - start or end search.
 - `CTRL+d` - delete current row.
 - `CTRL+n` - create a row above the current row and move to it.
 - `CTRL+s` - save.
@@ -97,12 +98,12 @@ Later.
 	</tr><tr>
 		<th>Markdown</th>
 		<th>2</th>
-		<th>131</th>
+		<th>133</th>
 		<th>42</th>
 		<th>0</th>
-		<th>89</th>
+		<th>91</th>
 		<th>0</th>
-		<th>2806</th>
+		<th>2874</th>
 	</tr><tr>
 		<th>Makefile</th>
 		<th>2</th>
@@ -143,12 +144,12 @@ Later.
 	<tfoot><tr>
 		<th>Total</th>
 		<th>32</th>
-		<th>1845</th>
+		<th>1847</th>
 		<th>278</th>
 		<th>242</th>
-		<th>1325</th>
+		<th>1327</th>
 		<th>132</th>
-    	<th>36849</th>
+    	<th>36917</th>
 	</tr></tfoot>
 	</table>
 

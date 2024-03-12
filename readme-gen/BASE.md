@@ -47,8 +47,9 @@ Normal mode keys:
 - `n` - create a row  below the current row and move to it.
 - `q` - go to begin of previous token.
 - `s` - go to end of file.
+- (X) `u` - undo last change.
 - `w` - go to begin of file.
-- `/` - start or end search.
+- (X) `/` - start or end search.
 - `CTRL+d` - delete current row.
 - `CTRL+n` - create a row above the current row and move to it.
 - `CTRL+s` - save.
