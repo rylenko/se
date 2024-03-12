@@ -1,5 +1,6 @@
 #include <assert.h>
 #include <signal.h>
+#include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
 #include "buf.h"
@@ -16,8 +17,11 @@
 #include "tok.h"
 
 /* Length of message's buffer must be greater than all message lengths */
-#define MSG_BUF_LEN (32)
+#define MSG_BUF_LEN (64)
 #define MSG_SAVED ("The file has been saved.")
+#define MSG_QUIT_PRESSES_REM_FMT ( \
+	"There are unsaved changes. Presses remain to quit: %hhu." \
+)
 
 #define STAT_COORDS_BUF_LEN (32)
 
@@ -26,12 +30,12 @@ static struct {
 	Cur cur;
 	Mode mode;
 	char msg[MSG_BUF_LEN];
-	char need_to_quit;
 	/* Maximum of `size_t` if not set */
 	size_t num_input;
 	size_t offset_col;
 	size_t offset_row;
 	char *path;
+	unsigned char quit_presses_rem;
 	Rows rows;
 	struct winsize win_size;
 } ed;
@@ -88,10 +92,13 @@ static void ed_mv_row(size_t idx);
 static void ed_mv_up(void);
 
 /* Quits the editor. */
-static void ed_quit(void);
+static void ed_try_quit(void);
 
 /* Saves file. */
 static void ed_save(void);
+
+/* Set message. */
+static void ed_set_msg(const char *fmt, ...);
 
 /*
 Requests the size from the terminal and sets it in the appropriate field.
@@ -321,7 +328,7 @@ ed_mv_up(void)
 char
 ed_need_to_quit(void)
 {
-	return ed.need_to_quit;
+	return ed.quit_presses_rem == 0;
 }
 
 void
@@ -333,11 +340,11 @@ ed_open(const char *path)
 	ed.cur = cur_new(0, 0);
 	ed.mode = MODE_NORM;
 	ed.msg[0] = 0;
-	ed.need_to_quit = 0;
 	ed.num_input = SIZE_MAX;
 	ed.offset_col = 0;
 	ed.offset_row = 0;
 	ed.path = str_clone(path);
+	ed.quit_presses_rem = 1;
 	ed.rows = rows_alloc();
 	/* Update window size and register the handler of window size changing */
 	ed_upd_win_size();
@@ -383,35 +390,44 @@ ed_ins_row_below(void)
 	} else {
 		ed.cur.y++;
 	}
-	rows_ins(&ed.rows, ed.offset_row + ed.cur.y + 1, row_empty());
+	/* Insert new empty row */
+	rows_ins(&ed.rows, ed.offset_row + ed.cur.y, row_empty());
+	ed.quit_presses_rem = CFG_QUIT_PRESSES_REM_WITHOUT_SAVE_AFTER_CHANGES;
 }
 
 static void
-ed_quit(void)
+ed_try_quit(void)
 {
-	ed.need_to_quit = 1;
-	/* Free memory */
-	free(ed.path);
-	rows_free(&ed.rows);
+	ed.quit_presses_rem--;
+	if (ed_need_to_quit()) {
+		/* Free memory */
+		free(ed.path);
+		rows_free(&ed.rows);
+	} else {
+		ed_set_msg(MSG_QUIT_PRESSES_REM_FMT, ed.quit_presses_rem);
+	}
 }
 
 void
 ed_refresh_scr(void)
 {
-	/* Allocate new buffer, hide cursor and go home */
+	/* Allocate new buffer */
 	Buf buf = buf_alloc();
-	cur_hide(&buf);
-	term_go_home(&buf);
-
-	/* Write content if we do not quit yet */
-	if (!ed.need_to_quit) {
+	if (ed_need_to_quit()) {
+		/* Clear the screen before quit */
+		term_clr_scr(&buf);
+	} else {
+		/* Hide cursor and go to start of the screen */
+		cur_hide(&buf);
+		term_go_home(&buf);
+		/* Write content */
 		ed_write_rows(&buf);
 		ed_write_stat(&buf);
 		ed_write_cur(&buf);
+		/* Show the cursor */
+		cur_show(&buf);
 	}
-
-	/* Show cursor, flush and free the buffer */
-	cur_show(&buf);
+	/* Flush and free the buffer */
 	term_flush(&buf);
 	buf_free(buf);
 }
@@ -431,13 +447,26 @@ ed_save(void)
 	for (row_i = 0; row_i < ed.rows.cnt; row_i++) {
 		row = &ed.rows.arr[row_i];
 		/* Write row's content and newline character */
+		/* TODO: Check errors */
 		fwrite(row->cont, sizeof(char), row->len, f);
 		fputc('\n', f);
 	}
-	/* Flush and close file and show message */
+	/* Flush and close file */
 	fflush(f);
 	fclose(f);
-	strcpy(ed.msg, MSG_SAVED);
+	/* Set quit presses and set message */
+	ed.quit_presses_rem = 1;
+	ed_set_msg(MSG_SAVED);
+}
+
+static void
+ed_set_msg(const char *fmt, ...)
+{
+	/* Collect arguments and print formatted message */
+	va_list args;
+	va_start(args, fmt);
+	vsnprintf(ed.msg, sizeof(ed.msg), fmt, args);
+	va_end(args);
 }
 
 static void
@@ -473,7 +502,7 @@ ed_wait_and_proc_key(void)
 {
 	char key;
 	/* Assert that we do not need to quit */
-	assert(!ed.need_to_quit);
+	assert(!ed_need_to_quit());
 
 	/* Wait key */
 	key = term_wait_key();
@@ -483,50 +512,50 @@ ed_wait_and_proc_key(void)
 	case MODE_NORM:
 		/* Normal mode keys */
 		switch (key) {
-		case KEY_INS_ROW_BELOW:
+		case CFG_KEY_INS_ROW_BELOW:
 			ed_ins_row_below();
 			break;
-		case KEY_MODE_INS:
+		case CFG_KEY_MODE_INS:
 			ed.mode = MODE_INS;
 			break;
-		case KEY_MV_BEGIN_OF_F:
+		case CFG_KEY_MV_BEGIN_OF_F:
 			ed_mv_begin_of_f();
 			break;
-		case KEY_MV_BEGIN_OF_ROW:
+		case CFG_KEY_MV_BEGIN_OF_ROW:
 			ed_mv_begin_of_row();
 			break;
-		case KEY_MV_DOWN:
+		case CFG_KEY_MV_DOWN:
 			ed_mv_down();
 			break;
-		case KEY_MV_END_OF_F:
+		case CFG_KEY_MV_END_OF_F:
 			ed_mv_end_of_f();
 			break;
-		case KEY_MV_END_OF_ROW:
+		case CFG_KEY_MV_END_OF_ROW:
 			ed_mv_end_of_row();
 			break;
-		case KEY_MV_LEFT:
+		case CFG_KEY_MV_LEFT:
 			ed_mv_left();
 			break;
-		case KEY_MV_NEXT_TOK:
+		case CFG_KEY_MV_NEXT_TOK:
 			ed_mv_next_tok();
 			break;
-		case KEY_MV_PREV_TOK:
+		case CFG_KEY_MV_PREV_TOK:
 			ed_mv_prev_tok();
 			break;
-		case KEY_MV_RIGHT:
+		case CFG_KEY_MV_RIGHT:
 			ed_mv_right();
 			break;
-		case KEY_MV_ROW:
+		case CFG_KEY_MV_ROW:
 			ed_mv_input_row();
 			break;
-		case KEY_MV_UP:
+		case CFG_KEY_MV_UP:
 			ed_mv_up();
 			break;
-		case KEY_QUIT:
-			ed_quit();
-			break;
-		case KEY_SAVE:
+		case CFG_KEY_SAVE:
 			ed_save();
+			break;
+		case CFG_KEY_TRY_QUIT:
+			ed_try_quit();
 			break;
 		}
 		/* Number input */
@@ -539,7 +568,7 @@ ed_wait_and_proc_key(void)
 	case MODE_INS:
 		/* Insert mode keys */
 		switch (key) {
-		case KEY_MODE_NORM:
+		case CFG_KEY_MODE_NORM:
 			ed.mode = MODE_NORM;
 			break;
 		}
@@ -553,8 +582,6 @@ ed_write_rows(Buf *buf)
 	size_t f_row_i;
 	const Row *row;
 	unsigned short row_i;
-	/* Assert that we do not need to quit */
-	assert(!ed.need_to_quit);
 
 	for (row_i = 0; row_i < ed.win_size.ws_row - 1; row_i++) {
 		term_clr_row_on_right(buf);
@@ -589,7 +616,11 @@ ed_write_stat(Buf *buf)
 
 	/* Clear row on the right and begin colored output */
 	term_clr_row_on_right(buf);
-	raw_color_begin(buf, (RawColor)COLOR_STAT_BG, (RawColor)COLOR_STAT_FG);
+	raw_color_begin(
+		buf,
+		(RawColor)CFG_COLOR_STAT_BG,
+		(RawColor)CFG_COLOR_STAT_FG
+	);
 
 	/* Write base status to buffer */
 	left_len = buf_writef(
@@ -607,7 +638,7 @@ ed_write_stat(Buf *buf)
 	/* Format coordinates before colored empty space */
 	right_len = snprintf(
 		coords,
-		STAT_COORDS_BUF_LEN,
+		sizeof(coords),
 		"%zu, %zu ",
 		ed.offset_col + ed.cur.x,
 		ed.offset_row + ed.cur.y

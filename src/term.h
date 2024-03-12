@@ -7,6 +7,9 @@
 /* Clears a row on the right. */
 void term_clr_row_on_right(Buf *);
 
+/* Clears the screen. */
+void term_clr_scr(Buf *);
+
 /* Disables raw mode. Accepts original parameters. */
 void term_disable_raw_mode(void);
 

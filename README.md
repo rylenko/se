@@ -78,21 +78,21 @@ Later.
 	<tbody><tr>
 		<th>C</th>
 		<th>12</th>
-		<th>1143</th>
-		<th>141</th>
-		<th>145</th>
-		<th>857</th>
-		<th>115</th>
-		<th>21758</th>
+		<th>1181</th>
+		<th>142</th>
+		<th>153</th>
+		<th>886</th>
+		<th>119</th>
+		<th>22677</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>13</th>
-		<th>286</th>
-		<th>63</th>
-		<th>57</th>
-		<th>166</th>
+		<th>293</th>
+		<th>64</th>
+		<th>59</th>
+		<th>170</th>
 		<th>0</th>
-		<th>6141</th>
+		<th>6378</th>
 	</tr><tr>
 		<th>Markdown</th>
 		<th>2</th>
@@ -142,12 +142,12 @@ Later.
 	<tfoot><tr>
 		<th>Total</th>
 		<th>32</th>
-		<th>1709</th>
-		<th>270</th>
-		<th>221</th>
-		<th>1218</th>
-		<th>115</th>
-    	<th>33789</th>
+		<th>1754</th>
+		<th>272</th>
+		<th>231</th>
+		<th>1251</th>
+		<th>119</th>
+    	<th>34945</th>
 	</tr></tfoot>
 	</table>
 
@@ -155,6 +155,8 @@ Later.
 
 |Path|Line|Description|
 |-|-|-|
-|**src/cfg.h**|**7**|**Fix it for another values**|
+|**src/main.c**|**17**|**ed_init() and ed_deinit() with term init and raw mode**|
+|**src/cfg.h**|**35**|**Fix it for another values**|
 |**src/row.c**|**130**|**Linked list is better for creating new rows**|
 |**src/row.c**|**150**|**create shrink_to_fit for rows_remove**|
+|**src/ed.c**|**450**|**Check errors**|

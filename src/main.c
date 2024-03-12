@@ -14,6 +14,7 @@ main(const int argc, const char *const *const argv)
 		err(USAGE);
 	}
 
+	/* TODO: ed_init() and ed_deinit() with term init and raw mode */
 	/* Initialize terminal */
 	term_init(STDIN_FILENO, STDOUT_FILENO);
 	/* Try open editor with file */
@@ -24,7 +25,7 @@ main(const int argc, const char *const *const argv)
 	/* Refresh editor's screen and process key presses */
 	while (1) {
 		ed_refresh_scr();
-		/* This is needed here to clear the screen after quit in the key processor */
+		/* Need here to clear the screen during last screen refreshing */
 		if (ed_need_to_quit()) {
 			break;
 		}

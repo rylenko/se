@@ -20,6 +20,12 @@ term_clr_row_on_right(Buf *buf)
 }
 
 void
+term_clr_scr(Buf *buf)
+{
+	buf_write(buf, "\x1b[2J", 4);
+}
+
+void
 term_disable_raw_mode(void)
 {
 	/* Restore original termios parameters */
