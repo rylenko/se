@@ -7,13 +7,13 @@
 /* TODO: Fix it for another values */
 #define CFG_TAB_SIZE (8)
 
-/* Colors */
+/* Correspondence between raw colors and configurable editor colors. */
 typedef enum {
 	COLOR_STAT_BG = RAW_COLOR_BLUE,
 	COLOR_STAT_FG = RAW_COLOR_BRIGHT_WHITE,
 } Color;
 
-/* Editor keys */
+/* Correspondence between raw keys and configurable editor keys. */
 typedef enum {
 	KEY_MODE_INS = RAW_KEY_I,
 	KEY_MODE_NORM = RAW_KEY_ESC,
@@ -26,6 +26,7 @@ typedef enum {
 	KEY_MV_NEXT_TOK = RAW_KEY_E,
 	KEY_MV_PREV_TOK = RAW_KEY_Q,
 	KEY_MV_RIGHT = RAW_KEY_L,
+	KEY_MV_ROW = RAW_KEY_G,
 	KEY_MV_UP = RAW_KEY_K,
 	KEY_QUIT = RAW_KEY_CTRL_Q,
 	KEY_SAVE = RAW_KEY_CTRL_S,

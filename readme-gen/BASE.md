@@ -52,7 +52,7 @@ Normal mode keys:
 - `CTRL+n` - create a row above the current row and move to it.
 - `CTRL+s` - save.
 - `CTRL+q` - quit. If you changed the file, you will need to either save it or press this key several times.
-- `<number>g` - Go to row by its number `<number>`.
+- `<index>g` - Go to row by its index `<index>`.
 
 Insert mode keys:
 

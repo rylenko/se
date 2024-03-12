@@ -22,9 +22,11 @@
 /* Structure with editor parameters. */
 static struct {
 	Cur cur;
-	char need_to_quit;
 	Mode mode;
 	char msg[MSG_BUF_LEN];
+	char need_to_quit;
+	/* Maximum of `size_t` if not set */
+	size_t num_input;
 	size_t offset_col;
 	size_t offset_row;
 	char *path;
@@ -41,6 +43,9 @@ static Row *ed_get_curr_row(void);
 /* Updates the size and checks that everything fits on the screen. */
 static void ed_handle_sig_win_ch(int num);
 
+/* Input number. */
+static void ed_input_num(unsigned char digit);
+
 /* Move to begin of file. */
 static void ed_mv_begin_of_f(void);
 
@@ -56,6 +61,9 @@ static void ed_mv_end_of_f(void);
 /* Move to end of row. */
 static void ed_mv_end_of_row(void);
 
+/* Move to prepared row's index. */
+static void ed_mv_input_row(void);
+
 /* Move cursor left. */
 static void ed_mv_left(void);
 
@@ -67,6 +75,9 @@ static void ed_mv_prev_tok(void);
 
 /* Move cursor right. */
 static void ed_mv_right(void);
+
+/* Move to row by its index. */
+static void ed_mv_row(size_t idx);
 
 /* Move cursor up. */
 static void ed_mv_up(void);
@@ -174,16 +185,7 @@ ed_mv_down(void)
 static void
 ed_mv_end_of_f(void)
 {
-	ed.cur.x = 0;
-	ed.offset_col = 0;
-	if (ed.rows.cnt < ed.win_size.ws_row) {
-		/* End of file on screen without offset */
-		ed.cur.y = ed.rows.cnt - 1;
-	} else {
-		/* End of file not on the screen */
-		ed.offset_row = ed.rows.cnt - ed.win_size.ws_row + 1;
-		ed.cur.y = ed.win_size.ws_row - 2;
-	}
+	ed_mv_row(ed.rows.cnt - 1);
 }
 
 static void
@@ -197,6 +199,15 @@ ed_mv_end_of_row(void)
 		/* Offset to see end of row on the screen */
 		ed.offset_col = row->len - ed.win_size.ws_col + 1;
 		ed.cur.x = ed.win_size.ws_col - 1;
+	}
+}
+
+static void
+ed_mv_input_row(void)
+{
+	if (ed.num_input != SIZE_MAX) {
+		ed_mv_row(ed.num_input);
+		ed.num_input = SIZE_MAX;
 	}
 }
 
@@ -268,6 +279,26 @@ ed_mv_right(void)
 }
 
 static void
+ed_mv_row(size_t idx)
+{
+	/* Remove offsets by x */
+	ed.cur.x = 0;
+	ed.offset_col = 0;
+
+	/* Clamp index and move */
+	idx = MIN(idx, ed.rows.cnt - 1);
+	if (idx + 1 < ed.win_size.ws_row) {
+		/* Row on initial screen without offset */
+		ed.offset_row = 0;
+		ed.cur.y = idx;
+	} else {
+		/* End of file not on the screen */
+		ed.offset_row = idx + 2 - ed.win_size.ws_row;
+		ed.cur.y = ed.win_size.ws_row - 2;
+	}
+}
+
+static void
 ed_mv_up(void)
 {
 	if (0 == ed.cur.y) {
@@ -298,6 +329,7 @@ ed_open(const char *path)
 	ed.mode = MODE_NORM;
 	ed.msg[0] = 0;
 	ed.need_to_quit = 0;
+	ed.num_input = SIZE_MAX;
 	ed.offset_col = 0;
 	ed.offset_row = 0;
 	ed.path = str_clone(path);
@@ -316,6 +348,24 @@ ed_open(const char *path)
 	/* Add empty row if there is no rows */
 	if (ed.rows.cnt == 0) {
 		rows_ins(&ed.rows, 0, row_empty());
+	}
+}
+
+static void
+ed_input_num(unsigned char digit)
+{
+	assert(digit < 10);
+	if (ed.num_input == SIZE_MAX) {
+		/* First digit in input */
+		ed.num_input = 0;
+	}
+	if (SIZE_MAX / 10 - digit <= ed.num_input) {
+		/* Too big. `SIZE_MAX` is flag that there is no pending index */
+		ed.num_input = SIZE_MAX - 1;
+	} else {
+		/* Append digit to pending index */
+		ed.num_input *= 10;
+		ed.num_input += digit;
 	}
 }
 
@@ -446,6 +496,9 @@ ed_wait_and_proc_key(void)
 		case KEY_MV_RIGHT:
 			ed_mv_right();
 			break;
+		case KEY_MV_ROW:
+			ed_mv_input_row();
+			break;
 		case KEY_MV_UP:
 			ed_mv_up();
 			break;
@@ -455,6 +508,12 @@ ed_wait_and_proc_key(void)
 		case KEY_SAVE:
 			ed_save();
 			break;
+		}
+		/* Number input */
+		if (raw_key_is_digit(key)) {
+			ed_input_num(raw_key_to_digit(key));
+		} else {
+			ed.num_input = SIZE_MAX;
 		}
 		break;
 	case MODE_INS:

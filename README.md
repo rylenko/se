@@ -52,7 +52,7 @@ Normal mode keys:
 - `CTRL+n` - create a row above the current row and move to it.
 - `CTRL+s` - save.
 - `CTRL+q` - quit. If you changed the file, you will need to either save it or press this key several times.
-- `<number>g` - Go to row by its number `<number>`.
+- `<index>g` - Go to row by its index `<index>`.
 
 Insert mode keys:
 
@@ -77,22 +77,22 @@ Later.
 	</tr></thead>
 	<tbody><tr>
 		<th>C</th>
-		<th>11</th>
-		<th>1038</th>
-		<th>128</th>
-		<th>131</th>
-		<th>779</th>
-		<th>103</th>
-		<th>19699</th>
+		<th>12</th>
+		<th>1112</th>
+		<th>137</th>
+		<th>141</th>
+		<th>834</th>
+		<th>112</th>
+		<th>21066</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>13</th>
-		<th>275</th>
-		<th>61</th>
-		<th>57</th>
-		<th>157</th>
+		<th>285</th>
+		<th>63</th>
+		<th>58</th>
+		<th>164</th>
 		<th>0</th>
-		<th>5800</th>
+		<th>6140</th>
 	</tr><tr>
 		<th>Markdown</th>
 		<th>2</th>
@@ -101,16 +101,16 @@ Later.
 		<th>0</th>
 		<th>87</th>
 		<th>0</th>
-		<th>2746</th>
+		<th>2740</th>
 	</tr><tr>
 		<th>Makefile</th>
 		<th>2</th>
-		<th>82</th>
+		<th>83</th>
 		<th>15</th>
 		<th>13</th>
-		<th>54</th>
+		<th>55</th>
 		<th>0</th>
-		<th>1868</th>
+		<th>1911</th>
 	</tr><tr>
 		<th>Shell</th>
 		<th>1</th>
@@ -141,13 +141,13 @@ Later.
 	</tr></tbody>
 	<tfoot><tr>
 		<th>Total</th>
-		<th>31</th>
-		<th>1592</th>
-		<th>255</th>
-		<th>207</th>
-		<th>1130</th>
-		<th>103</th>
-    	<th>31352</th>
+		<th>32</th>
+		<th>1677</th>
+		<th>266</th>
+		<th>218</th>
+		<th>1193</th>
+		<th>112</th>
+    	<th>33096</th>
 	</tr></tfoot>
 	</table>
 
@@ -158,3 +158,4 @@ Later.
 |**src/cfg.h**|**7**|**Fix it for another values**|
 |**src/row.c**|**130**|**Linked list is better for creating new rows**|
 |**src/row.c**|**150**|**create shrink_to_fit for rows_remove**|
+|**src/raw_key.h**|**6**|**try to place chars here using quotes**|
