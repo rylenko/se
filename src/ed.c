@@ -381,7 +381,7 @@ ed_input_num(unsigned char digit)
 {
 	assert(digit < 10);
 	if (ed.num_input == SIZE_MAX) {
-		/* First digit in input */
+		/* Prepare fo first digit in input */
 		ed.num_input = 0;
 	}
 	if (SIZE_MAX / 10 - digit <= ed.num_input) {
