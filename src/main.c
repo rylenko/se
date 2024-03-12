@@ -2,7 +2,6 @@
 #include <unistd.h>
 #include "ed.h"
 #include "err.h"
-#include "term.h"
 
 #define USAGE ("Usage:\n\t$ ew <filename>")
 
@@ -13,15 +12,9 @@ main(const int argc, const char *const *const argv)
 	if (argc != 2) {
 		err(USAGE);
 	}
-
-	/* TODO: ed_init() and ed_deinit() with term init and raw mode */
-	/* Initialize terminal */
-	term_init(STDIN_FILENO, STDOUT_FILENO);
-	/* Try open editor with file */
+	/* Initialize editor and open the file */
+	ed_init(STDIN_FILENO, STDOUT_FILENO);
 	ed_open(argv[1]);
-	/* Enable terminal's raw mode */
-	term_enable_raw_mode();
-
 	/* Refresh editor's screen and process key presses */
 	while (1) {
 		ed_refresh_scr();
@@ -31,8 +24,7 @@ main(const int argc, const char *const *const argv)
 		}
 		ed_wait_and_proc_key();
 	}
-
-	/* Disable raw mode, free buffer and exit */
-	term_disable_raw_mode();
+	/* Deiniailize editor and exit */
+	ed_deinit();
 	return EXIT_SUCCESS;
 }

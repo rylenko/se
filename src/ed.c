@@ -117,6 +117,12 @@ static void ed_write_rows(Buf *buf);
 /* Write static in the buffer. */
 static void ed_write_stat(Buf *buf);
 
+void
+ed_deinit(void)
+{
+	term_disable_raw_mode();
+}
+
 static void
 ed_fix_cur(void)
 {
@@ -160,6 +166,13 @@ ed_handle_sig_win_ch(int num)
 	ed_upd_win_size();
 	ed_refresh_scr();
 	ed_fix_cur();
+}
+
+void
+ed_init(int ifd, int ofd)
+{
+	term_init(ifd, ofd);
+	term_enable_raw_mode();
 }
 
 static void
@@ -414,15 +427,15 @@ ed_try_quit(void)
 void
 ed_refresh_scr(void)
 {
-	/* Allocate new buffer */
+	/* Allocate new buffer and go to start of the screen */
 	Buf buf = buf_alloc();
+	term_go_home(&buf);
 	if (ed_need_to_quit()) {
 		/* Clear the screen before quit */
 		term_clr_scr(&buf);
 	} else {
-		/* Hide cursor and go to start of the screen */
+		/* Hide cursor */
 		cur_hide(&buf);
-		term_go_home(&buf);
 		/* Write content */
 		ed_write_rows(&buf);
 		ed_write_stat(&buf);

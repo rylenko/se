@@ -1,6 +1,12 @@
 #ifndef _ED_H
 #define _ED_H
 
+/* Deinitializes editor. */
+void ed_deinit(void);
+
+/* Initializes editor. */
+void ed_init(int, int);
+
 /* Returns `1` if we need to quit the editor, otherwise `0`. */
 char ed_need_to_quit(void);
 
