@@ -75,4 +75,4 @@ valgrind: all
 	less $(VALGRIND_OUT_PATH)
 	rm -f $(VALGRIND_OUT_PATH)
 
-.PHONY: all clean gen-readme install valgrind uninstall
+.PHONY: all clean gen-readme install uninstall valgrind
