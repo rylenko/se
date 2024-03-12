@@ -1,3 +1,7 @@
+/* TODO: Add xclip patch to use, for example, with ed_del_row */
+/* TODO: Use linked list for rows array and row's content parts */
+/* TODO: Undo operations. Also rename "del" to "remove" where needed */
+
 #include <signal.h>
 #include <stdarg.h>
 #include <stdio.h>

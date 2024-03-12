@@ -104,12 +104,12 @@ Later.
 	<tbody><tr>
 		<th>C</th>
 		<th>12</th>
-		<th>1256</th>
-		<th>145</th>
-		<th>160</th>
+		<th>1258</th>
+		<th>146</th>
+		<th>161</th>
 		<th>951</th>
 		<th>132</th>
-		<th>24163</th>
+		<th>24274</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>13</th>
@@ -168,12 +168,12 @@ Later.
 	<tfoot><tr>
 		<th>Total</th>
 		<th>32</th>
-		<th>1895</th>
-		<th>294</th>
-		<th>242</th>
+		<th>1897</th>
+		<th>295</th>
+		<th>243</th>
 		<th>1359</th>
 		<th>132</th>
-    	<th>37295</th>
+    	<th>37406</th>
 	</tr></tfoot>
 	</table>
 
@@ -183,6 +183,7 @@ Later.
 |-|-|-|
 |**src/row.h**|**34**|**rename to `rows_remove` if undo is done.**|
 |**src/cfg.h**|**37**|**Fix it for another values**|
-|**src/row.c**|**108**|**Linked list is better for creating new rows**|
-|**src/row.c**|**160**|**Linked list is better**|
-|**src/ed.c**|**503**|**Check errors**|
+|**src/ed.c**|**1**|**Add xclip patch to use, for example, with ed_del_row**|
+|**src/ed.c**|**2**|**Use linked list for rows array and row's content parts**|
+|**src/ed.c**|**3**|**Undo operations. Also rename "del" to "remove" where needed**|
+|**src/ed.c**|**507**|**Check errors**|

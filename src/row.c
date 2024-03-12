@@ -105,7 +105,6 @@ rows_ins(Rows *rows, size_t idx, Row row)
 	rows_realloc_if_needed(rows);
 	/* Move other rows if needed */
 	if (idx != rows->cnt) {
-		/* TODO: Linked list is better for creating new rows */
 		memmove(
 			rows->arr + idx + 1,
 			rows->arr + idx,
@@ -157,7 +156,6 @@ rows_del(Rows *rows, size_t idx)
 	row_free(&rows->arr[idx]);
 	/* Move other rows if needed */
 	if (idx != rows->cnt - 1) {
-		/* TODO: Linked list is better */
 		memmove(
 			rows->arr + idx,
 			rows->arr + idx + 1,
