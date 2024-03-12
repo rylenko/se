@@ -83,7 +83,7 @@ Later.
 		<th>155</th>
 		<th>913</th>
 		<th>121</th>
-		<th>23223</th>
+		<th>23225</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>13</th>
@@ -110,7 +110,7 @@ Later.
 		<th>13</th>
 		<th>55</th>
 		<th>0</th>
-		<th>1900</th>
+		<th>1920</th>
 	</tr><tr>
 		<th>Shell</th>
 		<th>1</th>
@@ -147,7 +147,7 @@ Later.
 		<th>235</th>
 		<th>1282</th>
 		<th>121</th>
-    	<th>35643</th>
+    	<th>35665</th>
 	</tr></tfoot>
 	</table>
 

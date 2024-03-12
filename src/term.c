@@ -5,7 +5,7 @@
 #include "err.h"
 #include "term.h"
 
-#define TIMEOUT_TENTHS_OF_SECOND 1
+#define TIMEOUT_TENTHS_OF_SECOND (1)
 
 static struct {
 	int ifd;
