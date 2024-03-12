@@ -3,22 +3,21 @@
 
 /* Correspondence between an integer and a pressed raw key. */
 typedef enum {
-	/* TODO: try to place chars here using quotes */
 	RAW_KEY_CTRL_Q = 17,
 	RAW_KEY_CTRL_S = 19,
 	RAW_KEY_ESC = 27,
-	RAW_KEY_A = 97,
-	RAW_KEY_D = 100,
-	RAW_KEY_E = 101,
-	RAW_KEY_H = 104,
-	RAW_KEY_G = 103,
-	RAW_KEY_I = 105,
-	RAW_KEY_J = 106,
-	RAW_KEY_K = 107,
-	RAW_KEY_L = 108,
-	RAW_KEY_Q = 113,
-	RAW_KEY_S = 115,
-	RAW_KEY_W = 119,
+	RAW_KEY_A = 'a',
+	RAW_KEY_D = 'd',
+	RAW_KEY_E = 'e',
+	RAW_KEY_H = 'h',
+	RAW_KEY_G = 'g',
+	RAW_KEY_I = 'i',
+	RAW_KEY_J = 'j',
+	RAW_KEY_K = 'k',
+	RAW_KEY_L = 'l',
+	RAW_KEY_Q = 'q',
+	RAW_KEY_S = 's',
+	RAW_KEY_W = 'w',
 } RawKey;
 
 char raw_key_is_digit(int);

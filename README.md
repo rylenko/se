@@ -87,12 +87,12 @@ Later.
 	</tr><tr>
 		<th>C Header</th>
 		<th>13</th>
-		<th>285</th>
+		<th>284</th>
 		<th>63</th>
-		<th>58</th>
+		<th>57</th>
 		<th>164</th>
 		<th>0</th>
-		<th>6140</th>
+		<th>6091</th>
 	</tr><tr>
 		<th>Markdown</th>
 		<th>2</th>
@@ -142,12 +142,12 @@ Later.
 	<tfoot><tr>
 		<th>Total</th>
 		<th>32</th>
-		<th>1677</th>
+		<th>1676</th>
 		<th>266</th>
-		<th>218</th>
+		<th>217</th>
 		<th>1193</th>
 		<th>112</th>
-    	<th>33096</th>
+    	<th>33047</th>
 	</tr></tfoot>
 	</table>
 
@@ -158,4 +158,3 @@ Later.
 |**src/cfg.h**|**7**|**Fix it for another values**|
 |**src/row.c**|**130**|**Linked list is better for creating new rows**|
 |**src/row.c**|**150**|**create shrink_to_fit for rows_remove**|
-|**src/raw_key.h**|**6**|**try to place chars here using quotes**|
