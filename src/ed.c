@@ -19,6 +19,8 @@
 #define MSG_BUF_LEN (32)
 #define MSG_SAVED ("The file has been saved.")
 
+#define STAT_COORDS_BUF_LEN (32)
+
 /* Structure with editor parameters. */
 static struct {
 	Cur cur;
@@ -563,30 +565,41 @@ static void
 ed_write_stat(Buf *buf)
 {
 	size_t col_i;
-	size_t len = 0;
+	size_t left_len;
+	size_t right_len;
+	char coords[STAT_COORDS_BUF_LEN];
 
 	/* Clear row on the right and begin colored output */
 	term_clr_row_on_right(buf);
 	raw_color_begin(buf, (RawColor)COLOR_STAT_BG, (RawColor)COLOR_STAT_FG);
 
-	/* Write base status */
-	len += buf_writef(
+	/* Write base status to buffer */
+	left_len = buf_writef(
 		buf,
-		" %zu, %zu [%s] %s",
-		ed.offset_col + ed.cur.x,
-		ed.offset_row + ed.cur.y,
+		" [%s] %s",
 		mode_str(ed.mode),
 		ed.path
 	);
-	/* Write message if exists */
+	/* Write message to buffer if exists */
 	if (ed.msg[0]) {
-		len += buf_writef(buf, ": %s", ed.msg);
+		left_len += buf_writef(buf, ": %s", ed.msg);
 		/* That is, the message will disappear after the next key */
 		ed.msg[0] = 0;
 	}
+	/* Format coordinates before colored empty space */
+	right_len = snprintf(
+		coords,
+		STAT_COORDS_BUF_LEN,
+		"%zu, %zu ",
+		ed.offset_col + ed.cur.x,
+		ed.offset_row + ed.cur.y
+	);
 	/* Fill colored empty space */
-	for (col_i = len; col_i < ed.win_size.ws_col; col_i++) {
+	for (col_i = left_len + right_len; col_i < ed.win_size.ws_col; col_i++) {
 		buf_write(buf, " ", 1);
 	}
+	/* Write coordinates */
+	buf_write(buf, coords, right_len);
+
 	raw_color_end(buf);
 }
