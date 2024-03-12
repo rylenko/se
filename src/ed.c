@@ -1,4 +1,3 @@
-#include <assert.h>
 #include <signal.h>
 #include <stdarg.h>
 #include <stdio.h>
@@ -18,6 +17,7 @@
 
 /* Length of message's buffer must be greater than all message lengths */
 #define MSG_BUF_LEN (64)
+#define MSG_DEL_ONLY_ONE_ROW ("It is forbidden to delete only one row.")
 #define MSG_SAVED ("The file has been saved.")
 #define MSG_QUIT_PRESSES_REM_FMT ( \
 	"There are unsaved changes. Presses remain to quit: %hhu." \
@@ -39,6 +39,9 @@ static struct {
 	Rows rows;
 	struct winsize win_size;
 } ed;
+
+/* Deletes current row. */
+static void ed_del_row(void);
 
 /* Fixes cursor's coordinates. */
 static void ed_fix_cur(void);
@@ -124,6 +127,19 @@ void
 ed_deinit(void)
 {
 	term_disable_raw_mode();
+}
+
+static void
+ed_del_row(void)
+{
+	if (ed.rows.cnt == 1) {
+		ed_set_msg(MSG_DEL_ONLY_ONE_ROW);
+	} else {
+		/* Remove x offsets and delete the row */
+		ed.offset_col = 0;
+		ed.cur.x = 0;
+		rows_del(&ed.rows, ed.offset_row + ed.cur.y);
+	}
 }
 
 static void
@@ -361,7 +377,7 @@ ed_open(const char *path)
 	ed.offset_row = 0;
 	ed.path = str_clone(path);
 	ed.quit_presses_rem = 1;
-	ed.rows = rows_alloc();
+	ed.rows = rows_new();
 	/* Update window size and register the handler of window size changing */
 	ed_upd_win_size();
 	signal(SIGWINCH, ed_handle_sig_win_ch);
@@ -382,7 +398,9 @@ ed_open(const char *path)
 static void
 ed_input_num(unsigned char digit)
 {
-	assert(digit < 10);
+	if (digit > 9) {
+		err("Invalid digit for number input: %hhu.", digit);
+	}
 	if (ed.num_input == SIZE_MAX) {
 		/* Prepare fo first digit in input */
 		ed.num_input = 0;
@@ -537,7 +555,9 @@ ed_wait_and_proc_key(void)
 {
 	char key;
 	/* Assert that we do not need to quit */
-	assert(!ed_need_to_quit());
+	if (ed_need_to_quit()) {
+		err("Need to quit instead of key processing.");
+	}
 
 	/* Wait key */
 	key = term_wait_key();
@@ -547,6 +567,9 @@ ed_wait_and_proc_key(void)
 	case MODE_NORM:
 		/* Normal mode keys */
 		switch (key) {
+		case CFG_KEY_DEL_ROW:
+			ed_del_row();
+			break;
 		case CFG_KEY_INS_ROW_BELOW:
 			ed_ins_row_below();
 			break;

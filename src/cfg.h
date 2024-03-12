@@ -12,6 +12,7 @@ typedef enum {
 
 /* Correspondence between raw keys and configurable editor keys. */
 typedef enum {
+	CFG_KEY_DEL_ROW = RAW_KEY_CTRL_D,
 	CFG_KEY_INS_ROW_BELOW = RAW_KEY_N,
 	CFG_KEY_INS_ROW_TOP = RAW_KEY_CTRL_N,
 	CFG_KEY_MODE_INS = RAW_KEY_I,

@@ -49,6 +49,7 @@ Normal mode keys:
 - `s` - go to end of file.
 - `w` - go to begin of file.
 - `/` - start or end search.
+- `CTRL+d` - delete current row.
 - `CTRL+n` - create a row above the current row and move to it.
 - `CTRL+s` - save.
 - `CTRL+q` - quit. If you changed the file, you will need to either save it or press this key several times.

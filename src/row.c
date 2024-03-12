@@ -18,8 +18,8 @@ Returns pointer to accepted row on success and `NULL` on `EOF`.
 */
 static Row *row_read(Row *row, FILE *f);
 
-/* Grows rows capacity. */
-static void rows_grow(Rows *rows);
+/* Grows or shrinks the rows capacity. */
+static void rows_realloc_if_needed(Rows *rows);
 
 Row
 row_empty(void)
@@ -79,17 +79,6 @@ row_read(Row *row, FILE *f)
 	return row;
 }
 
-Rows
-rows_alloc(void)
-{
-	/* Allocate and initialize rows container */
-	Row *arr = malloc(ROWS_REALLOC_STEP * sizeof(Row));
-	if (!arr) {
-		err("Failed to allocate initial %zu rows:", ROWS_REALLOC_STEP);
-	}
-	return (Rows){ .arr = arr, .cap = ROWS_REALLOC_STEP, .cnt = 0 };
-}
-
 void
 rows_free(Rows *rows)
 {
@@ -105,15 +94,6 @@ rows_free(Rows *rows)
 	rows->cap = 0;
 }
 
-static void
-rows_grow(Rows *rows)
-{
-	rows->cap += ROWS_REALLOC_STEP;
-	if (!(rows->arr = realloc(rows->arr, sizeof(Row) * rows->cap))) {
-		err("Failed to reallocate rows with capacity %zu:", rows->cap);
-	}
-}
-
 void
 rows_ins(Rows *rows, size_t idx, Row row)
 {
@@ -122,9 +102,7 @@ rows_ins(Rows *rows, size_t idx, Row row)
 		err("Trying to insert a row, which index greater than rows count.");
 	}
 	/* Check that we need to grow */
-	if (rows->cnt == rows->cap) {
-		rows_grow(rows);
-	}
+	rows_realloc_if_needed(rows);
 	/* Move other rows if needed */
 	if (idx != rows->cnt) {
 		/* TODO: Linked list is better for creating new rows */
@@ -139,6 +117,12 @@ rows_ins(Rows *rows, size_t idx, Row row)
 	rows->cnt++;
 }
 
+Rows
+rows_new(void)
+{
+	return (Rows){ .arr = NULL, .cap = 0, .cnt = 0 };
+}
+
 void
 rows_read(Rows *rows, FILE *f)
 {
@@ -147,4 +131,40 @@ rows_read(Rows *rows, FILE *f)
 		rows_ins(rows, rows->cnt, row);
 }
 
-/* TODO: create shrink_to_fit for rows_remove */
+static void
+rows_realloc_if_needed(Rows *rows)
+{
+	if (rows->cnt == rows->cap) {
+		rows->cap += ROWS_REALLOC_STEP;
+	} else if (rows->cnt + ROWS_REALLOC_STEP <= rows->cap) {
+		rows->cap = rows->cnt;
+	} else {
+		return;
+	}
+	if (!(rows->arr = realloc(rows->arr, sizeof(Row) * rows->cap))) {
+		err("Failed to reallocate rows with capacity %zu:", rows->cap);
+	}
+}
+
+void
+rows_del(Rows *rows, size_t idx)
+{
+	/* Validate index */
+	if (idx >= rows->cnt) {
+		err("Invalid row's index to delete.");
+	}
+	/* Free a row */
+	row_free(&rows->arr[idx]);
+	/* Move other rows if needed */
+	if (idx != rows->cnt - 1) {
+		/* TODO: Linked list is better */
+		memmove(
+			rows->arr + idx,
+			rows->arr + idx + 1,
+			sizeof(Row) * (rows->cnt - idx - 1)
+		);
+	}
+	/* Remove from count and check that we need to shrink to fit */
+	rows->cnt--;
+	rows_realloc_if_needed(rows);
+}

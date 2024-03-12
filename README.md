@@ -49,6 +49,7 @@ Normal mode keys:
 - `s` - go to end of file.
 - `w` - go to begin of file.
 - `/` - start or end search.
+- `CTRL+d` - delete current row.
 - `CTRL+n` - create a row above the current row and move to it.
 - `CTRL+s` - save.
 - `CTRL+q` - quit. If you changed the file, you will need to either save it or press this key several times.
@@ -78,30 +79,30 @@ Later.
 	<tbody><tr>
 		<th>C</th>
 		<th>12</th>
-		<th>1211</th>
-		<th>143</th>
-		<th>155</th>
-		<th>913</th>
-		<th>121</th>
-		<th>23225</th>
+		<th>1256</th>
+		<th>145</th>
+		<th>160</th>
+		<th>951</th>
+		<th>132</th>
+		<th>24163</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>13</th>
-		<th>301</th>
-		<th>66</th>
-		<th>61</th>
-		<th>174</th>
+		<th>307</th>
+		<th>67</th>
+		<th>63</th>
+		<th>177</th>
 		<th>0</th>
-		<th>6541</th>
+		<th>6711</th>
 	</tr><tr>
 		<th>Markdown</th>
 		<th>2</th>
-		<th>129</th>
+		<th>131</th>
 		<th>42</th>
 		<th>0</th>
-		<th>87</th>
+		<th>89</th>
 		<th>0</th>
-		<th>2740</th>
+		<th>2806</th>
 	</tr><tr>
 		<th>Makefile</th>
 		<th>2</th>
@@ -110,7 +111,7 @@ Later.
 		<th>13</th>
 		<th>55</th>
 		<th>0</th>
-		<th>1920</th>
+		<th>1930</th>
 	</tr><tr>
 		<th>Shell</th>
 		<th>1</th>
@@ -142,12 +143,12 @@ Later.
 	<tfoot><tr>
 		<th>Total</th>
 		<th>32</th>
-		<th>1792</th>
-		<th>275</th>
-		<th>235</th>
-		<th>1282</th>
-		<th>121</th>
-    	<th>35665</th>
+		<th>1845</th>
+		<th>278</th>
+		<th>242</th>
+		<th>1325</th>
+		<th>132</th>
+    	<th>36849</th>
 	</tr></tfoot>
 	</table>
 
@@ -155,7 +156,8 @@ Later.
 
 |Path|Line|Description|
 |-|-|-|
-|**src/cfg.h**|**36**|**Fix it for another values**|
-|**src/row.c**|**130**|**Linked list is better for creating new rows**|
-|**src/row.c**|**150**|**create shrink_to_fit for rows_remove**|
-|**src/ed.c**|**485**|**Check errors**|
+|**src/row.h**|**34**|**rename to `rows_remove` if undo is done.**|
+|**src/cfg.h**|**37**|**Fix it for another values**|
+|**src/row.c**|**108**|**Linked list is better for creating new rows**|
+|**src/row.c**|**160**|**Linked list is better**|
+|**src/ed.c**|**503**|**Check errors**|
