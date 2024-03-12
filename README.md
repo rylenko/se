@@ -78,21 +78,21 @@ Later.
 	<tbody><tr>
 		<th>C</th>
 		<th>11</th>
-		<th>1050</th>
-		<th>129</th>
-		<th>133</th>
-		<th>788</th>
-		<th>105</th>
-		<th>20027</th>
+		<th>1042</th>
+		<th>128</th>
+		<th>132</th>
+		<th>782</th>
+		<th>103</th>
+		<th>19801</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>13</th>
-		<th>272</th>
-		<th>60</th>
-		<th>56</th>
-		<th>156</th>
+		<th>275</th>
+		<th>61</th>
+		<th>57</th>
+		<th>157</th>
 		<th>0</th>
-		<th>5731</th>
+		<th>5800</th>
 	</tr><tr>
 		<th>Markdown</th>
 		<th>2</th>
@@ -142,12 +142,12 @@ Later.
 	<tfoot><tr>
 		<th>Total</th>
 		<th>31</th>
-		<th>1601</th>
+		<th>1596</th>
 		<th>255</th>
 		<th>208</th>
-		<th>1138</th>
-		<th>105</th>
-    	<th>31621</th>
+		<th>1133</th>
+		<th>103</th>
+    	<th>31464</th>
 	</tr></tfoot>
 	</table>
 
@@ -158,3 +158,4 @@ Later.
 |**src/cfg.h**|**7**|**Fix it for another values**|
 |**src/row.c**|**130**|**Linked list is better for creating new rows**|
 |**src/row.c**|**150**|**create shrink_to_fit for rows_remove**|
+|**src/ed.c**|**408**|**<number>(h|j|k|l) using VT100 codes**|
