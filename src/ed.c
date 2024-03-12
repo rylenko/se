@@ -23,7 +23,7 @@
 /* Length of message's buffer must be greater than all message lengths */
 #define MSG_BUF_LEN (64)
 #define MSG_DEL_ONLY_ONE_ROW ("It is forbidden to delete only one row.")
-#define MSG_SAVED ("The file has been saved.")
+#define MSG_SAVED_FMT ("%zu bytes saved.")
 #define MSG_QUIT_PRESSES_REM_FMT ( \
 	"There are unsaved changes. Presses remain to quit: %hhu." \
 )
@@ -493,6 +493,7 @@ ed_refresh_scr(void)
 static void
 ed_save(void)
 {
+	size_t len = 0;
 	size_t row_i;
 	FILE *f;
 	Row *row;
@@ -506,7 +507,7 @@ ed_save(void)
 		row = &ed.rows.arr[row_i];
 		/* Write row's content and newline character */
 		/* TODO: Check errors */
-		fwrite(row->cont, sizeof(char), row->len, f);
+		len += fwrite(row->cont, sizeof(char), row->len, f);
 		fputc('\n', f);
 	}
 	/* Flush and close file */
@@ -514,7 +515,7 @@ ed_save(void)
 	fclose(f);
 	/* Set quit presses and set message */
 	ed.quit_presses_rem = 1;
-	ed_set_msg(MSG_SAVED);
+	ed_set_msg(MSG_SAVED_FMT, len);
 }
 
 static void
