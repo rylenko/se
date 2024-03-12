@@ -55,6 +55,9 @@ static void ed_input_num(unsigned char digit);
 /* Inserts new row below the cursor. */
 static void ed_ins_row_below(void);
 
+/* Inserts new row on top of the cursor. */
+static void ed_ins_row_top(void);
+
 /* Move to begin of file. */
 static void ed_mv_begin_of_f(void);
 
@@ -412,6 +415,22 @@ ed_ins_row_below(void)
 }
 
 static void
+ed_ins_row_top(void)
+{
+	/* Remove x offsets */
+	ed.offset_col = 0;
+	ed.cur.x = 0;
+	/* Insert new empty row */
+	rows_ins(&ed.rows, ed.offset_row + ed.cur.y, row_empty());
+	/* Offset cursor if we at the end of screen */
+	if (ed.cur.y == ed.win_size.ws_row - 2) {
+		ed.offset_row++;
+		ed.cur.y--;
+	}
+	ed.quit_presses_rem = CFG_QUIT_PRESSES_REM_WITHOUT_SAVE_AFTER_CHANGES;
+}
+
+static void
 ed_try_quit(void)
 {
 	ed.quit_presses_rem--;
@@ -530,6 +549,9 @@ ed_wait_and_proc_key(void)
 		switch (key) {
 		case CFG_KEY_INS_ROW_BELOW:
 			ed_ins_row_below();
+			break;
+		case CFG_KEY_INS_ROW_TOP:
+			ed_ins_row_top();
 			break;
 		case CFG_KEY_MODE_INS:
 			ed.mode = MODE_INS;
