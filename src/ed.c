@@ -385,12 +385,13 @@ ed_write_cur(Buf *buf)
 	unsigned short cont_i;
 	size_t x = 0;
 	const Row *row = ed_get_curr_row();
-	/* Calculate tabs */
+
 	for (
 		cont_i = ed.offset_col;
 		cont_i < ed.offset_col + ed.cur.x;
 		cont_i++
 	) {
+		/* Calculate tab offset */
 		if (row->cont[cont_i] == '\t') {
 			x += CFG_TAB_SIZE - x % CFG_TAB_SIZE - 1;
 		}
@@ -403,8 +404,6 @@ ed_write_cur(Buf *buf)
 void
 ed_wait_and_proc_key(void)
 {
-	/* TODO: <number>(h|j|k|l) using VT100 codes */
-
 	char key;
 	/* Assert that we do not need to quit */
 	assert(!ed.need_to_quit);
