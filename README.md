@@ -87,12 +87,12 @@ Later.
 	</tr><tr>
 		<th>C Header</th>
 		<th>13</th>
-		<th>302</th>
-		<th>67</th>
+		<th>301</th>
+		<th>66</th>
 		<th>61</th>
 		<th>174</th>
 		<th>0</th>
-		<th>6542</th>
+		<th>6541</th>
 	</tr><tr>
 		<th>Markdown</th>
 		<th>2</th>
@@ -142,12 +142,12 @@ Later.
 	<tfoot><tr>
 		<th>Total</th>
 		<th>32</th>
-		<th>1793</th>
-		<th>276</th>
+		<th>1792</th>
+		<th>275</th>
 		<th>235</th>
 		<th>1282</th>
 		<th>121</th>
-    	<th>35644</th>
+    	<th>35643</th>
 	</tr></tfoot>
 	</table>
 

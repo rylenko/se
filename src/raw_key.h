@@ -1,7 +1,6 @@
 #ifndef _RAW_KEY_H
 #define _RAW_KEY_H
 
-
 /* Correspondence between an integer and a pressed raw key. */
 typedef enum {
 	RAW_KEY_A = 'a',
