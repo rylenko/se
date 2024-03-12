@@ -78,12 +78,12 @@ Later.
 	<tbody><tr>
 		<th>C</th>
 		<th>12</th>
-		<th>1181</th>
+		<th>1184</th>
 		<th>142</th>
-		<th>153</th>
-		<th>886</th>
+		<th>154</th>
+		<th>888</th>
 		<th>119</th>
-		<th>22677</th>
+		<th>22735</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>13</th>
@@ -142,12 +142,12 @@ Later.
 	<tfoot><tr>
 		<th>Total</th>
 		<th>32</th>
-		<th>1754</th>
+		<th>1757</th>
 		<th>272</th>
-		<th>231</th>
-		<th>1251</th>
+		<th>232</th>
+		<th>1253</th>
 		<th>119</th>
-    	<th>34945</th>
+    	<th>35003</th>
 	</tr></tfoot>
 	</table>
 
@@ -159,4 +159,4 @@ Later.
 |**src/cfg.h**|**35**|**Fix it for another values**|
 |**src/row.c**|**130**|**Linked list is better for creating new rows**|
 |**src/row.c**|**150**|**create shrink_to_fit for rows_remove**|
-|**src/ed.c**|**450**|**Check errors**|
+|**src/ed.c**|**453**|**Check errors**|

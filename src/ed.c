@@ -384,6 +384,9 @@ ed_input_num(unsigned char digit)
 static void
 ed_ins_row_below(void)
 {
+	/* Remove x offsets */
+	ed.offset_col = 0;
+	ed.cur.x = 0;
 	/* Check cursor at the bottom of the screen */
 	if (ed.cur.y == ed.win_size.ws_row - 2) {
 		ed.offset_row++;
