@@ -349,7 +349,7 @@ ed_open(const char *path)
 {
 	FILE *f;
 
-	/* Initialize */
+	/* Set default for file */
 	ed.cur = cur_new(0, 0);
 	ed.mode = MODE_NORM;
 	ed.msg[0] = 0;
