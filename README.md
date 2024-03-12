@@ -78,21 +78,21 @@ Later.
 	<tbody><tr>
 		<th>C</th>
 		<th>12</th>
-		<th>1125</th>
-		<th>139</th>
-		<th>143</th>
-		<th>843</th>
-		<th>112</th>
-		<th>21381</th>
+		<th>1143</th>
+		<th>141</th>
+		<th>145</th>
+		<th>857</th>
+		<th>115</th>
+		<th>21758</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>13</th>
-		<th>284</th>
+		<th>286</th>
 		<th>63</th>
 		<th>57</th>
-		<th>164</th>
+		<th>166</th>
 		<th>0</th>
-		<th>6091</th>
+		<th>6141</th>
 	</tr><tr>
 		<th>Markdown</th>
 		<th>2</th>
@@ -142,12 +142,12 @@ Later.
 	<tfoot><tr>
 		<th>Total</th>
 		<th>32</th>
-		<th>1689</th>
-		<th>268</th>
-		<th>219</th>
-		<th>1202</th>
-		<th>112</th>
-    	<th>33362</th>
+		<th>1709</th>
+		<th>270</th>
+		<th>221</th>
+		<th>1218</th>
+		<th>115</th>
+    	<th>33789</th>
 	</tr></tfoot>
 	</table>
 

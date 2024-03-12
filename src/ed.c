@@ -48,6 +48,9 @@ static void ed_handle_sig_win_ch(int num);
 /* Input number. */
 static void ed_input_num(unsigned char digit);
 
+/* Inserts new row below the cursor. */
+static void ed_ins_row_below(void);
+
 /* Move to begin of file. */
 static void ed_mv_begin_of_f(void);
 
@@ -372,6 +375,18 @@ ed_input_num(unsigned char digit)
 }
 
 static void
+ed_ins_row_below(void)
+{
+	/* Check cursor at the bottom of the screen */
+	if (ed.cur.y == ed.win_size.ws_row - 2) {
+		ed.offset_row++;
+	} else {
+		ed.cur.y++;
+	}
+	rows_ins(&ed.rows, ed.offset_row + ed.cur.y + 1, row_empty());
+}
+
+static void
 ed_quit(void)
 {
 	ed.need_to_quit = 1;
@@ -468,6 +483,9 @@ ed_wait_and_proc_key(void)
 	case MODE_NORM:
 		/* Normal mode keys */
 		switch (key) {
+		case KEY_INS_ROW_BELOW:
+			ed_ins_row_below();
+			break;
 		case KEY_MODE_INS:
 			ed.mode = MODE_INS;
 			break;
