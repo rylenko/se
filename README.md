@@ -104,12 +104,12 @@ Later.
 	<tbody><tr>
 		<th>C</th>
 		<th>12</th>
-		<th>1260</th>
+		<th>1264</th>
 		<th>146</th>
-		<th>162</th>
-		<th>952</th>
+		<th>164</th>
+		<th>954</th>
 		<th>132</th>
-		<th>24344</th>
+		<th>24572</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>13</th>
@@ -168,12 +168,12 @@ Later.
 	<tfoot><tr>
 		<th>Total</th>
 		<th>32</th>
-		<th>1899</th>
+		<th>1903</th>
 		<th>295</th>
-		<th>244</th>
-		<th>1360</th>
+		<th>246</th>
+		<th>1362</th>
 		<th>132</th>
-    	<th>37476</th>
+    	<th>37704</th>
 	</tr></tfoot>
 	</table>
 
@@ -187,4 +187,4 @@ Later.
 |**src/ed.c**|**2**|**Use linked list for rows array and row's content parts**|
 |**src/ed.c**|**3**|**Undo operations. Also rename "del" to "remove" where needed**|
 |**src/ed.c**|**4**|**Xclip patch to use with local clipboard**|
-|**src/ed.c**|**509**|**Check errors**|
+|**src/ed.c**|**513**|**Check errors**|

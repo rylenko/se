@@ -60,10 +60,10 @@ static void ed_handle_sig_win_ch(int num);
 /* Input number. */
 static void ed_input_num(unsigned char digit);
 
-/* Inserts new row below the cursor. */
+/* Inserts new row below the cursor and switches to inserting mode. */
 static void ed_ins_row_below(void);
 
-/* Inserts new row on top of the cursor. */
+/* Inserts new row on top of the cursor and switches to inserting mode. */
 static void ed_ins_row_top(void);
 
 /* Move to begin of file. */
@@ -434,7 +434,9 @@ ed_ins_row_below(void)
 	}
 	/* Insert new empty row */
 	rows_ins(&ed.rows, ed.offset_row + ed.cur.y, row_empty());
+	/* Update quit presses count and switch to inserting mode */
 	ed.quit_presses_rem = CFG_QUIT_PRESSES_REM_WITHOUT_SAVE_AFTER_CHANGES;
+	ed.mode = MODE_INS;
 }
 
 static void
@@ -450,7 +452,9 @@ ed_ins_row_top(void)
 		ed.offset_row++;
 		ed.cur.y--;
 	}
+	/* Update quit presses count and switch to inserting mode */
 	ed.quit_presses_rem = CFG_QUIT_PRESSES_REM_WITHOUT_SAVE_AFTER_CHANGES;
+	ed.mode = MODE_INS;
 }
 
 static void
