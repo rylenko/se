@@ -104,12 +104,12 @@ Later.
 	<tbody><tr>
 		<th>C</th>
 		<th>12</th>
-		<th>1264</th>
+		<th>1265</th>
 		<th>146</th>
-		<th>164</th>
+		<th>165</th>
 		<th>954</th>
 		<th>132</th>
-		<th>24572</th>
+		<th>24649</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>13</th>
@@ -136,7 +136,7 @@ Later.
 		<th>13</th>
 		<th>55</th>
 		<th>0</th>
-		<th>1930</th>
+		<th>1934</th>
 	</tr><tr>
 		<th>Shell</th>
 		<th>1</th>
@@ -168,12 +168,12 @@ Later.
 	<tfoot><tr>
 		<th>Total</th>
 		<th>32</th>
-		<th>1903</th>
+		<th>1904</th>
 		<th>295</th>
-		<th>246</th>
+		<th>247</th>
 		<th>1362</th>
 		<th>132</th>
-    	<th>37704</th>
+    	<th>37785</th>
 	</tr></tfoot>
 	</table>
 
@@ -184,7 +184,8 @@ Later.
 |**src/row.h**|**34**|**rename to `rows_remove` if undo is done.**|
 |**src/cfg.h**|**37**|**Fix it for another values**|
 |**src/ed.c**|**1**|**Add local clipboard. Use it in functions.**|
-|**src/ed.c**|**2**|**Use linked list for rows array and row's content parts**|
-|**src/ed.c**|**3**|**Undo operations. Also rename "del" to "remove" where needed**|
-|**src/ed.c**|**4**|**Xclip patch to use with local clipboard**|
-|**src/ed.c**|**513**|**Check errors**|
+|**src/ed.c**|**2**|**Replace <index>g with <num><action> to repeat action <num> times**|
+|**src/ed.c**|**3**|**Use linked list for rows array and row's content parts**|
+|**src/ed.c**|**4**|**Undo operations. Also rename "del" to "remove" where needed**|
+|**src/ed.c**|**5**|**Xclip patch to use with local clipboard**|
+|**src/ed.c**|**514**|**Check errors**|

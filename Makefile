@@ -52,7 +52,7 @@ gen-readme:
 	$(GEN_README_PATH)
 
 # Install after build
-install: all
+install: $(NAME)
 	mkdir -p $(PREFIX)/bin
 	cp $(NAME) $(PREFIX)/bin/$(NAME)
 	chmod 755 $(PREFIX)/bin/$(NAME)
