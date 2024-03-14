@@ -29,7 +29,7 @@
 	"There are unsaved changes. Presses remain to quit: %hhu." \
 )
 
-#define STAT_COORDS_BUF_LEN (32)
+#define STAT_RIGHT_BUF_LEN (64)
 
 /* Structure with editor parameters. */
 static struct {
@@ -395,7 +395,7 @@ ed_input_num(unsigned char digit)
 	if (digit > 9) {
 		err("Invalid digit for number input: %hhu.", digit);
 	}
-	if (ed.num_input == SIZE_MAX) {
+	if (SIZE_MAX == ed.num_input) {
 		/* Prepare fo first digit in input */
 		ed.num_input = 0;
 	}
@@ -553,7 +553,7 @@ void
 ed_wait_and_proc_key(void)
 {
 	char key;
-	size_t repeat_times = ed.num_input == SIZE_MAX ? 1 : ed.num_input;
+	size_t repeat_times = SIZE_MAX == ed.num_input ? 1 : ed.num_input;
 	/* Assert that we do not need to quit */
 	if (ed_need_to_quit()) {
 		err("Need to quit instead of key processing.");
@@ -670,7 +670,7 @@ ed_write_stat(Buf *buf)
 	size_t col_i;
 	size_t left_len;
 	size_t right_len;
-	char coords[STAT_COORDS_BUF_LEN];
+	char right[STAT_RIGHT_BUF_LEN];
 
 	/* Clear row on the right and begin colored output */
 	term_clr_row_on_right(buf);
@@ -693,20 +693,31 @@ ed_write_stat(Buf *buf)
 		/* That is, the message will disappear after the next key */
 		ed.msg[0] = 0;
 	}
-	/* Format coordinates before colored empty space */
-	right_len = snprintf(
-		coords,
-		sizeof(coords),
-		"%zu, %zu ",
-		ed.offset_col + ed.cur.x,
-		ed.offset_row + ed.cur.y
-	);
+	/* Format right part before colored empty space */
+	if (SIZE_MAX == ed.num_input) {
+		right_len = snprintf(
+			right,
+			sizeof(right),
+			"%zu, %zu ",
+			ed.offset_col + ed.cur.x,
+			ed.offset_row + ed.cur.y
+		);
+	} else {
+		right_len = snprintf(
+			right,
+			sizeof(right),
+			"%zu | %zu, %zu ",
+			ed.num_input,
+			ed.offset_col + ed.cur.x,
+			ed.offset_row + ed.cur.y
+		);
+	}
 	/* Fill colored empty space */
 	for (col_i = left_len + right_len; col_i < ed.win_size.ws_col; col_i++) {
 		buf_write(buf, " ", 1);
 	}
-	/* Write coordinates */
-	buf_write(buf, coords, right_len);
+	/* Write right part */
+	buf_write(buf, right, right_len);
 
 	raw_color_end(buf);
 }
