@@ -87,10 +87,10 @@ static void ed_mv_end_of_row(void);
 static void ed_mv_left(void);
 
 /* Move to next token if exists. */
-static void ed_mv_next_tok(void);
+static void ed_mv_next_tok(size_t times);
 
 /* Move to previous token if exists. */
-static void ed_mv_prev_tok(void);
+static void ed_mv_prev_tok(size_t times);
 
 /* Move cursor right. */
 static void ed_mv_right(void);
@@ -268,39 +268,54 @@ ed_mv_left(void)
 }
 
 static void
-ed_mv_next_tok(void)
+ed_mv_next_tok(size_t times)
 {
 	/* Find next token */
 	const Row *row = ed_get_curr_row();
-	size_t f_col_i = ed.offset_col + ed.cur.x;
-	size_t len = row->len - f_col_i;
-	size_t tok_i = tok_next(row->cont + f_col_i, row->len - f_col_i);
+	size_t f_col_i;
+	size_t len;
+	size_t tok_i;
 
-	if (tok_i < len) {
-		/* Check token on the screen */
-		if (tok_i + ed.cur.x < ed.win_size.ws_col) {
-			ed.cur.x += tok_i;
+	while (times-- > 0) {
+		f_col_i = ed.offset_col + ed.cur.x;
+		len = row->len - f_col_i;
+		tok_i = tok_next(row->cont + f_col_i, row->len - f_col_i);
+
+		if (tok_i < len) {
+			/* Check token on the screen */
+			if (tok_i + ed.cur.x < ed.win_size.ws_col) {
+				ed.cur.x += tok_i;
+			} else {
+				ed.offset_col = f_col_i + tok_i - ed.win_size.ws_col + 1;
+				ed.cur.x = ed.win_size.ws_col - 1;
+			}
 		} else {
-			ed.offset_col = f_col_i + tok_i - ed.win_size.ws_col + 1;
-			ed.cur.x = ed.win_size.ws_col - 1;
+			break;
 		}
 	}
 }
 
 static void
-ed_mv_prev_tok(void)
+ed_mv_prev_tok(size_t times)
 {
-	/* Find previous token */
-	size_t f_col_i = ed.offset_col + ed.cur.x;
-	size_t tok_i = tok_rnext(ed_get_curr_row()->cont, f_col_i);
+	size_t f_col_i;
+	size_t tok_i;
 
-	if (tok_i < f_col_i) {
-		/* Check token on the screen */
-		if (tok_i >= ed.offset_col) {
-			ed.cur.x = tok_i - ed.offset_col;
+	while (times-- > 0) {
+		/* Find previous token */
+		f_col_i = ed.offset_col + ed.cur.x;
+		tok_i = tok_rnext(ed_get_curr_row()->cont, f_col_i);
+
+		if (tok_i < f_col_i) {
+			/* Check token on the screen */
+			if (tok_i >= ed.offset_col) {
+				ed.cur.x = tok_i - ed.offset_col;
+			} else {
+				ed.offset_col = tok_i;
+				ed.cur.x = 1;
+			}
 		} else {
-			ed.offset_col = tok_i;
-			ed.cur.x = 1;
+			break;
 		}
 	}
 }
@@ -602,10 +617,10 @@ ed_wait_and_proc_key(void)
 			REPEAT(repeat_times, ed_mv_left());
 			break;
 		case CFG_KEY_MV_NEXT_TOK:
-			REPEAT(repeat_times, ed_mv_next_tok());
+			ed_mv_next_tok(repeat_times);
 			break;
 		case CFG_KEY_MV_PREV_TOK:
-			REPEAT(repeat_times, ed_mv_prev_tok());
+			ed_mv_prev_tok(repeat_times);
 			break;
 		case CFG_KEY_MV_RIGHT:
 			REPEAT(repeat_times, ed_mv_right());
