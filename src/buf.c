@@ -40,7 +40,7 @@ buf_grow(Buf *buf, size_t by)
 	}
 }
 
-void
+size_t
 buf_write(Buf *buf, const char *part, size_t len)
 {
 	/* Check that we need to grow */
@@ -52,6 +52,7 @@ buf_write(Buf *buf, const char *part, size_t len)
 	/* Append the part to buffer */
 	memcpy(buf->data + buf->len, part, len);
 	buf->len = new_len;
+	return len;
 }
 
 size_t

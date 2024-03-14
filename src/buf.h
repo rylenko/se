@@ -26,7 +26,7 @@ void buf_flush(const Buf *, int);
 void buf_free(Buf);
 
 /* Appends a string to a buffer. */
-void buf_write(Buf *, const char *, size_t);
+size_t buf_write(Buf *, const char *, size_t);
 
 /* Appends a formatted string to a buffer. */
 size_t buf_writef(Buf *, const char *, ...);

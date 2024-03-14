@@ -35,7 +35,7 @@ typedef enum {
 typedef enum {
 	/* TODO: Fix it for another values */
 	CFG_TAB_SIZE = 8,
-	CFG_QUIT_PRESSES_REM_WITHOUT_SAVE_AFTER_CHANGES = 3,
+	CFG_QUIT_PRESSES_REM_AFT_CH = 3,
 } CfgOther;
 
 #endif /* _CFG_H */

@@ -4,6 +4,7 @@
 /* TODO: Undo operations. Also rename "del" to "remove" where needed */
 /* TODO: Xclip patch to use with local clipboard */
 
+#include <libgen.h>
 #include <signal.h>
 #include <stdarg.h>
 #include <stdio.h>
@@ -30,7 +31,7 @@
 	"There are unsaved changes. Presses remain to quit: %hhu." \
 )
 
-#define STAT_RIGHT_BUF_LEN (64)
+#define STAT_COORDS_BUF_LEN (32)
 
 /* Structure with editor parameters. */
 static struct {
@@ -145,7 +146,7 @@ ed_del_row(size_t times)
 		while (times-- > 0) {
 			rows_del(&ed.rows, ed.offset_row + ed.cur.y);
 		}
-		ed.quit_presses_rem = CFG_QUIT_PRESSES_REM_WITHOUT_SAVE_AFTER_CHANGES;
+		ed.quit_presses_rem = CFG_QUIT_PRESSES_REM_AFT_CH;
 	}
 }
 
@@ -440,7 +441,7 @@ ed_ins_row_below(void)
 	/* Insert new empty row */
 	rows_ins(&ed.rows, ed.offset_row + ed.cur.y, row_empty());
 	/* Update quit presses count and switch to inserting mode */
-	ed.quit_presses_rem = CFG_QUIT_PRESSES_REM_WITHOUT_SAVE_AFTER_CHANGES;
+	ed.quit_presses_rem = CFG_QUIT_PRESSES_REM_AFT_CH;
 	ed.mode = MODE_INS;
 }
 
@@ -458,7 +459,7 @@ ed_ins_row_top(void)
 		ed.cur.y--;
 	}
 	/* Update quit presses count and switch to inserting mode */
-	ed.quit_presses_rem = CFG_QUIT_PRESSES_REM_WITHOUT_SAVE_AFTER_CHANGES;
+	ed.quit_presses_rem = CFG_QUIT_PRESSES_REM_AFT_CH;
 	ed.mode = MODE_INS;
 }
 
@@ -685,8 +686,8 @@ ed_write_stat(Buf *buf)
 {
 	size_t col_i;
 	size_t left_len;
-	size_t right_len;
-	char right[STAT_RIGHT_BUF_LEN];
+	char coords[STAT_COORDS_BUF_LEN];
+	size_t coords_len;
 
 	/* Clear row on the right and begin colored output */
 	term_clr_row_on_right(buf);
@@ -695,45 +696,30 @@ ed_write_stat(Buf *buf)
 		(RawColor)CFG_COLOR_STAT_BG,
 		(RawColor)CFG_COLOR_STAT_FG
 	);
-
 	/* Write base status to buffer */
-	left_len = buf_writef(
-		buf,
-		" [%s] %s",
-		mode_str(ed.mode),
-		ed.path
-	);
+	left_len = buf_writef(buf, " [%s] %s", mode_str(ed.mode), basename(ed.path));
+	/* Add mark if file is dirty */
+	if (CFG_QUIT_PRESSES_REM_AFT_CH == ed.quit_presses_rem) {
+		left_len += buf_write(buf, " [+]", 4);
+	}
 	/* Write message to buffer if exists */
 	if (ed.msg[0]) {
 		left_len += buf_writef(buf, ": %s", ed.msg);
-		/* That is, the message will disappear after the next key */
 		ed.msg[0] = 0;
 	}
-	/* Format right part before colored empty space */
-	if (SIZE_MAX == ed.num_input) {
-		right_len = snprintf(
-			right,
-			sizeof(right),
-			"%zu, %zu ",
-			ed.offset_col + ed.cur.x,
-			ed.offset_row + ed.cur.y
-		);
-	} else {
-		right_len = snprintf(
-			right,
-			sizeof(right),
-			"%zu | %zu, %zu ",
-			ed.num_input,
-			ed.offset_col + ed.cur.x,
-			ed.offset_row + ed.cur.y
-		);
-	}
+	/* Write position */
+	coords_len = snprintf(
+		coords,
+		sizeof(coords),
+		"%zu, %zu ",
+		ed.offset_col + ed.cur.x,
+		ed.offset_row + ed.cur.y
+	);
 	/* Fill colored empty space */
-	for (col_i = left_len + right_len; col_i < ed.win_size.ws_col; col_i++) {
+	for (col_i = left_len + coords_len; col_i < ed.win_size.ws_col; col_i++) {
 		buf_write(buf, " ", 1);
 	}
-	/* Write right part */
-	buf_write(buf, right, right_len);
-
+	/* Write right parts and end color */
+	buf_write(buf, coords, coords_len);
 	raw_color_end(buf);
 }
