@@ -105,12 +105,12 @@ Later.
 	<tbody><tr>
 		<th>C</th>
 		<th>12</th>
-		<th>1281</th>
-		<th>146</th>
-		<th>164</th>
-		<th>971</th>
+		<th>1274</th>
 		<th>140</th>
-		<th>25153</th>
+		<th>166</th>
+		<th>968</th>
+		<th>152</th>
+		<th>25263</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>14</th>
@@ -119,7 +119,7 @@ Later.
 		<th>64</th>
 		<th>183</th>
 		<th>1</th>
-		<th>6831</th>
+		<th>6848</th>
 	</tr><tr>
 		<th>Markdown</th>
 		<th>2</th>
@@ -137,7 +137,7 @@ Later.
 		<th>13</th>
 		<th>55</th>
 		<th>0</th>
-		<th>1947</th>
+		<th>1961</th>
 	</tr><tr>
 		<th>Shell</th>
 		<th>1</th>
@@ -169,12 +169,12 @@ Later.
 	<tfoot><tr>
 		<th>Total</th>
 		<th>33</th>
-		<th>1931</th>
-		<th>299</th>
-		<th>247</th>
-		<th>1385</th>
-		<th>141</th>
-    	<th>38544</th>
+		<th>1924</th>
+		<th>293</th>
+		<th>249</th>
+		<th>1382</th>
+		<th>153</th>
+    	<th>38685</th>
 	</tr></tfoot>
 	</table>
 
@@ -189,4 +189,4 @@ Later.
 |**src/ed.c**|**3**|**Integrate repetition of keys into handlers**|
 |**src/ed.c**|**4**|**Undo operations. Also rename "del" to "remove" where needed**|
 |**src/ed.c**|**5**|**Xclip patch to use with local clipboard**|
-|**src/ed.c**|**521**|**Check errors**|
+|**src/ed.c**|**518**|**Check errors**|

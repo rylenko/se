@@ -4,7 +4,7 @@ include cfg.mk
 
 # Code files
 SRC = src/buf.c src/cur.c src/ed.c src/err.c src/main.c src/mode.c \
-	src/raw_color.c src/raw_key.c src/row.c src/str_util.c src/term.c src/tok.c
+	src/raw_color.c src/raw_key.c src/row.c src/str_util.c src/term.c src/word.c
 OBJ = $(SRC:.c=.o)
 
 # Paths
@@ -31,7 +31,7 @@ endif
 src/buf.o: src/buf.h src/err.h src/math.h
 src/cur.o: src/buf.h src/cur.h
 src/ed.o: src/cfg.h src/cur.h src/ed.h src/macros.h src/math.h src/mode.h \
-	src/raw_key.h src/raw_color.h src/row.h src/str_util.h src/term.h
+	src/raw_key.h src/raw_color.h src/row.h src/str_util.h src/term.h src/word.h
 src/err.o: src/err.h
 src/main.o: src/ed.h src/err.h
 src/mode.c: src/mode.h
@@ -40,7 +40,7 @@ src/raw_key.o: src/err.h src/raw_key.h
 src/row.o: src/err.h src/row.h
 src/str_util.o: src/err.h src/str_util.h
 src/term.o: src/buf.h src/err.h src/term.h
-src/tok.o: src/tok.h
+src/word.o: src/word.h
 
 # Clean all after build
 clean:

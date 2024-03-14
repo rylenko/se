@@ -20,7 +20,7 @@
 #include "row.h"
 #include "str_util.h"
 #include "term.h"
-#include "tok.h"
+#include "word.h"
 
 /* Length of message's buffer must be greater than all message lengths */
 #define MSG_BUF_LEN (64)
@@ -86,11 +86,11 @@ static void ed_mv_end_of_row(void);
 /* Move cursor left. */
 static void ed_mv_left(void);
 
-/* Move to next token if exists. */
-static void ed_mv_next_tok(size_t times);
+/* Move to next word if exists. */
+static void ed_mv_next_word(size_t times);
 
-/* Move to previous token if exists. */
-static void ed_mv_prev_tok(size_t times);
+/* Move to previous word if exists. */
+static void ed_mv_prev_word(size_t times);
 
 /* Move cursor right. */
 static void ed_mv_right(void);
@@ -268,53 +268,50 @@ ed_mv_left(void)
 }
 
 static void
-ed_mv_next_tok(size_t times)
+ed_mv_next_word(size_t times)
 {
-	/* Find next token */
+	/* Find next word */
 	const Row *row = ed_get_curr_row();
 	size_t f_col_i;
-	size_t len;
-	size_t tok_i;
+	size_t word_i;
 
 	while (times-- > 0) {
+		/* Find next word */
 		f_col_i = ed.offset_col + ed.cur.x;
-		len = row->len - f_col_i;
-		tok_i = tok_next(row->cont + f_col_i, row->len - f_col_i);
-
-		if (tok_i < len) {
-			/* Check token on the screen */
-			if (tok_i + ed.cur.x < ed.win_size.ws_col) {
-				ed.cur.x += tok_i;
-			} else {
-				ed.offset_col = f_col_i + tok_i - ed.win_size.ws_col + 1;
-				ed.cur.x = ed.win_size.ws_col - 1;
-			}
+		word_i = word_next(row->cont + f_col_i, row->len - f_col_i);
+		/* Check word on the screen */
+		if (word_i + ed.cur.x < ed.win_size.ws_col) {
+			ed.cur.x += word_i;
 		} else {
+			ed.offset_col = f_col_i + word_i - ed.win_size.ws_col + 1;
+			ed.cur.x = ed.win_size.ws_col - 1;
+		}
+		/* End of row */
+		if (word_i + f_col_i == row->len) {
 			break;
 		}
 	}
 }
 
 static void
-ed_mv_prev_tok(size_t times)
+ed_mv_prev_word(size_t times)
 {
 	size_t f_col_i;
-	size_t tok_i;
+	size_t word_i;
 
 	while (times-- > 0) {
-		/* Find previous token */
+		/* Find previous word */
 		f_col_i = ed.offset_col + ed.cur.x;
-		tok_i = tok_rnext(ed_get_curr_row()->cont, f_col_i);
-
-		if (tok_i < f_col_i) {
-			/* Check token on the screen */
-			if (tok_i >= ed.offset_col) {
-				ed.cur.x = tok_i - ed.offset_col;
-			} else {
-				ed.offset_col = tok_i;
-				ed.cur.x = 1;
-			}
+		word_i = word_rnext(ed_get_curr_row()->cont, f_col_i);
+		/* Check word on the screen */
+		if (word_i >= ed.offset_col) {
+			ed.cur.x = word_i - ed.offset_col;
 		} else {
+			ed.offset_col = word_i;
+			ed.cur.x = 1;
+		}
+		/* Start of row */
+		if (word_i == 0) {
 			break;
 		}
 	}
@@ -616,11 +613,11 @@ ed_wait_and_proc_key(void)
 		case CFG_KEY_MV_LEFT:
 			REPEAT(repeat_times, ed_mv_left());
 			break;
-		case CFG_KEY_MV_NEXT_TOK:
-			ed_mv_next_tok(repeat_times);
+		case CFG_KEY_MV_NEXT_WORD:
+			ed_mv_next_word(repeat_times);
 			break;
-		case CFG_KEY_MV_PREV_TOK:
-			ed_mv_prev_tok(repeat_times);
+		case CFG_KEY_MV_PREV_WORD:
+			ed_mv_prev_word(repeat_times);
 			break;
 		case CFG_KEY_MV_RIGHT:
 			REPEAT(repeat_times, ed_mv_right());
