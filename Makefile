@@ -30,8 +30,8 @@ endif
 # Object file dependencies
 src/buf.o: src/buf.h src/err.h src/math.h
 src/cur.o: src/buf.h src/cur.h
-src/ed.o: src/cfg.h src/cur.h src/ed.h src/math.h src/mode.h src/raw_key.h \
-	src/raw_color.h src/row.h src/str_util.h src/term.h
+src/ed.o: src/cfg.h src/cur.h src/ed.h src/macros.h src/math.h src/mode.h \
+	src/raw_key.h src/raw_color.h src/row.h src/str_util.h src/term.h
 src/err.o: src/err.h
 src/main.o: src/ed.h src/err.h
 src/mode.c: src/mode.h

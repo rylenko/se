@@ -30,7 +30,7 @@ Normal mode keys:
 - `j` - go down.
 - `k` - go up.
 - `l` - go right.
-- `n` - create a row  below the current row and move to it.
+- `n` - create a row below the current row and move to it.
 - `q` - go to begin of previous token.
 - `s` - go to end of file.
 - (X) `u` - undo last change.
@@ -40,7 +40,8 @@ Normal mode keys:
 - `CTRL+n` - create a row above the current row and move to it.
 - `CTRL+s` - save.
 - `CTRL+q` - quit. If you changed the file, you will need to either save it or press this key several times.
-- `<index>g` - Go to row by its index `<index>`.
+
+You can also repeat a key by pressing `<number><key>`. For example, `5n` will create 5 rows above the cursor.
 
 Insert mode keys:
 

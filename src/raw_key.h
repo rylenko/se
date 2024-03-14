@@ -11,7 +11,6 @@ typedef enum {
 	RAW_KEY_D = 'd',
 	RAW_KEY_E = 'e',
 	RAW_KEY_ESC = 27,
-	RAW_KEY_G = 'g',
 	RAW_KEY_H = 'h',
 	RAW_KEY_I = 'i',
 	RAW_KEY_J = 'j',

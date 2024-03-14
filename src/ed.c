@@ -1,5 +1,4 @@
 /* TODO: Add local clipboard. Use it in functions. */
-/* TODO: Replace <index>g with <num><action> to repeat action <num> times */
 /* TODO: Use linked list for rows array and row's content parts */
 /* TODO: Undo operations. Also rename "del" to "remove" where needed */
 /* TODO: Xclip patch to use with local clipboard */
@@ -13,6 +12,7 @@
 #include "cur.h"
 #include "ed.h"
 #include "err.h"
+#include "macros.h"
 #include "math.h"
 #include "mode.h"
 #include "raw_color.h"
@@ -81,9 +81,6 @@ static void ed_mv_end_of_f(void);
 
 /* Move to end of row. */
 static void ed_mv_end_of_row(void);
-
-/* Move to prepared row's index. */
-static void ed_mv_input_row(void);
 
 /* Move cursor left. */
 static void ed_mv_left(void);
@@ -253,15 +250,6 @@ ed_mv_end_of_row(void)
 }
 
 static void
-ed_mv_input_row(void)
-{
-	if (ed.num_input != SIZE_MAX) {
-		ed_mv_row(ed.num_input);
-		ed.num_input = SIZE_MAX;
-	}
-}
-
-static void
 ed_mv_left(void)
 {
 	if (0 == ed.cur.x) {
@@ -412,7 +400,7 @@ ed_input_num(unsigned char digit)
 		ed.num_input = 0;
 	}
 	if (SIZE_MAX / 10 - digit <= ed.num_input) {
-		/* Too big. `SIZE_MAX` is flag that there is no pending index */
+		/* Too big. `SIZE_MAX` is flag that there is no pending number */
 		ed.num_input = SIZE_MAX - 1;
 	} else {
 		/* Append digit to pending index */
@@ -565,6 +553,7 @@ void
 ed_wait_and_proc_key(void)
 {
 	char key;
+	size_t repeat_times = ed.num_input == SIZE_MAX ? 1 : ed.num_input;
 	/* Assert that we do not need to quit */
 	if (ed_need_to_quit()) {
 		err("Need to quit instead of key processing.");
@@ -579,13 +568,13 @@ ed_wait_and_proc_key(void)
 		/* Normal mode keys */
 		switch (key) {
 		case CFG_KEY_DEL_ROW:
-			ed_del_row();
+			REPEAT(repeat_times, ed_del_row());
 			break;
 		case CFG_KEY_INS_ROW_BELOW:
-			ed_ins_row_below();
+			REPEAT(repeat_times, ed_ins_row_below());
 			break;
 		case CFG_KEY_INS_ROW_TOP:
-			ed_ins_row_top();
+			REPEAT(repeat_times, ed_ins_row_top());
 			break;
 		case CFG_KEY_MODE_INS:
 			ed.mode = MODE_INS;
@@ -597,7 +586,7 @@ ed_wait_and_proc_key(void)
 			ed_mv_begin_of_row();
 			break;
 		case CFG_KEY_MV_DOWN:
-			ed_mv_down();
+			REPEAT(repeat_times, ed_mv_down());
 			break;
 		case CFG_KEY_MV_END_OF_F:
 			ed_mv_end_of_f();
@@ -606,22 +595,19 @@ ed_wait_and_proc_key(void)
 			ed_mv_end_of_row();
 			break;
 		case CFG_KEY_MV_LEFT:
-			ed_mv_left();
+			REPEAT(repeat_times, ed_mv_left());
 			break;
 		case CFG_KEY_MV_NEXT_TOK:
-			ed_mv_next_tok();
+			REPEAT(repeat_times, ed_mv_next_tok());
 			break;
 		case CFG_KEY_MV_PREV_TOK:
-			ed_mv_prev_tok();
+			REPEAT(repeat_times, ed_mv_prev_tok());
 			break;
 		case CFG_KEY_MV_RIGHT:
-			ed_mv_right();
-			break;
-		case CFG_KEY_MV_ROW:
-			ed_mv_input_row();
+			REPEAT(repeat_times, ed_mv_right());
 			break;
 		case CFG_KEY_MV_UP:
-			ed_mv_up();
+			REPEAT(repeat_times, ed_mv_up());
 			break;
 		case CFG_KEY_SAVE:
 			ed_save();

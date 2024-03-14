@@ -30,7 +30,7 @@ Normal mode keys:
 - `j` - go down.
 - `k` - go up.
 - `l` - go right.
-- `n` - create a row  below the current row and move to it.
+- `n` - create a row below the current row and move to it.
 - `q` - go to begin of previous token.
 - `s` - go to end of file.
 - (X) `u` - undo last change.
@@ -40,7 +40,8 @@ Normal mode keys:
 - `CTRL+n` - create a row above the current row and move to it.
 - `CTRL+s` - save.
 - `CTRL+q` - quit. If you changed the file, you will need to either save it or press this key several times.
-- `<index>g` - Go to row by its index `<index>`.
+
+You can also repeat a key by pressing `<number><key>`. For example, `5n` will create 5 rows above the cursor.
 
 Insert mode keys:
 
@@ -104,30 +105,30 @@ Later.
 	<tbody><tr>
 		<th>C</th>
 		<th>12</th>
-		<th>1265</th>
-		<th>146</th>
-		<th>165</th>
-		<th>954</th>
-		<th>132</th>
-		<th>24649</th>
+		<th>1251</th>
+		<th>144</th>
+		<th>163</th>
+		<th>944</th>
+		<th>131</th>
+		<th>24603</th>
 	</tr><tr>
 		<th>C Header</th>
-		<th>13</th>
-		<th>307</th>
-		<th>67</th>
-		<th>63</th>
-		<th>177</th>
-		<th>0</th>
-		<th>6711</th>
+		<th>14</th>
+		<th>316</th>
+		<th>69</th>
+		<th>64</th>
+		<th>183</th>
+		<th>1</th>
+		<th>6831</th>
 	</tr><tr>
 		<th>Markdown</th>
 		<th>2</th>
-		<th>181</th>
-		<th>58</th>
+		<th>183</th>
+		<th>60</th>
 		<th>0</th>
 		<th>123</th>
 		<th>0</th>
-		<th>3252</th>
+		<th>3374</th>
 	</tr><tr>
 		<th>Makefile</th>
 		<th>2</th>
@@ -136,7 +137,7 @@ Later.
 		<th>13</th>
 		<th>55</th>
 		<th>0</th>
-		<th>1934</th>
+		<th>1947</th>
 	</tr><tr>
 		<th>Shell</th>
 		<th>1</th>
@@ -167,13 +168,13 @@ Later.
 	</tr></tbody>
 	<tfoot><tr>
 		<th>Total</th>
-		<th>32</th>
-		<th>1904</th>
-		<th>295</th>
-		<th>247</th>
-		<th>1362</th>
+		<th>33</th>
+		<th>1901</th>
+		<th>297</th>
+		<th>246</th>
+		<th>1358</th>
 		<th>132</th>
-    	<th>37785</th>
+    	<th>37994</th>
 	</tr></tfoot>
 	</table>
 
@@ -182,10 +183,9 @@ Later.
 |Path|Line|Description|
 |-|-|-|
 |**src/row.h**|**34**|**rename to `rows_remove` if undo is done.**|
-|**src/cfg.h**|**37**|**Fix it for another values**|
+|**src/cfg.h**|**36**|**Fix it for another values**|
 |**src/ed.c**|**1**|**Add local clipboard. Use it in functions.**|
-|**src/ed.c**|**2**|**Replace <index>g with <num><action> to repeat action <num> times**|
-|**src/ed.c**|**3**|**Use linked list for rows array and row's content parts**|
-|**src/ed.c**|**4**|**Undo operations. Also rename "del" to "remove" where needed**|
-|**src/ed.c**|**5**|**Xclip patch to use with local clipboard**|
-|**src/ed.c**|**514**|**Check errors**|
+|**src/ed.c**|**2**|**Use linked list for rows array and row's content parts**|
+|**src/ed.c**|**3**|**Undo operations. Also rename "del" to "remove" where needed**|
+|**src/ed.c**|**4**|**Xclip patch to use with local clipboard**|
+|**src/ed.c**|**502**|**Check errors**|
