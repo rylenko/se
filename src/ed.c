@@ -48,7 +48,7 @@ static struct {
 } ed;
 
 /* Deletes current row. */
-static void ed_del_row(void);
+static void ed_del_row(size_t times);
 
 /* Fixes cursor's coordinates. */
 static void ed_fix_cur(void);
@@ -134,15 +134,17 @@ ed_deinit(void)
 }
 
 static void
-ed_del_row(void)
+ed_del_row(size_t times)
 {
 	if (ed.rows.cnt == 1) {
 		ed_set_msg(MSG_DEL_ONLY_ONE_ROW);
-	} else {
+	} else if (times > 0) {
 		/* Remove x offsets and delete the row */
 		ed.offset_col = 0;
 		ed.cur.x = 0;
-		rows_del(&ed.rows, ed.offset_row + ed.cur.y);
+		while (times-- > 0) {
+			rows_del(&ed.rows, ed.offset_row + ed.cur.y);
+		}
 	}
 }
 
@@ -569,7 +571,7 @@ ed_wait_and_proc_key(void)
 		/* Normal mode keys */
 		switch (key) {
 		case CFG_KEY_DEL_ROW:
-			REPEAT(repeat_times, ed_del_row());
+			ed_del_row(repeat_times);
 			break;
 		case CFG_KEY_INS_ROW_BELOW:
 			REPEAT(repeat_times, ed_ins_row_below());
