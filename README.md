@@ -105,12 +105,12 @@ Later.
 	<tbody><tr>
 		<th>C</th>
 		<th>12</th>
-		<th>1262</th>
+		<th>1263</th>
 		<th>144</th>
-		<th>163</th>
+		<th>164</th>
 		<th>955</th>
 		<th>134</th>
-		<th>24801</th>
+		<th>24856</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>14</th>
@@ -169,12 +169,12 @@ Later.
 	<tfoot><tr>
 		<th>Total</th>
 		<th>33</th>
-		<th>1912</th>
+		<th>1913</th>
 		<th>297</th>
-		<th>246</th>
+		<th>247</th>
 		<th>1369</th>
 		<th>135</th>
-    	<th>38192</th>
+    	<th>38247</th>
 	</tr></tfoot>
 	</table>
 
@@ -186,6 +186,7 @@ Later.
 |**src/cfg.h**|**36**|**Fix it for another values**|
 |**src/ed.c**|**1**|**Add local clipboard. Use it in functions.**|
 |**src/ed.c**|**2**|**Use linked list for rows array and row's content parts**|
-|**src/ed.c**|**3**|**Undo operations. Also rename "del" to "remove" where needed**|
-|**src/ed.c**|**4**|**Xclip patch to use with local clipboard**|
-|**src/ed.c**|**502**|**Check errors**|
+|**src/ed.c**|**3**|**Integrate repetition of keys into handlers**|
+|**src/ed.c**|**4**|**Undo operations. Also rename "del" to "remove" where needed**|
+|**src/ed.c**|**5**|**Xclip patch to use with local clipboard**|
+|**src/ed.c**|**503**|**Check errors**|
