@@ -1,4 +1,5 @@
 /* TODO: Add local clipboard. Use it in functions. */
+/* TODO: Replace <index>g with <num><action> to repeat action <num> times */
 /* TODO: Use linked list for rows array and row's content parts */
 /* TODO: Undo operations. Also rename "del" to "remove" where needed */
 /* TODO: Xclip patch to use with local clipboard */
