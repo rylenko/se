@@ -145,6 +145,7 @@ ed_del_row(size_t times)
 		while (times-- > 0) {
 			rows_del(&ed.rows, ed.offset_row + ed.cur.y);
 		}
+		ed.quit_presses_rem = CFG_QUIT_PRESSES_REM_WITHOUT_SAVE_AFTER_CHANGES;
 	}
 }
 
