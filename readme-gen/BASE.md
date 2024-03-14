@@ -41,7 +41,7 @@ Normal mode keys:
 - `CTRL+s` - save.
 - `CTRL+q` - quit. If you changed the file, you will need to either save it or press this key several times.
 
-You can also repeat a key by pressing `<number><key>`. For example, `5n` will create 5 rows above the cursor.
+You can also repeat a key by pressing `<number><key>`. For example, `5n` will create 5 rows below the cursor.
 
 Insert mode keys:
 
