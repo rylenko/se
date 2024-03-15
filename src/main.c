@@ -13,8 +13,8 @@ main(const int argc, const char *const *const argv)
 		err(USAGE);
 	}
 	/* Initialize editor and open the file */
-	ed_init(STDIN_FILENO, STDOUT_FILENO);
 	ed_open(argv[1]);
+	ed_init(STDIN_FILENO, STDOUT_FILENO);
 	/* Refresh editor's screen and process key presses */
 	while (1) {
 		ed_refresh_scr();

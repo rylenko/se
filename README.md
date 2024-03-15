@@ -40,6 +40,7 @@ Normal mode keys:
 - `CTRL+n` - create a row above the current row and move to it.
 - `CTRL+s` - save.
 - `CTRL+q` - quit. If you changed the file, you will need to either save it or press this key several times.
+- (X) `CTRL+x` - save to current user's home directory. Useful if no privilege to write to opened file.
 
 You can also repeat a key by pressing `<number><key>`. For example, `5n` will create 5 rows below the cursor.
 
@@ -105,12 +106,12 @@ Later.
 	<tbody><tr>
 		<th>C</th>
 		<th>12</th>
-		<th>1312</th>
+		<th>1314</th>
 		<th>140</th>
-		<th>173</th>
-		<th>999</th>
+		<th>172</th>
+		<th>1002</th>
 		<th>159</th>
-		<th>26370</th>
+		<th>26391</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>14</th>
@@ -123,12 +124,12 @@ Later.
 	</tr><tr>
 		<th>Markdown</th>
 		<th>2</th>
-		<th>183</th>
+		<th>185</th>
 		<th>60</th>
 		<th>0</th>
-		<th>123</th>
+		<th>125</th>
 		<th>0</th>
-		<th>3374</th>
+		<th>3582</th>
 	</tr><tr>
 		<th>Makefile</th>
 		<th>2</th>
@@ -169,12 +170,12 @@ Later.
 	<tfoot><tr>
 		<th>Total</th>
 		<th>33</th>
-		<th>1981</th>
+		<th>1985</th>
 		<th>296</th>
-		<th>269</th>
-		<th>1416</th>
+		<th>268</th>
+		<th>1421</th>
 		<th>160</th>
-    	<th>40297</th>
+    	<th>40526</th>
 	</tr></tfoot>
 	</table>
 
@@ -184,11 +185,10 @@ Later.
 |-|-|-|
 |**src/row.h**|**34**|**rename to `rows_remove` if undo is done.**|
 |**src/cfg.h**|**44**|**Fix it for another values**|
-|**src/ed.c**|**1**|**block insrting if there is no privelege to write**|
-|**src/ed.c**|**2**|**Add local clipboard. Use it in functions.**|
-|**src/ed.c**|**3**|**Use linked list for rows array and row's content parts**|
-|**src/ed.c**|**4**|**Integrate repetition of keys into handlers**|
-|**src/ed.c**|**5**|**Undo operations. Also rename "del" to "remove" where needed**|
-|**src/ed.c**|**6**|**Xclip patch to use with local clipboard**|
-|**src/ed.c**|**520**|**Check errors**|
-|**src/ed.c**|**584**|**ed_proc_(arrow|norm|ins)_keys**|
+|**src/ed.c**|**1**|**Add local clipboard. Use it in functions.**|
+|**src/ed.c**|**2**|**Use linked list for rows array and row's content parts**|
+|**src/ed.c**|**3**|**Integrate repetition of keys into handlers**|
+|**src/ed.c**|**4**|**Undo operations. Also rename "del" to "remove" where needed**|
+|**src/ed.c**|**5**|**Xclip patch to use with local clipboard**|
+|**src/ed.c**|**522**|**Check errors**|
+|**src/ed.c**|**586**|**ed_proc_(arrow|norm|ins)_keys**|

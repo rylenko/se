@@ -1,10 +1,10 @@
-/* TODO: block insrting if there is no privelege to write */
 /* TODO: Add local clipboard. Use it in functions. */
 /* TODO: Use linked list for rows array and row's content parts */
 /* TODO: Integrate repetition of keys into handlers */
 /* TODO: Undo operations. Also rename "del" to "remove" where needed */
 /* TODO: Xclip patch to use with local clipboard */
 
+#include <errno.h>
 #include <libgen.h>
 #include <signal.h>
 #include <stdarg.h>
@@ -29,6 +29,7 @@
 #define MSG_ARR_LEN (64)
 #define MSG_DEL_ONLY_ONE_ROW ("It is forbidden to delete only one row.")
 #define MSG_SAVED_FMT ("%zu bytes saved.")
+#define MSG_SAVE_FAIL_FMT ("Failed to save: %s.")
 #define MSG_QUIT_PRESSES_REM_FMT ( \
 	"There are unsaved changes. Presses remain to quit: %hhu." \
 )
@@ -511,7 +512,8 @@ ed_save(void)
 
 	/* Open file */
 	if (!(f = fopen(ed.path, "w"))) {
-		err("Failed to open %s for save.", ed.path);
+		ed_set_msg(MSG_SAVE_FAIL_FMT, strerror(errno));
+		return;
 	}
 	/* Write rows */
 	for (row_i = 0; row_i < ed.rows.cnt; row_i++) {
