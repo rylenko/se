@@ -110,16 +110,16 @@ Later.
 		<th>173</th>
 		<th>999</th>
 		<th>159</th>
-		<th>26324</th>
+		<th>26372</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>14</th>
-		<th>333</th>
+		<th>335</th>
 		<th>72</th>
 		<th>77</th>
-		<th>184</th>
+		<th>186</th>
 		<th>1</th>
-		<th>7293</th>
+		<th>7353</th>
 	</tr><tr>
 		<th>Markdown</th>
 		<th>2</th>
@@ -169,12 +169,12 @@ Later.
 	<tfoot><tr>
 		<th>Total</th>
 		<th>33</th>
-		<th>1980</th>
+		<th>1982</th>
 		<th>297</th>
 		<th>269</th>
-		<th>1414</th>
+		<th>1416</th>
 		<th>160</th>
-    	<th>40191</th>
+    	<th>40299</th>
 	</tr></tfoot>
 	</table>
 

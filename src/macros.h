@@ -3,7 +3,8 @@
 
 /* Repeats code several times. */
 #define REPEAT(cnt, code) { \
-	while (cnt-- > 0) { \
+	size_t unpacked_cnt = cnt; \
+	while (unpacked_cnt-- > 0) { \
 		(code); \
 	} \
 }

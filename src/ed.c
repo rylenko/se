@@ -624,10 +624,10 @@ ed_wait_and_proc_key(void)
 			ed_del_row(repeat_times);
 			return;
 		case CFG_KEY_INS_ROW_BELOW:
-			REPEAT(repeat_times, ed_ins_row_below());
+			REPEAT(MIN(CFG_INS_ROW_LIMIT, repeat_times), ed_ins_row_below());
 			return;
 		case CFG_KEY_INS_ROW_TOP:
-			REPEAT(repeat_times, ed_ins_row_top());
+			REPEAT(MIN(CFG_INS_ROW_LIMIT, repeat_times), ed_ins_row_top());
 			return;
 		case CFG_KEY_MODE_INS:
 			ed.mode = MODE_INS;
