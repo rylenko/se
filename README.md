@@ -105,12 +105,12 @@ Later.
 	<tbody><tr>
 		<th>C</th>
 		<th>12</th>
-		<th>1313</th>
-		<th>141</th>
+		<th>1312</th>
+		<th>140</th>
 		<th>173</th>
 		<th>999</th>
 		<th>159</th>
-		<th>26372</th>
+		<th>26370</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>14</th>
@@ -169,12 +169,12 @@ Later.
 	<tfoot><tr>
 		<th>Total</th>
 		<th>33</th>
-		<th>1982</th>
-		<th>297</th>
+		<th>1981</th>
+		<th>296</th>
 		<th>269</th>
 		<th>1416</th>
 		<th>160</th>
-    	<th>40299</th>
+    	<th>40297</th>
 	</tr></tfoot>
 	</table>
 
@@ -184,12 +184,11 @@ Later.
 |-|-|-|
 |**src/row.h**|**34**|**rename to `rows_remove` if undo is done.**|
 |**src/cfg.h**|**44**|**Fix it for another values**|
-|**src/ed.c**|**1**|**number input on status bar**|
-|**src/ed.c**|**2**|**block insrting if there is no privelege to write**|
-|**src/ed.c**|**3**|**Add local clipboard. Use it in functions.**|
-|**src/ed.c**|**4**|**Use linked list for rows array and row's content parts**|
-|**src/ed.c**|**5**|**Integrate repetition of keys into handlers**|
-|**src/ed.c**|**6**|**Undo operations. Also rename "del" to "remove" where needed**|
-|**src/ed.c**|**7**|**Xclip patch to use with local clipboard**|
-|**src/ed.c**|**521**|**Check errors**|
-|**src/ed.c**|**585**|**ed_proc_(arrow|norm|ins)_keys**|
+|**src/ed.c**|**1**|**block insrting if there is no privelege to write**|
+|**src/ed.c**|**2**|**Add local clipboard. Use it in functions.**|
+|**src/ed.c**|**3**|**Use linked list for rows array and row's content parts**|
+|**src/ed.c**|**4**|**Integrate repetition of keys into handlers**|
+|**src/ed.c**|**5**|**Undo operations. Also rename "del" to "remove" where needed**|
+|**src/ed.c**|**6**|**Xclip patch to use with local clipboard**|
+|**src/ed.c**|**520**|**Check errors**|
+|**src/ed.c**|**584**|**ed_proc_(arrow|norm|ins)_keys**|
