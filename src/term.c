@@ -99,20 +99,15 @@ term_init(const int ifd, const int ofd)
 	term.ofd = ofd;
 }
 
-char
-term_wait_key(void)
+size_t
+term_wait_key_seq(char *seq, const size_t len)
 {
-	char key;
-	while (0 == term_get_key(&key));
-	return key;
-}
-
-int
-term_get_key(char *to)
-{
-	int cnt = read(term.ifd, to, 1);
-	if (cnt < 0) {
-		err("Failed to non blocking read key press:");
+	ssize_t ret = 0;
+	while (ret == 0) {
+		if ((ret = read(term.ifd, seq, len)) < 0) {
+			err("Failed to read key sequence:");
+		}
 	}
-	return cnt;
+	/* It's ok to return signed number because we check errors before */
+	return ret;
 }

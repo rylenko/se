@@ -95,7 +95,7 @@ rows_free(Rows *rows)
 }
 
 void
-rows_ins(Rows *rows, size_t idx, Row row)
+rows_ins(Rows *rows, const size_t idx, Row row)
 {
 	/* Validate index */
 	if (idx > rows->cnt) {
@@ -126,8 +126,9 @@ void
 rows_read(Rows *rows, FILE *f)
 {
 	Row row = row_empty();
-	while (row_read(&row, f) != NULL)
+	while (row_read(&row, f)) {
 		rows_ins(rows, rows->cnt, row);
+	}
 }
 
 static void
@@ -146,7 +147,7 @@ rows_realloc_if_needed(Rows *rows)
 }
 
 void
-rows_del(Rows *rows, size_t idx)
+rows_del(Rows *rows, const size_t idx)
 {
 	/* Validate index */
 	if (idx >= rows->cnt) {

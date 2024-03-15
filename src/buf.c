@@ -11,7 +11,7 @@
 #define FMT_STR_LEN (256)
 
 /* Grows buffer capacity. */
-static void buf_grow(Buf *buf, size_t by);
+static void buf_grow(Buf *buf, const size_t by);
 
 Buf
 buf_alloc(void)
@@ -20,19 +20,22 @@ buf_alloc(void)
 }
 
 void
-buf_flush(const Buf* buf, int fd)
+buf_flush(const Buf* buf, const int fd)
 {
 	write(fd, buf->data, buf->len);
 }
 
 void
-buf_free(Buf buf)
+buf_free(Buf *buf)
 {
-	free(buf.data);
+	free(buf->data);
+	buf->data = NULL;
+	buf->len = 0;
+	buf->cap = 0;
 }
 
 static void
-buf_grow(Buf *buf, size_t by)
+buf_grow(Buf *buf, const size_t by)
 {
 	buf->cap += by;
 	if (!(buf->data = realloc(buf->data, buf->cap))) {
@@ -41,10 +44,10 @@ buf_grow(Buf *buf, size_t by)
 }
 
 size_t
-buf_write(Buf *buf, const char *part, size_t len)
+buf_write(Buf *buf, const char *part, const size_t len)
 {
 	/* Check that we need to grow */
-	size_t new_len = buf->len + len;
+	const size_t new_len = buf->len + len;
 	if (new_len > buf->cap) {
 		buf_grow(buf, MAX(new_len - buf->cap, REALLOC_STEP));
 	}

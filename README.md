@@ -105,21 +105,21 @@ Later.
 	<tbody><tr>
 		<th>C</th>
 		<th>12</th>
-		<th>1295</th>
-		<th>139</th>
-		<th>171</th>
-		<th>985</th>
-		<th>161</th>
-		<th>25855</th>
+		<th>1294</th>
+		<th>138</th>
+		<th>172</th>
+		<th>984</th>
+		<th>157</th>
+		<th>26028</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>14</th>
-		<th>327</th>
-		<th>73</th>
-		<th>69</th>
-		<th>185</th>
+		<th>333</th>
+		<th>72</th>
+		<th>77</th>
+		<th>184</th>
 		<th>1</th>
-		<th>7037</th>
+		<th>7293</th>
 	</tr><tr>
 		<th>Markdown</th>
 		<th>2</th>
@@ -169,12 +169,12 @@ Later.
 	<tfoot><tr>
 		<th>Total</th>
 		<th>33</th>
-		<th>1956</th>
-		<th>296</th>
-		<th>259</th>
-		<th>1401</th>
-		<th>162</th>
-    	<th>39466</th>
+		<th>1961</th>
+		<th>294</th>
+		<th>268</th>
+		<th>1399</th>
+		<th>158</th>
+    	<th>39895</th>
 	</tr></tfoot>
 	</table>
 
@@ -192,4 +192,4 @@ Later.
 |**src/ed.c**|**6**|**Undo operations. Also rename "del" to "remove" where needed**|
 |**src/ed.c**|**7**|**Xclip patch to use with local clipboard**|
 |**src/ed.c**|**521**|**Check errors**|
-|**src/ed.c**|**584**|**ed_proc_(arrow|norm|ins)_keys**|
+|**src/ed.c**|**585**|**ed_proc_(arrow|norm|ins)_keys**|

@@ -20,13 +20,13 @@ typedef struct {
 Buf buf_alloc(void);
 
 /* Writes buffer to stdout using one `write` call. */
-void buf_flush(const Buf *, int);
+void buf_flush(const Buf *, const int);
 
 /* Frees the buffer. */
-void buf_free(Buf);
+void buf_free(Buf *);
 
 /* Appends a string to a buffer. */
-size_t buf_write(Buf *, const char *, size_t);
+size_t buf_write(Buf *, const char *, const size_t);
 
 /* Appends a formatted string to a buffer. */
 size_t buf_writef(Buf *, const char *, ...);

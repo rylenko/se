@@ -28,10 +28,16 @@ void term_flush(const Buf *);
 /* Creates new terminal controller. */
 void term_init(const int, const int);
 
-/* Waits for the key press. */
-char term_wait_key(void);
+/*
+Waits for a key to be pressed.
 
-/* Gets key press. Returns `1` on success and `0` if no keys. */
-int term_get_key(char *);
+Some keys represent more than one `char`. So you need to read multiple
+`char`s in one press. For example, when you press the up arrow, three
+characters are counted: `'\x1b'`, `'['` and 'A'.
+
+Returns readed `char`s count, which always greater than zero and less
+or equal to given length.
+*/
+size_t term_wait_key_seq(char *, size_t);
 
 #endif /* _TERM_H */

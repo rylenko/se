@@ -63,7 +63,7 @@ static Row *ed_get_curr_row(void);
 static void ed_handle_sig_win_ch(int num);
 
 /* Input number. */
-static void ed_input_num(unsigned char digit);
+static void ed_input_num(const unsigned char digit);
 
 /* Inserts new row below the cursor and switches to inserting mode. */
 static void ed_ins_row_below(void);
@@ -185,7 +185,7 @@ ed_fix_cur(void)
 static Row*
 ed_get_curr_row(void)
 {
-	return &ed.rows.arr[ed.cur.y + ed.offset_row];
+	return ed.rows.arr + ed.offset_row + ed.cur.y;
 }
 
 static void
@@ -198,7 +198,7 @@ ed_handle_sig_win_ch(int num)
 }
 
 void
-ed_init(int ifd, int ofd)
+ed_init(const int ifd, const int ofd)
 {
 	term_init(ifd, ofd);
 	term_enable_raw_mode();
@@ -409,7 +409,7 @@ ed_open(const char *path)
 }
 
 static void
-ed_input_num(unsigned char digit)
+ed_input_num(const unsigned char digit)
 {
 	if (digit > 9) {
 		err("Invalid digit for number input: %hhu.", digit);
@@ -499,7 +499,7 @@ ed_refresh_scr(void)
 	}
 	/* Flush and free the buffer */
 	term_flush(&buf);
-	buf_free(buf);
+	buf_free(&buf);
 }
 
 static void
@@ -508,7 +508,7 @@ ed_save(void)
 	size_t len = 0;
 	size_t row_i;
 	FILE *f;
-	Row *row;
+	const Row *row;
 
 	/* Open file */
 	if (!(f = fopen(ed.path, "w"))) {
@@ -572,24 +572,24 @@ void
 ed_wait_and_proc_key(void)
 {
 	char key_seq[3];
+	size_t key_seq_len;
 	size_t repeat_times = SIZE_MAX == ed.num_input ? 1 : ed.num_input;
+
 	/* Assert that we do not need to quit */
 	if (ed_need_to_quit()) {
 		err("Need to quit instead of key processing.");
 	}
-
-	/* Wait master key */
-	key_seq[0] = term_wait_key();
+	/* Wait key sequence */
+	key_seq_len = term_wait_key_seq(key_seq, sizeof(key_seq));
 
 	/* TODO: ed_proc_(arrow|norm|ins)_keys */
 
 	/* Process arrow keys if enabled */
 	if (
 		CFG_ARROWS_ENABLED
+		&& key_seq_len >= 3
 		&& key_seq[0] == RAW_KEY_ESC
-		&& term_get_key(key_seq + 1) == 1
 		&& key_seq[1] == '['
-		&& term_get_key(key_seq + 2) == 1
 	) {
 		/* Check last key from sequence */
 		switch (key_seq[2]) {
