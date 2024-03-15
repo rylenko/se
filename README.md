@@ -105,12 +105,12 @@ Later.
 	<tbody><tr>
 		<th>C</th>
 		<th>12</th>
-		<th>1263</th>
+		<th>1264</th>
 		<th>138</th>
-		<th>168</th>
+		<th>169</th>
 		<th>957</th>
 		<th>151</th>
-		<th>25198</th>
+		<th>25259</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>14</th>
@@ -169,12 +169,12 @@ Later.
 	<tfoot><tr>
 		<th>Total</th>
 		<th>33</th>
-		<th>1913</th>
+		<th>1914</th>
 		<th>291</th>
-		<th>251</th>
+		<th>252</th>
 		<th>1371</th>
 		<th>152</th>
-    	<th>38602</th>
+    	<th>38663</th>
 	</tr></tfoot>
 	</table>
 
@@ -186,9 +186,10 @@ Later.
 |**src/cfg.h**|**36**|**Fix it for another values**|
 |**src/ed.c**|**1**|**Arrows. Arrows movement is allowed then inserting**|
 |**src/ed.c**|**2**|**number input on status bar**|
-|**src/ed.c**|**3**|**Add local clipboard. Use it in functions.**|
-|**src/ed.c**|**4**|**Use linked list for rows array and row's content parts**|
-|**src/ed.c**|**5**|**Integrate repetition of keys into handlers**|
-|**src/ed.c**|**6**|**Undo operations. Also rename "del" to "remove" where needed**|
-|**src/ed.c**|**7**|**Xclip patch to use with local clipboard**|
-|**src/ed.c**|**521**|**Check errors**|
+|**src/ed.c**|**3**|**block insrting if there is no privelege to write**|
+|**src/ed.c**|**4**|**Add local clipboard. Use it in functions.**|
+|**src/ed.c**|**5**|**Use linked list for rows array and row's content parts**|
+|**src/ed.c**|**6**|**Integrate repetition of keys into handlers**|
+|**src/ed.c**|**7**|**Undo operations. Also rename "del" to "remove" where needed**|
+|**src/ed.c**|**8**|**Xclip patch to use with local clipboard**|
+|**src/ed.c**|**522**|**Check errors**|
