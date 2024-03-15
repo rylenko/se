@@ -140,8 +140,14 @@ static void ed_write_cur(Buf *buf);
 /* Write rows in the buffer. */
 static void ed_write_rows(Buf *buf);
 
-/* Write static in the buffer. */
+/* Writes status to the buffer. */
 static void ed_write_stat(Buf *buf);
+
+/* Writes left part of status to the buffer. */
+static size_t ed_write_stat_left(Buf *buf);
+
+/* Writes right part of status to the buffer. */
+static void ed_write_stat_right(Buf *buf, size_t left_len);
 
 void
 ed_deinit(void)
@@ -750,32 +756,45 @@ ed_write_rows(Buf *buf)
 static void
 ed_write_stat(Buf *buf)
 {
-	size_t col_i;
 	size_t left_len;
-	char coords[32];
-	size_t coords_len;
-	char num_input[32];
-	size_t num_input_len = 0;
-
-	/* Clear row on the right and begin colored output */
+	/* Clear row, begin color, write parts and end color */
+	term_clr_row_on_right(buf);
 	raw_color_begin(
 		buf,
 		(RawColor)CFG_COLOR_STAT_BG,
 		(RawColor)CFG_COLOR_STAT_FG
 	);
-	term_clr_row_on_right(buf);
+	left_len = ed_write_stat_left(buf);
+	ed_write_stat_right(buf, left_len);
+	raw_color_end(buf);
+}
 
+static size_t
+ed_write_stat_left(Buf *buf)
+{
+	size_t len;
 	/* Write base status to buffer */
-	left_len = buf_writef(buf, " [%s] %s", mode_str(ed.mode), basename(ed.path));
+	len = buf_writef(buf, " [%s] %s", mode_str(ed.mode), basename(ed.path));
 	/* Add mark if file is dirty */
 	if (CFG_QUIT_PRESSES_REM_AFT_CH == ed.quit_presses_rem) {
-		left_len += buf_write(buf, " [+]", 4);
+		len += buf_write(buf, " [+]", 4);
 	}
 	/* Write message to buffer if exists */
 	if (ed.msg[0]) {
-		left_len += buf_writef(buf, ": %s", ed.msg);
+		len += buf_writef(buf, ": %s", ed.msg);
 		ed.msg[0] = 0;
 	}
+	return len;
+}
+
+static void
+ed_write_stat_right(Buf *buf, size_t left_len)
+{
+	size_t col_i;
+	char coords[32];
+	size_t coords_len;
+	char num_input[32];
+	size_t num_input_len = 0;
 
 	/* Prepare number input if active */
 	if (ed.num_input != SIZE_MAX) {
@@ -794,7 +813,6 @@ ed_write_stat(Buf *buf)
 		ed.offset_col + ed.cur.x,
 		ed.offset_row + ed.cur.y
 	);
-
 	/* Fill colored empty space */
 	for (
 		col_i = left_len + num_input_len + coords_len;
@@ -806,5 +824,4 @@ ed_write_stat(Buf *buf)
 	/* Write right parts and end color */
 	buf_write(buf, num_input, num_input_len);
 	buf_write(buf, coords, coords_len);
-	raw_color_end(buf);
 }
