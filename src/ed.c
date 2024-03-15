@@ -1,4 +1,5 @@
 /* TODO: Arrows. Arrows movement is allowed then inserting */
+/* TODO: number input on status bar */
 /* TODO: Add local clipboard. Use it in functions. */
 /* TODO: Use linked list for rows array and row's content parts */
 /* TODO: Integrate repetition of keys into handlers */
