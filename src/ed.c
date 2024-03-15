@@ -4,6 +4,7 @@
 /* TODO: Undo operations. Also rename "del" to "remove" where needed */
 /* TODO: Xclip patch to use with local clipboard */
 
+#include <assert.h>
 #include <errno.h>
 #include <libgen.h>
 #include <signal.h>
@@ -107,6 +108,15 @@ static void ed_mv_row(size_t idx);
 /* Move cursor up. */
 static void ed_mv_up(void);
 
+/* Processes arrow key sequence. */
+static void ed_proc_arrow_key(char *key_seq, size_t key_seq_len);
+
+/* Processes inserting key. */
+static void ed_proc_ins_key(char key);
+
+/* Processes normal key. */
+static void ed_proc_norm_key(char key);
+
 /* Quits the editor. */
 static void ed_try_quit(void);
 
@@ -205,6 +215,61 @@ ed_init(const int ifd, const int ofd)
 {
 	term_init(ifd, ofd);
 	term_enable_raw_mode();
+}
+
+static void
+ed_input_num(const unsigned char digit)
+{
+	assert(digit < 10);
+	if (SIZE_MAX == ed.num_input) {
+		/* Prepare for first digit in input */
+		ed.num_input = 0;
+	}
+	if ((SIZE_MAX - digit) / 10 <= ed.num_input) {
+		/* Too big. `SIZE_MAX` is flag that there is no pending number */
+		ed.num_input = SIZE_MAX;
+	} else {
+		/* Append digit to pending index */
+		ed.num_input *= 10;
+		ed.num_input += digit;
+	}
+}
+
+static void
+ed_ins_row_below(void)
+{
+	/* Remove x offsets */
+	ed.offset_col = 0;
+	ed.cur.x = 0;
+	/* Check cursor at the bottom of the screen */
+	if (ed.cur.y == ed.win_size.ws_row - 2) {
+		ed.offset_row++;
+	} else {
+		ed.cur.y++;
+	}
+	/* Insert new empty row */
+	rows_ins(&ed.rows, ed.offset_row + ed.cur.y, row_empty());
+	/* Update quit presses count and switch to inserting mode */
+	ed.quit_presses_rem = CFG_QUIT_PRESSES_REM_AFT_CH;
+	ed.mode = MODE_INS;
+}
+
+static void
+ed_ins_row_top(void)
+{
+	/* Remove x offsets */
+	ed.offset_col = 0;
+	ed.cur.x = 0;
+	/* Insert new empty row */
+	rows_ins(&ed.rows, ed.offset_row + ed.cur.y, row_empty());
+	/* Offset cursor if we at the end of screen */
+	if (ed.cur.y == ed.win_size.ws_row - 2) {
+		ed.offset_row++;
+		ed.cur.y--;
+	}
+	/* Update quit presses count and switch to inserting mode */
+	ed.quit_presses_rem = CFG_QUIT_PRESSES_REM_AFT_CH;
+	ed.mode = MODE_INS;
 }
 
 static void
@@ -416,60 +481,104 @@ ed_open(const char *path)
 }
 
 static void
-ed_input_num(const unsigned char digit)
+ed_proc_arrow_key(char *key_seq, size_t key_seq_len)
 {
-	if (digit > 9) {
-		err("Invalid digit for number input: %hhu.", digit);
+	/* Repititon times */
+	size_t repeat_times = SIZE_MAX == ed.num_input ? 1 : ed.num_input;
+	/* Handle key */
+	if (key_seq_len >= 3 && key_seq[0] == RAW_KEY_ESC && key_seq[1] == '[') {
+		/* Check last key from sequence */
+		switch (key_seq[2]) {
+		case 'A':
+			REPEAT(repeat_times, ed_mv_up());
+			return;
+		case 'B':
+			REPEAT(repeat_times, ed_mv_down());
+			return;
+		case 'C':
+			REPEAT(repeat_times, ed_mv_right());
+			return;
+		case 'D':
+			REPEAT(repeat_times, ed_mv_left());
+			return;
+		}
 	}
-	if (SIZE_MAX == ed.num_input) {
-		/* Prepare for first digit in input */
-		ed.num_input = 0;
+}
+
+static void
+ed_proc_ins_key(char key)
+{
+	switch (key) {
+	case CFG_KEY_MODE_NORM:
+		ed.mode = MODE_NORM;
+		return;
 	}
-	if ((SIZE_MAX - digit) / 10 <= ed.num_input) {
-		/* Too big. `SIZE_MAX` is flag that there is no pending number */
+}
+
+static void
+ed_proc_norm_key(char key)
+{
+	/* Repititon times */
+	size_t repeat_times = SIZE_MAX == ed.num_input ? 1 : ed.num_input;
+
+	/* Handle number input */
+	if (raw_key_is_digit(key)) {
+		ed_input_num(raw_key_to_digit(key));
+		return;
+	} else {
 		ed.num_input = SIZE_MAX;
-	} else {
-		/* Append digit to pending index */
-		ed.num_input *= 10;
-		ed.num_input += digit;
 	}
-}
-
-static void
-ed_ins_row_below(void)
-{
-	/* Remove x offsets */
-	ed.offset_col = 0;
-	ed.cur.x = 0;
-	/* Check cursor at the bottom of the screen */
-	if (ed.cur.y == ed.win_size.ws_row - 2) {
-		ed.offset_row++;
-	} else {
-		ed.cur.y++;
+	/* Other keys */
+	switch (key) {
+	case CFG_KEY_DEL_ROW:
+		ed_del_row(repeat_times);
+		return;
+	case CFG_KEY_INS_ROW_BELOW:
+		REPEAT(MIN(CFG_INS_ROW_LIMIT, repeat_times), ed_ins_row_below());
+		return;
+	case CFG_KEY_INS_ROW_TOP:
+		REPEAT(MIN(CFG_INS_ROW_LIMIT, repeat_times), ed_ins_row_top());
+		return;
+	case CFG_KEY_MODE_INS:
+		ed.mode = MODE_INS;
+		return;
+	case CFG_KEY_MV_BEGIN_OF_F:
+		ed_mv_begin_of_f();
+		return;
+	case CFG_KEY_MV_BEGIN_OF_ROW:
+		ed_mv_begin_of_row();
+		return;
+	case CFG_KEY_MV_DOWN:
+		REPEAT(repeat_times, ed_mv_down());
+		return;
+	case CFG_KEY_MV_END_OF_F:
+		ed_mv_end_of_f();
+		return;
+	case CFG_KEY_MV_END_OF_ROW:
+		ed_mv_end_of_row();
+		return;
+	case CFG_KEY_MV_LEFT:
+		REPEAT(repeat_times, ed_mv_left());
+		return;
+	case CFG_KEY_MV_NEXT_WORD:
+		ed_mv_next_word(repeat_times);
+		return;
+	case CFG_KEY_MV_PREV_WORD:
+		ed_mv_prev_word(repeat_times);
+		return;
+	case CFG_KEY_MV_RIGHT:
+		REPEAT(repeat_times, ed_mv_right());
+		return;
+	case CFG_KEY_MV_UP:
+		REPEAT(repeat_times, ed_mv_up());
+		return;
+	case CFG_KEY_SAVE:
+		ed_save();
+		return;
+	case CFG_KEY_TRY_QUIT:
+		ed_try_quit();
+		return;
 	}
-	/* Insert new empty row */
-	rows_ins(&ed.rows, ed.offset_row + ed.cur.y, row_empty());
-	/* Update quit presses count and switch to inserting mode */
-	ed.quit_presses_rem = CFG_QUIT_PRESSES_REM_AFT_CH;
-	ed.mode = MODE_INS;
-}
-
-static void
-ed_ins_row_top(void)
-{
-	/* Remove x offsets */
-	ed.offset_col = 0;
-	ed.cur.x = 0;
-	/* Insert new empty row */
-	rows_ins(&ed.rows, ed.offset_row + ed.cur.y, row_empty());
-	/* Offset cursor if we at the end of screen */
-	if (ed.cur.y == ed.win_size.ws_row - 2) {
-		ed.offset_row++;
-		ed.cur.y--;
-	}
-	/* Update quit presses count and switch to inserting mode */
-	ed.quit_presses_rem = CFG_QUIT_PRESSES_REM_AFT_CH;
-	ed.mode = MODE_INS;
 }
 
 static void
@@ -589,111 +698,22 @@ ed_wait_and_proc_key(void)
 {
 	char key_seq[3];
 	size_t key_seq_len;
-	size_t repeat_times = SIZE_MAX == ed.num_input ? 1 : ed.num_input;
-
 	/* Assert that we do not need to quit */
-	if (ed_need_to_quit()) {
-		err("Need to quit instead of key processing.");
-	}
+	assert(!ed_need_to_quit());
 	/* Wait key sequence */
 	key_seq_len = term_wait_key_seq(key_seq, sizeof(key_seq));
-
-	/* TODO: ed_proc_(arrow|norm|ins)_keys */
-
 	/* Process arrow keys if enabled */
-	if (
-		CFG_ARROWS_ENABLED
-		&& key_seq_len >= 3
-		&& key_seq[0] == RAW_KEY_ESC
-		&& key_seq[1] == '['
-	) {
-		/* Check last key from sequence */
-		switch (key_seq[2]) {
-		case 'A':
-			REPEAT(repeat_times, ed_mv_up());
-			return;
-		case 'B':
-			REPEAT(repeat_times, ed_mv_down());
-			return;
-		case 'C':
-			REPEAT(repeat_times, ed_mv_right());
-			return;
-		case 'D':
-			REPEAT(repeat_times, ed_mv_left());
-			return;
-		}
+	if (CFG_ARROWS_ENABLED) {
+		ed_proc_arrow_key(key_seq, key_seq_len);
 	}
 	/* Process pressed key with specific mode */
 	switch (ed.mode) {
-	/* Normal mode keys */
 	case MODE_NORM:
-		/* Number input */
-		if (raw_key_is_digit(key_seq[0])) {
-			ed_input_num(raw_key_to_digit(key_seq[0]));
-			return;
-		} else {
-			ed.num_input = SIZE_MAX;
-		}
-		/* Other keys */
-		switch (key_seq[0]) {
-		case CFG_KEY_DEL_ROW:
-			ed_del_row(repeat_times);
-			return;
-		case CFG_KEY_INS_ROW_BELOW:
-			REPEAT(MIN(CFG_INS_ROW_LIMIT, repeat_times), ed_ins_row_below());
-			return;
-		case CFG_KEY_INS_ROW_TOP:
-			REPEAT(MIN(CFG_INS_ROW_LIMIT, repeat_times), ed_ins_row_top());
-			return;
-		case CFG_KEY_MODE_INS:
-			ed.mode = MODE_INS;
-			return;
-		case CFG_KEY_MV_BEGIN_OF_F:
-			ed_mv_begin_of_f();
-			return;
-		case CFG_KEY_MV_BEGIN_OF_ROW:
-			ed_mv_begin_of_row();
-			return;
-		case CFG_KEY_MV_DOWN:
-			REPEAT(repeat_times, ed_mv_down());
-			return;
-		case CFG_KEY_MV_END_OF_F:
-			ed_mv_end_of_f();
-			return;
-		case CFG_KEY_MV_END_OF_ROW:
-			ed_mv_end_of_row();
-			return;
-		case CFG_KEY_MV_LEFT:
-			REPEAT(repeat_times, ed_mv_left());
-			return;
-		case CFG_KEY_MV_NEXT_WORD:
-			ed_mv_next_word(repeat_times);
-			return;
-		case CFG_KEY_MV_PREV_WORD:
-			ed_mv_prev_word(repeat_times);
-			return;
-		case CFG_KEY_MV_RIGHT:
-			REPEAT(repeat_times, ed_mv_right());
-			return;
-		case CFG_KEY_MV_UP:
-			REPEAT(repeat_times, ed_mv_up());
-			return;
-		case CFG_KEY_SAVE:
-			ed_save();
-			return;
-		case CFG_KEY_TRY_QUIT:
-			ed_try_quit();
-			return;
-		}
-		break;
-	/* Inserting mode keys */
+		ed_proc_norm_key(key_seq[0]);
+		return;
 	case MODE_INS:
-		switch (key_seq[0]) {
-		case CFG_KEY_MODE_NORM:
-			ed.mode = MODE_NORM;
-			return;
-		}
-		break;
+		ed_proc_ins_key(key_seq[0]);
+		return;
 	}
 }
 
