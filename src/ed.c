@@ -27,7 +27,6 @@
 #include "word.h"
 
 /* Length of message's buffer must be greater than all message lengths */
-
 #define MSG_ARR_LEN (64)
 #define MSG_DEL_ONLY_ONE_ROW ("It is forbidden to delete only one row.")
 #define MSG_SAVED_FMT ("%zu bytes saved.")
@@ -46,6 +45,7 @@ static struct {
 	size_t offset_row;
 	char *path;
 	unsigned char quit_presses_rem;
+	/* There is always at least 1 row */
 	Rows rows;
 	struct winsize win_size;
 } ed;
