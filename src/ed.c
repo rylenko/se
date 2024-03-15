@@ -415,12 +415,12 @@ ed_input_num(const unsigned char digit)
 		err("Invalid digit for number input: %hhu.", digit);
 	}
 	if (SIZE_MAX == ed.num_input) {
-		/* Prepare fo first digit in input */
+		/* Prepare for first digit in input */
 		ed.num_input = 0;
 	}
-	if (SIZE_MAX / 10 - digit <= ed.num_input) {
+	if ((SIZE_MAX - digit) / 10 <= ed.num_input) {
 		/* Too big. `SIZE_MAX` is flag that there is no pending number */
-		ed.num_input = SIZE_MAX - 1;
+		ed.num_input = SIZE_MAX;
 	} else {
 		/* Append digit to pending index */
 		ed.num_input *= 10;
@@ -718,14 +718,17 @@ ed_write_stat(Buf *buf)
 	size_t left_len;
 	char coords[32];
 	size_t coords_len;
+	char num_input[32];
+	size_t num_input_len = 0;
 
 	/* Clear row on the right and begin colored output */
-	term_clr_row_on_right(buf);
 	raw_color_begin(
 		buf,
 		(RawColor)CFG_COLOR_STAT_BG,
 		(RawColor)CFG_COLOR_STAT_FG
 	);
+	term_clr_row_on_right(buf);
+
 	/* Write base status to buffer */
 	left_len = buf_writef(buf, " [%s] %s", mode_str(ed.mode), basename(ed.path));
 	/* Add mark if file is dirty */
@@ -737,7 +740,17 @@ ed_write_stat(Buf *buf)
 		left_len += buf_writef(buf, ": %s", ed.msg);
 		ed.msg[0] = 0;
 	}
-	/* Write position */
+
+	/* Prepare number input if active */
+	if (ed.num_input != SIZE_MAX) {
+		num_input_len = snprintf(
+			num_input,
+			sizeof(num_input),
+			"%zu << ",
+			ed.num_input
+		);
+	}
+	/* Prepare coordinates */
 	coords_len = snprintf(
 		coords,
 		sizeof(coords),
@@ -745,11 +758,17 @@ ed_write_stat(Buf *buf)
 		ed.offset_col + ed.cur.x,
 		ed.offset_row + ed.cur.y
 	);
+
 	/* Fill colored empty space */
-	for (col_i = left_len + coords_len; col_i < ed.win_size.ws_col; col_i++) {
+	for (
+		col_i = left_len + num_input_len + coords_len;
+		col_i < ed.win_size.ws_col;
+		col_i++
+	) {
 		buf_write(buf, " ", 1);
 	}
 	/* Write right parts and end color */
+	buf_write(buf, num_input, num_input_len);
 	buf_write(buf, coords, coords_len);
 	raw_color_end(buf);
 }
