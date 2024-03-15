@@ -3,14 +3,14 @@
 #include "ed.h"
 #include "err.h"
 
-#define USAGE ("Usage:\n\t$ ew <filename>")
+static const char *const usage = "Usage:\n\t$ ew <filename>";
 
 int
 main(const int argc, const char *const *const argv)
 {
 	/* Check arguments count */
 	if (argc != 2) {
-		err(USAGE);
+		err(usage);
 	}
 	/* Initialize editor and open the file */
 	ed_open(argv[1]);

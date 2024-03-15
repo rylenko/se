@@ -5,8 +5,10 @@
 #include "row.h"
 
 /* Memory reallocation steps */
-#define ROWS_REALLOC_STEP (32)
-#define ROW_REALLOC_STEP (128)
+typedef enum {
+	REALLOC_STEP_ROWS = 32,
+	REALLOC_STEP_ROW = 128,
+} ReallocStep;
 
 /* Frees row's content. */
 static void row_free(Row *row);
@@ -49,6 +51,9 @@ row_read(Row *row, FILE *f)
 	while (1) {
 		/* Read new character */
 		ch = fgetc(f);
+		if (ferror(f) != 0) {
+			err("Failed to read row's character:");
+		}
 		if (0 == row->len) {
 			/* Return early if starting character is EOF or newline */
 			if (EOF == ch) {
@@ -59,7 +64,7 @@ row_read(Row *row, FILE *f)
 		}
 		/* Reallocate row with new capacity */
 		if (row->len == cap) {
-			cap += ROW_REALLOC_STEP;
+			cap += REALLOC_STEP_ROW;
 			if (!(row->cont = realloc(row->cont, cap))) {
 				err("Failed to reallocate row with %zu bytes:", cap);
 			}
@@ -135,8 +140,8 @@ static void
 rows_realloc_if_needed(Rows *rows)
 {
 	if (rows->cnt == rows->cap) {
-		rows->cap += ROWS_REALLOC_STEP;
-	} else if (rows->cnt + ROWS_REALLOC_STEP <= rows->cap) {
+		rows->cap += REALLOC_STEP_ROWS;
+	} else if (rows->cnt + REALLOC_STEP_ROWS <= rows->cap) {
 		rows->cap = rows->cnt;
 	} else {
 		return;

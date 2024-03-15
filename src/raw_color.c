@@ -1,7 +1,9 @@
 #include "buf.h"
 #include "raw_color.h"
 
-#define BG_OFFSET (10)
+enum {
+	BG_OFFSET = 10,
+};
 
 void
 raw_color_begin(Buf *buf, RawColor bg, RawColor fg)

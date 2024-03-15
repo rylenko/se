@@ -7,8 +7,10 @@
 #include "err.h"
 #include "math.h"
 
-#define REALLOC_STEP (4096)
-#define FMT_STR_LEN (256)
+enum {
+	REALLOC_STEP = 4096,
+	FMT_STR_LEN = 256,
+};
 
 /* Grows buffer capacity. */
 static void buf_grow(Buf *buf, const size_t by);
@@ -22,7 +24,9 @@ buf_alloc(void)
 void
 buf_flush(const Buf* buf, const int fd)
 {
-	write(fd, buf->data, buf->len);
+	if (write(fd, buf->data, buf->len) < 0) {
+		err("Failed to flush the buffer of %d with length %zu:", fd, buf->len);
+	}
 }
 
 void

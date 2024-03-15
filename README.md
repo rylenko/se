@@ -106,12 +106,12 @@ Later.
 	<tbody><tr>
 		<th>C</th>
 		<th>12</th>
-		<th>1314</th>
-		<th>140</th>
-		<th>172</th>
-		<th>1002</th>
-		<th>159</th>
-		<th>26391</th>
+		<th>1342</th>
+		<th>141</th>
+		<th>171</th>
+		<th>1030</th>
+		<th>176</th>
+		<th>27066</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>14</th>
@@ -170,12 +170,12 @@ Later.
 	<tfoot><tr>
 		<th>Total</th>
 		<th>33</th>
-		<th>1985</th>
-		<th>296</th>
-		<th>268</th>
-		<th>1421</th>
-		<th>160</th>
-    	<th>40526</th>
+		<th>2013</th>
+		<th>297</th>
+		<th>267</th>
+		<th>1449</th>
+		<th>177</th>
+    	<th>41201</th>
 	</tr></tfoot>
 	</table>
 
@@ -190,5 +190,4 @@ Later.
 |**src/ed.c**|**3**|**Integrate repetition of keys into handlers**|
 |**src/ed.c**|**4**|**Undo operations. Also rename "del" to "remove" where needed**|
 |**src/ed.c**|**5**|**Xclip patch to use with local clipboard**|
-|**src/ed.c**|**522**|**Check errors**|
-|**src/ed.c**|**586**|**ed_proc_(arrow|norm|ins)_keys**|
+|**src/ed.c**|**601**|**ed_proc_(arrow|norm|ins)_keys**|

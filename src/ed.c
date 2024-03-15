@@ -25,14 +25,17 @@
 #include "term.h"
 #include "word.h"
 
-/* Length of message's buffer must be greater than all message lengths */
-#define MSG_ARR_LEN (64)
-#define MSG_DEL_ONLY_ONE_ROW ("It is forbidden to delete only one row.")
-#define MSG_SAVED_FMT ("%zu bytes saved.")
-#define MSG_SAVE_FAIL_FMT ("Failed to save: %s.")
-#define MSG_QUIT_PRESSES_REM_FMT ( \
-	"There are unsaved changes. Presses remain to quit: %hhu." \
-)
+/* Length of message's array must be greater than all message lengths */
+static const char *const msg_del_only_one_row = \
+	"It is forbidden to delete only one row.";
+static const char *const msg_saved_fmt = "%zu bytes saved.";
+static const char *const msg_save_fail_fmt = "Failed to save: %s.";
+static const char *const msg_quit_presses_rem_fmt = \
+	"There are unsaved changes. Presses remain to quit: %hhu.";
+
+enum {
+	MSG_ARR_LEN = 64,
+};
 
 /* Structure with editor parameters. */
 static struct {
@@ -140,7 +143,7 @@ static void
 ed_del_row(size_t times)
 {
 	if (ed.rows.cnt == 1) {
-		ed_set_msg(MSG_DEL_ONLY_ONE_ROW);
+		ed_set_msg(msg_del_only_one_row);
 	} else if (times > 0) {
 		/* Remove x offsets and delete the row */
 		ed.offset_col = 0;
@@ -393,14 +396,18 @@ ed_open(const char *path)
 	ed.rows = rows_new();
 	/* Update window size and register the handler of window size changing */
 	ed_upd_win_size();
-	signal(SIGWINCH, ed_handle_sig_win_ch);
+	if (signal(SIGWINCH, ed_handle_sig_win_ch) == SIG_ERR) {
+		err("Failed to set window resize handler:");
+	}
 
 	/* Read rows from file  */
 	if (!(f = fopen(path, "r"))) {
-		err("Failed to open \"%s\":", path);
+		err("Failed to open to read:");
 	}
 	rows_read(&ed.rows, f);
-	fclose(f);
+	if (fclose(f) == EOF) {
+		err("Failed to close readed file:");
+	}
 
 	/* Add empty row if there is no rows */
 	if (ed.rows.cnt == 0) {
@@ -474,7 +481,7 @@ ed_try_quit(void)
 		free(ed.path);
 		rows_free(&ed.rows);
 	} else {
-		ed_set_msg(MSG_QUIT_PRESSES_REM_FMT, ed.quit_presses_rem);
+		ed_set_msg(msg_quit_presses_rem_fmt, ed.quit_presses_rem);
 	}
 }
 
@@ -505,6 +512,7 @@ ed_refresh_scr(void)
 static void
 ed_save(void)
 {
+	size_t len_part;
 	size_t len = 0;
 	size_t row_i;
 	FILE *f;
@@ -512,23 +520,30 @@ ed_save(void)
 
 	/* Open file */
 	if (!(f = fopen(ed.path, "w"))) {
-		ed_set_msg(MSG_SAVE_FAIL_FMT, strerror(errno));
+		ed_set_msg(msg_save_fail_fmt, strerror(errno));
 		return;
 	}
 	/* Write rows */
 	for (row_i = 0; row_i < ed.rows.cnt; row_i++) {
 		row = &ed.rows.arr[row_i];
 		/* Write row's content and newline character */
-		/* TODO: Check errors */
-		len += fwrite(row->cont, sizeof(char), row->len, f);
-		fputc('\n', f);
+		len_part = fwrite(row->cont, sizeof(char), row->len, f);
+		if (len_part != row->len) {
+			err("Failed to save a row #%zu:", row_i);
+		} else if (fputc('\n', f) == EOF) {
+			err("Failed to write newline after row #%zu:", row_i);
+		}
+		len += len_part;
 	}
 	/* Flush and close file */
-	fflush(f);
-	fclose(f);
+	if (fflush(f) == EOF) {
+		err("Failed to flush saved file:");
+	} else if (fclose(f) == EOF) {
+		err("Failed to close saved file:");
+	}
 	/* Set quit presses and set message */
 	ed.quit_presses_rem = 1;
-	ed_set_msg(MSG_SAVED_FMT, len);
+	ed_set_msg(msg_saved_fmt, len);
 }
 
 static void
