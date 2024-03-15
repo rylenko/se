@@ -106,12 +106,12 @@ Later.
 	<tbody><tr>
 		<th>C</th>
 		<th>12</th>
-		<th>1379</th>
+		<th>1380</th>
 		<th>146</th>
-		<th>176</th>
+		<th>177</th>
 		<th>1057</th>
 		<th>175</th>
-		<th>27838</th>
+		<th>27910</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>14</th>
@@ -170,12 +170,12 @@ Later.
 	<tfoot><tr>
 		<th>Total</th>
 		<th>33</th>
-		<th>2050</th>
+		<th>2051</th>
 		<th>302</th>
-		<th>272</th>
+		<th>273</th>
 		<th>1476</th>
 		<th>176</th>
-    	<th>41973</th>
+    	<th>42045</th>
 	</tr></tfoot>
 	</table>
 
@@ -189,4 +189,5 @@ Later.
 |**src/ed.c**|**2**|**Use linked list for rows array and row's content parts**|
 |**src/ed.c**|**3**|**Integrate repetition of keys into handlers**|
 |**src/ed.c**|**4**|**Undo operations. Also rename "del" to "remove" where needed**|
-|**src/ed.c**|**5**|**Xclip patch to use with local clipboard**|
+|**src/ed.c**|**5**|**Maybe split ed.c into ed_init.c, ed_stat.c, ed_key.c, etc.?**|
+|**src/ed.c**|**6**|**Xclip patch to use with local clipboard**|
