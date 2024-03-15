@@ -10,6 +10,7 @@ A simple text editor.
 - Fast movement and editing.
 - Small code base of up to 2000 lines.
 - No dependencies.
+- Extensibility.
 
 **Examples of what must be in separate patches**:
 
@@ -135,12 +136,12 @@ $ make gen-readme
 	</tr><tr>
 		<th>Markdown</th>
 		<th>2</th>
-		<th>207</th>
+		<th>209</th>
 		<th>62</th>
 		<th>0</th>
-		<th>145</th>
+		<th>147</th>
 		<th>0</th>
-		<th>3478</th>
+		<th>3512</th>
 	</tr><tr>
 		<th>Makefile</th>
 		<th>2</th>
@@ -181,12 +182,12 @@ $ make gen-readme
 	<tfoot><tr>
 		<th>Total</th>
 		<th>33</th>
-		<th>2073</th>
+		<th>2075</th>
 		<th>304</th>
 		<th>273</th>
-		<th>1496</th>
+		<th>1498</th>
 		<th>176</th>
-    	<th>41941</th>
+    	<th>41975</th>
 	</tr></tfoot>
 	</table>
 
@@ -194,11 +195,11 @@ $ make gen-readme
 
 |Path|Line|Description|
 |-|-|-|
-|**src/row.h**|**34**|**rename to `rows_remove` if undo is done.**|
-|**src/cfg.h**|**44**|**Fix it for another values**|
 |**src/ed.c**|**1**|**Add local clipboard. Use it in functions.**|
 |**src/ed.c**|**2**|**Use linked list for rows array and row's content parts**|
 |**src/ed.c**|**3**|**Integrate repetition of keys into handlers**|
 |**src/ed.c**|**4**|**Undo operations. Also rename "del" to "remove" where needed**|
 |**src/ed.c**|**5**|**Maybe split ed.c into ed_init.c, ed_stat.c, ed_key.c, etc.?**|
 |**src/ed.c**|**6**|**Xclip patch to use with local clipboard**|
+|**src/row.h**|**34**|**rename to `rows_remove` if undo is done.**|
+|**src/cfg.h**|**44**|**Fix it for another values**|

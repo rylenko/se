@@ -10,6 +10,7 @@ A simple text editor.
 - Fast movement and editing.
 - Small code base of up to 2000 lines.
 - No dependencies.
+- Extensibility.
 
 **Examples of what must be in separate patches**:
 
