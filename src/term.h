@@ -31,4 +31,7 @@ void term_init(const int, const int);
 /* Waits for the key press. */
 char term_wait_key(void);
 
+/* Gets key press. Returns `1` on success and `0` if no keys. */
+int term_get_key(char *);
+
 #endif /* _TERM_H */

@@ -1,4 +1,3 @@
-/* TODO: Arrows. Arrows movement is allowed then inserting */
 /* TODO: number input on status bar */
 /* TODO: block insrting if there is no privelege to write */
 /* TODO: Add local clipboard. Use it in functions. */
@@ -572,83 +571,110 @@ ed_write_cur(Buf *buf)
 void
 ed_wait_and_proc_key(void)
 {
-	char key;
+	char key_seq[3];
 	size_t repeat_times = SIZE_MAX == ed.num_input ? 1 : ed.num_input;
 	/* Assert that we do not need to quit */
 	if (ed_need_to_quit()) {
 		err("Need to quit instead of key processing.");
 	}
 
-	/* Wait key */
-	key = term_wait_key();
+	/* Wait master key */
+	key_seq[0] = term_wait_key();
 
-	/* Process pressed key */
-	switch (ed.mode) {
-	case MODE_NORM:
-		/* Normal mode keys */
-		switch (key) {
-		case CFG_KEY_DEL_ROW:
-			ed_del_row(repeat_times);
-			break;
-		case CFG_KEY_INS_ROW_BELOW:
-			REPEAT(repeat_times, ed_ins_row_below());
-			break;
-		case CFG_KEY_INS_ROW_TOP:
-			REPEAT(repeat_times, ed_ins_row_top());
-			break;
-		case CFG_KEY_MODE_INS:
-			ed.mode = MODE_INS;
-			break;
-		case CFG_KEY_MV_BEGIN_OF_F:
-			ed_mv_begin_of_f();
-			break;
-		case CFG_KEY_MV_BEGIN_OF_ROW:
-			ed_mv_begin_of_row();
-			break;
-		case CFG_KEY_MV_DOWN:
-			REPEAT(repeat_times, ed_mv_down());
-			break;
-		case CFG_KEY_MV_END_OF_F:
-			ed_mv_end_of_f();
-			break;
-		case CFG_KEY_MV_END_OF_ROW:
-			ed_mv_end_of_row();
-			break;
-		case CFG_KEY_MV_LEFT:
-			REPEAT(repeat_times, ed_mv_left());
-			break;
-		case CFG_KEY_MV_NEXT_WORD:
-			ed_mv_next_word(repeat_times);
-			break;
-		case CFG_KEY_MV_PREV_WORD:
-			ed_mv_prev_word(repeat_times);
-			break;
-		case CFG_KEY_MV_RIGHT:
-			REPEAT(repeat_times, ed_mv_right());
-			break;
-		case CFG_KEY_MV_UP:
+	/* TODO: ed_proc_(arrow|norm|ins)_keys */
+
+	/* Process arrow keys if enabled */
+	if (
+		CFG_ARROWS_ENABLED
+		&& term_get_key(key_seq + 1) == 1
+		&& key_seq[1] == '['
+		&& term_get_key(key_seq + 2) == 1
+	) {
+		/* Check last key from sequence */
+		switch (key_seq[2]) {
+		case 'A':
 			REPEAT(repeat_times, ed_mv_up());
-			break;
-		case CFG_KEY_SAVE:
-			ed_save();
-			break;
-		case CFG_KEY_TRY_QUIT:
-			ed_try_quit();
-			break;
+			return;
+		case 'B':
+			REPEAT(repeat_times, ed_mv_down());
+			return;
+		case 'C':
+			REPEAT(repeat_times, ed_mv_right());
+			return;
+		case 'D':
+			REPEAT(repeat_times, ed_mv_left());
+			return;
 		}
+	}
+	/* Process pressed key with specific mode */
+	switch (ed.mode) {
+	/* Normal mode keys */
+	case MODE_NORM:
 		/* Number input */
-		if (raw_key_is_digit(key)) {
-			ed_input_num(raw_key_to_digit(key));
+		if (raw_key_is_digit(key_seq[0])) {
+			ed_input_num(raw_key_to_digit(key_seq[0]));
+			return;
 		} else {
 			ed.num_input = SIZE_MAX;
 		}
+		/* Other keys */
+		switch (key_seq[0]) {
+		case CFG_KEY_DEL_ROW:
+			ed_del_row(repeat_times);
+			return;
+		case CFG_KEY_INS_ROW_BELOW:
+			REPEAT(repeat_times, ed_ins_row_below());
+			return;
+		case CFG_KEY_INS_ROW_TOP:
+			REPEAT(repeat_times, ed_ins_row_top());
+			return;
+		case CFG_KEY_MODE_INS:
+			ed.mode = MODE_INS;
+			return;
+		case CFG_KEY_MV_BEGIN_OF_F:
+			ed_mv_begin_of_f();
+			return;
+		case CFG_KEY_MV_BEGIN_OF_ROW:
+			ed_mv_begin_of_row();
+			return;
+		case CFG_KEY_MV_DOWN:
+			REPEAT(repeat_times, ed_mv_down());
+			return;
+		case CFG_KEY_MV_END_OF_F:
+			ed_mv_end_of_f();
+			return;
+		case CFG_KEY_MV_END_OF_ROW:
+			ed_mv_end_of_row();
+			return;
+		case CFG_KEY_MV_LEFT:
+			REPEAT(repeat_times, ed_mv_left());
+			return;
+		case CFG_KEY_MV_NEXT_WORD:
+			ed_mv_next_word(repeat_times);
+			return;
+		case CFG_KEY_MV_PREV_WORD:
+			ed_mv_prev_word(repeat_times);
+			return;
+		case CFG_KEY_MV_RIGHT:
+			REPEAT(repeat_times, ed_mv_right());
+			return;
+		case CFG_KEY_MV_UP:
+			REPEAT(repeat_times, ed_mv_up());
+			return;
+		case CFG_KEY_SAVE:
+			ed_save();
+			return;
+		case CFG_KEY_TRY_QUIT:
+			ed_try_quit();
+			return;
+		}
 		break;
+	/* Inserting mode keys */
 	case MODE_INS:
-		/* Insert mode keys */
-		switch (key) {
+		switch (key_seq[0]) {
 		case CFG_KEY_MODE_NORM:
 			ed.mode = MODE_NORM;
-			break;
+			return;
 		}
 		break;
 	}

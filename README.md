@@ -105,21 +105,21 @@ Later.
 	<tbody><tr>
 		<th>C</th>
 		<th>12</th>
-		<th>1264</th>
-		<th>138</th>
-		<th>169</th>
-		<th>957</th>
-		<th>151</th>
-		<th>25259</th>
+		<th>1294</th>
+		<th>139</th>
+		<th>171</th>
+		<th>984</th>
+		<th>159</th>
+		<th>25853</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>14</th>
-		<th>316</th>
+		<th>327</th>
+		<th>73</th>
 		<th>69</th>
-		<th>64</th>
-		<th>183</th>
+		<th>185</th>
 		<th>1</th>
-		<th>6830</th>
+		<th>7037</th>
 	</tr><tr>
 		<th>Markdown</th>
 		<th>2</th>
@@ -169,12 +169,12 @@ Later.
 	<tfoot><tr>
 		<th>Total</th>
 		<th>33</th>
-		<th>1914</th>
-		<th>291</th>
-		<th>252</th>
-		<th>1371</th>
-		<th>152</th>
-    	<th>38663</th>
+		<th>1955</th>
+		<th>296</th>
+		<th>259</th>
+		<th>1400</th>
+		<th>160</th>
+    	<th>39464</th>
 	</tr></tfoot>
 	</table>
 
@@ -183,13 +183,13 @@ Later.
 |Path|Line|Description|
 |-|-|-|
 |**src/row.h**|**34**|**rename to `rows_remove` if undo is done.**|
-|**src/cfg.h**|**36**|**Fix it for another values**|
-|**src/ed.c**|**1**|**Arrows. Arrows movement is allowed then inserting**|
-|**src/ed.c**|**2**|**number input on status bar**|
-|**src/ed.c**|**3**|**block insrting if there is no privelege to write**|
-|**src/ed.c**|**4**|**Add local clipboard. Use it in functions.**|
-|**src/ed.c**|**5**|**Use linked list for rows array and row's content parts**|
-|**src/ed.c**|**6**|**Integrate repetition of keys into handlers**|
-|**src/ed.c**|**7**|**Undo operations. Also rename "del" to "remove" where needed**|
-|**src/ed.c**|**8**|**Xclip patch to use with local clipboard**|
-|**src/ed.c**|**522**|**Check errors**|
+|**src/cfg.h**|**44**|**Fix it for another values**|
+|**src/ed.c**|**1**|**number input on status bar**|
+|**src/ed.c**|**2**|**block insrting if there is no privelege to write**|
+|**src/ed.c**|**3**|**Add local clipboard. Use it in functions.**|
+|**src/ed.c**|**4**|**Use linked list for rows array and row's content parts**|
+|**src/ed.c**|**5**|**Integrate repetition of keys into handlers**|
+|**src/ed.c**|**6**|**Undo operations. Also rename "del" to "remove" where needed**|
+|**src/ed.c**|**7**|**Xclip patch to use with local clipboard**|
+|**src/ed.c**|**521**|**Check errors**|
+|**src/ed.c**|**584**|**ed_proc_(arrow|norm|ins)_keys**|

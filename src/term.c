@@ -103,12 +103,16 @@ char
 term_wait_key(void)
 {
 	char key;
-	int readed_cnt;
-
-	/* Wait a key or an error */
-	while (0 == (readed_cnt = read(term.ifd, &key, 1)));
-	if (readed_cnt < 0) {
-		err("Failed to read key press:");
-	}
+	while (0 == term_get_key(&key));
 	return key;
+}
+
+int
+term_get_key(char *to)
+{
+	int cnt = read(term.ifd, to, 1);
+	if (cnt < 0) {
+		err("Failed to non blocking read key press:");
+	}
+	return cnt;
 }
