@@ -2,15 +2,28 @@
 
 A simple text editor.
 
-# Why
+# Goals
 
-For a simple text editor without dependencies that can edit, save, search in a file and nothing more.
+**Important goals**:
 
-There is no support for multiple windows. Use [tmux](https://github.com/tmux/tmux).
+- Ease of configuring, building and use.
+- Fast movement and editing.
+- Small code base of up to 2000 lines.
+- No dependencies.
 
-There is no support for plugins written in [Lua](https://en.wikipedia.org/wiki/Lua_(programming_language)) or [Python](https://en.wikipedia.org/wiki/Python_(programming_language)) or anything like that.
+**Examples of what must be in separate patches**:
 
-Support for syntax highlighting is optional and can be enabled by applying patches.
+- Syntax highlighting.
+- UTF-8 support.
+- Key macros.
+- Regular expressions.
+
+**Must be avoided**:
+
+- Multiple windows support.
+- File browser.
+- Support for plugins written in another language.
+- Configuring not via header file.
 
 # Usage
 
@@ -32,6 +45,7 @@ Normal mode keys:
 - `l` - go right.
 - `n` - create a row below the current row and move to it.
 - `q` - go to begin of previous token.
+- (X) `r` - redo last undo;
 - `s` - go to end of file.
 - (X) `u` - undo last change.
 - `w` - go to begin of file.
@@ -86,6 +100,3 @@ Regenerate README.md:
 $ make gen-readme
 ```
 
-# Syntax highlighting patches
-
-Later.

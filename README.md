@@ -2,15 +2,28 @@
 
 A simple text editor.
 
-# Why
+# Goals
 
-For a simple text editor without dependencies that can edit, save, search in a file and nothing more.
+**Important goals**:
 
-There is no support for multiple windows. Use [tmux](https://github.com/tmux/tmux).
+- Ease of configuring, building and use.
+- Fast movement and editing.
+- Small code base of up to 2000 lines.
+- No dependencies.
 
-There is no support for plugins written in [Lua](https://en.wikipedia.org/wiki/Lua_(programming_language)) or [Python](https://en.wikipedia.org/wiki/Python_(programming_language)) or anything like that.
+**Examples of what must be in separate patches**:
 
-Support for syntax highlighting is optional and can be enabled by applying patches.
+- Syntax highlighting.
+- UTF-8 support.
+- Key macros.
+- Regular expressions.
+
+**Must be avoided**:
+
+- Multiple windows support.
+- File browser.
+- Support for plugins written in another language.
+- Configuring not via header file.
 
 # Usage
 
@@ -32,6 +45,7 @@ Normal mode keys:
 - `l` - go right.
 - `n` - create a row below the current row and move to it.
 - `q` - go to begin of previous token.
+- (X) `r` - redo last undo;
 - `s` - go to end of file.
 - (X) `u` - undo last change.
 - `w` - go to begin of file.
@@ -86,9 +100,6 @@ Regenerate README.md:
 $ make gen-readme
 ```
 
-# Syntax highlighting patches
-
-Later.
 
 # Lines of code
 
@@ -124,12 +135,12 @@ Later.
 	</tr><tr>
 		<th>Markdown</th>
 		<th>2</th>
-		<th>185</th>
-		<th>60</th>
+		<th>207</th>
+		<th>62</th>
 		<th>0</th>
-		<th>125</th>
+		<th>145</th>
 		<th>0</th>
-		<th>3582</th>
+		<th>3478</th>
 	</tr><tr>
 		<th>Makefile</th>
 		<th>2</th>
@@ -170,12 +181,12 @@ Later.
 	<tfoot><tr>
 		<th>Total</th>
 		<th>33</th>
-		<th>2051</th>
-		<th>302</th>
+		<th>2073</th>
+		<th>304</th>
 		<th>273</th>
-		<th>1476</th>
+		<th>1496</th>
 		<th>176</th>
-    	<th>42045</th>
+    	<th>41941</th>
 	</tr></tfoot>
 	</table>
 
