@@ -105,12 +105,12 @@ Later.
 	<tbody><tr>
 		<th>C</th>
 		<th>12</th>
-		<th>1294</th>
+		<th>1295</th>
 		<th>139</th>
 		<th>171</th>
-		<th>984</th>
-		<th>159</th>
-		<th>25853</th>
+		<th>985</th>
+		<th>161</th>
+		<th>25855</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>14</th>
@@ -169,12 +169,12 @@ Later.
 	<tfoot><tr>
 		<th>Total</th>
 		<th>33</th>
-		<th>1955</th>
+		<th>1956</th>
 		<th>296</th>
 		<th>259</th>
-		<th>1400</th>
-		<th>160</th>
-    	<th>39464</th>
+		<th>1401</th>
+		<th>162</th>
+    	<th>39466</th>
 	</tr></tfoot>
 	</table>
 

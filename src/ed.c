@@ -20,26 +20,26 @@
 #include "math.h"
 #include "mode.h"
 #include "raw_color.h"
+#include "raw_key.h"
 #include "row.h"
 #include "str_util.h"
 #include "term.h"
 #include "word.h"
 
 /* Length of message's buffer must be greater than all message lengths */
-#define MSG_BUF_LEN (64)
+
+#define MSG_ARR_LEN (64)
 #define MSG_DEL_ONLY_ONE_ROW ("It is forbidden to delete only one row.")
 #define MSG_SAVED_FMT ("%zu bytes saved.")
 #define MSG_QUIT_PRESSES_REM_FMT ( \
 	"There are unsaved changes. Presses remain to quit: %hhu." \
 )
 
-#define STAT_COORDS_BUF_LEN (32)
-
 /* Structure with editor parameters. */
 static struct {
 	Cur cur;
 	Mode mode;
-	char msg[MSG_BUF_LEN];
+	char msg[MSG_ARR_LEN];
 	/* Maximum of `size_t` if not set */
 	size_t num_input;
 	size_t offset_col;
@@ -586,6 +586,7 @@ ed_wait_and_proc_key(void)
 	/* Process arrow keys if enabled */
 	if (
 		CFG_ARROWS_ENABLED
+		&& key_seq[0] == RAW_KEY_ESC
 		&& term_get_key(key_seq + 1) == 1
 		&& key_seq[1] == '['
 		&& term_get_key(key_seq + 2) == 1
@@ -715,7 +716,7 @@ ed_write_stat(Buf *buf)
 {
 	size_t col_i;
 	size_t left_len;
-	char coords[STAT_COORDS_BUF_LEN];
+	char coords[32];
 	size_t coords_len;
 
 	/* Clear row on the right and begin colored output */
