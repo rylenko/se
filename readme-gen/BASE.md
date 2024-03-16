@@ -55,7 +55,7 @@ Normal mode keys:
 - `CTRL+n` - create a row above the current row and move to it.
 - `CTRL+s` - save.
 - `CTRL+q` - quit. If you changed the file, you will need to either save it or press this key several times.
-- (X) `CTRL+x` - save to current user's home directory. Useful if no privilege to write to opened file.
+- `CTRL+x` - save to current user's home directory. Useful if no privilege to write to opened file.
 
 You can also repeat a key by pressing `<number><key>`. For example, `5n` will create 5 rows below the cursor.
 
