@@ -7,6 +7,7 @@
 /* TODO: Xclip patch to use with local clipboard */
 
 #include <assert.h>
+#include <err.h>
 #include <errno.h>
 #include <libgen.h>
 #include <signal.h>
@@ -18,7 +19,6 @@
 #include "cfg.h"
 #include "cur.h"
 #include "ed.h"
-#include "err.h"
 #include "macros.h"
 #include "math.h"
 #include "mode.h"
@@ -496,16 +496,16 @@ ed_open(const char *path)
 	/* Update window size and register the handler of window size changing */
 	ed_upd_win_size();
 	if (signal(SIGWINCH, ed_handle_sig_win_ch) == SIG_ERR) {
-		err("Failed to set window resize handler:");
+		err(EXIT_FAILURE, "Failed to set window resize handler");
 	}
 
 	/* Read rows from file  */
 	if ((f = fopen(path, "r")) == NULL) {
-		err("Failed to open to read:");
+		err(EXIT_FAILURE, "Failed to open to read");
 	}
 	rows_read(&ed.rows, f);
 	if (fclose(f) == EOF) {
-		err("Failed to close readed file:");
+		err(EXIT_FAILURE, "Failed to close readed file");
 	}
 
 	/* Add empty row if there is no rows */
@@ -678,9 +678,9 @@ ed_save(const char *path)
 	}
 	len = rows_write(&ed.rows, f);
 	if (fflush(f) == EOF) {
-		err("Failed to flush saved file:");
+		err(EXIT_FAILURE, "Failed to flush saved file");
 	} else if (fclose(f) == EOF) {
-		err("Failed to close saved file:");
+		err(EXIT_FAILURE, "Failed to close saved file");
 	}
 	/* Remove dirty flag and set message */
 	ed.is_dirty = 0;
@@ -699,11 +699,11 @@ ed_save_to_spare_dir(void)
 
 	/* Get date */
 	if ((utc = time(NULL)) == (time_t) - 1) {
-		err("Failed to get time to save to spare dir:");
+		err(EXIT_FAILURE, "Failed to get time to save to spare dir");
 	} else if ((local = localtime(&utc)) == NULL) {
-		err("Failed to get local time to save to spare dir:");
+		err(EXIT_FAILURE, "Failed to get local time to save to spare dir");
 	} else if (strftime(date, sizeof(date), "%m-%d_%H-%M-%S", local) == 0) {
-		err("Failed to convert time to string.");
+		errx(EXIT_FAILURE, "Failed to convert time to string.");
 	}
 	/* Build full path and save */
 	snprintf(

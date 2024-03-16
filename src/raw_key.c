@@ -1,4 +1,6 @@
-#include "err.h"
+#include <assert.h>
+#include <err.h>
+#include <stdlib.h>
 #include "raw_key.h"
 
 char
@@ -10,8 +12,6 @@ raw_key_is_digit(int key)
 unsigned char
 raw_key_to_digit(int key)
 {
-	if (!raw_key_is_digit(key)) {
-		err("Key %d is not a digit.", key);
-	}
+	assert(raw_key_is_digit(key));
 	return key - '0';
 }

@@ -117,22 +117,22 @@ $ make gen-readme
 	</tr></thead>
 	<tbody><tr>
 		<th>C</th>
-		<th>12</th>
-		<th>1463</th>
-		<th>156</th>
-		<th>187</th>
-		<th>1120</th>
-		<th>189</th>
-		<th>29596</th>
+		<th>11</th>
+		<th>1432</th>
+		<th>152</th>
+		<th>184</th>
+		<th>1096</th>
+		<th>184</th>
+		<th>29274</th>
 	</tr><tr>
 		<th>C Header</th>
-		<th>14</th>
-		<th>343</th>
+		<th>13</th>
+		<th>332</th>
+		<th>72</th>
 		<th>74</th>
-		<th>79</th>
-		<th>190</th>
+		<th>186</th>
 		<th>1</th>
-		<th>7664</th>
+		<th>7491</th>
 	</tr><tr>
 		<th>Markdown</th>
 		<th>2</th>
@@ -145,12 +145,12 @@ $ make gen-readme
 	</tr><tr>
 		<th>Makefile</th>
 		<th>2</th>
-		<th>83</th>
+		<th>82</th>
 		<th>15</th>
 		<th>13</th>
-		<th>55</th>
+		<th>54</th>
 		<th>0</th>
-		<th>1960</th>
+		<th>1869</th>
 	</tr><tr>
 		<th>Shell</th>
 		<th>1</th>
@@ -181,13 +181,13 @@ $ make gen-readme
 	</tr></tbody>
 	<tfoot><tr>
 		<th>Total</th>
-		<th>33</th>
-		<th>2166</th>
-		<th>316</th>
-		<th>285</th>
-		<th>1565</th>
-		<th>190</th>
-    	<th>43963</th>
+		<th>31</th>
+		<th>2123</th>
+		<th>310</th>
+		<th>277</th>
+		<th>1536</th>
+		<th>185</th>
+    	<th>43377</th>
 	</tr></tfoot>
 	</table>
 
@@ -202,6 +202,5 @@ $ make gen-readme
 |**src/ed.c**|**5**|**Maybe split ed.c into ed_init.c, ed_stat.c, ed_key.c, etc.?**|
 |**src/ed.c**|**6**|**Support huge files.**|
 |**src/ed.c**|**7**|**Xclip patch to use with local clipboard**|
-|**src/err.c**|**8**|**Try `err` and `errx`.**|
 |**src/row.h**|**19**|**rename to `rows_remove` if undo is done.**|
 |**src/cfg.h**|**49**|**Fix it for another values**|

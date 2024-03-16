@@ -1,8 +1,8 @@
+#include <err.h>
 #include <sys/ioctl.h>
 #include <termios.h>
 #include <unistd.h>
 #include "buf.h"
-#include "err.h"
 #include "term.h"
 
 enum {
@@ -32,7 +32,7 @@ term_disable_raw_mode(void)
 {
 	/* Restore original termios parameters */
 	if (tcsetattr(term.ifd, TCSAFLUSH, &term.orig) < 0) {
-		err("Failed to restore original termios parameters:");
+		err(EXIT_FAILURE, "Failed to restore original termios parameters");
 	}
 }
 
@@ -43,11 +43,11 @@ term_enable_raw_mode(void)
 
 	/* Get the original termios parameters */
 	if (tcgetattr(term.ifd, &term.orig) < 0) {
-		err("Failed to get original termios parameters:");
+		err(EXIT_FAILURE, "Failed to get original termios parameters");
 	}
 	/* Disable raw mode at exit */
-	else if (atexit(term_disable_raw_mode) < 0) {
-		err("Failed to set raw mode's disabler at exit.");
+	else if (atexit(term_disable_raw_mode) != 0) {
+		errx(EXIT_FAILURE, "Failed to set raw mode's disabler at exit.");
 	}
 
 	/* Not `NULL` because we got it earlier */
@@ -70,7 +70,7 @@ term_enable_raw_mode(void)
 
 	/* Set new parameters */
 	if (tcsetattr(term.ifd, TCSAFLUSH, &raw) < 0) {
-		err("Failed to set raw termios parameters:");
+		err(EXIT_FAILURE, "Failed to set raw termios parameters");
 	}
 }
 
@@ -84,7 +84,7 @@ void
 term_get_win_size(struct winsize *win_size)
 {
 	if (ioctl(term.ofd, TIOCGWINSZ, win_size) < 0) {
-		err("Failed to get window size for fd %d:", term.ofd);
+		err(EXIT_FAILURE, "Failed to get window size for fd %d", term.ofd);
 	}
 }
 
@@ -107,7 +107,7 @@ term_wait_key_seq(char *seq, const size_t len)
 	ssize_t ret = 0;
 	while (ret == 0) {
 		if ((ret = read(term.ifd, seq, len)) < 0) {
-			err("Failed to read key sequence:");
+			err(EXIT_FAILURE, "Failed to read key sequence");
 		}
 	}
 	/* It's ok to return signed number because we check errors before */

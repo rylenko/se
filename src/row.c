@@ -1,7 +1,8 @@
+#include <assert.h>
+#include <err.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "err.h"
 #include "row.h"
 
 /* Memory reallocation steps */
@@ -30,9 +31,7 @@ void
 rows_del(Rows *rows, const size_t idx)
 {
 	/* Validate index */
-	if (idx >= rows->cnt) {
-		err("Invalid row's index to delete.");
-	}
+	assert(idx < rows->cnt);
 	/* Free a row */
 	row_free(&rows->arr[idx]);
 	/* Move other rows if needed */
@@ -77,7 +76,7 @@ row_read(Row *row, FILE *f)
 		/* Read new character */
 		ch = fgetc(f);
 		if (ferror(f) != 0) {
-			err("Failed to read row's character:");
+			err(EXIT_FAILURE, "Failed to read row's character");
 		}
 		if (0 == row->len) {
 			/* Return early if starting character is EOF or newline */
@@ -91,7 +90,7 @@ row_read(Row *row, FILE *f)
 		if (row->len == cap) {
 			cap += REALLOC_STEP_ROW;
 			if ((row->cont = realloc(row->cont, cap)) == NULL) {
-				err("Failed to reallocate row with %zu bytes:", cap);
+				err(EXIT_FAILURE, "Failed to reallocate row with %zu bytes", cap);
 			}
 		}
 		/* Write readed character */
@@ -104,7 +103,7 @@ row_read(Row *row, FILE *f)
 
 	/* Shrink row's content to fit */
 	if ((row->cont = realloc(row->cont, row->len + 1)) == NULL) {
-		err("Failed to shrink a row from %zu to %zu bytes:", cap, row->len + 1);
+		err(EXIT_FAILURE, "Failed to shrink a row %zu -> %zu", cap, row->len + 1);
 	}
 	return row;
 }
@@ -114,9 +113,9 @@ row_write(Row *row, FILE *f)
 {
 	size_t len = fwrite(row->cont, sizeof(char), row->len, f);
 	if (len != row->len) {
-		err("Failed to write a row with length %zu:", row->len);
+		err(EXIT_FAILURE, "Failed to write a row with length %zu", row->len);
 	} else if (fputc('\n', f) == EOF) {
-		err("Failed to write newline after row with length %zu:", row->len);
+		err(EXIT_FAILURE, "Failed to write \n after row with length %zu", row->len);
 	}
 	return len;
 }
@@ -140,9 +139,7 @@ void
 rows_ins(Rows *rows, const size_t idx, Row row)
 {
 	/* Validate index */
-	if (idx > rows->cnt) {
-		err("Trying to insert a row, which index greater than rows count.");
-	}
+	assert(idx <= rows->cnt);
 	/* Check that we need to grow */
 	rows_realloc_if_needed(rows);
 	/* Move other rows if needed */
@@ -183,8 +180,8 @@ rows_realloc_if_needed(Rows *rows)
 	} else {
 		return;
 	}
-	if (!(rows->arr = realloc(rows->arr, sizeof(Row) * rows->cap))) {
-		err("Failed to reallocate rows with capacity %zu:", rows->cap);
+	if ((rows->arr = realloc(rows->arr, sizeof(Row) * rows->cap)) == NULL) {
+		err(EXIT_FAILURE, "Failed to reallocate rows with capacity %zu", rows->cap);
 	}
 }
 

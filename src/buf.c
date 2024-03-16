@@ -1,10 +1,10 @@
+#include <err.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
 #include "buf.h"
-#include "err.h"
 #include "math.h"
 
 enum {
@@ -25,7 +25,7 @@ void
 buf_flush(const Buf* buf, const int fd)
 {
 	if (write(fd, buf->data, buf->len) < 0) {
-		err("Failed to flush the buffer of %d with length %zu:", fd, buf->len);
+		err(EXIT_FAILURE, "Failed to flush the buffer with length %zu", buf->len);
 	}
 }
 
@@ -43,7 +43,7 @@ buf_grow(Buf *buf, const size_t by)
 {
 	buf->cap += by;
 	if ((buf->data = realloc(buf->data, buf->cap)) == NULL) {
-		err("Failed to reallocate buffer with capacity %zu:", buf->cap);
+		err(EXIT_FAILURE, "Failed to reallocate buffer with capacity %zu", buf->cap);
 	}
 }
 

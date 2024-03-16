@@ -1,7 +1,7 @@
+#include <err.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include "ed.h"
-#include "err.h"
 
 static const char *const usage = "Usage:\n\t$ ew <filename>";
 
@@ -10,7 +10,7 @@ main(const int argc, const char *const *const argv)
 {
 	/* Check arguments count */
 	if (argc != 2) {
-		err(usage);
+		errx(EXIT_FAILURE, usage);
 	}
 	/* Initialize editor and open the file */
 	ed_open(argv[1]);
