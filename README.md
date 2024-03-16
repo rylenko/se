@@ -203,5 +203,5 @@ $ make gen-readme
 |**src/ed.c**|**6**|**Support huge files.**|
 |**src/ed.c**|**7**|**Xclip patch to use with local clipboard**|
 |**src/ed.c**|**676**|**rows_write**|
-|**src/row.h**|**34**|**rename to `rows_remove` if undo is done.**|
+|**src/row.h**|**19**|**rename to `rows_remove` if undo is done.**|
 |**src/cfg.h**|**44**|**Fix it for another values**|

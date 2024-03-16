@@ -23,6 +23,28 @@ static Row *row_read(Row *row, FILE *f);
 /* Grows or shrinks the rows capacity. */
 static void rows_realloc_if_needed(Rows *rows);
 
+void
+rows_del(Rows *rows, const size_t idx)
+{
+	/* Validate index */
+	if (idx >= rows->cnt) {
+		err("Invalid row's index to delete.");
+	}
+	/* Free a row */
+	row_free(&rows->arr[idx]);
+	/* Move other rows if needed */
+	if (idx != rows->cnt - 1) {
+		memmove(
+			rows->arr + idx,
+			rows->arr + idx + 1,
+			sizeof(Row) * (rows->cnt - idx - 1)
+		);
+	}
+	/* Remove from count and check that we need to shrink to fit */
+	rows->cnt--;
+	rows_realloc_if_needed(rows);
+}
+
 Row
 row_empty(void)
 {
@@ -149,26 +171,4 @@ rows_realloc_if_needed(Rows *rows)
 	if (!(rows->arr = realloc(rows->arr, sizeof(Row) * rows->cap))) {
 		err("Failed to reallocate rows with capacity %zu:", rows->cap);
 	}
-}
-
-void
-rows_del(Rows *rows, const size_t idx)
-{
-	/* Validate index */
-	if (idx >= rows->cnt) {
-		err("Invalid row's index to delete.");
-	}
-	/* Free a row */
-	row_free(&rows->arr[idx]);
-	/* Move other rows if needed */
-	if (idx != rows->cnt - 1) {
-		memmove(
-			rows->arr + idx,
-			rows->arr + idx + 1,
-			sizeof(Row) * (rows->cnt - idx - 1)
-		);
-	}
-	/* Remove from count and check that we need to shrink to fit */
-	rows->cnt--;
-	rows_realloc_if_needed(rows);
 }
