@@ -1,5 +1,4 @@
 /* TODO: fix [+] disappear from status if quit_presses low than max */
-/* TODO: fix row deleting error with big number input */
 /* TODO: Add local clipboard. Use it in functions. */
 /* TODO: Use linked list for rows array and row's content parts */
 /* TODO: Integrate repetition of keys into handlers */
@@ -168,9 +167,16 @@ ed_del_row(size_t times)
 	if (ed.rows.cnt == 1) {
 		ed_set_msg(msg_del_only_one_row);
 	} else if (times > 0) {
+		/* Get real repeat times */
+		times = MIN(ed.rows.cnt - ed.offset_row - ed.cur.y, times);
+		/* The file must contain at least one row */
+		if (times == ed.rows.cnt) {
+			times--;
+		}
 		/* Remove x offsets and delete the row */
 		ed.offset_col = 0;
 		ed.cur.x = 0;
+		/* Delete */
 		while (times-- > 0) {
 			rows_del(&ed.rows, ed.offset_row + ed.cur.y);
 		}

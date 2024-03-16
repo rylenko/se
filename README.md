@@ -118,12 +118,12 @@ $ make gen-readme
 	<tbody><tr>
 		<th>C</th>
 		<th>12</th>
-		<th>1397</th>
+		<th>1403</th>
 		<th>148</th>
-		<th>182</th>
-		<th>1067</th>
-		<th>174</th>
-		<th>28289</th>
+		<th>184</th>
+		<th>1071</th>
+		<th>176</th>
+		<th>28432</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>14</th>
@@ -182,12 +182,12 @@ $ make gen-readme
 	<tfoot><tr>
 		<th>Total</th>
 		<th>33</th>
-		<th>2091</th>
+		<th>2097</th>
 		<th>306</th>
-		<th>278</th>
-		<th>1507</th>
-		<th>175</th>
-    	<th>42328</th>
+		<th>280</th>
+		<th>1511</th>
+		<th>177</th>
+    	<th>42471</th>
 	</tr></tfoot>
 	</table>
 
@@ -196,13 +196,12 @@ $ make gen-readme
 |Path|Line|Description|
 |-|-|-|
 |**src/ed.c**|**1**|**fix [+] disappear from status if quit_presses low than max**|
-|**src/ed.c**|**2**|**fix row deleting error with big number input**|
-|**src/ed.c**|**3**|**Add local clipboard. Use it in functions.**|
-|**src/ed.c**|**4**|**Use linked list for rows array and row's content parts**|
-|**src/ed.c**|**5**|**Integrate repetition of keys into handlers**|
-|**src/ed.c**|**6**|**Undo operations. Also rename "del" to "remove" where needed**|
-|**src/ed.c**|**7**|**Maybe split ed.c into ed_init.c, ed_stat.c, ed_key.c, etc.?**|
-|**src/ed.c**|**8**|**Support huge files.**|
-|**src/ed.c**|**9**|**Xclip patch to use with local clipboard**|
+|**src/ed.c**|**2**|**Add local clipboard. Use it in functions.**|
+|**src/ed.c**|**3**|**Use linked list for rows array and row's content parts**|
+|**src/ed.c**|**4**|**Integrate repetition of keys into handlers**|
+|**src/ed.c**|**5**|**Undo operations. Also rename "del" to "remove" where needed**|
+|**src/ed.c**|**6**|**Maybe split ed.c into ed_init.c, ed_stat.c, ed_key.c, etc.?**|
+|**src/ed.c**|**7**|**Support huge files.**|
+|**src/ed.c**|**8**|**Xclip patch to use with local clipboard**|
 |**src/row.h**|**34**|**rename to `rows_remove` if undo is done.**|
 |**src/cfg.h**|**44**|**Fix it for another values**|
