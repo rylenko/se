@@ -150,7 +150,7 @@ $ make gen-readme
 		<th>13</th>
 		<th>55</th>
 		<th>0</th>
-		<th>1961</th>
+		<th>1960</th>
 	</tr><tr>
 		<th>Shell</th>
 		<th>1</th>
@@ -187,7 +187,7 @@ $ make gen-readme
 		<th>285</th>
 		<th>1565</th>
 		<th>190</th>
-    	<th>43972</th>
+    	<th>43971</th>
 	</tr></tfoot>
 	</table>
 
