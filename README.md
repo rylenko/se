@@ -118,21 +118,21 @@ $ make gen-readme
 	<tbody><tr>
 		<th>C</th>
 		<th>12</th>
-		<th>1426</th>
-		<th>153</th>
-		<th>182</th>
-		<th>1091</th>
-		<th>175</th>
-		<th>28598</th>
+		<th>1463</th>
+		<th>156</th>
+		<th>187</th>
+		<th>1120</th>
+		<th>189</th>
+		<th>29596</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>14</th>
-		<th>337</th>
-		<th>73</th>
-		<th>78</th>
-		<th>186</th>
+		<th>343</th>
+		<th>74</th>
+		<th>79</th>
+		<th>190</th>
 		<th>1</th>
-		<th>7419</th>
+		<th>7664</th>
 	</tr><tr>
 		<th>Markdown</th>
 		<th>2</th>
@@ -182,12 +182,12 @@ $ make gen-readme
 	<tfoot><tr>
 		<th>Total</th>
 		<th>33</th>
-		<th>2123</th>
-		<th>312</th>
-		<th>279</th>
-		<th>1532</th>
-		<th>176</th>
-    	<th>42729</th>
+		<th>2166</th>
+		<th>316</th>
+		<th>285</th>
+		<th>1565</th>
+		<th>190</th>
+    	<th>43972</th>
 	</tr></tfoot>
 	</table>
 
@@ -202,5 +202,6 @@ $ make gen-readme
 |**src/ed.c**|**5**|**Maybe split ed.c into ed_init.c, ed_stat.c, ed_key.c, etc.?**|
 |**src/ed.c**|**6**|**Support huge files.**|
 |**src/ed.c**|**7**|**Xclip patch to use with local clipboard**|
+|**src/err.c**|**8**|**Try `err` and `errx`.**|
 |**src/row.h**|**19**|**rename to `rows_remove` if undo is done.**|
-|**src/cfg.h**|**44**|**Fix it for another values**|
+|**src/cfg.h**|**49**|**Fix it for another values**|

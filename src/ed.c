@@ -13,6 +13,7 @@
 #include <stdarg.h>
 #include <stdio.h>
 #include <string.h>
+#include <time.h>
 #include "buf.h"
 #include "cfg.h"
 #include "cur.h"
@@ -129,8 +130,11 @@ static void ed_proc_norm_key(char key);
 /* Quits the editor. */
 static void ed_try_quit(void);
 
-/* Saves file. */
-static void ed_save(void);
+/* Saves file. Saves to opened file if argument is `NULL`. */
+static void ed_save(const char *path);
+
+/* Saves file to spare dir. */
+static void ed_save_to_spare_dir(void);
 
 /* Set message. */
 static void ed_set_msg(const char *fmt, ...);
@@ -496,7 +500,7 @@ ed_open(const char *path)
 	}
 
 	/* Read rows from file  */
-	if (!(f = fopen(path, "r"))) {
+	if ((f = fopen(path, "r")) == NULL) {
 		err("Failed to open to read:");
 	}
 	rows_read(&ed.rows, f);
@@ -582,28 +586,28 @@ ed_proc_norm_key(char key)
 	case CFG_KEY_MODE_INS:
 		ed.mode = MODE_INS;
 		return;
-	case CFG_KEY_MV_BEGIN_OF_F:
+	case CFG_KEY_MV_TO_BEGIN_OF_F:
 		ed_mv_begin_of_f();
 		return;
-	case CFG_KEY_MV_BEGIN_OF_ROW:
+	case CFG_KEY_MV_TO_BEGIN_OF_ROW:
 		ed_mv_begin_of_row();
 		return;
 	case CFG_KEY_MV_DOWN:
 		REPEAT(repeat_times, ed_mv_down());
 		return;
-	case CFG_KEY_MV_END_OF_F:
+	case CFG_KEY_MV_TO_END_OF_F:
 		ed_mv_end_of_f();
 		return;
-	case CFG_KEY_MV_END_OF_ROW:
+	case CFG_KEY_MV_TO_END_OF_ROW:
 		ed_mv_end_of_row();
 		return;
 	case CFG_KEY_MV_LEFT:
 		REPEAT(repeat_times, ed_mv_left());
 		return;
-	case CFG_KEY_MV_NEXT_WORD:
+	case CFG_KEY_MV_TO_NEXT_WORD:
 		ed_mv_next_word(repeat_times);
 		return;
-	case CFG_KEY_MV_PREV_WORD:
+	case CFG_KEY_MV_TO_PREV_WORD:
 		ed_mv_prev_word(repeat_times);
 		return;
 	case CFG_KEY_MV_RIGHT:
@@ -613,7 +617,10 @@ ed_proc_norm_key(char key)
 		REPEAT(repeat_times, ed_mv_up());
 		return;
 	case CFG_KEY_SAVE:
-		ed_save();
+		ed_save(NULL);
+		return;
+	case CFG_KEY_SAVE_TO_SPARE_DIR:
+		ed_save_to_spare_dir();
 		return;
 	case CFG_KEY_TRY_QUIT:
 		ed_try_quit();
@@ -659,13 +666,13 @@ ed_refresh_scr(void)
 }
 
 static void
-ed_save(void)
+ed_save(const char *path)
 {
 	FILE *f;
 	size_t len;
 
 	/* Open file, write rows, flush and close file  */
-	if (!(f = fopen(ed.path, "w"))) {
+	if ((f = fopen(path ? path : ed.path, "w")) == NULL) {
 		ed_set_msg(msg_save_fail_fmt, strerror(errno));
 		return;
 	}
@@ -679,6 +686,35 @@ ed_save(void)
 	ed.is_dirty = 0;
 	ed.quit_presses_rem = 1;
 	ed_set_msg(msg_saved_fmt, len);
+}
+
+/* Saves file to spare dir. */
+static void
+ed_save_to_spare_dir(void)
+{
+	time_t utc;
+	struct tm *local;
+	char date[15];
+	char path[CFG_SPARE_SAVE_PATH_MAX_LEN] = {0};
+
+	/* Get date */
+	if ((utc = time(NULL)) == (time_t) - 1) {
+		err("Failed to get time to save to spare dir:");
+	} else if ((local = localtime(&utc)) == NULL) {
+		err("Failed to get local time to save to spare dir:");
+	} else if (strftime(date, sizeof(date), "%m-%d_%H-%M-%S", local) == 0) {
+		err("Failed to convert time to string.");
+	}
+	/* Build full path and save */
+	snprintf(
+		path,
+		sizeof(path),
+		"%s/%s_%s",
+		cfg_spare_save_dir,
+		basename(ed.path),
+		date
+	);
+	ed_save(path);
 }
 
 static void

@@ -8,6 +8,7 @@ typedef enum {
 	RAW_KEY_CTRL_N = 14,
 	RAW_KEY_CTRL_Q = 17,
 	RAW_KEY_CTRL_S = 19,
+	RAW_KEY_CTRL_X = 24,
 	RAW_KEY_D = 'd',
 	RAW_KEY_E = 'e',
 	RAW_KEY_ESC = 27,

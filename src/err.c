@@ -5,6 +5,7 @@
 #include <string.h>
 #include "err.h"
 
+/* TODO: Try `err` and `errx`. */
 void
 err(const char *fmt, ...)
 {

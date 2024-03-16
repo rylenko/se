@@ -90,7 +90,7 @@ row_read(Row *row, FILE *f)
 		/* Reallocate row with new capacity */
 		if (row->len == cap) {
 			cap += REALLOC_STEP_ROW;
-			if (!(row->cont = realloc(row->cont, cap))) {
+			if ((row->cont = realloc(row->cont, cap)) == NULL) {
 				err("Failed to reallocate row with %zu bytes:", cap);
 			}
 		}
@@ -103,7 +103,7 @@ row_read(Row *row, FILE *f)
 	}
 
 	/* Shrink row's content to fit */
-	if (!(row->cont = realloc(row->cont, row->len + 1))) {
+	if ((row->cont = realloc(row->cont, row->len + 1)) == NULL) {
 		err("Failed to shrink a row from %zu to %zu bytes:", cap, row->len + 1);
 	}
 	return row;
