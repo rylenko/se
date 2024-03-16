@@ -1,3 +1,5 @@
+/* TODO: fix [+] disappear from status if quit_presses low than max */
+/* TODO: fix row deleting error with big number input */
 /* TODO: Add local clipboard. Use it in functions. */
 /* TODO: Use linked list for rows array and row's content parts */
 /* TODO: Integrate repetition of keys into handlers */
@@ -111,10 +113,13 @@ static void ed_mv_row(size_t idx);
 static void ed_mv_up(void);
 
 /* Processes arrow key sequence. */
-static void ed_proc_arrow_key(char *key_seq, size_t key_seq_len);
+static void ed_proc_arrow_key(char key);
 
 /* Processes inserting key. */
 static void ed_proc_ins_key(char key);
+
+/* Processes key sequence. Useful if single key press is several `char`s. */
+static void ed_proc_key_seq(const char *key_seq, const size_t len);
 
 /* Processes normal key. */
 static void ed_proc_norm_key(char key);
@@ -489,27 +494,23 @@ ed_open(const char *path)
 }
 
 static void
-ed_proc_arrow_key(char *key_seq, size_t key_seq_len)
+ed_proc_arrow_key(char key)
 {
 	/* Repititon times */
-	size_t repeat_times = SIZE_MAX == ed.num_input ? 1 : ed.num_input;
-	/* Handle key */
-	if (key_seq_len >= 3 && key_seq[0] == RAW_KEY_ESC && key_seq[1] == '[') {
-		/* Check last key from sequence */
-		switch (key_seq[2]) {
-		case 'A':
-			REPEAT(repeat_times, ed_mv_up());
-			return;
-		case 'B':
-			REPEAT(repeat_times, ed_mv_down());
-			return;
-		case 'C':
-			REPEAT(repeat_times, ed_mv_right());
-			return;
-		case 'D':
-			REPEAT(repeat_times, ed_mv_left());
-			return;
-		}
+	size_t times = SIZE_MAX == ed.num_input ? 1 : ed.num_input;
+	switch (key) {
+	case 'A':
+		REPEAT(times, ed_mv_up());
+		return;
+	case 'B':
+		REPEAT(times, ed_mv_down());
+		return;
+	case 'C':
+		REPEAT(times, ed_mv_right());
+		return;
+	case 'D':
+		REPEAT(times, ed_mv_left());
+		return;
 	}
 }
 
@@ -517,9 +518,23 @@ static void
 ed_proc_ins_key(char key)
 {
 	switch (key) {
+	/* Switch to normal mode */
 	case CFG_KEY_MODE_NORM:
 		ed.mode = MODE_NORM;
 		return;
+	}
+}
+
+static void
+ed_proc_key_seq(const char *key_seq, const size_t len)
+{
+	/* Validate escape sequence */
+	assert(len > 2);
+	assert(RAW_KEY_ESC == key_seq[0]);
+	assert('[' == key_seq[1]);
+	/* Arrows */
+	if ('A' <= key_seq[2] && key_seq[2] <= 'D') {
+		ed_proc_arrow_key(key_seq[2]);
 	}
 }
 
@@ -542,10 +557,10 @@ ed_proc_norm_key(char key)
 		ed_del_row(repeat_times);
 		return;
 	case CFG_KEY_INS_ROW_BELOW:
-		REPEAT(MIN(CFG_INS_ROW_LIMIT, repeat_times), ed_ins_row_below());
+		REPEAT(repeat_times, ed_ins_row_below());
 		return;
 	case CFG_KEY_INS_ROW_TOP:
-		REPEAT(MIN(CFG_INS_ROW_LIMIT, repeat_times), ed_ins_row_top());
+		REPEAT(repeat_times, ed_ins_row_top());
 		return;
 	case CFG_KEY_MODE_INS:
 		ed.mode = MODE_INS;
@@ -710,11 +725,12 @@ ed_wait_and_proc_key(void)
 	assert(!ed_need_to_quit());
 	/* Wait key sequence */
 	key_seq_len = term_wait_key_seq(key_seq, sizeof(key_seq));
-	/* Process arrow keys if enabled */
-	if (CFG_ARROWS_ENABLED) {
-		ed_proc_arrow_key(key_seq, key_seq_len);
+	/* Process entire key sequence if there is more than one `char` */
+	if (key_seq_len > 1) {
+		ed_proc_key_seq(key_seq, key_seq_len);
+		return;
 	}
-	/* Process pressed key with specific mode */
+	/* Process single `char` key press with specific mode */
 	switch (ed.mode) {
 	case MODE_NORM:
 		ed_proc_norm_key(key_seq[0]);

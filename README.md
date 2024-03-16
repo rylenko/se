@@ -118,21 +118,21 @@ $ make gen-readme
 	<tbody><tr>
 		<th>C</th>
 		<th>12</th>
-		<th>1381</th>
-		<th>146</th>
-		<th>178</th>
-		<th>1057</th>
-		<th>175</th>
-		<th>27942</th>
+		<th>1397</th>
+		<th>148</th>
+		<th>182</th>
+		<th>1067</th>
+		<th>174</th>
+		<th>28289</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>14</th>
-		<th>335</th>
+		<th>334</th>
 		<th>72</th>
 		<th>77</th>
-		<th>186</th>
+		<th>185</th>
 		<th>1</th>
-		<th>7353</th>
+		<th>7327</th>
 	</tr><tr>
 		<th>Markdown</th>
 		<th>2</th>
@@ -182,12 +182,12 @@ $ make gen-readme
 	<tfoot><tr>
 		<th>Total</th>
 		<th>33</th>
-		<th>2076</th>
-		<th>304</th>
-		<th>274</th>
-		<th>1498</th>
-		<th>176</th>
-    	<th>42007</th>
+		<th>2091</th>
+		<th>306</th>
+		<th>278</th>
+		<th>1507</th>
+		<th>175</th>
+    	<th>42328</th>
 	</tr></tfoot>
 	</table>
 
@@ -195,12 +195,14 @@ $ make gen-readme
 
 |Path|Line|Description|
 |-|-|-|
-|**src/ed.c**|**1**|**Add local clipboard. Use it in functions.**|
-|**src/ed.c**|**2**|**Use linked list for rows array and row's content parts**|
-|**src/ed.c**|**3**|**Integrate repetition of keys into handlers**|
-|**src/ed.c**|**4**|**Undo operations. Also rename "del" to "remove" where needed**|
-|**src/ed.c**|**5**|**Maybe split ed.c into ed_init.c, ed_stat.c, ed_key.c, etc.?**|
-|**src/ed.c**|**6**|**Support huge files.**|
-|**src/ed.c**|**7**|**Xclip patch to use with local clipboard**|
+|**src/ed.c**|**1**|**fix [+] disappear from status if quit_presses low than max**|
+|**src/ed.c**|**2**|**fix row deleting error with big number input**|
+|**src/ed.c**|**3**|**Add local clipboard. Use it in functions.**|
+|**src/ed.c**|**4**|**Use linked list for rows array and row's content parts**|
+|**src/ed.c**|**5**|**Integrate repetition of keys into handlers**|
+|**src/ed.c**|**6**|**Undo operations. Also rename "del" to "remove" where needed**|
+|**src/ed.c**|**7**|**Maybe split ed.c into ed_init.c, ed_stat.c, ed_key.c, etc.?**|
+|**src/ed.c**|**8**|**Support huge files.**|
+|**src/ed.c**|**9**|**Xclip patch to use with local clipboard**|
 |**src/row.h**|**34**|**rename to `rows_remove` if undo is done.**|
 |**src/cfg.h**|**44**|**Fix it for another values**|
