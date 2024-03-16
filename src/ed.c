@@ -1,4 +1,3 @@
-/* TODO: fix [+] disappear from status if quit_presses low than max */
 /* TODO: Add local clipboard. Use it in functions. */
 /* TODO: Use linked list for rows array and row's content parts */
 /* TODO: Integrate repetition of keys into handlers */
@@ -44,6 +43,7 @@ enum {
 /* Structure with editor parameters. */
 static struct {
 	Cur cur;
+	char is_dirty;
 	Mode mode;
 	char msg[MSG_ARR_LEN];
 	/* Maximum of `size_t` if not set */
@@ -110,6 +110,9 @@ static void ed_mv_row(size_t idx);
 
 /* Move cursor up. */
 static void ed_mv_up(void);
+
+/* State updater of file change. */
+static void ed_on_f_ch(void);
 
 /* Processes arrow key sequence. */
 static void ed_proc_arrow_key(char key);
@@ -180,7 +183,7 @@ ed_del_row(size_t times)
 		while (times-- > 0) {
 			rows_del(&ed.rows, ed.offset_row + ed.cur.y);
 		}
-		ed.quit_presses_rem = CFG_QUIT_PRESSES_REM_AFT_CH;
+		ed_on_f_ch();
 	}
 }
 
@@ -268,8 +271,8 @@ ed_ins_row_below(void)
 	}
 	/* Insert new empty row */
 	rows_ins(&ed.rows, ed.offset_row + ed.cur.y, row_empty());
-	/* Update quit presses count and switch to inserting mode */
-	ed.quit_presses_rem = CFG_QUIT_PRESSES_REM_AFT_CH;
+	/* Handle file change and switch to inserting mode */
+	ed_on_f_ch();
 	ed.mode = MODE_INS;
 }
 
@@ -286,8 +289,8 @@ ed_ins_row_top(void)
 		ed.offset_row++;
 		ed.cur.y--;
 	}
-	/* Update quit presses count and switch to inserting mode */
-	ed.quit_presses_rem = CFG_QUIT_PRESSES_REM_AFT_CH;
+	/* Handle file change and switch to inserting mode */
+	ed_on_f_ch();
 	ed.mode = MODE_INS;
 }
 
@@ -463,6 +466,13 @@ ed_need_to_quit(void)
 	return ed.quit_presses_rem == 0;
 }
 
+static void
+ed_on_f_ch(void)
+{
+	ed.is_dirty = 1;
+	ed.quit_presses_rem = CFG_QUIT_PRESSES_REM_AFT_CH;
+}
+
 void
 ed_open(const char *path)
 {
@@ -470,6 +480,7 @@ ed_open(const char *path)
 
 	/* Set default for file */
 	ed.cur = cur_new(0, 0);
+	ed.is_dirty = 0;
 	ed.mode = MODE_NORM;
 	ed.msg[0] = 0;
 	ed.num_input = SIZE_MAX;
@@ -662,6 +673,7 @@ ed_save(void)
 		return;
 	}
 	/* Write rows */
+	/* TODO: rows_write */
 	for (row_i = 0; row_i < ed.rows.cnt; row_i++) {
 		row = &ed.rows.arr[row_i];
 		/* Write row's content and newline character */
@@ -679,7 +691,8 @@ ed_save(void)
 	} else if (fclose(f) == EOF) {
 		err("Failed to close saved file:");
 	}
-	/* Set quit presses and set message */
+	/* Remove dirty flag and set message */
+	ed.is_dirty = 0;
 	ed.quit_presses_rem = 1;
 	ed_set_msg(msg_saved_fmt, len);
 }
@@ -800,7 +813,7 @@ ed_write_stat_left(Buf *buf)
 	/* Write base status to buffer */
 	len = buf_writef(buf, " [%s] %s", mode_str(ed.mode), basename(ed.path));
 	/* Add mark if file is dirty */
-	if (CFG_QUIT_PRESSES_REM_AFT_CH == ed.quit_presses_rem) {
+	if (ed.is_dirty) {
 		len += buf_write(buf, " [+]", 4);
 	}
 	/* Write message to buffer if exists */
