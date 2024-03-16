@@ -661,31 +661,15 @@ ed_refresh_scr(void)
 static void
 ed_save(void)
 {
-	size_t len_part;
-	size_t len = 0;
-	size_t row_i;
 	FILE *f;
-	const Row *row;
+	size_t len;
 
-	/* Open file */
+	/* Open file, write rows, flush and close file  */
 	if (!(f = fopen(ed.path, "w"))) {
 		ed_set_msg(msg_save_fail_fmt, strerror(errno));
 		return;
 	}
-	/* Write rows */
-	/* TODO: rows_write */
-	for (row_i = 0; row_i < ed.rows.cnt; row_i++) {
-		row = &ed.rows.arr[row_i];
-		/* Write row's content and newline character */
-		len_part = fwrite(row->cont, sizeof(char), row->len, f);
-		if (len_part != row->len) {
-			err("Failed to save a row #%zu:", row_i);
-		} else if (fputc('\n', f) == EOF) {
-			err("Failed to write newline after row #%zu:", row_i);
-		}
-		len += len_part;
-	}
-	/* Flush and close file */
+	len = rows_write(&ed.rows, f);
 	if (fflush(f) == EOF) {
 		err("Failed to flush saved file:");
 	} else if (fclose(f) == EOF) {

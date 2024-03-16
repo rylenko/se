@@ -20,6 +20,9 @@ Returns pointer to accepted row on success and `NULL` on `EOF`.
 */
 static Row *row_read(Row *row, FILE *f);
 
+/* Writes row to the file with newline character. */
+static size_t row_write(Row *row, FILE *f);
+
 /* Grows or shrinks the rows capacity. */
 static void rows_realloc_if_needed(Rows *rows);
 
@@ -106,6 +109,18 @@ row_read(Row *row, FILE *f)
 	return row;
 }
 
+static size_t
+row_write(Row *row, FILE *f)
+{
+	size_t len = fwrite(row->cont, sizeof(char), row->len, f);
+	if (len != row->len) {
+		err("Failed to write a row with length %zu:", row->len);
+	} else if (fputc('\n', f) == EOF) {
+		err("Failed to write newline after row with length %zu:", row->len);
+	}
+	return len;
+}
+
 void
 rows_free(Rows *rows)
 {
@@ -171,4 +186,15 @@ rows_realloc_if_needed(Rows *rows)
 	if (!(rows->arr = realloc(rows->arr, sizeof(Row) * rows->cap))) {
 		err("Failed to reallocate rows with capacity %zu:", rows->cap);
 	}
+}
+
+size_t
+rows_write(Rows *rows, FILE *f)
+{
+	size_t len = 0;
+	size_t row_i;
+	for (row_i = 0; row_i < rows->cnt; row_i++) {
+		len += row_write(rows->arr + row_i, f);
+	}
+	return len;
 }

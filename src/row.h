@@ -31,7 +31,10 @@ void rows_ins(Rows *, const size_t, Row);
 /* Creates new dynamic array with rows. */
 Rows rows_new(void);
 
-/* Reads rows from file without newline character. */
+/* Reads rows from file without newline characters. */
 void rows_read(Rows *, FILE *);
+
+/* Writes rows to the file with newline characters. */
+size_t rows_write(Rows *, FILE *);
 
 #endif /* _ROW_H */
