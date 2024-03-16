@@ -3,6 +3,7 @@
 /* TODO: Integrate repetition of keys into handlers */
 /* TODO: Undo operations. Also rename "del" to "remove" where needed */
 /* TODO: Maybe split ed.c into ed_init.c, ed_stat.c, ed_key.c, etc.? */
+/* TODO: Support huge files. */
 /* TODO: Xclip patch to use with local clipboard */
 
 #include <assert.h>
