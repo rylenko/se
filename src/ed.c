@@ -73,6 +73,9 @@ static void ed_handle_sig_win_ch(int num);
 /* Input number. */
 static void ed_input_num(const unsigned char digit);
 
+/* Insert a character. */
+static void ed_ins(char ch);
+
 /* Inserts new row below the cursor and switches to inserting mode. */
 static void ed_ins_row_below(void);
 
@@ -259,6 +262,20 @@ ed_input_num(const unsigned char digit)
 		ed.num_input *= 10;
 		ed.num_input += digit;
 	}
+}
+
+static void
+ed_ins(char ch)
+{
+	/* Insert character */
+	row_ins(ed.rows.arr + ed.offset_row + ed.cur.y, ed.offset_col + ed.cur.x, ch);
+	/* Shift cursor */
+	if (ed.cur.x + 1 == ed.win_size.ws_col) {
+		ed.offset_col++;
+	} else {
+		ed.cur.x++;
+	}
+	ed_on_f_ch();
 }
 
 static void
@@ -542,6 +559,9 @@ ed_proc_ins_key(char key)
 	/* Switch to normal mode */
 	case CFG_KEY_MODE_NORM:
 		ed.mode = MODE_NORM;
+		return;
+	default:
+		ed_ins(key);
 		return;
 	}
 }

@@ -4,6 +4,7 @@
 /* Row in the file. */
 typedef struct {
 	/* `NULL` if length is 0. */
+	size_t cap;
 	char *cont;
 	size_t len;
 } Row;
@@ -15,12 +16,15 @@ typedef struct {
 	size_t cnt;
 } Rows;
 
+/* Creates new empty row. */
+Row row_empty(void);
+
+/* Inserts character to row. */
+void row_ins(Row *, const size_t, const char);
+
 /* Remove row by its index. */
 /* TODO: rename to `rows_remove` if undo is done. */
 void rows_del(Rows *, const size_t);
-
-/* Creates new empty row. */
-Row row_empty(void);
 
 /* Frees allocated rows. */
 void rows_free(Rows *);
