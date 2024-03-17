@@ -13,7 +13,7 @@ README_PATH = $(ROOT_DIR)README.md
 ROOT_DIR = $(dir $(realpath $(lastword $(MAKEFILE_LIST))))
 
 # Valgrind
-VALGRIND_OUT_PATH = "valgrind-out"
+VALGRIND_OUT_PATH = valgrind-out
 
 # Build executable
 all: $(OBJ)
@@ -61,7 +61,7 @@ uninstall:
 	rm $(PREFIX)/bin/$(NAME)
 
 # Valgrind
-valgrind: all
+valgrind: $(NAME)
 	# Use valgrind to check memory leaks
 	valgrind --leak-check=full \
 		--show-leak-kinds=all \

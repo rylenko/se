@@ -3,7 +3,7 @@
 #include <unistd.h>
 #include "ed.h"
 
-static const char *const usage = "Usage:\n\t$ ew <filename>";
+static const char *const usage = "Usage:\n\t$ se <filename>";
 
 int
 main(const int argc, const char *const *const argv)

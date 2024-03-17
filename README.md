@@ -1,8 +1,4 @@
-# Edelweiss
-
-A simple text editor.
-
-# Goals
+# Simple Editor
 
 **Important goals**:
 
@@ -18,13 +14,14 @@ A simple text editor.
 - UTF-8 support.
 - Key macros.
 - Regular expressions.
+- Configuring using `~/.config/se/se.conf` or something like that.
 
 **Must be avoided**:
 
 - Multiple windows support.
 - File browser.
 - Support for plugins written in another language.
-- Configuring not via header file.
+- LSP.
 
 # Usage
 
@@ -55,7 +52,7 @@ Normal mode keys:
 - `CTRL+n` - create a row above the current row and move to it.
 - `CTRL+s` - save.
 - `CTRL+q` - quit. If you changed the file, you will need to either save it or press this key several times.
-- `CTRL+x` - save to current user's home directory. Useful if no privilege to write to opened file.
+- `CTRL+x` - save to spare directory. Useful if no privilege to write to opened file.
 
 You can also repeat a key by pressing `<number><key>`. For example, `5n` will create 5 rows below the cursor.
 
@@ -136,12 +133,12 @@ $ make gen-readme
 	</tr><tr>
 		<th>Markdown</th>
 		<th>2</th>
-		<th>209</th>
-		<th>62</th>
+		<th>203</th>
+		<th>58</th>
 		<th>0</th>
-		<th>147</th>
+		<th>145</th>
 		<th>0</th>
-		<th>3504</th>
+		<th>3498</th>
 	</tr><tr>
 		<th>Makefile</th>
 		<th>2</th>
@@ -150,7 +147,7 @@ $ make gen-readme
 		<th>13</th>
 		<th>54</th>
 		<th>0</th>
-		<th>1869</th>
+		<th>1871</th>
 	</tr><tr>
 		<th>Shell</th>
 		<th>1</th>
@@ -182,12 +179,12 @@ $ make gen-readme
 	<tfoot><tr>
 		<th>Total</th>
 		<th>31</th>
-		<th>2123</th>
-		<th>310</th>
+		<th>2117</th>
+		<th>306</th>
 		<th>277</th>
-		<th>1536</th>
+		<th>1534</th>
 		<th>185</th>
-    	<th>43377</th>
+    	<th>43373</th>
 	</tr></tfoot>
 	</table>
 
