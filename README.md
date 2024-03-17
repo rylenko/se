@@ -28,7 +28,7 @@
 Open a file:
 
 ```
-$ ew <path>
+$ se <path>
 ```
 
 Normal mode keys:
