@@ -8,7 +8,7 @@
 - No dependencies.
 - Extensibility.
 
-**Examples of what must be in separate patches**:
+**Examples of what may be in separate patches**:
 
 - Syntax highlighting.
 - UTF-8 support.

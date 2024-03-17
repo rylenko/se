@@ -8,7 +8,7 @@
 - No dependencies.
 - Extensibility.
 
-**Examples of what must be in separate patches**:
+**Examples of what may be in separate patches**:
 
 - Syntax highlighting.
 - UTF-8 support.
@@ -138,7 +138,7 @@ $ make gen-readme
 		<th>0</th>
 		<th>145</th>
 		<th>0</th>
-		<th>3498</th>
+		<th>3496</th>
 	</tr><tr>
 		<th>Makefile</th>
 		<th>2</th>
@@ -184,7 +184,7 @@ $ make gen-readme
 		<th>277</th>
 		<th>1534</th>
 		<th>185</th>
-    	<th>43373</th>
+    	<th>43371</th>
 	</tr></tfoot>
 	</table>
 
