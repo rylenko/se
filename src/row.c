@@ -178,6 +178,33 @@ row_write(Row *row, FILE *f)
 }
 
 void
+rows_break(Rows *rows, const size_t idx, const size_t col_i)
+{
+	/* TODO: Copy a smaller portion of a row to the row abome or below */
+	Row new_row = row_empty();
+	/* Fill new row with content if present */
+	new_row.len = rows->arr[idx].len - col_i;
+	if (new_row.len > 0) {
+		/* Allocate memory for new row and copy part of previous row to it */
+		new_row.cap = new_row.len + 1;
+		if (NULL == (new_row.cont = malloc(new_row.cap))) {
+			err(EXIT_FAILURE, "Failed to alloc row with capacity %zu", new_row.cap);
+		}
+		strcpy(new_row.cont, &rows->arr[idx].cont[col_i]);
+	}
+	/* Insert new row */
+	rows_ins(rows, idx + 1, new_row);
+
+	/* Update old row's length and set null byte to break point */
+	if (rows->arr[idx].len > 0) {
+		rows->arr[idx].len = col_i;
+		rows->arr[idx].cont[col_i] = 0;
+	}
+	/* Shrink to fit an old row if needed */
+	row_shrink_if_needed(&rows->arr[idx]);
+}
+
+void
 rows_del(Rows *rows, const size_t idx)
 {
 	/* Validate index */

@@ -60,6 +60,9 @@ static struct {
 	struct winsize win_size;
 } ed;
 
+/* Breaks the row into two rows. */
+static void ed_break_row(void);
+
 /* Deletes current character. */
 static void ed_del(void);
 
@@ -169,6 +172,22 @@ static size_t ed_write_stat_left(Buf *buf);
 
 /* Writes right part of status to the buffer. */
 static void ed_write_stat_right(Buf *buf, size_t left_len);
+
+
+static void
+ed_break_row(void)
+{
+	/* Break the row */
+	rows_break(&ed.rows, ed.offset_row + ed.cur.y, ed.offset_col + ed.cur.x);
+	/* Remove x offset and move down */
+	ed.cur.x = 0;
+	ed.offset_col = 0;
+	if (ed.cur.y + 2 == ed.win_size.ws_row) {
+		ed.offset_row++;
+	} else {
+		ed.cur.y++;
+	}
+}
 
 void
 ed_deinit(void)
@@ -580,6 +599,10 @@ static void
 ed_proc_ins_key(char key)
 {
 	switch (key) {
+	/* Breaks current row */
+	case CFG_KEY_BREAK_ROW:
+		ed_break_row();
+		return;
 	/* Delete current character */
 	case CFG_KEY_DEL:
 		ed_del();

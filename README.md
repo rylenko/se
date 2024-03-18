@@ -60,6 +60,7 @@ Insert mode keys:
 
 - `ESC` - switch to normal mode.
 - `Backspace` - erase character before cursor.
+- `Enter` - break row.
 - Otherwise the character is inserted.
 
 # Build and install
@@ -117,30 +118,30 @@ $ make gen-readme
 	<tbody><tr>
 		<th>C</th>
 		<th>11</th>
-		<th>1569</th>
-		<th>166</th>
-		<th>210</th>
-		<th>1193</th>
-		<th>215</th>
-		<th>32172</th>
+		<th>1619</th>
+		<th>171</th>
+		<th>220</th>
+		<th>1228</th>
+		<th>222</th>
+		<th>33492</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>13</th>
-		<th>344</th>
-		<th>74</th>
-		<th>79</th>
-		<th>191</th>
+		<th>349</th>
+		<th>75</th>
+		<th>80</th>
+		<th>194</th>
 		<th>1</th>
-		<th>7734</th>
+		<th>7889</th>
 	</tr><tr>
 		<th>Markdown</th>
 		<th>2</th>
-		<th>207</th>
+		<th>209</th>
 		<th>58</th>
 		<th>0</th>
-		<th>149</th>
+		<th>151</th>
 		<th>0</th>
-		<th>3668</th>
+		<th>3714</th>
 	</tr><tr>
 		<th>Makefile</th>
 		<th>2</th>
@@ -181,12 +182,12 @@ $ make gen-readme
 	<tfoot><tr>
 		<th>Total</th>
 		<th>31</th>
-		<th>2270</th>
-		<th>322</th>
-		<th>308</th>
-		<th>1640</th>
-		<th>216</th>
-    	<th>46684</th>
+		<th>2327</th>
+		<th>328</th>
+		<th>319</th>
+		<th>1680</th>
+		<th>223</th>
+    	<th>48205</th>
 	</tr></tfoot>
 	</table>
 
@@ -202,6 +203,7 @@ $ make gen-readme
 |**src/ed.c**|**6**|**Maybe split ed.c into ed_init.c, ed_stat.c, ed_key.c, etc.?**|
 |**src/ed.c**|**7**|**Support huge files.**|
 |**src/ed.c**|**8**|**Xclip patch to use with local clipboard**|
-|**src/ed.c**|**184**|**union current and previous rows if current is not first**|
-|**src/row.h**|**32**|**rename to `rows_remove` if undo is done.**|
-|**src/cfg.h**|**50**|**Fix it for another values**|
+|**src/ed.c**|**203**|**union current and previous rows if current is not first**|
+|**src/row.c**|**183**|**Copy a smaller portion of a row to the row abome or below**|
+|**src/row.h**|**35**|**rename to `rows_remove` if undo is done.**|
+|**src/cfg.h**|**51**|**Fix it for another values**|

@@ -60,6 +60,7 @@ Insert mode keys:
 
 - `ESC` - switch to normal mode.
 - `Backspace` - erase character before cursor.
+- `Enter` - break row.
 - Otherwise the character is inserted.
 
 # Build and install
