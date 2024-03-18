@@ -12,29 +12,29 @@ typedef enum {
 } ReallocStep;
 
 /* Extends the row with another. */
-static void row_extend(Row *row, const Row *with);
+static void row_extend(Row *const row, const Row *const with);
 
 /* Force row to shrink to fit the capacity. */
-static void row_force_shrink(Row *row);
+static void row_force_shrink(Row *const row);
 
 /* Frees row's content. */
-static void row_free(Row *row);
+static void row_free(Row *const row);
 
 /* Grows capacity if needed. */
-static void row_grow_if_needed(Row *row);
+static void row_grow_if_needed(Row *const row);
 
 /*
 Reads new row.
 
 Returns pointer to accepted row on success and `NULL` on `EOF`.
 */
-static Row *row_read(Row *row, FILE *f);
+static Row *row_read(Row *const row, FILE *const f);
 
 /* Shrinks capacity if needed. */
-static void row_shrink_if_needed(Row *row);
+static void row_shrink_if_needed(Row *const row);
 
 /* Writes row to the file with newline character. */
-static size_t row_write(Row *row, FILE *f);
+static size_t row_write(Row *const row, FILE *const f);
 
 /* Grows rows capacity if needed. */
 static void rows_grow_if_needed(Rows *rows);
@@ -43,7 +43,7 @@ static void rows_grow_if_needed(Rows *rows);
 static void rows_shrink_if_needed(Rows *rows);
 
 void
-row_del(Row *row, const size_t idx)
+row_del(Row *const row, const size_t idx)
 {
 	/* Validate index */
 	assert(idx < row->len);
@@ -62,7 +62,7 @@ row_empty(void)
 static void
 row_extend(Row *const row, const Row *const with)
 {
-	size_t row_old_len = row->len;
+	const size_t row_old_len = row->len;
 	/* Add length and check that we need to grow capacity */
 	row->len += with->len;
 	row_grow_if_needed(row);
@@ -71,9 +71,9 @@ row_extend(Row *const row, const Row *const with)
 }
 
 static void
-row_force_shrink(Row *row)
+row_force_shrink(Row *const row)
 {
-	size_t size = row->len + 1;
+	const size_t size = row->len + 1;
 	if (0 == row->len && row->cap > 0) {
 		row_free(row);
 	} else if (size < row->cap) {
@@ -86,7 +86,7 @@ row_force_shrink(Row *row)
 }
 
 static void
-row_free(Row *row)
+row_free(Row *const row)
 {
 	free(row->cont);
 	row->cont = NULL;
@@ -95,7 +95,7 @@ row_free(Row *row)
 }
 
 static void
-row_grow_if_needed(Row *row)
+row_grow_if_needed(Row *const row)
 {
 	/* Do not forget to include null byte */
 	if (row->len + 1 >= row->cap) {
@@ -108,7 +108,7 @@ row_grow_if_needed(Row *row)
 }
 
 void
-row_ins(Row *row, const size_t idx, const char ch)
+row_ins(Row *const row, const size_t idx, const char ch)
 {
 	/* Validate index */
 	assert(idx <= row->len);
@@ -124,7 +124,7 @@ row_ins(Row *row, const size_t idx, const char ch)
 }
 
 static Row*
-row_read(Row *row, FILE *f)
+row_read(Row *const row, FILE *const f)
 {
 	int ch;
 
@@ -165,7 +165,7 @@ row_read(Row *row, FILE *f)
 }
 
 static void
-row_shrink_if_needed(Row *row)
+row_shrink_if_needed(Row *const row)
 {
 	if (0 == row->len && row->cap > 0) {
 		row_free(row);
@@ -180,9 +180,9 @@ row_shrink_if_needed(Row *row)
 }
 
 static size_t
-row_write(Row *row, FILE *f)
+row_write(Row *const row, FILE *const f)
 {
-	size_t len = fwrite(row->cont, sizeof(char), row->len, f);
+	const size_t len = fwrite(row->cont, sizeof(char), row->len, f);
 	if (len != row->len) {
 		err(EXIT_FAILURE, "Failed to write a row with length %zu", row->len);
 	} else if (fputc('\n', f) == EOF) {
@@ -192,7 +192,7 @@ row_write(Row *row, FILE *f)
 }
 
 void
-rows_break(Rows *rows, const size_t idx, const size_t col_i)
+rows_break(Rows *const rows, const size_t idx, const size_t col_i)
 {
 	/* TODO: Copy a smaller portion of a row to the row abome or below */
 	Row new_row = row_empty();
@@ -223,7 +223,7 @@ rows_break(Rows *rows, const size_t idx, const size_t col_i)
 }
 
 void
-rows_extend_with_next(Rows *rows, const size_t idx)
+rows_extend_with_next(Rows *const rows, const size_t idx)
 {
 	/* Check next row exists */
 	if (idx + 1 < rows->cnt) {
@@ -233,7 +233,7 @@ rows_extend_with_next(Rows *rows, const size_t idx)
 }
 
 void
-rows_del(Rows *rows, const size_t idx)
+rows_del(Rows *const rows, const size_t idx)
 {
 	/* Validate index */
 	assert(idx < rows->cnt);
@@ -253,10 +253,9 @@ rows_del(Rows *rows, const size_t idx)
 }
 
 void
-rows_free(Rows *rows)
+rows_free(Rows *const rows)
 {
 	size_t i;
-
 	/* Free rows */
 	for (i = 0; i < rows->cnt; i++) {
 		row_free(&rows->arr[i]);
@@ -268,7 +267,7 @@ rows_free(Rows *rows)
 }
 
 static void
-rows_grow_if_needed(Rows *rows)
+rows_grow_if_needed(Rows *const rows)
 {
 	if (rows->cnt == rows->cap) {
 		rows->cap += REALLOC_STEP_ROWS;
@@ -280,7 +279,7 @@ rows_grow_if_needed(Rows *rows)
 }
 
 void
-rows_ins(Rows *rows, const size_t idx, Row row)
+rows_ins(Rows *const rows, const size_t idx, Row row)
 {
 	/* Validate index */
 	assert(idx <= rows->cnt);
@@ -306,7 +305,7 @@ rows_new(void)
 }
 
 void
-rows_read(Rows *rows, FILE *f)
+rows_read(Rows *const rows, FILE *const f)
 {
 	Row row = row_empty();
 	while (row_read(&row, f)) {
@@ -315,7 +314,7 @@ rows_read(Rows *rows, FILE *f)
 }
 
 static void
-rows_shrink_if_needed(Rows *rows)
+rows_shrink_if_needed(Rows *const rows)
 {
 	if (rows->cnt + REALLOC_STEP_ROWS <= rows->cap) {
 		rows->cap = rows->cnt;
@@ -327,7 +326,7 @@ rows_shrink_if_needed(Rows *rows)
 }
 
 size_t
-rows_write(Rows *rows, FILE *f)
+rows_write(Rows *const rows, FILE *const f)
 {
 	size_t len = 0;
 	size_t row_i;

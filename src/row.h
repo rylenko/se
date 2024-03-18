@@ -20,29 +20,29 @@ typedef struct {
 } Rows;
 
 /* Deletes character. */
-void row_del(Row *, const size_t);
+void row_del(Row *, size_t);
 
 /* Creates new empty row. */
 Row row_empty(void);
 
 /* Inserts character to row. Grows capacity if there is no space. */
-void row_ins(Row *, const size_t, const char);
+void row_ins(Row *, size_t, char);
 
 /* Breaks the row at index and position. */
-void rows_break(Rows *, const size_t, const size_t);
+void rows_break(Rows *, size_t, size_t);
 
 /* Extends specified row with next row. */
-void rows_extend_with_next(Rows *, const size_t);
+void rows_extend_with_next(Rows *, size_t);
 
 /* Remove row by its index. */
 /* TODO: rename to `rows_remove` if undo is done. */
-void rows_del(Rows *, const size_t);
+void rows_del(Rows *, size_t);
 
 /* Frees allocated rows. */
 void rows_free(Rows *);
 
 /* Inserts new row at index. Grows capacity if there is no space. */
-void rows_ins(Rows *, const size_t, Row);
+void rows_ins(Rows *, size_t, Row);
 
 /* Creates new dynamic array with rows. */
 Rows rows_new(void);

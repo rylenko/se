@@ -16,13 +16,13 @@ static struct {
 } term;
 
 void
-term_clr_row_on_right(Buf *buf)
+term_clr_row_on_right(Buf *const buf)
 {
 	buf_write(buf, "\x1b[0K", 4);
 }
 
 void
-term_clr_scr(Buf *buf)
+term_clr_scr(Buf *const buf)
 {
 	buf_write(buf, "\x1b[2J", 4);
 }
@@ -40,7 +40,6 @@ void
 term_enable_raw_mode(void)
 {
 	struct termios raw;
-
 	/* Get the original termios parameters */
 	if (tcgetattr(term.ifd, &term.orig) < 0) {
 		err(EXIT_FAILURE, "Failed to get original termios parameters");
@@ -75,13 +74,13 @@ term_enable_raw_mode(void)
 }
 
 void
-term_flush(const Buf *buf)
+term_flush(const Buf *const buf)
 {
 	buf_flush(buf, term.ofd);
 }
 
 void
-term_get_win_size(struct winsize *win_size)
+term_get_win_size(struct winsize *const win_size)
 {
 	if (ioctl(term.ofd, TIOCGWINSZ, win_size) < 0) {
 		err(EXIT_FAILURE, "Failed to get window size for fd %d", term.ofd);
@@ -89,7 +88,7 @@ term_get_win_size(struct winsize *win_size)
 }
 
 void
-term_go_home(Buf *buf)
+term_go_home(Buf *const buf)
 {
 	buf_write(buf, "\x1b[H", 3);
 }
@@ -102,7 +101,7 @@ term_init(const int ifd, const int ofd)
 }
 
 size_t
-term_wait_key_seq(char *seq, const size_t len)
+term_wait_key_seq(char *const seq, const size_t len)
 {
 	ssize_t ret = 0;
 	while (0 == ret) {

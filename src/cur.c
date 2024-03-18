@@ -2,7 +2,7 @@
 #include "cur.h"
 
 void
-cur_hide(Buf *buf)
+cur_hide(Buf *const buf)
 {
 	buf_write(buf, "\x1b[?25l", 6);
 }
@@ -14,13 +14,13 @@ cur_new(unsigned short x, unsigned short y)
 }
 
 void
-cur_show(Buf *buf)
+cur_show(Buf *const buf)
 {
 	buf_write(buf, "\x1b[?25h", 6);
 }
 
 void
-cur_write(const Cur cur, Buf *buf)
+cur_write(const Cur cur, Buf *const buf)
 {
 	buf_writef(buf, "\x1b[%hu;%huH", cur.y + 1, cur.x + 1);
 }

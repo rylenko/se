@@ -1,5 +1,3 @@
-/* TODO: make const hints better */
-/* TODO: use movement functions in other functions (dry) */
 /* TODO: reduce allocated memory even without optimizing large files */
 /* TODO: Add local clipboard. Use it in functions. */
 /* TODO: Use linked list for rows array and row's content parts */
@@ -88,12 +86,12 @@ static void ed_handle_sig_win_ch(int num);
 static void ed_input_num(const unsigned char digit);
 
 /* Inserts a character. */
-static void ed_ins(char ch);
+static void ed_ins(const char ch);
 
-/* Inserts new row below the cursor and switches to inserting mode. */
+/* Inserts new row below the cursor. */
 static void ed_ins_row_below(void);
 
-/* Inserts new row on top of the cursor and switches to inserting mode. */
+/* Inserts new row on top of the cursor. */
 static void ed_ins_row_top(void);
 
 /* Move to begin of file. */
@@ -123,9 +121,6 @@ static void ed_mv_prev_word(size_t times);
 /* Move cursor right. */
 static void ed_mv_right(void);
 
-/* Move to row by its index. */
-static void ed_mv_row(size_t idx);
-
 /* Move cursor up. */
 static void ed_mv_up(void);
 
@@ -133,28 +128,28 @@ static void ed_mv_up(void);
 static void ed_on_f_ch(void);
 
 /* Processes arrow key sequence. */
-static void ed_proc_arrow_key(char key);
+static void ed_proc_arrow_key(const char key);
 
 /* Processes inserting key. */
-static void ed_proc_ins_key(char key);
+static void ed_proc_ins_key(const char key);
 
 /* Processes key sequence. Useful if single key press is several `char`s. */
-static void ed_proc_key_seq(const char *key_seq, const size_t len);
+static void ed_proc_key_seq(const char *const key_seq, const size_t len);
 
 /* Processes normal key. */
-static void ed_proc_norm_key(char key);
+static void ed_proc_norm_key(const char key);
 
 /* Quits the editor. */
 static void ed_try_quit(void);
 
 /* Saves file. Saves to opened file if argument is `NULL`. */
-static void ed_save(const char *path);
+static void ed_save(const char *const path);
 
 /* Saves file to spare dir. */
 static void ed_save_to_spare_dir(void);
 
 /* Set message. */
-static void ed_set_msg(const char *fmt, ...);
+static void ed_set_msg(const char *const fmt, ...);
 
 /*
 Requests the size from the terminal and sets it in the appropriate field.
@@ -165,19 +160,19 @@ To update the window size after it has been changed, use the handler
 static void ed_upd_win_size(void);
 
 /* Writes cursor position including tabs. */
-static void ed_write_cur(Buf *buf);
+static void ed_write_cur(Buf *const buf);
 
 /* Write rows in the buffer. */
-static void ed_write_rows(Buf *buf);
+static void ed_write_rows(Buf *const buf);
 
 /* Writes status to the buffer. */
-static void ed_write_stat(Buf *buf);
+static void ed_write_stat(Buf *const buf);
 
 /* Writes left part of status to the buffer. */
-static size_t ed_write_stat_left(Buf *buf);
+static size_t ed_write_stat_left(Buf *const buf);
 
 /* Writes right part of status to the buffer. */
-static void ed_write_stat_right(Buf *buf, size_t left_len);
+static void ed_write_stat_right(Buf *const buf, const size_t left_len);
 
 
 static void
@@ -204,8 +199,8 @@ ed_deinit(void)
 static void
 ed_del(void)
 {
-	size_t f_row_i = ed.offset_row + ed.cur.y;
-	size_t f_col_i = ed.offset_col + ed.cur.x;
+	const size_t f_row_i = ed.offset_row + ed.cur.y;
+	const size_t f_col_i = ed.offset_col + ed.cur.x;
 	if (f_col_i > 0) {
 		/* Delete character */
 		row_del(&ed.rows.arr[f_row_i], f_col_i - 1);
@@ -245,8 +240,8 @@ ed_del_row(size_t times)
 static void
 ed_fix_cur(void)
 {
-	const Row *row = ed_get_curr_row();
-	size_t f_col_i = ed.offset_col + ed.cur.x;
+	const Row *const row = ed_get_curr_row();
+	const size_t f_col_i = ed.offset_col + ed.cur.x;
 	size_t col_diff;
 
 	/* Clamp cursor on the screen */
@@ -313,62 +308,35 @@ ed_input_num(const unsigned char digit)
 }
 
 static void
-ed_ins(char ch)
+ed_ins(const char ch)
 {
-	/* Insert character */
 	row_ins(&ed.rows.arr[ed.offset_row + ed.cur.y], ed.offset_col + ed.cur.x, ch);
-	/* Shift cursor */
-	if (ed.cur.x + 1 == ed.win_size.ws_col) {
-		ed.offset_col++;
-	} else {
-		ed.cur.x++;
-	}
+	ed_mv_right();
 	ed_on_f_ch();
 }
 
 static void
 ed_ins_row_below(void)
 {
-	/* Remove x offsets */
-	ed.offset_col = 0;
-	ed.cur.x = 0;
-	/* Check cursor at the bottom of the screen */
-	if (ed.win_size.ws_row - 2 == ed.cur.y) {
-		ed.offset_row++;
-	} else {
-		ed.cur.y++;
-	}
-	/* Insert new empty row */
+	ed_mv_begin_of_row();
+	ed_mv_down();
 	rows_ins(&ed.rows, ed.offset_row + ed.cur.y, row_empty());
-	/* Handle file change and switch to inserting mode */
 	ed_on_f_ch();
-	ed.mode = MODE_INS;
 }
 
 static void
 ed_ins_row_top(void)
 {
-	/* Remove x offsets */
-	ed.offset_col = 0;
-	ed.cur.x = 0;
-	/* Insert new empty row */
+	ed_mv_begin_of_row();
 	rows_ins(&ed.rows, ed.offset_row + ed.cur.y, row_empty());
-	/* Offset cursor if we at the end of screen */
-	if (ed.win_size.ws_row - 2 == ed.cur.y) {
-		ed.offset_row++;
-		ed.cur.y--;
-	}
-	/* Handle file change and switch to inserting mode */
 	ed_on_f_ch();
-	ed.mode = MODE_INS;
 }
 
 static void
 ed_mv_begin_of_f(void)
 {
-	ed.offset_col = 0;
+	ed_mv_begin_of_row();
 	ed.offset_row = 0;
-	ed.cur.x = 0;
 	ed.cur.y = 0;
 }
 
@@ -398,13 +366,21 @@ ed_mv_down(void)
 static void
 ed_mv_end_of_f(void)
 {
-	ed_mv_row(ed.rows.cnt - 1);
+	ed_mv_begin_of_row();
+	/* Check that ro on initial screen */
+	if (ed.rows.cnt < ed.win_size.ws_row) {
+		ed.offset_row = 0;
+		ed.cur.y = ed.rows.cnt - 1;
+	} else {
+		ed.offset_row = ed.rows.cnt + 1 - ed.win_size.ws_row;
+		ed.cur.y = ed.win_size.ws_row - 2;
+	}
 }
 
 static void
 ed_mv_end_of_row(void)
 {
-	const Row *row = ed_get_curr_row();
+	const Row *const row = ed_get_curr_row();
 	if (row->len < ed.offset_col + ed.win_size.ws_col) {
 		/* End of row on the screen */
 		ed.cur.x = row->len - ed.offset_col;
@@ -437,10 +413,9 @@ static void
 ed_mv_next_word(size_t times)
 {
 	/* Find next word */
-	const Row *row = ed_get_curr_row();
+	const Row *const row = ed_get_curr_row();
 	size_t f_col_i;
 	size_t word_i;
-
 	while (times-- > 0) {
 		/* Find next word */
 		f_col_i = ed.offset_col + ed.cur.x;
@@ -502,26 +477,6 @@ ed_mv_right(void)
 }
 
 static void
-ed_mv_row(size_t idx)
-{
-	/* Remove offsets by x */
-	ed.cur.x = 0;
-	ed.offset_col = 0;
-
-	/* Clamp index and move */
-	idx = MIN(idx, ed.rows.cnt - 1);
-	if (idx + 1 < ed.win_size.ws_row) {
-		/* Row on initial screen without offset */
-		ed.offset_row = 0;
-		ed.cur.y = idx;
-	} else {
-		/* End of file not on the screen */
-		ed.offset_row = idx + 2 - ed.win_size.ws_row;
-		ed.cur.y = ed.win_size.ws_row - 2;
-	}
-}
-
-static void
 ed_mv_up(void)
 {
 	if (0 == ed.cur.y) {
@@ -550,7 +505,7 @@ ed_on_f_ch(void)
 }
 
 void
-ed_open(const char *path)
+ed_open(const char *const path)
 {
 	FILE *f;
 
@@ -579,7 +534,6 @@ ed_open(const char *path)
 	if (fclose(f) == EOF) {
 		err(EXIT_FAILURE, "Failed to close readed file");
 	}
-
 	/* Add empty row if there is no rows */
 	if (ed.rows.cnt == 0) {
 		rows_ins(&ed.rows, 0, row_empty());
@@ -587,7 +541,7 @@ ed_open(const char *path)
 }
 
 static void
-ed_proc_arrow_key(char key)
+ed_proc_arrow_key(const char key)
 {
 	/* Repititon times */
 	size_t times = SIZE_MAX == ed.num_input ? 1 : ed.num_input;
@@ -608,7 +562,7 @@ ed_proc_arrow_key(char key)
 }
 
 static void
-ed_proc_ins_key(char key)
+ed_proc_ins_key(const char key)
 {
 	switch (key) {
 	/* Breaks current row */
@@ -646,7 +600,7 @@ ed_proc_key_seq(const char *key_seq, const size_t len)
 }
 
 static void
-ed_proc_norm_key(char key)
+ed_proc_norm_key(const char key)
 {
 	/* Repititon times */
 	size_t repeat_times = SIZE_MAX == ed.num_input ? 1 : ed.num_input;
@@ -752,7 +706,7 @@ ed_refresh_scr(void)
 }
 
 static void
-ed_save(const char *path)
+ed_save(const char *const path)
 {
 	FILE *f;
 	size_t len;
@@ -804,7 +758,7 @@ ed_save_to_spare_dir(void)
 }
 
 static void
-ed_set_msg(const char *fmt, ...)
+ed_set_msg(const char *const fmt, ...)
 {
 	/* Collect arguments and print formatted message */
 	va_list args;
@@ -820,11 +774,11 @@ ed_upd_win_size(void)
 }
 
 static void
-ed_write_cur(Buf *buf)
+ed_write_cur(Buf *const buf)
 {
 	unsigned short cont_i;
 	size_t x = 0;
-	const Row *row = ed_get_curr_row();
+	const Row *const row = ed_get_curr_row();
 
 	for (
 		cont_i = ed.offset_col;
@@ -867,7 +821,7 @@ ed_wait_and_proc_key(void)
 }
 
 static void
-ed_write_rows(Buf *buf)
+ed_write_rows(Buf *const buf)
 {
 	size_t f_row_i;
 	const Row *row;
@@ -897,7 +851,7 @@ ed_write_rows(Buf *buf)
 }
 
 static void
-ed_write_stat(Buf *buf)
+ed_write_stat(Buf *const buf)
 {
 	size_t left_len;
 	/* Clear row, begin color, write parts and end color */
@@ -913,7 +867,7 @@ ed_write_stat(Buf *buf)
 }
 
 static size_t
-ed_write_stat_left(Buf *buf)
+ed_write_stat_left(Buf *const buf)
 {
 	size_t len;
 	/* Write base status to buffer */
@@ -931,7 +885,7 @@ ed_write_stat_left(Buf *buf)
 }
 
 static void
-ed_write_stat_right(Buf *buf, size_t left_len)
+ed_write_stat_right(Buf *const buf, const size_t left_len)
 {
 	size_t col_i;
 	char coords[32];

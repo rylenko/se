@@ -3,7 +3,7 @@
 #include "word.h"
 
 size_t
-word_next(const char *s, const size_t len)
+word_next(const char *const s, const size_t len)
 {
 	size_t i;
 	char space_visited = 0;
@@ -18,7 +18,7 @@ word_next(const char *s, const size_t len)
 }
 
 size_t
-word_rnext(const char *s, const size_t len)
+word_rnext(const char *const s, const size_t len)
 {
 	size_t i;
 	char space_visited = 0;

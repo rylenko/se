@@ -4,10 +4,10 @@
 #include "str_util.h"
 
 char*
-str_clone(const char *str)
+str_clone(const char *const str)
 {
-	size_t len = strlen(str);
-	char *ret = malloc(len + 1);
+	const size_t len = strlen(str);
+	char *const ret = malloc(len + 1);
 	if (NULL == ret) {
 		err(EXIT_FAILURE, "Failed to clone string with length %zu", len);
 	}

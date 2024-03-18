@@ -17,6 +17,6 @@ Cur cur_new(unsigned short, unsigned short);
 void cur_show(Buf *);
 
 /* Writes cursor position to buffer. */
-void cur_write(const Cur, Buf *);
+void cur_write(Cur, Buf *);
 
 #endif /* _CUR_H */

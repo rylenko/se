@@ -26,7 +26,7 @@ void term_go_home(Buf *buf);
 void term_flush(const Buf *);
 
 /* Creates new terminal controller. */
-void term_init(const int, const int);
+void term_init(int, int);
 
 /*
 Waits for a key to be pressed.
