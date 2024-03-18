@@ -62,7 +62,7 @@ row_force_shrink(Row *row)
 		row_free(row);
 	} else if (size < row->cap) {
 		/* Shrink if possible */
-		if ((row->cont = realloc(row->cont, size)) == NULL) {
+		if (NULL == (row->cont = realloc(row->cont, size))) {
 			err(EXIT_FAILURE, "Failed to shrink a row to capacity %zu", size);
 		}
 		row->cap = size;
@@ -85,7 +85,7 @@ row_grow_if_needed(Row *row)
 	if (row->len + 1 >= row->cap) {
 		row->cap += REALLOC_STEP_ROW;
 		/* Realloc with new capacity */
-		if ((row->cont = realloc(row->cont, row->cap)) == NULL) {
+		if (NULL == (row->cont = realloc(row->cont, row->cap))) {
 			err(EXIT_FAILURE, "Failed to reallocate row with %zu bytes", row->cap);
 		}
 	}
@@ -157,7 +157,7 @@ row_shrink_if_needed(Row *row)
 	} else if (row->len + 1 + REALLOC_STEP_ROW <= row->cap) {
 		row->cap -= REALLOC_STEP_ROW;
 		/* Realloc with new capacity */
-		if ((row->cont = realloc(row->cont, row->cap)) == NULL) {
+		if (NULL == (row->cont = realloc(row->cont, row->cap))) {
 			err(EXIT_FAILURE, "Failed to reallocate row with %zu bytes", row->cap);
 		}
 	}
@@ -255,7 +255,7 @@ rows_realloc_if_needed(Rows *rows)
 	} else {
 		return;
 	}
-	if ((rows->arr = realloc(rows->arr, sizeof(Row) * rows->cap)) == NULL) {
+	if (NULL == (rows->arr = realloc(rows->arr, sizeof(Row) * rows->cap))) {
 		err(EXIT_FAILURE, "Failed to reallocate rows with capacity %zu", rows->cap);
 	}
 }

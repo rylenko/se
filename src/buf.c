@@ -42,7 +42,7 @@ static void
 buf_grow(Buf *buf, const size_t by)
 {
 	buf->cap += by;
-	if ((buf->data = realloc(buf->data, buf->cap)) == NULL) {
+	if (NULL == (buf->data = realloc(buf->data, buf->cap))) {
 		err(EXIT_FAILURE, "Failed to reallocate buffer with capacity %zu", buf->cap);
 	}
 }

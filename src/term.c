@@ -105,7 +105,7 @@ size_t
 term_wait_key_seq(char *seq, const size_t len)
 {
 	ssize_t ret = 0;
-	while (ret == 0) {
+	while (0 == ret) {
 		if ((ret = read(term.ifd, seq, len)) < 0) {
 			err(EXIT_FAILURE, "Failed to read key sequence");
 		}

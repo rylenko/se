@@ -180,13 +180,13 @@ static void
 ed_del(void)
 {
 	size_t f_col_i = ed.offset_col + ed.cur.x;
-	if (f_col_i == 0) {
+	if (0 == f_col_i) {
 		/* TODO: union current and previous rows if current is not first */
 	} else {
 		/* Delete character */
 		row_del(&ed.rows.arr[ed.offset_row + ed.cur.y], f_col_i - 1);
 		/* Shift cursor */
-		if (ed.cur.x == 0) {
+		if (0 == ed.cur.x) {
 			ed.offset_col--;
 		} else {
 			ed.cur.x--;
@@ -198,7 +198,7 @@ ed_del(void)
 static void
 ed_del_row(size_t times)
 {
-	if (ed.rows.cnt == 1) {
+	if (1 == ed.rows.cnt) {
 		ed_set_msg(msg_del_only_one_row);
 	} else if (times > 0) {
 		/* Get real repeat times */
@@ -309,7 +309,7 @@ ed_ins_row_below(void)
 	ed.offset_col = 0;
 	ed.cur.x = 0;
 	/* Check cursor at the bottom of the screen */
-	if (ed.cur.y == ed.win_size.ws_row - 2) {
+	if (ed.win_size.ws_row - 2 == ed.cur.y) {
 		ed.offset_row++;
 	} else {
 		ed.cur.y++;
@@ -330,7 +330,7 @@ ed_ins_row_top(void)
 	/* Insert new empty row */
 	rows_ins(&ed.rows, ed.offset_row + ed.cur.y, row_empty());
 	/* Offset cursor if we at the end of screen */
-	if (ed.cur.y == ed.win_size.ws_row - 2) {
+	if (ed.win_size.ws_row - 2 == ed.cur.y) {
 		ed.offset_row++;
 		ed.cur.y--;
 	}
@@ -541,7 +541,7 @@ ed_open(const char *path)
 	}
 
 	/* Read rows from file  */
-	if ((f = fopen(path, "r")) == NULL) {
+	if (NULL == (f = fopen(path, "r"))) {
 		err(EXIT_FAILURE, "Failed to open to read");
 	}
 	rows_read(&ed.rows, f);
@@ -721,7 +721,7 @@ ed_save(const char *path)
 	size_t len;
 
 	/* Open file, write rows, flush and close file  */
-	if ((f = fopen(path ? path : ed.path, "w")) == NULL) {
+	if (NULL == (f = fopen(path ? path : ed.path, "w"))) {
 		ed_set_msg(msg_save_fail_fmt, strerror(errno));
 		return;
 	}
@@ -749,7 +749,7 @@ ed_save_to_spare_dir(void)
 	/* Get date */
 	if ((utc = time(NULL)) == (time_t) - 1) {
 		err(EXIT_FAILURE, "Failed to get time to save to spare dir");
-	} else if ((local = localtime(&utc)) == NULL) {
+	} else if (NULL == (local = localtime(&utc))) {
 		err(EXIT_FAILURE, "Failed to get local time to save to spare dir");
 	} else if (strftime(date, sizeof(date), "%m-%d_%H-%M-%S", local) == 0) {
 		errx(EXIT_FAILURE, "Failed to convert time to string.");
