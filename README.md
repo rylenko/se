@@ -118,12 +118,12 @@ $ make gen-readme
 	<tbody><tr>
 		<th>C</th>
 		<th>11</th>
-		<th>1659</th>
-		<th>175</th>
-		<th>232</th>
-		<th>1252</th>
-		<th>226</th>
-		<th>34667</th>
+		<th>1609</th>
+		<th>166</th>
+		<th>216</th>
+		<th>1227</th>
+		<th>218</th>
+		<th>34163</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>13</th>
@@ -132,7 +132,7 @@ $ make gen-readme
 		<th>81</th>
 		<th>195</th>
 		<th>1</th>
-		<th>8057</th>
+		<th>7967</th>
 	</tr><tr>
 		<th>Markdown</th>
 		<th>2</th>
@@ -182,12 +182,12 @@ $ make gen-readme
 	<tfoot><tr>
 		<th>Total</th>
 		<th>31</th>
-		<th>2370</th>
-		<th>333</th>
-		<th>332</th>
-		<th>1705</th>
-		<th>227</th>
-    	<th>49548</th>
+		<th>2320</th>
+		<th>324</th>
+		<th>316</th>
+		<th>1680</th>
+		<th>219</th>
+    	<th>48954</th>
 	</tr></tfoot>
 	</table>
 
@@ -195,16 +195,14 @@ $ make gen-readme
 
 |Path|Line|Description|
 |-|-|-|
-|**src/ed.c**|**1**|**make const hints better**|
-|**src/ed.c**|**2**|**use movement functions in other functions (dry)**|
-|**src/ed.c**|**3**|**reduce allocated memory even without optimizing large files**|
-|**src/ed.c**|**4**|**Add local clipboard. Use it in functions.**|
-|**src/ed.c**|**5**|**Use linked list for rows array and row's content parts**|
-|**src/ed.c**|**6**|**Integrate repetition of keys into handlers**|
-|**src/ed.c**|**7**|**Undo operations. Also rename "del" to "remove" where needed**|
-|**src/ed.c**|**8**|**Maybe split ed.c into ed_init.c, ed_stat.c, ed_key.c, etc.?**|
-|**src/ed.c**|**9**|**Support huge files.**|
-|**src/ed.c**|**10**|**Xclip patch to use with local clipboard**|
+|**src/ed.c**|**1**|**reduce allocated memory even without optimizing large files**|
+|**src/ed.c**|**2**|**Add local clipboard. Use it in functions.**|
+|**src/ed.c**|**3**|**Use linked list for rows array and row's content parts**|
+|**src/ed.c**|**4**|**Integrate repetition of keys into handlers**|
+|**src/ed.c**|**5**|**Undo operations. Also rename "del" to "remove" where needed**|
+|**src/ed.c**|**6**|**Maybe split ed.c into ed_init.c, ed_stat.c, ed_key.c, etc.?**|
+|**src/ed.c**|**7**|**Support huge files.**|
+|**src/ed.c**|**8**|**Xclip patch to use with local clipboard**|
 |**src/row.c**|**197**|**Copy a smaller portion of a row to the row abome or below**|
 |**src/row.h**|**38**|**rename to `rows_remove` if undo is done.**|
 |**src/cfg.h**|**51**|**Fix it for another values**|
