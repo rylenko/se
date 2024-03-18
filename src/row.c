@@ -11,8 +11,14 @@ typedef enum {
 	REALLOC_STEP_ROW = 128,
 } ReallocStep;
 
+/* Force row to shrink to fit the capacity. */
+static void row_force_shrink(Row *row);
+
 /* Frees row's content. */
 static void row_free(Row *row);
+
+/* Grows capacity if needed. */
+static void row_grow_if_needed(Row *row);
 
 /*
 Reads new row.
@@ -21,11 +27,8 @@ Returns pointer to accepted row on success and `NULL` on `EOF`.
 */
 static Row *row_read(Row *row, FILE *f);
 
-/* Grows or shrinks the row's capacity if there is a big benefit. */
-static void row_realloc_if_needed(Row *row);
-
-/* Shrinks to fit the row. */
-static void row_shrink_to_fit(Row *row);
+/* Shrinks capacity if needed. */
+static void row_shrink_if_needed(Row *row);
 
 /* Writes row to the file with newline character. */
 static size_t row_write(Row *row, FILE *f);
@@ -41,7 +44,7 @@ row_del(Row *row, const size_t idx)
 	/* Always need to move because of null byte */
 	memmove(&row->cont[idx], &row->cont[idx + 1], row->len - idx);
 	row->len--;
-	row_realloc_if_needed(row);
+	row_shrink_if_needed(row);
 }
 
 Row
@@ -51,11 +54,40 @@ row_empty(void)
 }
 
 static void
+row_force_shrink(Row *row)
+{
+	size_t size = row->len + 1;
+	if (0 == row->len && row->cap > 0) {
+		row_free(row);
+	} else if (size < row->cap) {
+		/* Shrink if possible */
+		if ((row->cont = realloc(row->cont, size)) == NULL) {
+			err(EXIT_FAILURE, "Failed to shrink a row to capacity %zu", size);
+		}
+		row->cap = size;
+	}
+}
+
+static void
 row_free(Row *row)
 {
 	free(row->cont);
 	row->cont = NULL;
+	row->cap = 0;
 	row->len = 0;
+}
+
+static void
+row_grow_if_needed(Row *row)
+{
+	/* Do not forget to include null byte */
+	if (row->len + 1 >= row->cap) {
+		row->cap += REALLOC_STEP_ROW;
+		/* Realloc with new capacity */
+		if ((row->cont = realloc(row->cont, row->cap)) == NULL) {
+			err(EXIT_FAILURE, "Failed to reallocate row with %zu bytes", row->cap);
+		}
+	}
 }
 
 void
@@ -64,7 +96,7 @@ row_ins(Row *row, const size_t idx, const char ch)
 	/* Validate index */
 	assert(idx <= row->len);
 	/* Check that we need to grow */
-	row_realloc_if_needed(row);
+	row_grow_if_needed(row);
 	/* Always need to move because of null byte */
 	memmove(
 		&row->cont[idx + 1],
@@ -102,7 +134,7 @@ row_read(Row *row, FILE *f)
 			}
 		}
 		/* Grow row if needed */
-		row_realloc_if_needed(row);
+		row_grow_if_needed(row);
 		/* Check end of row */
 		if ('\n' == ch || EOF == ch) {
 			break;
@@ -115,35 +147,22 @@ row_read(Row *row, FILE *f)
 	}
 
 	/* Shrink row's content to fit */
-	row_shrink_to_fit(row);
+	row_force_shrink(row);
 	return row;
 }
 
 static void
-row_realloc_if_needed(Row *row)
+row_shrink_if_needed(Row *row)
 {
+	if (0 == row->len && row->cap > 0) {
+		row_free(row);
 	/* Do not forget to include null byte */
-	if (row->len + 1 == row->cap || row->cont == NULL) {
-		row->cap += REALLOC_STEP_ROW;
-	} else {
-		return;
-	}
-	/* Realloc with new capacity */
-	if ((row->cont = realloc(row->cont, row->cap)) == NULL) {
-		err(EXIT_FAILURE, "Failed to reallocate row with %zu bytes", row->cap);
-	}
-}
-
-static void
-row_shrink_to_fit(Row *row)
-{
-	size_t size = row->len + 1;
-	if (size < row->cap) {
-		/* Shrink if possible */
-		if ((row->cont = realloc(row->cont, size)) == NULL) {
-			err(EXIT_FAILURE, "Failed to shrink a row %zu -> %zu", row->cap, size);
+	} else if (row->len + 1 + REALLOC_STEP_ROW <= row->cap) {
+		row->cap -= REALLOC_STEP_ROW;
+		/* Realloc with new capacity */
+		if ((row->cont = realloc(row->cont, row->cap)) == NULL) {
+			err(EXIT_FAILURE, "Failed to reallocate row with %zu bytes", row->cap);
 		}
-		row->cap = size;
 	}
 }
 
