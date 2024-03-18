@@ -68,7 +68,11 @@ static void ed_del(void);
 /* Deletes current row. */
 static void ed_del_row(size_t times);
 
-/* Fixes cursor's coordinates. */
+/*
+Fixes cursor's coordinates.
+
+Useful when resizing the window or moving to a another row.
+*/
 static void ed_fix_cur(void);
 
 /* Gets current row. Use it carefully with reallocations. */
@@ -416,8 +420,10 @@ ed_mv_left(void)
 		/* Check that we are at the left of window */
 		if (ed.offset_col > 0) {
 			ed.offset_col--;
-		} else {
-			/* TODO: move to previous row */
+		} else if (ed.offset_row + ed.cur.y != 0)  {
+			/* Move to end of previous row */
+			ed_mv_up();
+			ed_mv_end_of_row();
 		}
 	} else {
 		/* We are have enough space to move left on the screen */
@@ -486,8 +492,10 @@ ed_mv_right(void)
 			/* We are have enough space to move right on the screen */
 			ed.cur.x++;
 		}
-	} else {
-		/* TODO: move to previous row if exists */
+	} else if (ed.offset_row + ed.cur.y + 1 != ed.rows.cnt) {
+		/* Move to begin of next row */
+		ed_mv_down();
+		ed_mv_begin_of_row();
 	}
 }
 

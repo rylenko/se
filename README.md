@@ -118,12 +118,12 @@ $ make gen-readme
 	<tbody><tr>
 		<th>C</th>
 		<th>11</th>
-		<th>1625</th>
+		<th>1633</th>
 		<th>172</th>
-		<th>221</th>
-		<th>1232</th>
-		<th>224</th>
-		<th>33624</th>
+		<th>225</th>
+		<th>1236</th>
+		<th>228</th>
+		<th>33838</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>13</th>
@@ -182,12 +182,12 @@ $ make gen-readme
 	<tfoot><tr>
 		<th>Total</th>
 		<th>31</th>
-		<th>2333</th>
+		<th>2341</th>
 		<th>329</th>
-		<th>320</th>
-		<th>1684</th>
-		<th>225</th>
-    	<th>48411</th>
+		<th>324</th>
+		<th>1688</th>
+		<th>229</th>
+    	<th>48625</th>
 	</tr></tfoot>
 	</table>
 
@@ -202,9 +202,7 @@ $ make gen-readme
 |**src/ed.c**|**5**|**Maybe split ed.c into ed_init.c, ed_stat.c, ed_key.c, etc.?**|
 |**src/ed.c**|**6**|**Support huge files.**|
 |**src/ed.c**|**7**|**Xclip patch to use with local clipboard**|
-|**src/ed.c**|**202**|**union current and previous rows if current is not first**|
-|**src/ed.c**|**420**|**move to previous row**|
-|**src/ed.c**|**490**|**move to previous row if exists**|
+|**src/ed.c**|**206**|**union current and previous rows if current is not first**|
 |**src/row.c**|**183**|**Copy a smaller portion of a row to the row abome or below**|
 |**src/row.h**|**35**|**rename to `rows_remove` if undo is done.**|
 |**src/cfg.h**|**51**|**Fix it for another values**|
