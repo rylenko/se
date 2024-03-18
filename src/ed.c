@@ -227,9 +227,7 @@ ed_del_row(size_t times)
 			times--;
 		}
 		/* Remove x offsets and delete the row */
-		ed.offset_col = 0;
-		ed.cur.x = 0;
-		/* Delete */
+		ed_mv_begin_of_row();
 		while (times-- > 0) {
 			rows_del(&ed.rows, ed.offset_row + ed.cur.y);
 		}
