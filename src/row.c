@@ -33,6 +33,7 @@ static void row_shrink_if_needed(Row *row);
 /* Writes row to the file with newline character. */
 static size_t row_write(Row *row, FILE *f);
 
+/* TODO: split into rows_grow_if_needed and rows_shrink_if_needed */
 /* Grows or shrinks the rows capacity. */
 static void rows_realloc_if_needed(Rows *rows);
 
@@ -41,7 +42,7 @@ row_del(Row *row, const size_t idx)
 {
 	/* Validate index */
 	assert(idx < row->len);
-	/* Always need to move because of null byte */
+	/* Do not forget about null byte */
 	memmove(&row->cont[idx], &row->cont[idx + 1], row->len - idx);
 	row->len--;
 	row_shrink_if_needed(row);
@@ -97,12 +98,8 @@ row_ins(Row *row, const size_t idx, const char ch)
 	assert(idx <= row->len);
 	/* Check that we need to grow */
 	row_grow_if_needed(row);
-	/* Always need to move because of null byte */
-	memmove(
-		&row->cont[idx + 1],
-		&row->cont[idx],
-		sizeof(char) * (row->len - idx + 1)
-	);
+	/* Do not forget about null byte */
+	memmove(&row->cont[idx + 1], &row->cont[idx], row->len - idx + 1);
 	/* Write new character */
 	row->cont[idx] = ch;
 	if (!(0 == ch && idx == row->len)) {

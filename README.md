@@ -117,21 +117,21 @@ $ make gen-readme
 	<tbody><tr>
 		<th>C</th>
 		<th>11</th>
-		<th>1558</th>
+		<th>1556</th>
 		<th>164</th>
-		<th>207</th>
-		<th>1187</th>
+		<th>209</th>
+		<th>1183</th>
 		<th>211</th>
-		<th>31908</th>
+		<th>31961</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>13</th>
-		<th>341</th>
+		<th>344</th>
 		<th>74</th>
-		<th>76</th>
+		<th>79</th>
 		<th>191</th>
 		<th>1</th>
-		<th>7705</th>
+		<th>7734</th>
 	</tr><tr>
 		<th>Markdown</th>
 		<th>2</th>
@@ -181,12 +181,12 @@ $ make gen-readme
 	<tfoot><tr>
 		<th>Total</th>
 		<th>31</th>
-		<th>2256</th>
+		<th>2257</th>
 		<th>320</th>
-		<th>302</th>
-		<th>1634</th>
+		<th>307</th>
+		<th>1630</th>
 		<th>212</th>
-    	<th>46391</th>
+    	<th>46473</th>
 	</tr></tfoot>
 	</table>
 
@@ -194,13 +194,15 @@ $ make gen-readme
 
 |Path|Line|Description|
 |-|-|-|
-|**src/ed.c**|**1**|**Add local clipboard. Use it in functions.**|
-|**src/ed.c**|**2**|**Use linked list for rows array and row's content parts**|
-|**src/ed.c**|**3**|**Integrate repetition of keys into handlers**|
-|**src/ed.c**|**4**|**Undo operations. Also rename "del" to "remove" where needed**|
-|**src/ed.c**|**5**|**Maybe split ed.c into ed_init.c, ed_stat.c, ed_key.c, etc.?**|
-|**src/ed.c**|**6**|**Support huge files.**|
-|**src/ed.c**|**7**|**Xclip patch to use with local clipboard**|
-|**src/ed.c**|**183**|**union current and previous rows if current is not first**|
-|**src/row.h**|**29**|**rename to `rows_remove` if undo is done.**|
+|**src/ed.c**|**1**|**break row via Enter**|
+|**src/ed.c**|**2**|**Add local clipboard. Use it in functions.**|
+|**src/ed.c**|**3**|**Use linked list for rows array and row's content parts**|
+|**src/ed.c**|**4**|**Integrate repetition of keys into handlers**|
+|**src/ed.c**|**5**|**Undo operations. Also rename "del" to "remove" where needed**|
+|**src/ed.c**|**6**|**Maybe split ed.c into ed_init.c, ed_stat.c, ed_key.c, etc.?**|
+|**src/ed.c**|**7**|**Support huge files.**|
+|**src/ed.c**|**8**|**Xclip patch to use with local clipboard**|
+|**src/ed.c**|**184**|**union current and previous rows if current is not first**|
+|**src/row.c**|**36**|**split into rows_grow_if_needed and rows_shrink_if_needed**|
+|**src/row.h**|**32**|**rename to `rows_remove` if undo is done.**|
 |**src/cfg.h**|**50**|**Fix it for another values**|

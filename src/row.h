@@ -1,9 +1,12 @@
 #ifndef _ROW_H
 #define _ROW_H
 
-/* Row in the file. */
+/*
+Row in the file.
+
+Length is greater than zero, otherwise content is `NULL`.
+*/
 typedef struct {
-	/* `NULL` if length is 0. */
 	size_t cap;
 	char *cont;
 	size_t len;
