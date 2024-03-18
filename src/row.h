@@ -25,7 +25,7 @@ void row_del(Row *, const size_t);
 /* Creates new empty row. */
 Row row_empty(void);
 
-/* Inserts character to row. */
+/* Inserts character to row. Grows capacity if there is no space. */
 void row_ins(Row *, const size_t, const char);
 
 /* Breaks the row at index and position. */
@@ -38,7 +38,7 @@ void rows_del(Rows *, const size_t);
 /* Frees allocated rows. */
 void rows_free(Rows *);
 
-/* Inserts new row at index. */
+/* Inserts new row at index. Grows capacity if there is no space. */
 void rows_ins(Rows *, const size_t, Row);
 
 /* Creates new dynamic array with rows. */

@@ -71,7 +71,7 @@ static void ed_del_row(size_t times);
 /* Fixes cursor's coordinates. */
 static void ed_fix_cur(void);
 
-/* Gets current row. */
+/* Gets current row. Use it carefully with reallocations. */
 static Row *ed_get_curr_row(void);
 
 /* Updates the size and checks that everything fits on the screen. */
