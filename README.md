@@ -117,12 +117,12 @@ $ make gen-readme
 	<tbody><tr>
 		<th>C</th>
 		<th>11</th>
-		<th>1556</th>
-		<th>164</th>
-		<th>209</th>
-		<th>1183</th>
-		<th>211</th>
-		<th>31961</th>
+		<th>1569</th>
+		<th>166</th>
+		<th>210</th>
+		<th>1193</th>
+		<th>215</th>
+		<th>32172</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>13</th>
@@ -181,12 +181,12 @@ $ make gen-readme
 	<tfoot><tr>
 		<th>Total</th>
 		<th>31</th>
-		<th>2257</th>
-		<th>320</th>
-		<th>307</th>
-		<th>1630</th>
-		<th>212</th>
-    	<th>46473</th>
+		<th>2270</th>
+		<th>322</th>
+		<th>308</th>
+		<th>1640</th>
+		<th>216</th>
+    	<th>46684</th>
 	</tr></tfoot>
 	</table>
 
@@ -203,6 +203,5 @@ $ make gen-readme
 |**src/ed.c**|**7**|**Support huge files.**|
 |**src/ed.c**|**8**|**Xclip patch to use with local clipboard**|
 |**src/ed.c**|**184**|**union current and previous rows if current is not first**|
-|**src/row.c**|**36**|**split into rows_grow_if_needed and rows_shrink_if_needed**|
 |**src/row.h**|**32**|**rename to `rows_remove` if undo is done.**|
 |**src/cfg.h**|**50**|**Fix it for another values**|

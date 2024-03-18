@@ -598,12 +598,14 @@ ed_proc_ins_key(char key)
 static void
 ed_proc_key_seq(const char *key_seq, const size_t len)
 {
-	/* Validate escape sequence */
-	assert(len > 2);
-	assert(RAW_KEY_ESC == key_seq[0]);
-	assert('[' == key_seq[1]);
 	/* Arrows */
-	if ('A' <= key_seq[2] && key_seq[2] <= 'D') {
+	if (
+		len == 3
+		&& RAW_KEY_ESC == key_seq[0]
+		&& '[' == key_seq[1]
+		&& 'A' <= key_seq[2]
+		&& key_seq[2] <= 'D'
+	) {
 		ed_proc_arrow_key(key_seq[2]);
 	}
 }
