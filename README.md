@@ -118,12 +118,12 @@ $ make gen-readme
 	<tbody><tr>
 		<th>C</th>
 		<th>11</th>
-		<th>1619</th>
+		<th>1621</th>
 		<th>171</th>
 		<th>220</th>
-		<th>1228</th>
-		<th>222</th>
-		<th>33492</th>
+		<th>1230</th>
+		<th>224</th>
+		<th>33527</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>13</th>
@@ -182,12 +182,12 @@ $ make gen-readme
 	<tfoot><tr>
 		<th>Total</th>
 		<th>31</th>
-		<th>2327</th>
+		<th>2329</th>
 		<th>328</th>
 		<th>319</th>
-		<th>1680</th>
-		<th>223</th>
-    	<th>48205</th>
+		<th>1682</th>
+		<th>225</th>
+    	<th>48240</th>
 	</tr></tfoot>
 	</table>
 
@@ -195,15 +195,16 @@ $ make gen-readme
 
 |Path|Line|Description|
 |-|-|-|
-|**src/ed.c**|**1**|**break row via Enter**|
-|**src/ed.c**|**2**|**Add local clipboard. Use it in functions.**|
-|**src/ed.c**|**3**|**Use linked list for rows array and row's content parts**|
-|**src/ed.c**|**4**|**Integrate repetition of keys into handlers**|
-|**src/ed.c**|**5**|**Undo operations. Also rename "del" to "remove" where needed**|
-|**src/ed.c**|**6**|**Maybe split ed.c into ed_init.c, ed_stat.c, ed_key.c, etc.?**|
-|**src/ed.c**|**7**|**Support huge files.**|
-|**src/ed.c**|**8**|**Xclip patch to use with local clipboard**|
-|**src/ed.c**|**203**|**union current and previous rows if current is not first**|
+|**src/ed.c**|**1**|**Add local clipboard. Use it in functions.**|
+|**src/ed.c**|**2**|**Use linked list for rows array and row's content parts**|
+|**src/ed.c**|**3**|**Integrate repetition of keys into handlers**|
+|**src/ed.c**|**4**|**Undo operations. Also rename "del" to "remove" where needed**|
+|**src/ed.c**|**5**|**Maybe split ed.c into ed_init.c, ed_stat.c, ed_key.c, etc.?**|
+|**src/ed.c**|**6**|**Support huge files.**|
+|**src/ed.c**|**7**|**Xclip patch to use with local clipboard**|
+|**src/ed.c**|**202**|**union current and previous rows if current is not first**|
+|**src/ed.c**|**420**|**move to previous row**|
+|**src/ed.c**|**490**|**move to previous row if exists**|
 |**src/row.c**|**183**|**Copy a smaller portion of a row to the row abome or below**|
 |**src/row.h**|**35**|**rename to `rows_remove` if undo is done.**|
 |**src/cfg.h**|**51**|**Fix it for another values**|

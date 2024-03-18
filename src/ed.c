@@ -1,4 +1,3 @@
-/* TODO: break row via Enter */
 /* TODO: Add local clipboard. Use it in functions. */
 /* TODO: Use linked list for rows array and row's content parts */
 /* TODO: Integrate repetition of keys into handlers */
@@ -414,9 +413,11 @@ static void
 ed_mv_left(void)
 {
 	if (0 == ed.cur.x) {
+		/* Check that we are at the left of window */
 		if (ed.offset_col > 0) {
-			/* We are at the top of window */
 			ed.offset_col--;
+		} else {
+			/* TODO: move to previous row */
 		}
 	} else {
 		/* We are have enough space to move left on the screen */
@@ -477,7 +478,6 @@ ed_mv_prev_word(size_t times)
 static void
 ed_mv_right(void)
 {
-	/* Check that we need space to move right */
 	if (ed.offset_col + ed.cur.x < ed_get_curr_row()->len) {
 		if (ed.win_size.ws_col - 1 == ed.cur.x) {
 			/* We are at the right of window */
@@ -486,6 +486,8 @@ ed_mv_right(void)
 			/* We are have enough space to move right on the screen */
 			ed.cur.x++;
 		}
+	} else {
+		/* TODO: move to previous row if exists */
 	}
 }
 
