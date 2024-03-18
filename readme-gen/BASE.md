@@ -59,7 +59,7 @@ You can also repeat a key by pressing `<number><key>`. For example, `5n` will cr
 Insert mode keys:
 
 - `ESC` - switch to normal mode.
-- (X) `Backspace` - erase character before cursor.
+- `Backspace` - erase character before cursor.
 - Otherwise the character is inserted.
 
 # Build and install

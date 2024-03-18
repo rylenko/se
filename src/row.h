@@ -16,6 +16,9 @@ typedef struct {
 	size_t cnt;
 } Rows;
 
+/* Deletes character. */
+void row_del(Row *, const size_t);
+
 /* Creates new empty row. */
 Row row_empty(void);
 

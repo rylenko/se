@@ -7,6 +7,7 @@
 /* TODO: Xclip patch to use with local clipboard */
 
 #include <assert.h>
+#include <ctype.h>
 #include <err.h>
 #include <errno.h>
 #include <libgen.h>
@@ -58,6 +59,9 @@ static struct {
 	struct winsize win_size;
 } ed;
 
+/* Deletes current character. */
+static void ed_del(void);
+
 /* Deletes current row. */
 static void ed_del_row(size_t times);
 
@@ -73,7 +77,7 @@ static void ed_handle_sig_win_ch(int num);
 /* Input number. */
 static void ed_input_num(const unsigned char digit);
 
-/* Insert a character. */
+/* Inserts a character. */
 static void ed_ins(char ch);
 
 /* Inserts new row below the cursor and switches to inserting mode. */
@@ -172,6 +176,25 @@ ed_deinit(void)
 }
 
 static void
+ed_del(void)
+{
+	size_t f_col_i = ed.offset_col + ed.cur.x;
+	if (f_col_i == 0) {
+		/* TODO: union current and previous rows if current is not first */
+	} else {
+		/* Delete character */
+		row_del(&ed.rows.arr[ed.offset_row + ed.cur.y], f_col_i - 1);
+		/* Shift cursor */
+		if (ed.cur.x == 0) {
+			ed.offset_col--;
+		} else {
+			ed.cur.x--;
+		}
+		ed_on_f_ch();
+	}
+}
+
+static void
 ed_del_row(size_t times)
 {
 	if (ed.rows.cnt == 1) {
@@ -227,7 +250,7 @@ ed_fix_cur(void)
 static Row*
 ed_get_curr_row(void)
 {
-	return ed.rows.arr + ed.offset_row + ed.cur.y;
+	return &ed.rows.arr[ed.offset_row + ed.cur.y];
 }
 
 static void
@@ -268,7 +291,7 @@ static void
 ed_ins(char ch)
 {
 	/* Insert character */
-	row_ins(ed.rows.arr + ed.offset_row + ed.cur.y, ed.offset_col + ed.cur.x, ch);
+	row_ins(&ed.rows.arr[ed.offset_row + ed.cur.y], ed.offset_col + ed.cur.x, ch);
 	/* Shift cursor */
 	if (ed.cur.x + 1 == ed.win_size.ws_col) {
 		ed.offset_col++;
@@ -556,13 +579,18 @@ static void
 ed_proc_ins_key(char key)
 {
 	switch (key) {
+	/* Delete current character */
+	case CFG_KEY_DEL:
+		ed_del();
+		return;
 	/* Switch to normal mode */
 	case CFG_KEY_MODE_NORM:
 		ed.mode = MODE_NORM;
 		return;
-	default:
+	}
+	/* Check key is printable and insert */
+	if (isprint(key)) {
 		ed_ins(key);
-		return;
 	}
 }
 

@@ -59,7 +59,7 @@ You can also repeat a key by pressing `<number><key>`. For example, `5n` will cr
 Insert mode keys:
 
 - `ESC` - switch to normal mode.
-- (X) `Backspace` - erase character before cursor.
+- `Backspace` - erase character before cursor.
 - Otherwise the character is inserted.
 
 # Build and install
@@ -117,21 +117,21 @@ $ make gen-readme
 	<tbody><tr>
 		<th>C</th>
 		<th>11</th>
-		<th>1500</th>
-		<th>159</th>
-		<th>197</th>
-		<th>1144</th>
-		<th>193</th>
-		<th>30596</th>
+		<th>1539</th>
+		<th>162</th>
+		<th>205</th>
+		<th>1172</th>
+		<th>200</th>
+		<th>31428</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>13</th>
-		<th>336</th>
-		<th>73</th>
-		<th>75</th>
-		<th>188</th>
+		<th>341</th>
+		<th>74</th>
+		<th>76</th>
+		<th>191</th>
 		<th>1</th>
-		<th>7584</th>
+		<th>7705</th>
 	</tr><tr>
 		<th>Markdown</th>
 		<th>2</th>
@@ -140,7 +140,7 @@ $ make gen-readme
 		<th>0</th>
 		<th>149</th>
 		<th>0</th>
-		<th>3676</th>
+		<th>3668</th>
 	</tr><tr>
 		<th>Makefile</th>
 		<th>2</th>
@@ -181,12 +181,12 @@ $ make gen-readme
 	<tfoot><tr>
 		<th>Total</th>
 		<th>31</th>
-		<th>2193</th>
-		<th>314</th>
-		<th>291</th>
-		<th>1588</th>
-		<th>194</th>
-    	<th>44966</th>
+		<th>2237</th>
+		<th>318</th>
+		<th>300</th>
+		<th>1619</th>
+		<th>201</th>
+    	<th>45911</th>
 	</tr></tfoot>
 	</table>
 
@@ -201,5 +201,6 @@ $ make gen-readme
 |**src/ed.c**|**5**|**Maybe split ed.c into ed_init.c, ed_stat.c, ed_key.c, etc.?**|
 |**src/ed.c**|**6**|**Support huge files.**|
 |**src/ed.c**|**7**|**Xclip patch to use with local clipboard**|
-|**src/row.h**|**26**|**rename to `rows_remove` if undo is done.**|
-|**src/cfg.h**|**49**|**Fix it for another values**|
+|**src/ed.c**|**183**|**union current and previous rows if current is not first**|
+|**src/row.h**|**29**|**rename to `rows_remove` if undo is done.**|
+|**src/cfg.h**|**50**|**Fix it for another values**|

@@ -57,7 +57,7 @@ buf_write(Buf *buf, const char *part, const size_t len)
 	}
 
 	/* Append the part to buffer */
-	memcpy(buf->data + buf->len, part, len);
+	memcpy(&buf->data[buf->len], part, len);
 	buf->len = new_len;
 	return len;
 }

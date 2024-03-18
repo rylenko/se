@@ -33,10 +33,21 @@ static size_t row_write(Row *row, FILE *f);
 /* Grows or shrinks the rows capacity. */
 static void rows_realloc_if_needed(Rows *rows);
 
+void
+row_del(Row *row, const size_t idx)
+{
+	/* Validate index */
+	assert(idx < row->len);
+	/* Always need to move because of null byte */
+	memmove(&row->cont[idx], &row->cont[idx + 1], row->len - idx);
+	row->len--;
+	row_realloc_if_needed(row);
+}
+
 Row
 row_empty(void)
 {
-	return (Row){ .cont = NULL, .len = 0 };
+	return (Row){ .cap = 0, .cont = NULL, .len = 0 };
 }
 
 static void
@@ -56,8 +67,8 @@ row_ins(Row *row, const size_t idx, const char ch)
 	row_realloc_if_needed(row);
 	/* Always need to move because of null byte */
 	memmove(
-		row->cont + idx + 1,
-		row->cont + idx,
+		&row->cont[idx + 1],
+		&row->cont[idx],
 		sizeof(char) * (row->len - idx + 1)
 	);
 	/* Write new character */
@@ -158,8 +169,8 @@ rows_del(Rows *rows, const size_t idx)
 	/* Move other rows if needed */
 	if (idx != rows->cnt - 1) {
 		memmove(
-			rows->arr + idx,
-			rows->arr + idx + 1,
+			&rows->arr[idx],
+			&rows->arr[idx + 1],
 			sizeof(Row) * (rows->cnt - idx - 1)
 		);
 	}
@@ -175,7 +186,7 @@ rows_free(Rows *rows)
 
 	/* Free rows */
 	for (i = 0; i < rows->cnt; i++) {
-		row_free(rows->arr + i);
+		row_free(&rows->arr[i]);
 	}
 	/* Free container */
 	free(rows->arr);
@@ -193,8 +204,8 @@ rows_ins(Rows *rows, const size_t idx, Row row)
 	/* Move other rows if needed */
 	if (idx != rows->cnt) {
 		memmove(
-			rows->arr + idx + 1,
-			rows->arr + idx,
+			&rows->arr[idx + 1],
+			&rows->arr[idx],
 			sizeof(Row) * (rows->cnt - idx)
 		);
 	}
@@ -239,7 +250,7 @@ rows_write(Rows *rows, FILE *f)
 	size_t len = 0;
 	size_t row_i;
 	for (row_i = 0; row_i < rows->cnt; row_i++) {
-		len += row_write(rows->arr + row_i, f);
+		len += row_write(&rows->arr[row_i], f);
 	}
 	return len;
 }
