@@ -118,21 +118,21 @@ $ make gen-readme
 	<tbody><tr>
 		<th>C</th>
 		<th>11</th>
-		<th>1633</th>
-		<th>172</th>
-		<th>225</th>
-		<th>1236</th>
-		<th>228</th>
-		<th>33838</th>
+		<th>1659</th>
+		<th>175</th>
+		<th>232</th>
+		<th>1252</th>
+		<th>226</th>
+		<th>34667</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>13</th>
-		<th>349</th>
-		<th>75</th>
-		<th>80</th>
-		<th>194</th>
+		<th>352</th>
+		<th>76</th>
+		<th>81</th>
+		<th>195</th>
 		<th>1</th>
-		<th>7963</th>
+		<th>8057</th>
 	</tr><tr>
 		<th>Markdown</th>
 		<th>2</th>
@@ -182,12 +182,12 @@ $ make gen-readme
 	<tfoot><tr>
 		<th>Total</th>
 		<th>31</th>
-		<th>2341</th>
-		<th>329</th>
-		<th>324</th>
-		<th>1688</th>
-		<th>229</th>
-    	<th>48625</th>
+		<th>2370</th>
+		<th>333</th>
+		<th>332</th>
+		<th>1705</th>
+		<th>227</th>
+    	<th>49548</th>
 	</tr></tfoot>
 	</table>
 
@@ -195,14 +195,16 @@ $ make gen-readme
 
 |Path|Line|Description|
 |-|-|-|
-|**src/ed.c**|**1**|**Add local clipboard. Use it in functions.**|
-|**src/ed.c**|**2**|**Use linked list for rows array and row's content parts**|
-|**src/ed.c**|**3**|**Integrate repetition of keys into handlers**|
-|**src/ed.c**|**4**|**Undo operations. Also rename "del" to "remove" where needed**|
-|**src/ed.c**|**5**|**Maybe split ed.c into ed_init.c, ed_stat.c, ed_key.c, etc.?**|
-|**src/ed.c**|**6**|**Support huge files.**|
-|**src/ed.c**|**7**|**Xclip patch to use with local clipboard**|
-|**src/ed.c**|**206**|**union current and previous rows if current is not first**|
-|**src/row.c**|**183**|**Copy a smaller portion of a row to the row abome or below**|
-|**src/row.h**|**35**|**rename to `rows_remove` if undo is done.**|
+|**src/ed.c**|**1**|**make const hints better**|
+|**src/ed.c**|**2**|**use movement functions in other functions (dry)**|
+|**src/ed.c**|**3**|**reduce allocated memory even without optimizing large files**|
+|**src/ed.c**|**4**|**Add local clipboard. Use it in functions.**|
+|**src/ed.c**|**5**|**Use linked list for rows array and row's content parts**|
+|**src/ed.c**|**6**|**Integrate repetition of keys into handlers**|
+|**src/ed.c**|**7**|**Undo operations. Also rename "del" to "remove" where needed**|
+|**src/ed.c**|**8**|**Maybe split ed.c into ed_init.c, ed_stat.c, ed_key.c, etc.?**|
+|**src/ed.c**|**9**|**Support huge files.**|
+|**src/ed.c**|**10**|**Xclip patch to use with local clipboard**|
+|**src/row.c**|**197**|**Copy a smaller portion of a row to the row abome or below**|
+|**src/row.h**|**38**|**rename to `rows_remove` if undo is done.**|
 |**src/cfg.h**|**51**|**Fix it for another values**|

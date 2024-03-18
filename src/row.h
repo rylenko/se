@@ -31,6 +31,9 @@ void row_ins(Row *, const size_t, const char);
 /* Breaks the row at index and position. */
 void rows_break(Rows *, const size_t, const size_t);
 
+/* Extends specified row with next row. */
+void rows_extend_with_next(Rows *, const size_t);
+
 /* Remove row by its index. */
 /* TODO: rename to `rows_remove` if undo is done. */
 void rows_del(Rows *, const size_t);

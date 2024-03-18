@@ -11,6 +11,9 @@ typedef enum {
 	REALLOC_STEP_ROW = 128,
 } ReallocStep;
 
+/* Extends the row with another. */
+static void row_extend(Row *row, const Row *with);
+
 /* Force row to shrink to fit the capacity. */
 static void row_force_shrink(Row *row);
 
@@ -57,6 +60,17 @@ row_empty(void)
 }
 
 static void
+row_extend(Row *const row, const Row *const with)
+{
+	size_t row_old_len = row->len;
+	/* Add length and check that we need to grow capacity */
+	row->len += with->len;
+	row_grow_if_needed(row);
+	/* Copy string */
+	strcpy(&row->cont[row_old_len], with->cont);
+}
+
+static void
 row_force_shrink(Row *row)
 {
 	size_t size = row->len + 1;
@@ -85,7 +99,7 @@ row_grow_if_needed(Row *row)
 {
 	/* Do not forget to include null byte */
 	if (row->len + 1 >= row->cap) {
-		row->cap += REALLOC_STEP_ROW;
+		row->cap = row->len + 1 + REALLOC_STEP_ROW;;
 		/* Realloc with new capacity */
 		if (NULL == (row->cont = realloc(row->cont, row->cap))) {
 			err(EXIT_FAILURE, "Failed to grow a row to capacity %zu", row->cap);
@@ -206,6 +220,16 @@ rows_break(Rows *rows, const size_t idx, const size_t col_i)
 	}
 	/* Shrink to fit an old row if needed */
 	row_shrink_if_needed(row);
+}
+
+void
+rows_extend_with_next(Rows *rows, const size_t idx)
+{
+	/* Check next row exists */
+	if (idx + 1 < rows->cnt) {
+		row_extend(&rows->arr[idx], &rows->arr[idx + 1]);
+		rows_del(rows, idx + 1);
+	}
 }
 
 void

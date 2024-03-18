@@ -1,3 +1,6 @@
+/* TODO: make const hints better */
+/* TODO: use movement functions in other functions (dry) */
+/* TODO: reduce allocated memory even without optimizing large files */
 /* TODO: Add local clipboard. Use it in functions. */
 /* TODO: Use linked list for rows array and row's content parts */
 /* TODO: Integrate repetition of keys into handlers */
@@ -201,20 +204,19 @@ ed_deinit(void)
 static void
 ed_del(void)
 {
+	size_t f_row_i = ed.offset_row + ed.cur.y;
 	size_t f_col_i = ed.offset_col + ed.cur.x;
-	if (0 == f_col_i) {
-		/* TODO: union current and previous rows if current is not first */
-	} else {
+	if (f_col_i > 0) {
 		/* Delete character */
-		row_del(&ed.rows.arr[ed.offset_row + ed.cur.y], f_col_i - 1);
-		/* Shift cursor */
-		if (0 == ed.cur.x) {
-			ed.offset_col--;
-		} else {
-			ed.cur.x--;
-		}
-		ed_on_f_ch();
+		row_del(&ed.rows.arr[f_row_i], f_col_i - 1);
+		ed_mv_left();
+	} else if (f_row_i > 0) {
+		/* Move left first to have cursor at end of previous row */
+		ed_mv_left();
+		/* Extends previous row with current and delete current row */
+		rows_extend_with_next(&ed.rows, f_row_i - 1);
 	}
+	ed_on_f_ch();
 }
 
 static void
