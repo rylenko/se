@@ -105,7 +105,9 @@ row_ins(Row *row, const size_t idx, const char ch)
 	);
 	/* Write new character */
 	row->cont[idx] = ch;
-	row->len++;
+	if (!(0 == ch && idx == row->len)) {
+		row->len++;
+	}
 }
 
 static Row*
@@ -133,15 +135,13 @@ row_read(Row *row, FILE *f)
 				return row;
 			}
 		}
-		/* Grow row if needed */
-		row_grow_if_needed(row);
 		/* Check end of row */
 		if ('\n' == ch || EOF == ch) {
 			break;
 		}
 		/* Add null byte first */
 		if (0 == row->len) {
-			row->cont[row->len] = 0;
+			row_ins(row, row->len, 0);
 		}
 		row_ins(row, row->len, ch);
 	}
