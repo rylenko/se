@@ -156,6 +156,7 @@ ed_mv_up(Ed *const ed)
 			/* We are at the top of window */
 			ed->offset_row--;
 		}
+		return;
 	} else {
 		/* We are have enough space to move up on the window */
 		ed->cur.y--;
