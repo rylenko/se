@@ -1,4 +1,3 @@
-/* TODO: Add include comments and remove useless includes */
 /* TODO: reduce allocated memory even without optimizing large files */
 /* TODO: Add local clipboard. Use it in functions. */
 /* TODO: Use linked list for rows array and row's content parts */

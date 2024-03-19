@@ -118,12 +118,12 @@ $ make gen-readme
 	<tbody><tr>
 		<th>C</th>
 		<th>22</th>
-		<th>1645</th>
+		<th>1644</th>
 		<th>135</th>
-		<th>270</th>
+		<th>269</th>
 		<th>1240</th>
 		<th>215</th>
-		<th>35545</th>
+		<th>35484</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>24</th>
@@ -182,12 +182,12 @@ $ make gen-readme
 	<tfoot><tr>
 		<th>Total</th>
 		<th>53</th>
-		<th>2554</th>
+		<th>2553</th>
 		<th>345</th>
-		<th>431</th>
+		<th>430</th>
 		<th>1778</th>
 		<th>216</th>
-    	<th>53601</th>
+    	<th>53540</th>
 	</tr></tfoot>
 	</table>
 
@@ -195,14 +195,13 @@ $ make gen-readme
 
 |Path|Line|Description|
 |-|-|-|
-|**src/main.c**|**1**|**Add include comments and remove useless includes**|
-|**src/main.c**|**2**|**reduce allocated memory even without optimizing large files**|
-|**src/main.c**|**3**|**Add local clipboard. Use it in functions.**|
-|**src/main.c**|**4**|**Use linked list for rows array and row's content parts**|
-|**src/main.c**|**5**|**Integrate repetition of keys into handlers**|
-|**src/main.c**|**6**|**Undo operations. Also rename "del" to "remove" where needed**|
-|**src/main.c**|**7**|**Support huge files.**|
-|**src/main.c**|**8**|**Xclip patch to use with local clipboard**|
+|**src/main.c**|**1**|**reduce allocated memory even without optimizing large files**|
+|**src/main.c**|**2**|**Add local clipboard. Use it in functions.**|
+|**src/main.c**|**3**|**Use linked list for rows array and row's content parts**|
+|**src/main.c**|**4**|**Integrate repetition of keys into handlers**|
+|**src/main.c**|**5**|**Undo operations. Also rename "del" to "remove" where needed**|
+|**src/main.c**|**6**|**Support huge files.**|
+|**src/main.c**|**7**|**Xclip patch to use with local clipboard**|
 |**src/cfg.h**|**53**|**Fix it for another values**|
 |**src/rows.h**|**25**|**rename to `rows_remove` if undo is done.**|
 |**src/rows.c**|**31**|**Copy a smaller portion of a row to the row abome or below**|
