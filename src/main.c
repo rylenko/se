@@ -1,10 +1,9 @@
-/* TODO: reduce allocated memory even without optimizing large files */
-/* TODO: Add local clipboard. Use it in functions. */
-/* TODO: Use linked list for rows array and row's content parts */
 /* TODO: Integrate repetition of keys into handlers */
+/* TODO: Add local clipboard. Use it in functions. */
+/* TODO: Use linked list for rows array and row's content parts. Benchmark! */
 /* TODO: Undo operations. Also rename "del" to "remove" where needed */
-/* TODO: Support huge files. */
 /* TODO: Xclip patch to use with local clipboard */
+/* TODO: Support huge files. */
 
 #include <err.h>
 #include <stdlib.h>
