@@ -83,10 +83,10 @@ static Row *ed_get_curr_row(void);
 static void ed_handle_sig_win_ch(int num);
 
 /* Input number. */
-static void ed_input_num(const unsigned char digit);
+static void ed_input_num(unsigned char digit);
 
 /* Inserts a character. */
-static void ed_ins(const char ch);
+static void ed_ins(char ch);
 
 /* Inserts new row below the cursor. */
 static void ed_ins_row_below(void);
@@ -128,28 +128,28 @@ static void ed_mv_up(void);
 static void ed_on_f_ch(void);
 
 /* Processes arrow key sequence. */
-static void ed_proc_arrow_key(const char key);
+static void ed_proc_arrow_key(char key);
 
 /* Processes inserting key. */
-static void ed_proc_ins_key(const char key);
+static void ed_proc_ins_key(char key);
 
 /* Processes key sequence. Useful if single key press is several `char`s. */
-static void ed_proc_key_seq(const char *const key_seq, const size_t len);
+static void ed_proc_key_seq(const char *key_seq, size_t len);
 
 /* Processes normal key. */
-static void ed_proc_norm_key(const char key);
+static void ed_proc_norm_key(char key);
 
 /* Quits the editor. */
 static void ed_try_quit(void);
 
 /* Saves file. Saves to opened file if argument is `NULL`. */
-static void ed_save(const char *const path);
+static void ed_save(const char *path);
 
 /* Saves file to spare dir. */
 static void ed_save_to_spare_dir(void);
 
 /* Set message. */
-static void ed_set_msg(const char *const fmt, ...);
+static void ed_set_msg(const char *fmt, ...);
 
 /*
 Requests the size from the terminal and sets it in the appropriate field.
@@ -160,19 +160,19 @@ To update the window size after it has been changed, use the handler
 static void ed_upd_win_size(void);
 
 /* Writes cursor position including tabs. */
-static void ed_write_cur(Buf *const buf);
+static void ed_write_cur(Buf *buf);
 
 /* Write rows in the buffer. */
-static void ed_write_rows(Buf *const buf);
+static void ed_write_rows(Buf *buf);
 
 /* Writes status to the buffer. */
-static void ed_write_stat(Buf *const buf);
+static void ed_write_stat(Buf *buf);
 
 /* Writes left part of status to the buffer. */
-static size_t ed_write_stat_left(Buf *const buf);
+static size_t ed_write_stat_left(Buf *buf);
 
 /* Writes right part of status to the buffer. */
-static void ed_write_stat_right(Buf *const buf, const size_t left_len);
+static void ed_write_stat_right(Buf *buf, size_t left_len);
 
 
 static void

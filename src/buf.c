@@ -13,7 +13,7 @@ enum {
 };
 
 /* Grows buffer capacity. */
-static void buf_grow(Buf *const buf, const size_t by);
+static void buf_grow(Buf *buf, size_t by);
 
 Buf
 buf_alloc(void)
