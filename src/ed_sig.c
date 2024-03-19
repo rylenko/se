@@ -12,6 +12,15 @@ Ed *ed = NULL;
 /* Handles window size changing signal. */
 static void ed_sig_handle_win_size_ch(int _num);
 
+static void
+ed_sig_handle_win_size_ch(int _num)
+{
+	(void)_num;
+	term_get_win_size(&ed->win_size);
+	ed_fix_cur(ed);
+	ed_draw(ed);
+}
+
 void
 ed_sig_reg(Ed *ed_local)
 {
@@ -22,11 +31,11 @@ ed_sig_reg(Ed *ed_local)
 	}
 }
 
-static void
-ed_sig_handle_win_size_ch(int _num)
+void
+ed_sig_unreg(void)
 {
-	(void)_num;
-	term_get_win_size(&ed->win_size);
-	ed_fix_cur(ed);
-	ed_draw(ed);
+	/* WIndow size change */
+	if (signal(SIGWINCH, SIG_DFL) == SIG_ERR) {
+		err(EXIT_FAILURE, "Failed to unset window size change handler");
+	}
 }

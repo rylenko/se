@@ -162,5 +162,5 @@ row_write(Row *const row, FILE *const f)
 	} else if (fputc('\n', f) == EOF) {
 		err(EXIT_FAILURE, "Failed to write \n after row with length %zu", row->len);
 	}
-	return len;
+	return len + 1;
 }

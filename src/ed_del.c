@@ -3,6 +3,7 @@
 #include "ed_mv.h"
 #include "math.h"
 #include "row.h"
+#include "rows.h"
 
 static const char *const ed_del_only_one_row_msg = \
 	"It is forbidden to delete a single row.";

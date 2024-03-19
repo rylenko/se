@@ -2,6 +2,7 @@
 #include "ed_ins.h"
 #include "ed_mv.h"
 #include "row.h"
+#include "rows.h"
 
 void
 ed_ins(Ed *const ed, const char ch)
