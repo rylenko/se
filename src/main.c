@@ -6,21 +6,13 @@
 /* TODO: Support huge files. */
 /* TODO: Xclip patch to use with local clipboard */
 
-/* errx */
 #include <err.h>
-/* EXIT_FAILURE, EXIT_SUCCESS */
 #include <stdlib.h>
-/* STDIN_FILENO, STDOUT_FILENO */
 #include <unistd.h>
-/* Ed, ed_open */
 #include "ed.h"
-/* ed_draw */
 #include "ed_draw.h"
-/* ed_term_init, ed_term_deinit */
 #include "ed_term.h"
-/* ed_key_wait_and_proc */
 #include "ed_key.h"
-/* ed_quit_done */
 #include "ed_quit.h"
 
 static const char *const usage = "Usage:\n\t$ se <filename>";

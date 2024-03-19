@@ -1,13 +1,9 @@
 #ifndef _ED_H
 #define _ED_H
 
-/* winsize */
 #include <sys/ioctl.h>
-/* Cur */
 #include "cur.h"
-/* Mode */
 #include "mode.h"
-/* Rows */
 #include "rows.h"
 
 enum {
@@ -31,11 +27,18 @@ typedef struct {
 	struct winsize win_size;
 } Ed;
 
+/*
+Fixes cursor's coordinates.
+
+Useful when resizing the window or moving to a another row.
+*/
+void ed_fix_cur(Ed *);
+
 /* Inputs digit to number. */
 void ed_input_num(Ed *, unsigned char);
 
 /* Sets message in the editor */
-void ed_msg_set(Ed *, const char *, ...);
+void ed_set_msg(Ed *, const char *, ...);
 
 /* Use this if file was changed. */
 void ed_on_f_ch(Ed *);

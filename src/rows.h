@@ -1,11 +1,8 @@
 #ifndef _ROWS_H
 #define _ROWS_H
 
-/* size_t */
 #include <stddef.h>
-/* FILE */
 #include <stdio.h>
-/* Row */
 #include "row.h"
 
 /* Dynamic array with `Row`s. */

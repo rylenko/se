@@ -1,25 +1,14 @@
-/* snprintf */
 #include <stdio.h>
-/* basename */
 #include <libgen.h>
-/* Buf, buf_alloc, buf_free, buf_write, buf_writef */
 #include "buf.h"
-/* CFG_TAB_SIZE, CFG_COLOR_STAT_BG, CFG_COLOR_STAT_FG */
 #include "cfg.h"
-/* cur_draw, cur_hide, cur_new, cur_show */
 #include "cur.h"
-/* Ed */
 #include "ed.h"
 #include "ed_draw.h"
-/* ed_quit_done */
 #include "ed_quit.h"
-/* MIN, SIZE_MAX */
 #include "math.h"
-/* mode_str */
 #include "mode.h"
-/* RawColor, raw_color_begin, raw_color_end */
 #include "raw_color.h"
-/* term_clr_row_on_right, term_clr_win, term_flush, term_go_home */
 #include "term.h"
 
 /* Draws cursor at his position */

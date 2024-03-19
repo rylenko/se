@@ -1,7 +1,6 @@
 #ifndef _RAW_COLOR_H
 #define _RAW_COLOR_H
 
-/* Buf */
 #include "buf.h"
 
 /*

@@ -1,7 +1,6 @@
 #ifndef _ED_TERM_H
 #define _ED_TERM_H
 
-/* Ed */
 #include "ed.h"
 
 /* Disconnects editor with terminal. */

@@ -1,7 +1,6 @@
 #ifndef _ED_DRAW_H
 #define _ED_DRAW_H
 
-/* Ed */
 #include "ed.h"
 
 /* Draws all window's content. */

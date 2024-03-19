@@ -1,6 +1,8 @@
 #ifndef _ED_MV_H
 #define _ED_MV_H
 
+#include "ed.h"
+
 /* Move to begin of file. */
 void ed_mv_begin_of_f(Ed *);
 

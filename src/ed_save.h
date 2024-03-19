@@ -1,7 +1,6 @@
 #ifndef _ED_SAVE_H
 #define _ED_SAVE_H
 
-/* Ed */
 #include "ed.h"
 
 /* Saves file to path. Saves to opened file if argument is `NULL`. */

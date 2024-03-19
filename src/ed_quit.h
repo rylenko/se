@@ -1,6 +1,8 @@
 #ifndef _ED_QUIT_H
 #define _ED_QUIT_H
 
+#include "ed.h"
+
 /* Determines that we need to quit immediately beacuse of freed memory.. */
 char ed_quit_done(const Ed *);
 

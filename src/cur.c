@@ -1,6 +1,4 @@
-/* Buf, buf_write, buf_writef */
 #include "buf.h"
-/* Cur */
 #include "cur.h"
 
 void

@@ -1,7 +1,6 @@
 #ifndef _CUR_H
 #define _CUR_H
 
-/* Buf */
 #include "buf.h"
 
 /* Cursor struct with position on the window. */

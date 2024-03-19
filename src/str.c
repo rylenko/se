@@ -1,8 +1,5 @@
-/* err */
 #include <err.h>
-/* EXIT_FAILURE, NULL, malloc */
 #include <stdlib.h>
-/* strcpy, strlen */
 #include <string.h>
 #include "str.h"
 

@@ -1,4 +1,3 @@
-/* NULL */
 #include <stdlib.h>
 #include "mode.h"
 

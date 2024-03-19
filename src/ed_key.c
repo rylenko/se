@@ -1,28 +1,15 @@
-/* assert */
 #include <assert.h>
-/* isprint */
 #include <ctype.h>
-/* CFG_KEY_* */
 #include "cfg.h"
-/* Ed */
 #include "ed.h"
-/* ed_del, ed_del_row */
 #include "ed_del.h"
-/* ed_ins, ed_ins_break, ed_ins_row_below, ed_ins_row_top */
 #include "ed_ins.h"
-/* ed_mv_* */
 #include "ed_mv.h"
-/* ed_quit_try */
 #include "ed_quit.h"
-/* ed_save, ed_save_to_spare_dir */
 #include "ed_save.h"
-/* REPEAT */
 #include "macros.h"
-/* SIZE_MAX */
 #include "math.h"
-/* raw_key_is_digit, raw_key_to_digit */
 #include "raw_key.h"
-/* term_wait_key_seq */
 #include "term.h"
 
 /* Processes arrow key sequence. */

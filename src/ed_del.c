@@ -1,11 +1,7 @@
-/* Ed, ed_on_f_ch */
 #include "ed.h"
 #include "ed_del.h"
-/* ed_mv_begin_of_row, ed_mv_left */
 #include "ed_mv.h"
-/* MIN */
 #include "math.h"
-/* row_del, rows_del, rows_extend_with_next */
 #include "row.h"
 
 static const char *const ed_del_only_one_row_msg = \
@@ -33,7 +29,7 @@ void
 ed_del_row(Ed *const ed, size_t times)
 {
 	if (1 == ed->rows.cnt) {
-		ed_msg_set(ed, ed_del_only_one_row_msg);
+		ed_set_msg(ed, ed_del_only_one_row_msg);
 	} else if (times > 0) {
 		/* Get real repeat times */
 		times = MIN(ed->rows.cnt - ed->offset_row - ed->cur.y, times);

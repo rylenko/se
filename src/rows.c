@@ -1,16 +1,8 @@
-/* assert */
 #include <assert.h>
-/* err */
 #include <err.h>
-/* FILE */
 #include <stdio.h>
-/* EXIT_FAILURE, NULL, free */
 #include <stdlib.h>
-/* memmove, strcpy */
 #include <string.h>
-/*
-row_empty, row_extend, row_free, row_shrink_if_needed, row_read, row_write
-*/
 #include "row.h"
 #include "rows.h"
 

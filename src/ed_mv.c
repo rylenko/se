@@ -1,9 +1,5 @@
-/* Ed */
 #include "ed.h"
-/* ed_cur_fix */
-#include "ed_cur.h"
 #include "ed_mv.h"
-/* word_next, word_rnext */
 #include "word.h"
 
 void
@@ -34,7 +30,7 @@ ed_mv_down(Ed *const ed)
 			ed->cur.y++;
 		}
 	}
-	ed_cur_fix(ed);
+	ed_fix_cur(ed);
 }
 
 void
@@ -164,5 +160,5 @@ ed_mv_up(Ed *const ed)
 		/* We are have enough space to move up on the window */
 		ed->cur.y--;
 	}
-	ed_cur_fix(ed);
+	ed_fix_cur(ed);
 }

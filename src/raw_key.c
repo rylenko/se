@@ -1,4 +1,3 @@
-/* assert */
 #include <assert.h>
 #include "raw_key.h"
 

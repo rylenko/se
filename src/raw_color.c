@@ -1,4 +1,3 @@
-/* Buf, buf_write, buf_writef */
 #include "buf.h"
 #include "raw_color.h"
 

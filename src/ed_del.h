@@ -1,7 +1,6 @@
 #ifndef _ED_DEL_H
 #define _ED_DEL_H
 
-/* Ed */
 #include "ed.h"
 
 /* Deletes current character. */

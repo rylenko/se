@@ -1,23 +1,13 @@
-/* err, errx */
 #include <err.h>
-/* errno  */
 #include <errno.h>
-/* basename */
 #include <libgen.h>
-/* EOF, FILE, fclose, fflush, fopen, NULL */
 #include <stdio.h>
-/* EXIT_FAILURE */
 #include <stdlib.h>
-/* strerror */
 #include <string.h>
-/* localtime, strftime, time, time_t, tm */
 #include <time.h>
-/* CFG_SPARE_SAVE_PATH_MAX_LEN, cfg_spare_save_dir */
 #include "cfg.h"
-/* Ed, ed_msg_set */
 #include "ed.h"
 #include "ed_save.h"
-/* rows_write */
 #include "row.h"
 
 static const char *const ed_save_msg_fmt = "%zu bytes saved.";
@@ -31,7 +21,7 @@ ed_save(Ed *const ed, const char *const path)
 
 	/* Open file, write rows, flush and close file  */
 	if (NULL == (f = fopen(path ? path : ed->path, "w"))) {
-		ed_msg_set(ed, ed_save_fail_msg_fmt, strerror(errno));
+		ed_set_msg(ed, ed_save_fail_msg_fmt, strerror(errno));
 		return;
 	}
 	len = rows_write(&ed->rows, f);
@@ -43,7 +33,7 @@ ed_save(Ed *const ed, const char *const path)
 	/* Remove dirty flag and set message */
 	ed->is_dirty = 0;
 	ed->quit_presses_rem = 1;
-	ed_msg_set(ed, ed_save_msg_fmt, len);
+	ed_set_msg(ed, ed_save_msg_fmt, len);
 }
 
 void

@@ -1,9 +1,6 @@
-/* Ed */
 #include "ed.h"
-/* ed_sig_reg */
 #include "ed_sig.h"
 #include "ed_term.h"
-/* term_disable_raw_mode, term_enable_raw_mode, term_get_win_size, term_init */
 #include "term.h"
 
 void

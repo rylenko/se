@@ -1,9 +1,6 @@
-/* Ed, ed_on_f_ch */
 #include "ed.h"
 #include "ed_ins.h"
-/* ed_mv_begin_of_row, ed_mv_down, ed_mv_right */
 #include "ed_mv.h"
-/* row_empty, row_ins, rows_ins */
 #include "row.h"
 
 void

@@ -1,12 +1,7 @@
-/* assert */
 #include <assert.h>
-/* err */
 #include <err.h>
-/* FILE, ferror, fgetc, fwrite */
 #include <stdio.h>
-/* EXIT_FAILURE, NULL, free */
 #include <stdlib.h>
-/* memmove, strcpy */
 #include <string.h>
 #include "row.h"
 
