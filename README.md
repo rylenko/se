@@ -117,7 +117,7 @@ $ make gen-readme
 	</tr></thead>
 	<tbody><tr>
 		<th>C</th>
-		<th>22</th>
+		<th>21</th>
 		<th>1552</th>
 		<th>136</th>
 		<th>167</th>
@@ -181,7 +181,7 @@ $ make gen-readme
 	</tr></tbody>
 	<tfoot><tr>
 		<th>Total</th>
-		<th>52</th>
+		<th>51</th>
 		<th>2442</th>
 		<th>347</th>
 		<th>309</th>
