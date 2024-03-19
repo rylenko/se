@@ -79,7 +79,7 @@ static void ed_fix_cur(void);
 /* Gets current row. Use it carefully with reallocations. */
 static Row *ed_get_curr_row(void);
 
-/* Updates the size and checks that everything fits on the screen. */
+/* Updates the size and checks that everything fits on the window. */
 static void ed_handle_sig_win_ch(int num);
 
 /* Input number. */
@@ -242,7 +242,7 @@ ed_fix_cur(void)
 	const size_t f_col_i = ed.offset_col + ed.cur.x;
 	size_t col_diff;
 
-	/* Clamp cursor on the screen */
+	/* Clamp cursor on the window */
 	ed.cur.y = MIN(ed.cur.y, ed.win_size.ws_row - 2);
 	ed.cur.x = MIN(ed.cur.x, ed.win_size.ws_col - 1);
 
@@ -251,7 +251,7 @@ ed_fix_cur(void)
 		col_diff = f_col_i - row->len;
 
 		if (ed.cur.x < col_diff) {
-			/* Return row on the screen */
+			/* Return row on the window */
 			ed.offset_col -= col_diff - ed.cur.x;
 			ed.cur.x = 0;
 			/* Show last character of the row if exists */
@@ -276,7 +276,7 @@ ed_handle_sig_win_ch(int num)
 {
 	(void)num;
 	ed_upd_win_size();
-	ed_refresh_scr();
+	ed_refr_win();
 	ed_fix_cur();
 }
 
@@ -354,7 +354,7 @@ ed_mv_down(void)
 			/* We are at the bottom of window */
 			ed.offset_row++;
 		} else {
-			/* We are have enough space to move down on the screen */
+			/* We are have enough space to move down on the window */
 			ed.cur.y++;
 		}
 	}
@@ -365,7 +365,7 @@ static void
 ed_mv_end_of_f(void)
 {
 	ed_mv_begin_of_row();
-	/* Check that ro on initial screen */
+	/* Check that ro on initial window */
 	if (ed.rows.cnt < ed.win_size.ws_row) {
 		ed.offset_row = 0;
 		ed.cur.y = ed.rows.cnt - 1;
@@ -380,10 +380,10 @@ ed_mv_end_of_row(void)
 {
 	const Row *const row = ed_get_curr_row();
 	if (row->len < ed.offset_col + ed.win_size.ws_col) {
-		/* End of row on the screen */
+		/* End of row on the window */
 		ed.cur.x = row->len - ed.offset_col;
 	} else {
-		/* Offset to see end of row on the screen */
+		/* Offset to see end of row on the window */
 		ed.offset_col = row->len - ed.win_size.ws_col + 1;
 		ed.cur.x = ed.win_size.ws_col - 1;
 	}
@@ -402,7 +402,7 @@ ed_mv_left(void)
 			ed_mv_end_of_row();
 		}
 	} else {
-		/* We are have enough space to move left on the screen */
+		/* We are have enough space to move left on the window */
 		ed.cur.x--;
 	}
 }
@@ -418,7 +418,7 @@ ed_mv_next_word(size_t times)
 		/* Find next word */
 		f_col_i = ed.offset_col + ed.cur.x;
 		word_i = word_next(row->cont + f_col_i, row->len - f_col_i);
-		/* Check word on the screen */
+		/* Check word on the window */
 		if (word_i + ed.cur.x < ed.win_size.ws_col) {
 			ed.cur.x += word_i;
 		} else {
@@ -442,7 +442,7 @@ ed_mv_prev_word(size_t times)
 		/* Find previous word */
 		f_col_i = ed.offset_col + ed.cur.x;
 		word_i = word_rnext(ed_get_curr_row()->cont, f_col_i);
-		/* Check word on the screen */
+		/* Check word on the window */
 		if (word_i >= ed.offset_col) {
 			ed.cur.x = word_i - ed.offset_col;
 		} else {
@@ -464,7 +464,7 @@ ed_mv_right(void)
 			/* We are at the right of window */
 			ed.offset_col++;
 		} else {
-			/* We are have enough space to move right on the screen */
+			/* We are have enough space to move right on the window */
 			ed.cur.x++;
 		}
 	} else if (ed.offset_row + ed.cur.y + 1 != ed.rows.cnt) {
@@ -483,7 +483,7 @@ ed_mv_up(void)
 			ed.offset_row--;
 		}
 	} else {
-		/* We are have enough space to move up on the screen */
+		/* We are have enough space to move up on the window */
 		ed.cur.y--;
 	}
 	ed_fix_cur();
@@ -680,14 +680,14 @@ ed_try_quit(void)
 }
 
 void
-ed_refresh_scr(void)
+ed_refr_win(void)
 {
-	/* Allocate new buffer and go to start of the screen */
+	/* Allocate new buffer and go to start of the window */
 	Buf buf = buf_alloc();
 	term_go_home(&buf);
 	if (ed_need_to_quit()) {
-		/* Clear the screen before quit */
-		term_clr_scr(&buf);
+		/* Clear the window before quit */
+		term_clr_win(&buf);
 	} else {
 		/* Hide cursor */
 		cur_hide(&buf);

@@ -22,7 +22,7 @@ term_clr_row_on_right(Buf *const buf)
 }
 
 void
-term_clr_scr(Buf *const buf)
+term_clr_win(Buf *const buf)
 {
 	buf_write(buf, "\x1b[2J", 4);
 }

@@ -123,7 +123,7 @@ $ make gen-readme
 		<th>215</th>
 		<th>1226</th>
 		<th>218</th>
-		<th>34135</th>
+		<th>34126</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>13</th>
@@ -132,7 +132,7 @@ $ make gen-readme
 		<th>81</th>
 		<th>195</th>
 		<th>1</th>
-		<th>7967</th>
+		<th>7964</th>
 	</tr><tr>
 		<th>Markdown</th>
 		<th>2</th>
@@ -187,7 +187,7 @@ $ make gen-readme
 		<th>315</th>
 		<th>1679</th>
 		<th>219</th>
-    	<th>48926</th>
+    	<th>48914</th>
 	</tr></tfoot>
 	</table>
 
@@ -195,6 +195,9 @@ $ make gen-readme
 
 |Path|Line|Description|
 |-|-|-|
+|**src/cfg.h**|**51**|**Fix it for another values**|
+|**src/row.c**|**197**|**Copy a smaller portion of a row to the row abome or below**|
+|**src/row.h**|**38**|**rename to `rows_remove` if undo is done.**|
 |**src/ed.c**|**1**|**reduce allocated memory even without optimizing large files**|
 |**src/ed.c**|**2**|**Add local clipboard. Use it in functions.**|
 |**src/ed.c**|**3**|**Use linked list for rows array and row's content parts**|
@@ -203,6 +206,3 @@ $ make gen-readme
 |**src/ed.c**|**6**|**Maybe split ed.c into ed_init.c, ed_stat.c, ed_key.c, etc.?**|
 |**src/ed.c**|**7**|**Support huge files.**|
 |**src/ed.c**|**8**|**Xclip patch to use with local clipboard**|
-|**src/row.c**|**197**|**Copy a smaller portion of a row to the row abome or below**|
-|**src/row.h**|**38**|**rename to `rows_remove` if undo is done.**|
-|**src/cfg.h**|**51**|**Fix it for another values**|

@@ -15,10 +15,10 @@ main(const int argc, const char *const *const argv)
 	/* Initialize editor and open the file */
 	ed_open(argv[1]);
 	ed_init(STDIN_FILENO, STDOUT_FILENO);
-	/* Refresh editor's screen and process key presses */
+	/* Refresh editor's window and process key presses */
 	while (1) {
-		ed_refresh_scr();
-		/* Need here to clear the screen during last screen refreshing */
+		ed_refr_win();
+		/* Need here to clear the window during last window refreshing */
 		if (ed_need_to_quit()) {
 			break;
 		}

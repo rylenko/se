@@ -1,7 +1,7 @@
 #ifndef _CUR_H
 #define _CUR_H
 
-/* Cursor struct with position on the screen. */
+/* Cursor struct with position on the window. */
 typedef struct {
 	unsigned short x;
 	unsigned short y;
