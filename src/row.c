@@ -1,3 +1,5 @@
+/* TODO: Separate into rows.c and row.c */
+
 #include <assert.h>
 #include <err.h>
 #include <stdio.h>

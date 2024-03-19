@@ -1,0 +1,51 @@
+/* Ed, ed_on_f_ch */
+#include "ed.h"
+#include "ed_del.h"
+/* ed_mv_begin_of_row, ed_mv_left */
+#include "ed_mv.h"
+/* MIN */
+#include "math.h"
+/* row_del, rows_del, rows_extend_with_next */
+#include "row.h"
+
+static const char *const ed_del_only_one_row_msg = \
+	"It is forbidden to delete a single row.";
+
+void
+ed_del(Ed *const ed)
+{
+	const size_t f_row_i = ed->offset_row + ed->cur.y;
+	const size_t f_col_i = ed->offset_col + ed->cur.x;
+	if (f_col_i > 0) {
+		/* Delete character */
+		row_del(&ed->rows.arr[f_row_i], f_col_i - 1);
+		ed_mv_left(ed);
+	} else if (f_row_i > 0) {
+		/* Move left first to have cursor at end of previous row */
+		ed_mv_left(ed);
+		/* Extends previous row with current and delete current row */
+		rows_extend_with_next(&ed->rows, f_row_i - 1);
+	}
+	ed_on_f_ch(ed);
+}
+
+void
+ed_del_row(Ed *const ed, size_t times)
+{
+	if (1 == ed->rows.cnt) {
+		ed_msg_set(ed, ed_del_only_one_row_msg);
+	} else if (times > 0) {
+		/* Get real repeat times */
+		times = MIN(ed->rows.cnt - ed->offset_row - ed->cur.y, times);
+		/* The file must contain at least one row */
+		if (times == ed->rows.cnt) {
+			times--;
+		}
+		/* Remove x offsets and delete the row */
+		ed_mv_begin_of_row(ed);
+		while (times-- > 0) {
+			rows_del(&ed->rows, ed->offset_row + ed->cur.y);
+		}
+		ed_on_f_ch(ed);
+	}
+}

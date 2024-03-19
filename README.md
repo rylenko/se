@@ -117,22 +117,22 @@ $ make gen-readme
 	</tr></thead>
 	<tbody><tr>
 		<th>C</th>
-		<th>11</th>
-		<th>1607</th>
-		<th>166</th>
+		<th>21</th>
+		<th>1639</th>
+		<th>140</th>
+		<th>261</th>
+		<th>1238</th>
 		<th>215</th>
-		<th>1226</th>
-		<th>218</th>
-		<th>34024</th>
+		<th>35647</th>
 	</tr><tr>
 		<th>C Header</th>
-		<th>13</th>
-		<th>352</th>
-		<th>76</th>
-		<th>81</th>
-		<th>195</th>
+		<th>23</th>
+		<th>530</th>
+		<th>122</th>
+		<th>129</th>
+		<th>279</th>
 		<th>1</th>
-		<th>7964</th>
+		<th>10995</th>
 	</tr><tr>
 		<th>Markdown</th>
 		<th>2</th>
@@ -145,12 +145,12 @@ $ make gen-readme
 	</tr><tr>
 		<th>Makefile</th>
 		<th>2</th>
-		<th>82</th>
-		<th>15</th>
-		<th>13</th>
-		<th>54</th>
+		<th>70</th>
+		<th>14</th>
+		<th>12</th>
+		<th>44</th>
 		<th>0</th>
-		<th>1871</th>
+		<th>1536</th>
 	</tr><tr>
 		<th>Shell</th>
 		<th>1</th>
@@ -181,13 +181,13 @@ $ make gen-readme
 	</tr></tbody>
 	<tfoot><tr>
 		<th>Total</th>
-		<th>31</th>
-		<th>2318</th>
-		<th>324</th>
-		<th>315</th>
-		<th>1679</th>
-		<th>219</th>
-    	<th>48812</th>
+		<th>51</th>
+		<th>2516</th>
+		<th>343</th>
+		<th>408</th>
+		<th>1765</th>
+		<th>216</th>
+    	<th>53131</th>
 	</tr></tfoot>
 	</table>
 
@@ -195,14 +195,15 @@ $ make gen-readme
 
 |Path|Line|Description|
 |-|-|-|
+|**src/main.c**|**1**|**Add include comments and remove useless includes**|
+|**src/main.c**|**2**|**reduce allocated memory even without optimizing large files**|
+|**src/main.c**|**3**|**Add local clipboard. Use it in functions.**|
+|**src/main.c**|**4**|**Use linked list for rows array and row's content parts**|
+|**src/main.c**|**5**|**Integrate repetition of keys into handlers**|
+|**src/main.c**|**6**|**Undo operations. Also rename "del" to "remove" where needed**|
+|**src/main.c**|**7**|**Support huge files.**|
+|**src/main.c**|**8**|**Xclip patch to use with local clipboard**|
 |**src/cfg.h**|**51**|**Fix it for another values**|
-|**src/row.c**|**197**|**Copy a smaller portion of a row to the row abome or below**|
-|**src/row.h**|**38**|**rename to `rows_remove` if undo is done.**|
-|**src/ed.c**|**1**|**reduce allocated memory even without optimizing large files**|
-|**src/ed.c**|**2**|**Add local clipboard. Use it in functions.**|
-|**src/ed.c**|**3**|**Use linked list for rows array and row's content parts**|
-|**src/ed.c**|**4**|**Integrate repetition of keys into handlers**|
-|**src/ed.c**|**5**|**Undo operations. Also rename "del" to "remove" where needed**|
-|**src/ed.c**|**6**|**Maybe split ed.c into ed_init.c, ed_stat.c, ed_key.c, etc.?**|
-|**src/ed.c**|**7**|**Support huge files.**|
-|**src/ed.c**|**8**|**Xclip patch to use with local clipboard**|
+|**src/row.c**|**1**|**Separate into rows.c and row.c**|
+|**src/row.c**|**199**|**Copy a smaller portion of a row to the row abome or below**|
+|**src/row.h**|**43**|**rename to `rows_remove` if undo is done.**|

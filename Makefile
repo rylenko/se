@@ -3,8 +3,10 @@
 include cfg.mk
 
 # Code files
-SRC = src/buf.c src/cur.c src/ed.c src/main.c src/mode.c src/raw_color.c \
-	src/raw_key.c src/row.c src/str_util.c src/term.c src/word.c
+SRC = src/buf.c src/cur.c src/ed.c src/ed_cur.c src/ed_del.c src/ed_draw.c \
+	src/ed_ins.c src/ed_key.c src/ed_mv.c src/ed_quit.c src/ed_save.c \
+	src/ed_sig.c src/ed_term.c src/main.c src/mode.c src/raw_color.c \
+	src/raw_key.c src/row.c src/str.c src/term.c src/word.c
 OBJ = $(SRC:.c=.o)
 
 # Paths
@@ -26,20 +28,6 @@ ifdef DEBUG
 else
 	$(CC) -c $(CFLAGS) -o $@ $<
 endif
-
-# Object file dependencies
-src/buf.o: src/buf.h src/math.h
-src/cur.o: src/buf.h src/cur.h
-src/ed.o: src/cfg.h src/cur.h src/ed.h src/macros.h src/math.h src/mode.h \
-	src/raw_key.h src/raw_color.h src/row.h src/str_util.h src/term.h src/word.h
-src/main.o: src/ed.h
-src/mode.c: src/mode.h
-src/raw_color.o: src/buf.h src/raw_color.h
-src/raw_key.o: src/raw_key.h
-src/row.o: src/row.h
-src/str_util.o: src/str_util.h
-src/term.o: src/buf.h src/term.h
-src/word.o: src/word.h
 
 # Clean all after build
 clean:

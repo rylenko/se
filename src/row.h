@@ -1,6 +1,11 @@
 #ifndef _ROW_H
 #define _ROW_H
 
+/* size_t */
+#include <stddef.h>
+/* FILE */
+#include <stdio.h>
+
 /*
 Row in the file.
 
