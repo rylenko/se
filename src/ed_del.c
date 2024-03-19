@@ -16,10 +16,10 @@ ed_del(Ed *const ed)
 	if (f_col_i > 0) {
 		/* Delete character */
 		row_del(&ed->rows.arr[f_row_i], f_col_i - 1);
-		ed_mv_left(ed);
+		ed_mv_left(ed, 1);
 	} else if (f_row_i > 0) {
 		/* Move left first to have cursor at end of previous row */
-		ed_mv_left(ed);
+		ed_mv_left(ed, 1);
 		/* Extends previous row with current and delete current row */
 		rows_extend_with_next(&ed->rows, f_row_i - 1);
 	}

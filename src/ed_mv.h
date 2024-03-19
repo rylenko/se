@@ -10,7 +10,7 @@ void ed_mv_begin_of_f(Ed *);
 void ed_mv_begin_of_row(Ed *);
 
 /* Move cursor down. */
-void ed_mv_down(Ed *);
+void ed_mv_down(Ed *, size_t);
 
 /* Move to end of file. */
 void ed_mv_end_of_f(Ed *);
@@ -19,7 +19,7 @@ void ed_mv_end_of_f(Ed *);
 void ed_mv_end_of_row(Ed *);
 
 /* Move cursor left. */
-void ed_mv_left(Ed *);
+void ed_mv_left(Ed *, size_t);
 
 /* Move cursor to next word if exists. */
 void ed_mv_next_word(Ed *, size_t);
@@ -30,7 +30,7 @@ void ed_mv_prev_word(Ed *, size_t);
 /* Move cursor right. */
 void ed_mv_right(Ed *);
 
-/* Move cursor up. */
-void ed_mv_up(Ed *);
+/* Move cursor up several times. */
+void ed_mv_up(Ed *, size_t);
 
 #endif /* _ED_MV_H */

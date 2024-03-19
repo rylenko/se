@@ -1,5 +1,6 @@
 #include "ed.h"
 #include "ed_mv.h"
+#include "math.h"
 #include "word.h"
 
 void
@@ -18,18 +19,21 @@ ed_mv_begin_of_row(Ed *const ed)
 }
 
 void
-ed_mv_down(Ed *const ed)
+ed_mv_down(Ed *const ed, size_t times)
 {
-	/* Check that we need space to move down */
-	if (ed->offset_row + ed->cur.y < ed->rows.cnt - 1) {
-		if (ed->win_size.ws_row - 2 == ed->cur.y) {
-			/* We are at the bottom of window */
-			ed->offset_row++;
-		} else {
-			/* We are have enough space to move down on the window */
-			ed->cur.y++;
-		}
-	}
+	/* Move down on current window */
+	size_t curr_win_times = MIN(
+		(size_t)(ed->win_size.ws_row - 2 - ed->cur.y),
+		times
+	);
+	ed->cur.y += curr_win_times;
+	times -= curr_win_times;
+	/* Move down by offset shifting */
+	ed->offset_row += MIN(
+		ed->rows.cnt - ed->offset_row - ed->win_size.ws_row,
+		times
+	);
+	/* Fix cursor to fit on the row */
 	ed_fix_cur(ed);
 }
 
@@ -62,20 +66,21 @@ ed_mv_end_of_row(Ed *const ed)
 }
 
 void
-ed_mv_left(Ed *const ed)
+ed_mv_left(Ed *const ed, size_t times)
 {
-	if (0 == ed->cur.x) {
-		/* Check that we are at the left of window */
-		if (ed->offset_col > 0) {
-			ed->offset_col--;
-		} else if (ed->offset_row + ed->cur.y != 0)  {
-			/* Move to end of previous row */
-			ed_mv_up(ed);
+	size_t curr_win_times;
+	while (times > 0) {
+		/* Move up on current window */
+		curr_win_times = MIN(ed->cur.x, times);
+		ed->cur.x -= curr_win_times;
+		times -= curr_win_times;
+		/* Move up by offset shifting */
+		ed->offset_col -= MIN(ed->offset_col, times);
+		/* Move to previous row if exists and times not exceed */
+		if (times > 0 && ed->offset_row + ed->cur.y != 0) {
+			ed_mv_up(ed, 1);
 			ed_mv_end_of_row(ed);
 		}
-	} else {
-		/* We are have enough space to move left on the window */
-		ed->cur.x--;
 	}
 }
 
@@ -143,23 +148,20 @@ ed_mv_right(Ed *const ed)
 		}
 	} else if (ed->offset_row + ed->cur.y + 1 != ed->rows.cnt) {
 		/* Move to begin of next row */
-		ed_mv_down(ed);
+		ed_mv_down(ed, 1);
 		ed_mv_begin_of_row(ed);
 	}
 }
 
 void
-ed_mv_up(Ed *const ed)
+ed_mv_up(Ed *const ed, size_t times)
 {
-	if (0 == ed->cur.y) {
-		if (ed->offset_row > 0) {
-			/* We are at the top of window */
-			ed->offset_row--;
-		}
-		return;
-	} else {
-		/* We are have enough space to move up on the window */
-		ed->cur.y--;
-	}
+	/* Move up on current window */
+	size_t curr_win_times = MIN(ed->cur.y, times);
+	ed->cur.y -= curr_win_times;
+	times -= curr_win_times;
+	/* Move up by offset shifting */
+	ed->offset_row -= MIN(ed->offset_row, times);
+	/* Fix cursor to fit on the row */
 	ed_fix_cur(ed);
 }

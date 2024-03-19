@@ -31,16 +31,16 @@ ed_proc_arrow_key(Ed *const ed, const char key)
 	size_t times = SIZE_MAX == ed->num_input ? 1 : ed->num_input;
 	switch (key) {
 	case 'A':
-		REPEAT(times, ed_mv_up(ed));
+		ed_mv_up(ed, times);
 		return;
 	case 'B':
-		REPEAT(times, ed_mv_down(ed));
+		ed_mv_down(ed, times);
 		return;
 	case 'C':
 		REPEAT(times, ed_mv_right(ed));
 		return;
 	case 'D':
-		REPEAT(times, ed_mv_left(ed));
+		ed_mv_left(ed, times);
 		return;
 	}
 }
@@ -87,7 +87,7 @@ static void
 ed_proc_norm_key(Ed *const ed, const char key)
 {
 	/* Repititon times */
-	size_t repeat_times = SIZE_MAX == ed->num_input ? 1 : ed->num_input;
+	size_t times = SIZE_MAX == ed->num_input ? 1 : ed->num_input;
 
 	/* Handle number input */
 	if (raw_key_is_digit(key)) {
@@ -99,13 +99,13 @@ ed_proc_norm_key(Ed *const ed, const char key)
 	/* Other keys */
 	switch (key) {
 	case CFG_KEY_DEL_ROW:
-		ed_del_row(ed, repeat_times);
+		ed_del_row(ed, times);
 		return;
 	case CFG_KEY_INS_ROW_BELOW:
-		REPEAT(repeat_times, ed_ins_row_below(ed));
+		REPEAT(times, ed_ins_row_below(ed));
 		return;
 	case CFG_KEY_INS_ROW_TOP:
-		REPEAT(repeat_times, ed_ins_row_top(ed));
+		REPEAT(times, ed_ins_row_top(ed));
 		return;
 	case CFG_KEY_MODE_INS:
 		ed->mode = MODE_INS;
@@ -117,7 +117,7 @@ ed_proc_norm_key(Ed *const ed, const char key)
 		ed_mv_begin_of_row(ed);
 		return;
 	case CFG_KEY_MV_DOWN:
-		REPEAT(repeat_times, ed_mv_down(ed));
+		ed_mv_down(ed, times);
 		return;
 	case CFG_KEY_MV_TO_END_OF_F:
 		ed_mv_end_of_f(ed);
@@ -126,19 +126,19 @@ ed_proc_norm_key(Ed *const ed, const char key)
 		ed_mv_end_of_row(ed);
 		return;
 	case CFG_KEY_MV_LEFT:
-		REPEAT(repeat_times, ed_mv_left(ed));
+		ed_mv_left(ed, times);
 		return;
 	case CFG_KEY_MV_TO_NEXT_WORD:
-		ed_mv_next_word(ed, repeat_times);
+		ed_mv_next_word(ed, times);
 		return;
 	case CFG_KEY_MV_TO_PREV_WORD:
-		ed_mv_prev_word(ed, repeat_times);
+		ed_mv_prev_word(ed, times);
 		return;
 	case CFG_KEY_MV_RIGHT:
-		REPEAT(repeat_times, ed_mv_right(ed));
+		REPEAT(times, ed_mv_right(ed));
 		return;
 	case CFG_KEY_MV_UP:
-		REPEAT(repeat_times, ed_mv_up(ed));
+		ed_mv_up(ed, times);
 		return;
 	case CFG_KEY_SAVE:
 		ed_save(ed, NULL);
