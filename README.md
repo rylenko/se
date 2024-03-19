@@ -117,22 +117,22 @@ $ make gen-readme
 	</tr></thead>
 	<tbody><tr>
 		<th>C</th>
-		<th>21</th>
-		<th>1639</th>
-		<th>140</th>
-		<th>261</th>
-		<th>1238</th>
+		<th>22</th>
+		<th>1645</th>
+		<th>135</th>
+		<th>270</th>
+		<th>1240</th>
 		<th>215</th>
-		<th>35647</th>
+		<th>35545</th>
 	</tr><tr>
 		<th>C Header</th>
-		<th>23</th>
-		<th>530</th>
-		<th>122</th>
+		<th>24</th>
+		<th>562</th>
 		<th>129</th>
-		<th>279</th>
+		<th>143</th>
+		<th>290</th>
 		<th>1</th>
-		<th>10995</th>
+		<th>11556</th>
 	</tr><tr>
 		<th>Markdown</th>
 		<th>2</th>
@@ -150,7 +150,7 @@ $ make gen-readme
 		<th>12</th>
 		<th>44</th>
 		<th>0</th>
-		<th>1536</th>
+		<th>1547</th>
 	</tr><tr>
 		<th>Shell</th>
 		<th>1</th>
@@ -181,13 +181,13 @@ $ make gen-readme
 	</tr></tbody>
 	<tfoot><tr>
 		<th>Total</th>
-		<th>51</th>
-		<th>2516</th>
-		<th>343</th>
-		<th>408</th>
-		<th>1765</th>
+		<th>53</th>
+		<th>2554</th>
+		<th>345</th>
+		<th>431</th>
+		<th>1778</th>
 		<th>216</th>
-    	<th>53131</th>
+    	<th>53601</th>
 	</tr></tfoot>
 	</table>
 
@@ -203,7 +203,6 @@ $ make gen-readme
 |**src/main.c**|**6**|**Undo operations. Also rename "del" to "remove" where needed**|
 |**src/main.c**|**7**|**Support huge files.**|
 |**src/main.c**|**8**|**Xclip patch to use with local clipboard**|
-|**src/cfg.h**|**51**|**Fix it for another values**|
-|**src/row.c**|**1**|**Separate into rows.c and row.c**|
-|**src/row.c**|**199**|**Copy a smaller portion of a row to the row abome or below**|
-|**src/row.h**|**43**|**rename to `rows_remove` if undo is done.**|
+|**src/cfg.h**|**53**|**Fix it for another values**|
+|**src/rows.h**|**25**|**rename to `rows_remove` if undo is done.**|
+|**src/rows.c**|**31**|**Copy a smaller portion of a row to the row abome or below**|

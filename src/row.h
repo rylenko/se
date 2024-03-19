@@ -17,45 +17,31 @@ typedef struct {
 	size_t len;
 } Row;
 
-/* Dynamic array with `Row`s. */
-typedef struct {
-	Row *arr;
-	size_t cap;
-	size_t cnt;
-} Rows;
-
 /* Deletes character. */
 void row_del(Row *, size_t);
 
 /* Creates new empty row. */
 Row row_empty(void);
 
+void row_free(Row *);
+
+/* Extends row with another row. */
+void row_extend(Row *, const Row *);
+
 /* Inserts character to row. Grows capacity if there is no space. */
 void row_ins(Row *, size_t, char);
 
-/* Breaks the row at index and position. */
-void rows_break(Rows *, size_t, size_t);
+/* Shrinks row if needed. */
+void row_shrink_if_needed(Row *);
 
-/* Extends specified row with next row. */
-void rows_extend_with_next(Rows *, size_t);
+/*
+Reads row from file.
 
-/* Remove row by its index. */
-/* TODO: rename to `rows_remove` if undo is done. */
-void rows_del(Rows *, size_t);
+Returns pointer to accepted row on success and `NULL` on `EOF`.
+*/
+Row *row_read(Row *, FILE *);
 
-/* Frees allocated rows. */
-void rows_free(Rows *);
-
-/* Inserts new row at index. Grows capacity if there is no space. */
-void rows_ins(Rows *, size_t, Row);
-
-/* Creates new dynamic array with rows. */
-Rows rows_new(void);
-
-/* Reads rows from file without newline characters. */
-void rows_read(Rows *, FILE *);
-
-/* Writes rows to the file with newline characters. */
-size_t rows_write(Rows *, FILE *);
+/* Writes row to file. */
+size_t row_write(Row *, FILE *);
 
 #endif /* _ROW_H */

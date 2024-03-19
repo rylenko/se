@@ -1,6 +1,5 @@
+/* assert */
 #include <assert.h>
-#include <err.h>
-#include <stdlib.h>
 #include "raw_key.h"
 
 char

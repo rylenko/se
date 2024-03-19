@@ -6,7 +6,7 @@ include cfg.mk
 SRC = src/buf.c src/cur.c src/ed.c src/ed_cur.c src/ed_del.c src/ed_draw.c \
 	src/ed_ins.c src/ed_key.c src/ed_mv.c src/ed_quit.c src/ed_save.c \
 	src/ed_sig.c src/ed_term.c src/main.c src/mode.c src/raw_color.c \
-	src/raw_key.c src/row.c src/str.c src/term.c src/word.c
+	src/raw_key.c src/row.c src/rows.c src/str.c src/term.c src/word.c
 OBJ = $(SRC:.c=.o)
 
 # Paths

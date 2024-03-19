@@ -1,5 +1,7 @@
+/* isspace */
 #include <ctype.h>
-#include <stdlib.h>
+/* size_t */
+#include <stddef.h>
 #include "word.h"
 
 size_t

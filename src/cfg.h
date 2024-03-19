@@ -1,7 +1,9 @@
 #ifndef _CFG_H
 #define _CFG_H
 
+/* RAW_COLOR_BLUE, RAW_COLOR_BRIGHT_WHITE */
 #include "raw_color.h"
+/* RAW_KEY_* */
 #include "raw_key.h"
 
 /* If no privilege to save the file, you can save it to this directory */

@@ -8,7 +8,7 @@
 /* Mode */
 #include "mode.h"
 /* Rows */
-#include "row.h"
+#include "rows.h"
 
 enum {
 	ED_MSG_ARR_LEN = 64,
