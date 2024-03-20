@@ -21,7 +21,7 @@ ed_mv_begin_of_row(Ed *const ed)
 void
 ed_mv_down(Ed *const ed, size_t times)
 {
-	/* Move down on current window */
+	/* Move cursor down in current window */
 	size_t curr_win_times = MIN(
 		(size_t)(ed->win_size.ws_row - 2 - ed->cur.y),
 		times
@@ -70,17 +70,21 @@ ed_mv_left(Ed *const ed, size_t times)
 {
 	size_t curr_win_times;
 	while (times > 0) {
-		/* Move up on current window */
+		/* Move to previous row if exists and cursor at start of row */
+		if (ed->offset_col + ed->cur.x == 0) {
+			if (ed->offset_row + ed->cur.y == 0) {
+				break;
+			}
+			ed_mv_up(ed, 1);
+			ed_mv_end_of_row(ed);
+			times--;
+		}
+		/* Move cursor left in current window */
 		curr_win_times = MIN(ed->cur.x, times);
 		ed->cur.x -= curr_win_times;
 		times -= curr_win_times;
-		/* Move up by offset shifting */
+		/* Move left by offset shifting */
 		ed->offset_col -= MIN(ed->offset_col, times);
-		/* Move to previous row if exists and times not exceed */
-		if (times > 0 && ed->offset_row + ed->cur.y != 0) {
-			ed_mv_up(ed, 1);
-			ed_mv_end_of_row(ed);
-		}
 	}
 }
 
@@ -156,7 +160,7 @@ ed_mv_right(Ed *const ed)
 void
 ed_mv_up(Ed *const ed, size_t times)
 {
-	/* Move up on current window */
+	/* Move cursor up in current window */
 	size_t curr_win_times = MIN(ed->cur.y, times);
 	ed->cur.y -= curr_win_times;
 	times -= curr_win_times;
