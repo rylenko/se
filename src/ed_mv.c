@@ -68,8 +68,7 @@ ed_mv_end_of_row(Ed *const ed)
 void
 ed_mv_left(Ed *const ed, size_t times)
 {
-	size_t curr_win_times;
-	while (times > 0) {
+	for (; times > 0; times--) {
 		/* Move to previous row if exists and cursor at start of row */
 		if (ed->offset_col + ed->cur.x == 0) {
 			if (ed->offset_row + ed->cur.y == 0) {
@@ -77,14 +76,16 @@ ed_mv_left(Ed *const ed, size_t times)
 			}
 			ed_mv_up(ed, 1);
 			ed_mv_end_of_row(ed);
-			times--;
+			continue;
+		} else {
+			if (ed->cur.x == 0) {
+				/* We are at the left of window */
+				ed->offset_col--;
+			} else {
+				/* We are have enough space to move left on the window */
+				ed->cur.x--;
+			}
 		}
-		/* Move cursor left in current window */
-		curr_win_times = MIN(ed->cur.x, times);
-		ed->cur.x -= curr_win_times;
-		times -= curr_win_times;
-		/* Move left by offset shifting */
-		ed->offset_col -= MIN(ed->offset_col, times);
 	}
 }
 
@@ -141,10 +142,8 @@ ed_mv_prev_word(Ed *const ed, size_t times)
 void
 ed_mv_right(Ed *const ed, size_t times)
 {
-	const Row *row;
-	size_t used_times;
-	while (times > 0) {
-		row = &ed->rows.arr[ed->offset_row + ed->cur.y];
+	const Row *row = &ed->rows.arr[ed->offset_row + ed->cur.y];
+	for (; times > 0; times--) {
 		/* Move to next row if exists and cursor at start of row */
 		if (ed->offset_col + ed->cur.x == row->len) {
 			if (ed->offset_row + ed->cur.y + 1 == ed->rows.cnt) {
@@ -152,17 +151,17 @@ ed_mv_right(Ed *const ed, size_t times)
 			}
 			ed_mv_down(ed, 1);
 			ed_mv_begin_of_row(ed);
-			times--;
 			row++;
+			continue;
+		} else {
+			if (ed->win_size.ws_col - 1 == ed->cur.x) {
+				/* We are at the right of window */
+				ed->offset_col++;
+			} else {
+				/* We are have enough space to move right on the window */
+				ed->cur.x++;
+			}
 		}
-		/* Move cursor right in current window */
-		used_times = MIN(row->len - ed->offset_col - ed->cur.x, times);
-		ed->cur.x += used_times;
-		times -= used_times;
-		/* Move right by offset shifting */
-		used_times = MIN(ed->offset_col, times);
-		ed->offset_col -= used_times;
-		times -= used_times;
 	}
 }
 

@@ -30,13 +30,13 @@ ed_ins_break(Ed *const ed)
 void
 ed_ins_row_below(Ed *const ed, size_t times)
 {
-	size_t ins_i = ed->offset_row + ed->cur.y + 1;
+	size_t ins_i;
 	times = MIN(times, CFG_INS_ROW_LIMIT);
 	ed_mv_begin_of_row(ed);
-	ed_mv_down(ed, times);
-	while (times-- > 0) {
-		rows_ins(&ed->rows, ins_i++, row_empty());
+	for (ins_i = 0; ins_i < times; ins_i++) {
+		rows_ins(&ed->rows, ed->offset_row + ed->cur.y + ins_i + 1, row_empty());
 	}
+	ed_mv_down(ed, times);
 	ed->mode = MODE_INS;
 	ed_on_f_ch(ed);
 }
