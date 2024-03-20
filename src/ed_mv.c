@@ -30,7 +30,7 @@ ed_mv_down(Ed *const ed, size_t times)
 	times -= curr_win_times;
 	/* Move down by offset shifting */
 	ed->offset_row += MIN(
-		ed->rows.cnt - ed->offset_row - ed->win_size.ws_row,
+		ed->rows.cnt - ed->offset_row - ed->win_size.ws_row + 1,
 		times
 	);
 	/* Fix cursor to fit on the row */

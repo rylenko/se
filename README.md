@@ -123,7 +123,7 @@ $ make gen-readme
 		<th>166</th>
 		<th>1249</th>
 		<th>206</th>
-		<th>33151</th>
+		<th>33155</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>23</th>
@@ -187,7 +187,7 @@ $ make gen-readme
 		<th>309</th>
 		<th>1786</th>
 		<th>207</th>
-    	<th>51041</th>
+    	<th>51045</th>
 	</tr></tfoot>
 	</table>
 
