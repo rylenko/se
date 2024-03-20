@@ -14,13 +14,17 @@
 void
 ed_fix_cur(Ed *const ed)
 {
-	const Row *const row = &ed->rows.arr[ed->offset_row + ed->cur.y];
-	const size_t f_col_i = ed->offset_col + ed->cur.x;
+	const Row *row;
+	size_t f_col_i;
 	size_t col_diff;
 
 	/* Clamp cursor on the window */
 	ed->cur.y = MIN(ed->cur.y, ed->win_size.ws_row - 2);
 	ed->cur.x = MIN(ed->cur.x, ed->win_size.ws_col - 1);
+
+	/* Need to be after cursor clamping to work with fresh values */
+	row = &ed->rows.arr[ed->offset_row + ed->cur.y];
+	f_col_i = ed->offset_col + ed->cur.x;
 
 	/* Fix x coordinate if current row does not has enough length */
 	if (f_col_i > row->len) {
