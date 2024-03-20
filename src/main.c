@@ -1,4 +1,3 @@
-/* TODO: Integrate repetition of keys into handlers */
 /* TODO: Add local clipboard. Use it in functions. */
 /* TODO: Use linked list for rows array and row's content parts. Benchmark! */
 /* TODO: Undo operations. Also rename "del" to "remove" where needed */

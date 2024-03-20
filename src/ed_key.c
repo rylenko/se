@@ -7,7 +7,6 @@
 #include "ed_mv.h"
 #include "ed_quit.h"
 #include "ed_save.h"
-#include "macros.h"
 #include "math.h"
 #include "raw_key.h"
 #include "term.h"
@@ -102,10 +101,10 @@ ed_proc_norm_key(Ed *const ed, const char key)
 		ed_del_row(ed, times);
 		return;
 	case CFG_KEY_INS_ROW_BELOW:
-		REPEAT(times, ed_ins_row_below(ed));
+		ed_ins_row_below(ed, times);
 		return;
 	case CFG_KEY_INS_ROW_TOP:
-		REPEAT(times, ed_ins_row_top(ed));
+		ed_ins_row_top(ed, times);
 		return;
 	case CFG_KEY_MODE_INS:
 		ed->mode = MODE_INS;
