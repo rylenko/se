@@ -118,21 +118,21 @@ $ make gen-readme
 	<tbody><tr>
 		<th>C</th>
 		<th>21</th>
-		<th>1571</th>
+		<th>1577</th>
 		<th>137</th>
-		<th>167</th>
-		<th>1267</th>
-		<th>207</th>
-		<th>33626</th>
+		<th>166</th>
+		<th>1274</th>
+		<th>209</th>
+		<th>33725</th>
 	</tr><tr>
 		<th>C Header</th>
-		<th>23</th>
-		<th>540</th>
-		<th>130</th>
-		<th>121</th>
-		<th>289</th>
-		<th>1</th>
-		<th>11394</th>
+		<th>22</th>
+		<th>529</th>
+		<th>128</th>
+		<th>120</th>
+		<th>281</th>
+		<th>0</th>
+		<th>11230</th>
 	</tr><tr>
 		<th>Markdown</th>
 		<th>2</th>
@@ -181,13 +181,13 @@ $ make gen-readme
 	</tr></tbody>
 	<tfoot><tr>
 		<th>Total</th>
-		<th>51</th>
-		<th>2458</th>
-		<th>348</th>
-		<th>306</th>
-		<th>1804</th>
-		<th>208</th>
-    	<th>51507</th>
+		<th>50</th>
+		<th>2453</th>
+		<th>346</th>
+		<th>304</th>
+		<th>1803</th>
+		<th>209</th>
+    	<th>51442</th>
 	</tr></tfoot>
 	</table>
 
@@ -195,12 +195,11 @@ $ make gen-readme
 
 |Path|Line|Description|
 |-|-|-|
-|**src/main.c**|**1**|**Integrate repetition of keys into handlers**|
-|**src/main.c**|**2**|**Add local clipboard. Use it in functions.**|
-|**src/main.c**|**3**|**Use linked list for rows array and row's content parts. Benchmark!**|
-|**src/main.c**|**4**|**Undo operations. Also rename "del" to "remove" where needed**|
-|**src/main.c**|**5**|**Xclip patch to use with local clipboard**|
-|**src/main.c**|**6**|**Support huge files.**|
-|**src/cfg.h**|**51**|**Fix it for another values**|
+|**src/main.c**|**1**|**Add local clipboard. Use it in functions.**|
+|**src/main.c**|**2**|**Use linked list for rows array and row's content parts. Benchmark!**|
+|**src/main.c**|**3**|**Undo operations. Also rename "del" to "remove" where needed**|
+|**src/main.c**|**4**|**Xclip patch to use with local clipboard**|
+|**src/main.c**|**5**|**Support huge files.**|
+|**src/cfg.h**|**52**|**Fix it for another values**|
 |**src/rows.h**|**22**|**rename to `rows_remove` if undo is done.**|
 |**src/rows.c**|**23**|**Copy a smaller portion of a row to the row abome or below**|
