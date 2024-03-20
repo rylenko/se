@@ -5,6 +5,7 @@
 #include "row.h"
 #include "rows.h"
 #include "math.h"
+#include "mode.h"
 
 void
 ed_ins(Ed *const ed, const char ch)
@@ -36,6 +37,7 @@ ed_ins_row_below(Ed *const ed, size_t times)
 	while (times-- > 0) {
 		rows_ins(&ed->rows, ins_i++, row_empty());
 	}
+	ed->mode = MODE_INS;
 	ed_on_f_ch(ed);
 }
 
@@ -46,5 +48,6 @@ ed_ins_row_top(Ed *const ed, size_t times)
 	while (times-- > 0) {
 		rows_ins(&ed->rows, ed->offset_row + ed->cur.y, row_empty());
 	}
+	ed->mode = MODE_INS;
 	ed_on_f_ch(ed);
 }
