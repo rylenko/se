@@ -27,11 +27,7 @@ typedef struct {
 	struct winsize win_size;
 } Ed;
 
-/*
-Fixes cursor's coordinates.
-
-Useful when resizing the window or moving to a another row.
-*/
+/* Makes sure that the cursor is on the window and is not outside the row. */
 void ed_fix_cur(Ed *);
 
 /* Inputs digit to number. */
