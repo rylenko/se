@@ -62,7 +62,7 @@ ed_proc_ins_key(Ed *const ed, const char key)
 		return;
 	}
 	/* Check key is printable and insert */
-	if (isprint(key)) {
+	if (isprint(key) || key == '\t') {
 		ed_ins(ed, key);
 	}
 }
