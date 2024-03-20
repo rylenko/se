@@ -10,6 +10,7 @@
 
 **Examples of what may be in separate patches**:
 
+- Automatic saving.
 - Syntax highlighting.
 - UTF-8 support.
 - Key macros.

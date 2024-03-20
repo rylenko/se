@@ -10,6 +10,7 @@
 
 **Examples of what may be in separate patches**:
 
+- Automatic saving.
 - Syntax highlighting.
 - UTF-8 support.
 - Key macros.
@@ -136,12 +137,12 @@ $ make gen-readme
 	</tr><tr>
 		<th>Markdown</th>
 		<th>2</th>
-		<th>209</th>
+		<th>211</th>
 		<th>58</th>
 		<th>0</th>
-		<th>151</th>
+		<th>153</th>
 		<th>0</th>
-		<th>3714</th>
+		<th>3754</th>
 	</tr><tr>
 		<th>Makefile</th>
 		<th>2</th>
@@ -182,12 +183,12 @@ $ make gen-readme
 	<tfoot><tr>
 		<th>Total</th>
 		<th>50</th>
-		<th>2455</th>
+		<th>2457</th>
 		<th>346</th>
 		<th>304</th>
-		<th>1805</th>
+		<th>1807</th>
 		<th>212</th>
-    	<th>51487</th>
+    	<th>51527</th>
 	</tr></tfoot>
 	</table>
 
