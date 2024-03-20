@@ -37,11 +37,13 @@ void
 row_extend(Row *const row, const Row *const with)
 {
 	const size_t row_old_len = row->len;
-	/* Add length and check that we need to grow capacity */
-	row->len += with->len;
-	row_grow_if_needed(row);
-	/* Copy string */
-	strcpy(&row->cont[row_old_len], with->cont);
+	if (with->len > 0) {
+		/* Add length and check that we need to grow capacity */
+		row->len += with->len;
+		row_grow_if_needed(row);
+		/* Copy string */
+		strcpy(&row->cont[row_old_len], with->cont);
+	}
 }
 
 static void
