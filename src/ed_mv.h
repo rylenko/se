@@ -28,7 +28,7 @@ void ed_mv_next_word(Ed *, size_t);
 void ed_mv_prev_word(Ed *, size_t);
 
 /* Move cursor right. */
-void ed_mv_right(Ed *);
+void ed_mv_right(Ed *, size_t);
 
 /* Move cursor up several times. */
 void ed_mv_up(Ed *, size_t);

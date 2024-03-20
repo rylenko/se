@@ -37,7 +37,7 @@ ed_proc_arrow_key(Ed *const ed, const char key)
 		ed_mv_down(ed, times);
 		return;
 	case 'C':
-		REPEAT(times, ed_mv_right(ed));
+		ed_mv_right(ed, times);
 		return;
 	case 'D':
 		ed_mv_left(ed, times);
@@ -135,7 +135,7 @@ ed_proc_norm_key(Ed *const ed, const char key)
 		ed_mv_prev_word(ed, times);
 		return;
 	case CFG_KEY_MV_RIGHT:
-		REPEAT(times, ed_mv_right(ed));
+		ed_mv_right(ed, times);
 		return;
 	case CFG_KEY_MV_UP:
 		ed_mv_up(ed, times);

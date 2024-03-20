@@ -21,20 +21,20 @@ ed_mv_begin_of_row(Ed *const ed)
 void
 ed_mv_down(Ed *const ed, size_t times)
 {
-	/* Move cursor down in current window */
-	size_t curr_win_times = MIN(
-		(size_t)(ed->win_size.ws_row - 2 - ed->cur.y),
-		times
-	);
-	ed->cur.y += curr_win_times;
-	times -= curr_win_times;
-	/* Move down by offset shifting */
-	ed->offset_row += MIN(
-		ed->rows.cnt - ed->offset_row - ed->win_size.ws_row + 1,
-		times
-	);
-	/* Fix cursor to fit on the row */
-	ed_fix_cur(ed);
+	size_t used_times;
+	if (ed->offset_row + ed->cur.y + 1 < ed->rows.cnt) {
+		/* Move cursor down in current window */
+		used_times = MIN((size_t)(ed->win_size.ws_row - 2 - ed->cur.y), times);
+		ed->cur.y += used_times;
+		times -= used_times;
+		/* Move down by offset shifting */
+		ed->offset_row += MIN(
+			ed->rows.cnt - ed->offset_row - ed->cur.y + 1,
+			times
+		);
+		/* Fix cursor to fit on the row */
+		ed_fix_cur(ed);
+	}
 }
 
 void
@@ -139,33 +139,45 @@ ed_mv_prev_word(Ed *const ed, size_t times)
 }
 
 void
-ed_mv_right(Ed *const ed)
+ed_mv_right(Ed *const ed, size_t times)
 {
-	const Row *const row = &ed->rows.arr[ed->offset_row + ed->cur.y];
-	if (ed->offset_col + ed->cur.x < row->len) {
-		if (ed->win_size.ws_col - 1 == ed->cur.x) {
-			/* We are at the right of window */
-			ed->offset_col++;
-		} else {
-			/* We are have enough space to move right on the window */
-			ed->cur.x++;
+	const Row *row;
+	size_t used_times;
+	while (times > 0) {
+		row = &ed->rows.arr[ed->offset_row + ed->cur.y];
+		/* Move to next row if exists and cursor at start of row */
+		if (ed->offset_col + ed->cur.x == row->len) {
+			if (ed->offset_row + ed->cur.y + 1 == ed->rows.cnt) {
+				break;
+			}
+			ed_mv_down(ed, 1);
+			ed_mv_begin_of_row(ed);
+			times--;
+			row++;
 		}
-	} else if (ed->offset_row + ed->cur.y + 1 != ed->rows.cnt) {
-		/* Move to begin of next row */
-		ed_mv_down(ed, 1);
-		ed_mv_begin_of_row(ed);
+		/* Move cursor right in current window */
+		used_times = MIN(row->len - ed->offset_col - ed->cur.x, times);
+		ed->cur.x += used_times;
+		times -= used_times;
+		/* Move right by offset shifting */
+		used_times = MIN(ed->offset_col, times);
+		ed->offset_col -= used_times;
+		times -= used_times;
 	}
 }
 
 void
 ed_mv_up(Ed *const ed, size_t times)
 {
-	/* Move cursor up in current window */
-	size_t curr_win_times = MIN(ed->cur.y, times);
-	ed->cur.y -= curr_win_times;
-	times -= curr_win_times;
-	/* Move up by offset shifting */
-	ed->offset_row -= MIN(ed->offset_row, times);
-	/* Fix cursor to fit on the row */
-	ed_fix_cur(ed);
+	size_t used_times;
+	if (ed->offset_row + ed->cur.y > 0) {
+		/* Move cursor up in current window */
+		used_times = MIN(ed->cur.y, times);
+		ed->cur.y -= used_times;
+		times -= used_times;
+		/* Move up by offset shifting */
+		ed->offset_row -= MIN(ed->offset_row, times);
+		/* Fix cursor to fit on the row */
+		ed_fix_cur(ed);
+	}
 }

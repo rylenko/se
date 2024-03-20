@@ -12,7 +12,7 @@ ed_ins(Ed *const ed, const char ch)
 		ed->offset_col + ed->cur.x,
 		ch
 	);
-	ed_mv_right(ed);
+	ed_mv_right(ed, 1);
 	ed_on_f_ch(ed);
 }
 
