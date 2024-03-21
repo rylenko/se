@@ -77,7 +77,6 @@ ed_mv_left(Ed *const ed, size_t times)
 			}
 			ed_mv_up(ed, 1);
 			ed_mv_end_of_row(ed);
-			continue;
 		} else {
 			if (ed->cur.x == 0) {
 				/* We are at the left of window */
@@ -143,10 +142,8 @@ ed_mv_prev_word(Ed *const ed, size_t times)
 void
 ed_mv_right(Ed *const ed, size_t times)
 {
-	Cur expanded_cur;
 	const Row *row = &ed->rows.arr[ed->offset_row + ed->cur.y];
 	for (; times > 0; times--) {
-		expanded_cur = ed_expand_cur(ed);
 		/* Move to next row if exists and cursor at start of row */
 		if (ed->offset_col + ed->cur.x == row->len) {
 			if (ed->offset_row + ed->cur.y + 1 == ed->rows.cnt) {
@@ -163,13 +160,6 @@ ed_mv_right(Ed *const ed, size_t times)
 				/* We are have enough space to move right on the window */
 				ed->cur.x++;
 			}
-		}
-		if (
-			'\t' == row->cont[ed->offset_col + ed->cur.x]
-			&& expanded_cur.x + CFG_TAB_SIZE >= ed->win_size.ws_col
-		) {
-			ed->cur.x--;
-			ed->offset_col += CFG_TAB_SIZE;
 		}
 	}
 }

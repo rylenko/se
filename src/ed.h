@@ -27,9 +27,6 @@ typedef struct {
 	struct winsize win_size;
 } Ed;
 
-/* Expands cursor with tabs to draw it on the window. */
-Cur ed_expand_cur(const Ed *);
-
 /* Makes sure that the cursor is on the window and is not outside the row. */
 void ed_fix_cur(Ed *);
 

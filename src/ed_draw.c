@@ -53,7 +53,16 @@ ed_draw(Ed *const ed)
 static void
 ed_draw_cur(const Ed *const ed, Buf *const buf)
 {
-	cur_draw(ed_expand_cur(ed), buf);
+	size_t i;
+	size_t x = 0;
+	const Row *const row = &ed->rows.arr[ed->offset_row + ed->cur.y];
+	/* Calculate x position with tab expansion */
+	for (i = ed->offset_col; i < ed->offset_col + ed->cur.x; i++, x++) {
+		if (row->cont[i] == '\t') {
+			x += CFG_TAB_SIZE - x % CFG_TAB_SIZE - 1;
+		}
+	}
+	cur_draw(cur_new(x, ed->cur.y), buf);
 }
 
 static void
