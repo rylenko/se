@@ -11,6 +11,22 @@
 #include "str.h"
 #include "row.h"
 
+Cur
+ed_expand_cur(const Ed *const ed)
+{
+	size_t i;
+	size_t x = 0;
+	const Row *const row = &ed->rows.arr[ed->offset_row + ed->cur.y];
+
+	for (i = ed->offset_col; i < ed->offset_col + ed->cur.x; i++, x ++) {
+		/* Calculate tab offset */
+		if (row->cont[i] == '\t') {
+			x += CFG_TAB_SIZE - x % CFG_TAB_SIZE - 1;
+		}
+	}
+	return cur_new(x, ed->cur.y);
+}
+
 void
 ed_fix_cur(Ed *const ed)
 {

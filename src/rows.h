@@ -12,10 +12,10 @@ typedef struct {
 	size_t cnt;
 } Rows;
 
-/* Breaks the row at index and position. */
+/* Breaks the row at index and position. Updates render of new rows. */
 void rows_break(Rows *, size_t, size_t);
 
-/* Extends specified row with next row. */
+/* Extends specified row with next row. Does not update render. */
 void rows_extend_with_next(Rows *, size_t);
 
 /* Remove row by its index. */

@@ -53,18 +53,7 @@ ed_draw(Ed *const ed)
 static void
 ed_draw_cur(const Ed *const ed, Buf *const buf)
 {
-	unsigned int i;
-	size_t x = 0;
-	const Row *const row = &ed->rows.arr[ed->offset_row + ed->cur.y];
-
-	for (i = ed->offset_col; i < ed->offset_col + ed->cur.x; i++, x++) {
-		/* Calculate tab offset */
-		if (row->cont[i] == '\t') {
-			x += CFG_TAB_SIZE - x % CFG_TAB_SIZE - 1;
-		}
-	}
-	/* Write cursor */
-	cur_draw(cur_new(x, ed->cur.y), buf);
+	cur_draw(ed_expand_cur(ed), buf);
 }
 
 static void
@@ -85,11 +74,11 @@ ed_draw_rows(const Ed *const ed, Buf *const buf)
 		} else {
 			row = &ed->rows.arr[f_row_i];
 			/* This condition also skips empty rows */
-			if (row->len > ed->offset_col) {
+			if (row->render_len > ed->offset_col) {
 				buf_write(
 					buf,
-					row->cont + ed->offset_col,
-					MIN(ed->win_size.ws_col, row->len - ed->offset_col)
+					&row->render[ed->offset_col],
+					MIN(ed->win_size.ws_col, row->render_len - ed->offset_col)
 				);
 			}
 		}

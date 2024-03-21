@@ -10,11 +10,9 @@
 void
 ed_ins(Ed *const ed, const char ch)
 {
-	row_ins(
-		&ed->rows.arr[ed->offset_row + ed->cur.y],
-		ed->offset_col + ed->cur.x,
-		ch
-	);
+	Row *const row = &ed->rows.arr[ed->offset_row + ed->cur.y];
+	row_ins(row, ed->offset_col + ed->cur.x, ch);
+	row_upd_render(row);
 	ed_mv_right(ed, 1);
 	ed_on_f_ch(ed);
 }

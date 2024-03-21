@@ -34,7 +34,8 @@ rows_break(Rows *const rows, const size_t idx, const size_t col_i)
 		}
 		strcpy(new_row.cont, &row->cont[col_i]);
 	}
-	/* Insert new row */
+	/* Update render and insert new row */
+	row_upd_render(&new_row);
 	rows_ins(rows, idx + 1, new_row);
 
 	/* Update pointer because of reallocation in inserting function */
@@ -44,7 +45,8 @@ rows_break(Rows *const rows, const size_t idx, const size_t col_i)
 		row->len = col_i;
 		row->cont[col_i] = 0;
 	}
-	/* Shrink to fit an old row if needed */
+	/* Update render and shrink capacity if needed for old row */
+	row_upd_render(row);
 	row_shrink_if_needed(row);
 }
 
@@ -133,8 +135,9 @@ rows_new(void)
 void
 rows_read(Rows *const rows, FILE *const f)
 {
-	Row row = row_empty();
+	Row row;
 	while (row_read(&row, f)) {
+		row_upd_render(&row);
 		rows_ins(rows, rows->cnt, row);
 	}
 }

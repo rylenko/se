@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "cfg.h"
 #include "row.h"
 
 enum {
@@ -24,13 +25,20 @@ row_del(Row *const row, const size_t idx)
 	/* Do not forget about null byte */
 	memmove(&row->cont[idx], &row->cont[idx + 1], row->len - idx);
 	row->len--;
+	/* Shrink capacity if needed and update render */
 	row_shrink_if_needed(row);
 }
 
 Row
 row_empty(void)
 {
-	return (Row){ .cap = 0, .cont = NULL, .len = 0 };
+	return (Row){
+		.cap = 0,
+		.cont = NULL,
+		.len = 0,
+		.render = NULL,
+		.render_len = 0
+	};
 }
 
 void
@@ -41,7 +49,7 @@ row_extend(Row *const row, const Row *const with)
 		/* Add length and check that we need to grow capacity */
 		row->len += with->len;
 		row_grow_if_needed(row);
-		/* Copy string */
+		/* Copy string and update render */
 		strcpy(&row->cont[row_old_len], with->cont);
 	}
 }
@@ -64,10 +72,16 @@ row_force_shrink(Row *const row)
 void
 row_free(Row *const row)
 {
+	/* Free content */
+	row->cap = 0;
 	free(row->cont);
 	row->cont = NULL;
-	row->cap = 0;
 	row->len = 0;
+
+	/* Free render */
+	free(row->render);
+	row->render = NULL;
+	row->render_len = 0;
 }
 
 static void
@@ -103,12 +117,8 @@ Row*
 row_read(Row *const row, FILE *const f)
 {
 	int ch;
-
 	/* Zeroize row */
-	row->cap = 0;
-	row->cont = NULL;
-	row->len = 0;
-
+	*row = row_empty();
 	/* Read characters */
 	while (1) {
 		/* Read new character */
@@ -134,7 +144,6 @@ row_read(Row *const row, FILE *const f)
 		}
 		row_ins(row, row->len, ch);
 	}
-
 	/* Shrink row's content to fit */
 	row_force_shrink(row);
 	return row;
@@ -153,6 +162,43 @@ row_shrink_if_needed(Row *const row)
 			err(EXIT_FAILURE, "Failed to shrink row to capacity %zu", row->cap);
 		}
 	}
+}
+
+void
+row_upd_render(Row *const row)
+{
+	size_t f_col_i;
+	size_t tabs_cnt = 0;
+	if (row->len == 0) {
+		return;
+	}
+
+	/* Free old render */
+	free(row->render);
+	row->render_len = 0;
+	/* Calculate tabs */
+	for (f_col_i = 0; f_col_i < row->len; f_col_i++) {
+		if ('\t' == row->cont[f_col_i]) {
+			tabs_cnt++;
+		}
+	}
+	/* Allocate render */
+	row->render = malloc(row->len + (CFG_TAB_SIZE - 1) * tabs_cnt + 1);
+	if (NULL == row->render) {
+		err(EXIT_FAILURE, "Failed to allocate row's render");
+	}
+	/* Render */
+	for (f_col_i = 0; f_col_i < row->len; f_col_i++) {
+		if ('\t' == row->cont[f_col_i]) {
+			row->render[row->render_len++] = ' ';
+			while (row->render_len % CFG_TAB_SIZE != 0) {
+				row->render[row->render_len++] = ' ';
+			}
+		} else {
+			row->render[row->render_len++] = row->cont[f_col_i];
+		}
+	}
+	row->render[row->render_len] = '\0';
 }
 
 size_t

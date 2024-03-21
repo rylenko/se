@@ -13,15 +13,18 @@ ed_del(Ed *const ed)
 {
 	const size_t f_row_i = ed->offset_row + ed->cur.y;
 	const size_t f_col_i = ed->offset_col + ed->cur.x;
+	Row *const row = &ed->rows.arr[f_row_i];
 	if (f_col_i > 0) {
-		/* Delete character */
-		row_del(&ed->rows.arr[f_row_i], f_col_i - 1);
+		/* Delete character and update render */
+		row_del(row, f_col_i - 1);
+		row_upd_render(row);
 		ed_mv_left(ed, 1);
 	} else if (f_row_i > 0) {
 		/* Move left first to have cursor at end of previous row */
 		ed_mv_left(ed, 1);
 		/* Extends previous row with current and delete current row */
 		rows_extend_with_next(&ed->rows, f_row_i - 1);
+		row_upd_render(&ed->rows.arr[f_row_i - 1]);
 	}
 	ed_on_f_ch(ed);
 }
