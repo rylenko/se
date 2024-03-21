@@ -77,19 +77,16 @@ ed_draw_rows(const Ed *const ed, Buf *const buf)
 
 		/* Write row */
 		f_row_i = row_i + ed->offset_row;
+		row = &ed->rows.arr[f_row_i];
 		if (f_row_i >= ed->rows.cnt) {
 			/* No row */
 			buf_write(buf, "~", 1);
-		} else {
-			row = &ed->rows.arr[f_row_i];
-			/* This condition also skips empty rows */
-			if (row->render_len > ed->offset_col) {
-				buf_write(
-					buf,
-					&row->render[ed->offset_col],
-					MIN(ed->win_size.ws_col, row->render_len - ed->offset_col)
-				);
-			}
+		} else if (row->render_len > ed->offset_col) {
+			buf_write(
+				buf,
+				&row->render[ed->offset_col],
+				MIN(ed->win_size.ws_col, row->render_len - ed->offset_col)
+			);
 		}
 		buf_write(buf, "\r\n", 2);
 	}
