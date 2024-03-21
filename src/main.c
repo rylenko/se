@@ -1,10 +1,11 @@
-/* TODO: fix offset shifting with tabs in the window. See `Pos` todo  */
-/* TODO: Create `Pos` struct to store file position and window position */
-/* TODO: Add local clipboard. Use it in functions. */
-/* TODO: Use linked list for rows array and row's content parts. Benchmark! */
-/* TODO: Undo operations. Also rename "del" to "remove" where needed */
-/* TODO: Xclip patch to use with local clipboard */
-/* TODO: Support huge files. */
+/* TODO: [1] fix offset shifting with tabs in the window. See `Pos` todo  */
+/* TODO: [1] Create `Pos` struct to store file position and window position */
+/* TODO: [1] Spend time on refactoring and arch after [1] todos */
+/* TODO: [2] Add local clipboard. Use it in functions. */
+/* TODO: [2] Use linked list for rows array and row's content parts. Benchmark! */
+/* TODO: [2] Undo operations. Also rename "del" to "remove" where needed */
+/* TODO: [3] Xclip patch to use with local clipboard */
+/* TODO: [3] Support huge files */
 
 #include <err.h>
 #include <stdlib.h>

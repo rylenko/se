@@ -19,7 +19,7 @@ void rows_break(Rows *, size_t, size_t);
 void rows_extend_with_next(Rows *, size_t);
 
 /* Remove row by its index. */
-/* TODO: rename to `rows_remove` if undo is done. */
+/* TODO: [2] rename to `rows_remove` if undo is done. */
 void rows_del(Rows *, size_t);
 
 /* Frees allocated rows. */

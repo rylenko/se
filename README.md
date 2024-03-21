@@ -119,12 +119,12 @@ $ make gen-readme
 	<tbody><tr>
 		<th>C</th>
 		<th>21</th>
-		<th>1629</th>
+		<th>1630</th>
 		<th>136</th>
-		<th>173</th>
+		<th>174</th>
 		<th>1320</th>
 		<th>233</th>
-		<th>35069</th>
+		<th>35163</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>22</th>
@@ -133,7 +133,7 @@ $ make gen-readme
 		<th>121</th>
 		<th>284</th>
 		<th>0</th>
-		<th>11418</th>
+		<th>11422</th>
 	</tr><tr>
 		<th>Markdown</th>
 		<th>2</th>
@@ -183,12 +183,12 @@ $ make gen-readme
 	<tfoot><tr>
 		<th>Total</th>
 		<th>50</th>
-		<th>2512</th>
+		<th>2513</th>
 		<th>346</th>
-		<th>312</th>
+		<th>313</th>
 		<th>1854</th>
 		<th>233</th>
-    	<th>53014</th>
+    	<th>53112</th>
 	</tr></tfoot>
 	</table>
 
@@ -196,11 +196,12 @@ $ make gen-readme
 
 |Path|Line|Description|
 |-|-|-|
-|**src/main.c**|**1**|**fix offset shifting with tabs in the window. See `Pos` todo**|
-|**src/main.c**|**2**|**Create `Pos` struct to store file position and window position**|
-|**src/main.c**|**3**|**Add local clipboard. Use it in functions.**|
-|**src/main.c**|**4**|**Use linked list for rows array and row's content parts. Benchmark!**|
-|**src/main.c**|**5**|**Undo operations. Also rename "del" to "remove" where needed**|
-|**src/main.c**|**6**|**Xclip patch to use with local clipboard**|
-|**src/main.c**|**7**|**Support huge files.**|
-|**src/rows.h**|**22**|**rename to `rows_remove` if undo is done.**|
+|**src/main.c**|**1**|**[1] fix offset shifting with tabs in the window. See `Pos` todo**|
+|**src/main.c**|**2**|**[1] Create `Pos` struct to store file position and window position**|
+|**src/main.c**|**3**|**[1] Spend time on refactoring and arch after [1] todos**|
+|**src/main.c**|**4**|**[2] Add local clipboard. Use it in functions.**|
+|**src/main.c**|**5**|**[2] Use linked list for rows array and row's content parts. Benchmark!**|
+|**src/main.c**|**6**|**[2] Undo operations. Also rename "del" to "remove" where needed**|
+|**src/main.c**|**7**|**[3] Xclip patch to use with local clipboard**|
+|**src/main.c**|**8**|**[3] Support huge files**|
+|**src/rows.h**|**22**|**[2] rename to `rows_remove` if undo is done.**|
