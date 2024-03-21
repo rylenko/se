@@ -1,3 +1,5 @@
+/* TODO: fix offset shifting with tabs in the window. See `Pos` todo  */
+/* TODO: Create `Pos` struct to store file position and window position */
 /* TODO: Add local clipboard. Use it in functions. */
 /* TODO: Use linked list for rows array and row's content parts. Benchmark! */
 /* TODO: Undo operations. Also rename "del" to "remove" where needed */

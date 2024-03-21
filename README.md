@@ -119,12 +119,12 @@ $ make gen-readme
 	<tbody><tr>
 		<th>C</th>
 		<th>21</th>
-		<th>1645</th>
+		<th>1647</th>
 		<th>138</th>
-		<th>172</th>
+		<th>174</th>
 		<th>1335</th>
 		<th>236</th>
-		<th>35290</th>
+		<th>35438</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>22</th>
@@ -183,12 +183,12 @@ $ make gen-readme
 	<tfoot><tr>
 		<th>Total</th>
 		<th>50</th>
-		<th>2532</th>
+		<th>2534</th>
 		<th>349</th>
-		<th>313</th>
+		<th>315</th>
 		<th>1870</th>
 		<th>236</th>
-    	<th>53363</th>
+    	<th>53511</th>
 	</tr></tfoot>
 	</table>
 
@@ -196,11 +196,13 @@ $ make gen-readme
 
 |Path|Line|Description|
 |-|-|-|
-|**src/main.c**|**1**|**Add local clipboard. Use it in functions.**|
-|**src/main.c**|**2**|**Use linked list for rows array and row's content parts. Benchmark!**|
-|**src/main.c**|**3**|**Undo operations. Also rename "del" to "remove" where needed**|
-|**src/main.c**|**4**|**Xclip patch to use with local clipboard**|
-|**src/main.c**|**5**|**Support huge files.**|
+|**src/rows.c**|**23**|**Copy a smaller portion of a row to the row abome or below**|
+|**src/main.c**|**1**|**fix offset shifting with tabs in the window. See `Pos` todo**|
+|**src/main.c**|**2**|**Create `Pos` struct to store file position and window position**|
+|**src/main.c**|**3**|**Add local clipboard. Use it in functions.**|
+|**src/main.c**|**4**|**Use linked list for rows array and row's content parts. Benchmark!**|
+|**src/main.c**|**5**|**Undo operations. Also rename "del" to "remove" where needed**|
+|**src/main.c**|**6**|**Xclip patch to use with local clipboard**|
+|**src/main.c**|**7**|**Support huge files.**|
 |**src/cfg.h**|**52**|**Fix it for another values**|
 |**src/rows.h**|**22**|**rename to `rows_remove` if undo is done.**|
-|**src/rows.c**|**23**|**Copy a smaller portion of a row to the row abome or below**|
