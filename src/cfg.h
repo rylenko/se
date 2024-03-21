@@ -49,7 +49,6 @@ typedef enum {
 	CFG_ARROWS_ENABLED = 1,
 	CFG_INS_ROW_LIMIT = 100,
 	CFG_SPARE_SAVE_PATH_MAX_LEN = 256,
-	/* TODO: Fix it for another values */
 	CFG_TAB_SIZE = 8,
 	CFG_QUIT_PRESSES_REM_AFT_CH = 3,
 } Cfg;

@@ -128,12 +128,12 @@ $ make gen-readme
 	</tr><tr>
 		<th>C Header</th>
 		<th>22</th>
-		<th>535</th>
+		<th>534</th>
 		<th>129</th>
-		<th>122</th>
+		<th>121</th>
 		<th>284</th>
 		<th>0</th>
-		<th>11457</th>
+		<th>11418</th>
 	</tr><tr>
 		<th>Markdown</th>
 		<th>2</th>
@@ -183,12 +183,12 @@ $ make gen-readme
 	<tfoot><tr>
 		<th>Total</th>
 		<th>50</th>
-		<th>2513</th>
+		<th>2512</th>
 		<th>346</th>
-		<th>313</th>
+		<th>312</th>
 		<th>1854</th>
 		<th>233</th>
-    	<th>53053</th>
+    	<th>53014</th>
 	</tr></tfoot>
 	</table>
 
@@ -203,5 +203,4 @@ $ make gen-readme
 |**src/main.c**|**5**|**Undo operations. Also rename "del" to "remove" where needed**|
 |**src/main.c**|**6**|**Xclip patch to use with local clipboard**|
 |**src/main.c**|**7**|**Support huge files.**|
-|**src/cfg.h**|**52**|**Fix it for another values**|
 |**src/rows.h**|**22**|**rename to `rows_remove` if undo is done.**|
