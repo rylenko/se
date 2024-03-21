@@ -152,7 +152,6 @@ ed_mv_right(Ed *const ed, size_t times)
 			ed_mv_down(ed, 1);
 			ed_mv_begin_of_row(ed);
 			row++;
-			continue;
 		} else {
 			if (ed->win_size.ws_col - 1 == ed->cur.x) {
 				/* We are at the right of window */
