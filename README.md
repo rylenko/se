@@ -119,12 +119,12 @@ $ make gen-readme
 	<tbody><tr>
 		<th>C</th>
 		<th>21</th>
-		<th>1647</th>
+		<th>1646</th>
 		<th>138</th>
-		<th>174</th>
+		<th>173</th>
 		<th>1335</th>
 		<th>236</th>
-		<th>35438</th>
+		<th>35367</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>22</th>
@@ -183,12 +183,12 @@ $ make gen-readme
 	<tfoot><tr>
 		<th>Total</th>
 		<th>50</th>
-		<th>2534</th>
+		<th>2533</th>
 		<th>349</th>
-		<th>315</th>
+		<th>314</th>
 		<th>1870</th>
 		<th>236</th>
-    	<th>53511</th>
+    	<th>53440</th>
 	</tr></tfoot>
 	</table>
 
@@ -196,7 +196,6 @@ $ make gen-readme
 
 |Path|Line|Description|
 |-|-|-|
-|**src/rows.c**|**23**|**Copy a smaller portion of a row to the row abome or below**|
 |**src/main.c**|**1**|**fix offset shifting with tabs in the window. See `Pos` todo**|
 |**src/main.c**|**2**|**Create `Pos` struct to store file position and window position**|
 |**src/main.c**|**3**|**Add local clipboard. Use it in functions.**|

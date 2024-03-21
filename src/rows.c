@@ -20,7 +20,6 @@ static void rows_shrink_if_needed(Rows *rows);
 void
 rows_break(Rows *const rows, const size_t idx, const size_t col_i)
 {
-	/* TODO: Copy a smaller portion of a row to the row abome or below */
 	Row new_row = row_empty();
 	Row *row = &rows->arr[idx];
 
