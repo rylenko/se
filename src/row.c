@@ -47,8 +47,6 @@ row_free(Row *const row)
 	/* Free content and render */
 	free(row->cont);
 	free(row->render);
-	/* Zeroize instance */
-	memset(row, 0, sizeof(*row));
 }
 
 void

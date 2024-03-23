@@ -16,6 +16,8 @@ void term_get_win_size(struct winsize *);
 /*
 Initializes terminal with input file descriptor and output file descriptor and
 enables raw mode.
+
+Do not forget to deinitialize it.
 */
 void term_init(int, int);
 

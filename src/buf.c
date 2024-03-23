@@ -36,8 +36,6 @@ buf_free(Buf *const buf)
 {
 	/* Free allocated data */
 	free(buf->data);
-	/* Zeroize memory */
-	memset(buf, 0, sizeof(*buf));
 }
 
 static void

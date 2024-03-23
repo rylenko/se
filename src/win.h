@@ -15,4 +15,14 @@ typedef struct {
 	struct winsize size; /* Window size */
 } Win;
 
+/* Deinitializes window's from terminal. */
+void win_deinit(Win *);
+
+/*
+Initializes and connects window to terminal using passed file descriptors.
+
+Do not forget to deinitialize it.
+*/
+void win_init(Win *, int, int);
+
 #endif /* WIN_H */

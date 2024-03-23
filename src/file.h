@@ -17,10 +17,15 @@ typedef struct {
 	char *path; /* Path of readed file. This is where the default save occurs */
 } File;
 
+/* Closes file and frees memory. */
+void file_close(File *);
+
 /*
 Reads the contents of file.
 
 Adds an empty row if there are no rows in the file.
+
+Do not forget to close file.
 */
 void file_open(File *, const char *);
 

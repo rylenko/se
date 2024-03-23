@@ -1,11 +1,11 @@
-#include <string.h>
 #include "pos.h"
 
 void
 pos_init(Pos *const pos)
 {
-	/* Zeroize instance */
-	memset(pos, 0, sizeof(*pos));
+	/* Set default offset */
+	pos->offset.x = 0;
+	pos->offset.y = 0;
 	/* Initialize cursor */
 	cur_init(&pos->cur);
 }

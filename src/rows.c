@@ -94,9 +94,6 @@ rows_free(Rows *const rows)
 	while (rows->cnt-- > 0)
 		row_free(&rows->arr[i]);
 	free(rows->arr);
-
-	/* Zeroize instance */
-	memset(rows, 0, sizeof(*rows));
 }
 
 static void

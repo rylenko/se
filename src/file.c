@@ -1,11 +1,19 @@
 #include <err.h>
 #include <stddef.h>
 #include <stdio.h>
-#include <string.h>
 #include "file.h"
 #include "pos.h"
 #include "row.h"
 #include "rows.h"
+
+void
+file_close(File *const file)
+{
+	/* Free readed rows */
+	rows_free(&file->rows);
+	/* Freeing the path since we cloned it earlier */
+	free(file->path);
+}
 
 void
 file_open(File *const file, const char *const path)
