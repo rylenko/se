@@ -1,40 +1,47 @@
 #ifndef _ROWS_H
 #define _ROWS_H
 
-#include <stddef.h>
 #include <stdio.h>
 #include "row.h"
 
-/* Dynamic array with `Row`s. */
+/* Rows of the file. */
 typedef struct {
-	Row *arr;
-	size_t cap;
-	size_t cnt;
+	Row *arr; /* Dynamic array with rows */
+	size_t cnt; /* Count of rows */
+	size_t cap; /* Reserved capacity for dynamic array */
 } Rows;
 
-/* Breaks the row at index and position. Updates render of new rows. */
+/* TODO: do not forget to rerender after absorb */
+/*
+Extends specified row with next row, then frees next row.
+
+Does not update the render so you can do it yourself after several operations.
+*/
+void rows_absorb_next(Rows *, size_t);
+
+/* Find the row by index and breaks it at specified position. */
 void rows_break(Rows *, size_t, size_t);
 
-/* Extends specified row with next row. Does not update render. */
-void rows_extend_with_next(Rows *, size_t);
-
-/* Remove row by its index. */
-/* TODO: [2] rename to `rows_remove` if undo is done. */
+/* Deletes row by index. */
 void rows_del(Rows *, size_t);
 
-/* Frees allocated rows. */
+/* Frees the rows container. */
 void rows_free(Rows *);
 
-/* Inserts new row at index. Grows capacity if there is no space. */
+/* Initializes rows container with default values. Do not forget to free it. */
+void rows_init(Rows *);
+
+/* Inserts new row at index. */
 void rows_ins(Rows *, size_t, Row);
 
-/* Creates new dynamic array with rows. */
-Rows rows_new(void);
-
-/* Reads rows from file without newline characters. */
+/* Reads rows from the file. */
 void rows_read(Rows *, FILE *);
 
-/* Writes rows to the file with newline characters. */
-size_t rows_write(Rows *, FILE *);
+/*
+Writes rows to the file.
+
+Returns written bytes count.
+*/
+size_t rows_write(const Rows *, FILE *);
 
 #endif /* _ROWS_H */

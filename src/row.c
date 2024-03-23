@@ -3,98 +3,67 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "cfg.h"
+#include "math.h"
 #include "row.h"
 
 enum {
-	/* Memory reallocation step */
+	/* Realloc step, when no capacity or there is too much unused capacity */
 	ROW_REALLOC_STEP = 128,
 };
 
-/* Force row to shrink to fit the capacity. */
-static void row_force_shrink(Row *const row);
-
-/* Grows capacity if needed. */
-static void row_grow_if_needed(Row *const row);
+/* Reallocates row with new capacity. */
+static void row_realloc(Row *const row, const size_t new_cap);
 
 void
 row_del(Row *const row, const size_t idx)
 {
 	/* Validate index */
 	assert(idx < row->len);
-	/* Do not forget about null byte */
-	memmove(&row->cont[idx], &row->cont[idx + 1], row->len - idx);
-	row->len--;
-	/* Shrink capacity if needed and update render */
-	row_shrink_if_needed(row);
-}
 
-Row
-row_empty(void)
-{
-	return (Row){
-		.cap = 0,
-		.cont = NULL,
-		.len = 0,
-		.render = NULL,
-		.render_len = 0
-	};
+	/* Move other content left. Do not forget about null byte */
+	memmove(&row->cont[idx], &row->cont[idx + 1], row->len - idx);
+	/* Decrease length a shrink capacity if there is too much unused space */
+	row->len--;
+	row_shrink(row, 0);
 }
 
 void
-row_extend(Row *const row, const Row *const with)
+row_extend(Row *const dest, const Row *const src)
 {
-	const size_t row_old_len = row->len;
-	if (with->len > 0) {
-		/* Add length and check that we need to grow capacity */
-		row->len += with->len;
-		row_grow_if_needed(row);
-		/* Copy string and update render */
-		strcpy(&row->cont[row_old_len], with->cont);
-	}
-}
+	if (src->len > 0) {
+		/* Grow capacity if needed to store source content */
+		row_grow_if_needed(dest, dest->len + src->len);
 
-static void
-row_force_shrink(Row *const row)
-{
-	const size_t size = row->len + 1;
-	if (0 == row->len && row->cap > 0) {
-		row_free(row);
-	} else if (size < row->cap) {
-		/* Shrink if possible */
-		if (NULL == (row->cont = realloc(row->cont, size))) {
-			err(EXIT_FAILURE, "Failed to force shrink a row to capacity %zu", size);
-		}
-		row->cap = size;
+		/* Copy source content to destinationh */
+		strcpy(&dest->cont[dest->len], src->cont);
+		/* Update length of extended row */
+		dest->len += src->len;
 	}
 }
 
 void
 row_free(Row *const row)
 {
-	/* Free content */
-	row->cap = 0;
+	/* Free content and render */
 	free(row->cont);
-	row->cont = NULL;
-	row->len = 0;
-
-	/* Free render */
 	free(row->render);
-	row->render = NULL;
-	row->render_len = 0;
+	/* Zeroize instance */
+	memset(row, 0, sizeof(*row));
 }
 
-static void
-row_grow_if_needed(Row *const row)
+void
+row_grow_if_needed(Row *const row, size_t new_len)
 {
-	/* Do not forget to include null byte */
-	if (row->len + 1 >= row->cap) {
-		row->cap = row->len + 1 + ROW_REALLOC_STEP;
-		/* Realloc with new capacity */
-		if (NULL == (row->cont = realloc(row->cont, row->cap))) {
-			err(EXIT_FAILURE, "Failed to grow a row to capacity %zu", row->cap);
-		}
-	}
+	/* Grow row in there is no capacity to insert characters */
+	if (new_len + 1 > row->cap)
+		/* Add specified step or use huge length as new capacity */
+		row_realloc(row, MAX(row->cap + ROW_REALLOC_STEP, new_len + 1));
+}
+
+void
+row_init(Row *const row)
+{
+	memset(row, 0, sizeof(*row));
 }
 
 void
@@ -102,12 +71,15 @@ row_ins(Row *const row, const size_t idx, const char ch)
 {
 	/* Validate index */
 	assert(idx <= row->len);
-	/* Check that we need to grow */
-	row_grow_if_needed(row);
-	/* Do not forget about null byte */
+
+	/* Grow row's capacity if there is no space */
+	row_grow_if_needed(row, row->len + 1);
+	/* Move content to free new character's space. Do not forget null byte */
 	memmove(&row->cont[idx + 1], &row->cont[idx], row->len - idx + 1);
-	/* Write new character */
+
+	/* Write new character to string */
 	row->cont[idx] = ch;
+	/* Increase the length if it is not a zero byte appended to the end */
 	if (!(0 == ch && idx == row->len)) {
 		row->len++;
 	}
@@ -117,58 +89,60 @@ Row*
 row_read(Row *const row, FILE *const f)
 {
 	int ch;
-	/* Zeroize row */
-	*row = row_empty();
+
+	/* Initialize row with default values */
+	row_init(row);
+
 	/* Read characters */
 	while (1) {
-		/* Read new character */
+		/* Try to read character */
 		ch = fgetc(f);
-		if (ferror(f) != 0) {
+		if (ferror(f) != 0)
 			err(EXIT_FAILURE, "Failed to read row's character");
-		}
+
 		if (0 == row->len) {
-			/* Return early if starting character is EOF or newline */
-			if (EOF == ch) {
+			/* Return early without memory alloc if row is empty or EOF reached */
+			if (EOF == ch)
 				return NULL;
-			} else if ('\n' == ch) {
+			else if ('\n' == ch)
 				return row;
-			}
-		}
-		/* Check end of row */
-		if ('\n' == ch || EOF == ch) {
-			break;
-		}
-		/* Add null byte first */
-		if (0 == row->len) {
+
+			/* Insert null byte first to set end of row */
 			row_ins(row, row->len, 0);
 		}
+
+		/* Check end of row reached */
+		if ('\n' == ch || EOF == ch)
+			break;
+		/* Insert readed character */
 		row_ins(row, row->len, ch);
 	}
+
 	/* Shrink row's content to fit */
-	row_force_shrink(row);
+	row_shrink(row, 1);
+
+	/* Render row */
+	row_render(row);
 	return row;
 }
 
 void
-row_shrink_if_needed(Row *const row)
+row_realloc(Row *const row, size_t new_cap)
 {
-	if (0 == row->len && row->cap > 0) {
-		row_free(row);
-	/* Do not forget to include null byte */
-	} else if (row->len + 1 + ROW_REALLOC_STEP <= row->cap) {
-		row->cap = row->len + 1;
-		/* Realloc with new capacity */
-		if (NULL == (row->cont = realloc(row->cont, row->cap))) {
-			err(EXIT_FAILURE, "Failed to shrink row to capacity %zu", row->cap);
-		}
-	}
+	/* Reallocate row's content with new capacity */
+	if (NULL == (row->cont = realloc(row->cont, new_cap)))
+		err(EXIT_FAILURE, "Failed to realloc a row to capacity %zu", new_cap);
+	/* Update capacity */
+	row->cap = new_cap
 }
 
 void
-row_upd_render(Row *const row)
+row_render(Row *const row)
 {
-	size_t f_col_i;
+	size_t i;
 	size_t tabs_cnt = 0;
+
+	/* No content to render */
 	if (row->len == 0) {
 		return;
 	}
@@ -176,39 +150,58 @@ row_upd_render(Row *const row)
 	/* Free old render */
 	free(row->render);
 	row->render_len = 0;
-	/* Calculate tabs */
-	for (f_col_i = 0; f_col_i < row->len; f_col_i++) {
-		if ('\t' == row->cont[f_col_i]) {
+
+	/* Calculate tabs count */
+	for (i = 0; i < row->len; i++)
+		if ('\t' == row->cont[i])
 			tabs_cnt++;
-		}
-	}
-	/* Allocate render */
+
+	/* Allocate render buffer */
 	row->render = malloc(row->len + (CFG_TAB_SIZE - 1) * tabs_cnt + 1);
-	if (NULL == row->render) {
+	if (NULL == row->render)
 		err(EXIT_FAILURE, "Failed to allocate row's render");
-	}
-	/* Render */
-	for (f_col_i = 0; f_col_i < row->len; f_col_i++) {
-		if ('\t' == row->cont[f_col_i]) {
+
+	/* Render content */
+	for (i = 0; i < row->len; i++) {
+		if ('\t' == row->cont[i]) {
+			/* Expand tab with spaces */
 			row->render[row->render_len++] = ' ';
-			while (row->render_len % CFG_TAB_SIZE != 0) {
+			while (row->render_len % CFG_TAB_SIZE != 0)
 				row->render[row->render_len++] = ' ';
-			}
 		} else {
-			row->render[row->render_len++] = row->cont[f_col_i];
+			/* Render simple character */
+			row->render[row->render_len++] = row->cont[i];
 		}
 	}
-	row->render[row->render_len] = '\0';
+	/* Do not forget to append null byte */
+	row->render[row->render_len] = 0;
+}
+
+void
+row_shrink(Row *const row, const char hard)
+{
+	if (0 == row->len && row->cap > 0)
+		/* Free allocated memory if row becomes empty */
+		row_free(row);
+	else if (
+		/* Reallocate row's content to equate capacity to length */
+		(hard && row->len + 1 < row->cap)
+		/* Reallocate if there is too much unused capacity */
+		|| row->len + ROW_REALLOC_STEP <= row->cap
+	)
+		row_realloc(row, row->len + 1);
 }
 
 size_t
 row_write(Row *const row, FILE *const f)
 {
+	/* Write row's content and check returned value */
 	const size_t len = fwrite(row->cont, sizeof(char), row->len, f);
-	if (len != row->len) {
+	if (len != row->len)
 		err(EXIT_FAILURE, "Failed to write a row with length %zu", row->len);
-	} else if (fputc('\n', f) == EOF) {
+	else if (fputc('\n', f) == EOF)
 		err(EXIT_FAILURE, "Failed to write \n after row with length %zu", row->len);
-	}
+
+	/* Return written length. Do not forget about \n */
 	return len + 1;
 }

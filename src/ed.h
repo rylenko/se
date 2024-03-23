@@ -1,45 +1,22 @@
 #ifndef _ED_H
 #define _ED_H
 
-#include <sys/ioctl.h>
-#include "cur.h"
+#include "file.h"
 #include "mode.h"
-#include "rows.h"
+#include "win.h"
 
 enum {
-	ED_MSG_ARR_LEN = 64,
+	ED_MSG_ARR_LEN = 64, /* Capacity of message buffer */
 };
 
-/* Structure of editor parameters. */
+/* Editor options. */
 typedef struct {
-	Cur cur;
-	char is_dirty;
-	Mode mode;
-	char msg[ED_MSG_ARR_LEN];
-	/* Maximum of `size_t` if not set */
-	size_t num_input;
-	size_t offset_col;
-	size_t offset_row;
-	char *path;
-	unsigned char quit_presses_rem;
-	/* There is always at least 1 row */
-	Rows rows;
-	struct winsize win_size;
+	File file; /* Info about opened file. This is what the user edits */
+	Win win; /* Info about view. This is what the user sees */
+	Mode mode; /* Input mode */
+	char msg[ED_MSG_ARR_LEN]; /* Message for the user */
+	size_t num_input; /* Number input. Maximum if not set */
+	unsigned char quit_presses_rem; /* Greater than 1 if file is dirty */
 } Ed;
-
-/* Makes sure that the cursor is on the window and is not outside the row. */
-void ed_fix_cur(Ed *);
-
-/* Inputs digit to number. */
-void ed_input_num(Ed *, unsigned char);
-
-/* Sets message in the editor */
-void ed_set_msg(Ed *, const char *, ...);
-
-/* Use this if file was changed. */
-void ed_on_f_ch(Ed *);
-
-/* Opens a file in the editor */
-Ed ed_open(const char *);
 
 #endif /* _ED_H */

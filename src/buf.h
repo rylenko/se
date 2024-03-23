@@ -1,7 +1,7 @@
 #ifndef _BUF_H
 #define _BUF_H
 
-#include <stdlib.h>
+#include <stddef.h>
 
 /*
 During redrawing content may flicker because `printf` buffers the output but
@@ -11,24 +11,28 @@ This buffer is needed to write strings into one large buffer and print them on
 the window in one call.
 */
 typedef struct {
-	size_t cap;
-	char *data;
-	size_t len;
+	char *data; /* Dynamic array with buffer data */
+	size_t len; /* Length of data */
+	size_t cap; /* Current capacity of dynamic array with data */
 } Buf;
 
-/* Creates new buffer. Do not forget to `buf_free` it. */
-Buf buf_alloc(void);
+/* Initializes buffer with default values. Do not forget to free it. */
+void buf_init(Buf *);
 
-/* Writes buffer to stdout using one `write` call. */
+/*
+Flushes the buffer to file by its descritor using single `write` call.
+
+After flush frees the buffer to continue usage from scratch.
+*/
 void buf_flush(const Buf *, int);
 
 /* Frees the buffer. */
 void buf_free(Buf *);
 
-/* Appends a string to a buffer. */
+/* Appends a string with specified length to the buffer. */
 size_t buf_write(Buf *, const char *, size_t);
 
-/* Appends a formatted string to a buffer. */
+/* Appends a formatted string to the buffer .*/
 size_t buf_writef(Buf *, const char *, ...);
 
 #endif /* _BUF_H */

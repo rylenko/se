@@ -1,43 +1,32 @@
 #ifndef _TERM_H
 #define _TERM_H
 
+#include <stddef.h>
 #include <sys/ioctl.h>
-#include "buf.h"
 
-/* Clears a row on the right. */
-void term_clr_row_on_right(Buf *);
+/* Deinitializes terminal and disables raw mode. */
+void term_deinit(void);
 
-/* Clears the window. */
-void term_clr_win(Buf *);
-
-/* Disables raw mode. Accepts original parameters. */
-void term_disable_raw_mode(void);
-
-/* Enables raw mode. Accepts a pointer to save the original parameters. */
-void term_enable_raw_mode(void);
-
-/* Gets wingow size: rows and colums count. */
-void term_get_win_size(struct winsize *);
-
-/* Places the cursor at the beginning. */
-void term_go_home(Buf *buf);
-
-/* Flushes buffer to terminal */
+/* Flushes the buffer to terminal. */
 void term_flush(const Buf *);
 
-/* Creates new terminal controller. */
+/* Gets terminal's window size. */
+void term_get_win_size(struct winsize *);
+
+/*
+Initializes terminal with input file descriptor and output file descriptor and
+enables raw mode.
+*/
 void term_init(int, int);
 
 /*
-Waits for a key to be pressed.
+Waits for a key press.
 
-Some keys represent more than one `char`. So you need to read multiple
-`char`s in one press. For example, when you press the up arrow, three
-characters are counted: `'\x1b'`, `'['` and 'A'.
+Key press sometimes consists of several characters. Therefore, the pressed
+key's characters is written to the passed buffer up to the passed length.
 
-Returns readed `char`s count, which always greater than zero and less
-or equal to given length.
+Returns readed characters count.
 */
-size_t term_wait_key_seq(char *, size_t);
+size_t term_wait_key(char *, size_t);
 
 #endif /* _TERM_H */

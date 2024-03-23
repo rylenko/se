@@ -1,8 +1,15 @@
-#include <stdlib.h>
+#include <stddef.h>
 #include "mode.h"
 
 char*
 mode_str(const Mode mode)
 {
-	return mode == MODE_INS ? "INSERT" : (mode == MODE_NORM ? "NORMAL" : NULL);
+	switch (mode) {
+	case MODE_INS:
+		return "INSERT";
+	case MODE_NORM:
+		return "NORMAL";
+	default:
+		return NULL;
+	}
 }

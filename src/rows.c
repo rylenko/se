@@ -1,62 +1,68 @@
-#include <assert.h>
-#include <err.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include "row.h"
 #include "rows.h"
 
 enum {
-	/* Memory reallocation step */
+	/* Realloc step, when no capacity or there is too much unused capacity */
 	ROWS_REALLOC_STEP = 32,
 };
 
-/* Grows rows capacity if needed. */
-static void rows_grow_if_needed(Rows *rows);
-
-/* Grows or shrinks the rows capacity. */
-static void rows_shrink_if_needed(Rows *rows);
+/* Reallocates rows container's capacity. */
+static void rows_realloc(Rows *const rows, const size_t new_cap);
 
 void
-rows_break(Rows *const rows, const size_t idx, const size_t col_i)
+rows_absorb_next(Rows *const rows, const size_t idx)
 {
-	Row new_row = row_empty();
-	Row *row = &rows->arr[idx];
+	/* Check that next row exists */
+	if (idx + 1 < rows->cnt) {
+		/* Extend specified row with next row */
+		row_extend(&rows->arr[idx], &rows->arr[idx + 1]);
 
-	/* Fill new row with content if present */
-	new_row.len = row->len - col_i;
-	if (new_row.len > 0) {
-		/* Allocate memory for new row and copy part of previous row to it */
-		new_row.cap = new_row.len + 1;
-		if (NULL == (new_row.cont = malloc(new_row.cap))) {
-			err(EXIT_FAILURE, "Failed to alloc row with capacity %zu", new_row.cap);
-		}
-		strcpy(new_row.cont, &row->cont[col_i]);
+		/* Delete absorbed row */
+		rows_del(rows, idx + 1);
 	}
-	/* Update render and insert new row */
-	row_upd_render(&new_row);
-	rows_ins(rows, idx + 1, new_row);
-
-	/* Update pointer because of reallocation in inserting function */
-	row = &rows->arr[idx];
-	/* Update old row's length and set null byte to break point */
-	if (row->len > 0) {
-		row->len = col_i;
-		row->cont[col_i] = 0;
-	}
-	/* Update render and shrink capacity if needed for old row */
-	row_upd_render(row);
-	row_shrink_if_needed(row);
 }
 
 void
-rows_extend_with_next(Rows *const rows, const size_t idx)
+rows_break(Rows *const rows, const size_t idx, const size_t pos)
 {
-	/* Check next row exists */
-	if (idx + 1 < rows->cnt) {
-		row_extend(&rows->arr[idx], &rows->arr[idx + 1]);
-		rows_del(rows, idx + 1);
+	Row new_row;
+	Row *const row = &rows->arr[idx];
+
+	/* Update new row's length */
+	new_row.len = row->len - pos;
+
+	/* Copy content to new row if it is not empty */
+	if (new_row.len > 0) {
+		/* Set minimum capacity */
+		new_row.cap = new_row.len + 1;
+
+		/* Try to allocate space for new row's contnet */
+		if (NULL == (new_row.cont = malloc(new_row.cap)))
+			err(EXIT_FAILURE, "Failed to alloc new row with capacity %zu", new_row.cap);
+
+		/* Copy content to new row */
+		strcpy(new_row.cont, &row->cont[pos]);
 	}
+
+	/* Update row if it makes sense. Otherwise it will be freed when shrinking */
+	if (row->len > 0) {
+		/* Update row's length */
+		row->len = pos;
+		/* Terminate broken row's content with null byte at break point */
+		row->cont[pos] = 0;
+
+		/* Render row with new length */
+		row_render(row);
+	}
+	/* Shrink broken row's capacity */
+	row_shrink(row, 0);
+
+	/* Render new row */
+	row_render(&new_row);
+	/* Insert new row */
+	rows_ins(rows, idx + 1, new_row);
 }
 
 void
@@ -64,45 +70,48 @@ rows_del(Rows *const rows, const size_t idx)
 {
 	/* Validate index */
 	assert(idx < rows->cnt);
-	/* Free a row */
+
+	/* Free deleted row */
 	row_free(&rows->arr[idx]);
-	/* Move other rows if needed */
-	if (idx != rows->cnt - 1) {
+
+	/* Move other rows if the deleted row is not the last one */
+	if (idx < rows->cnt - 1)
 		memmove(
 			&rows->arr[idx],
 			&rows->arr[idx + 1],
-			sizeof(Row) * (rows->cnt - idx - 1)
+			sizeof(*rows->arr) * (rows->cnt - idx - 1)
 		);
-	}
-	/* Remove from count and check that we need to shrink to fit */
-	rows->cnt--;
-	rows_shrink_if_needed(rows);
+
+	/* Decrease rows count and shrink capacity if benefit */
+	if (--rows->cnt + ROWS_REALLOC_STEP <= rows->cap)
+		rows_realloc(rows, rows->cnt);
 }
 
 void
 rows_free(Rows *const rows)
 {
-	size_t i;
-	/* Free rows */
-	for (i = 0; i < rows->cnt; i++) {
+	/* Free rows and its container */
+	while (rows->cnt-- > 0)
 		row_free(&rows->arr[i]);
-	}
-	/* Free container */
 	free(rows->arr);
-	rows->cnt = 0;
-	rows->cap = 0;
+
+	/* Zeroize instance */
+	memset(rows, 0, sizeof(*rows));
 }
 
 static void
-rows_grow_if_needed(Rows *const rows)
+rows_realloc(Rows *const rows, const size_t new_cap)
 {
-	if (rows->cnt == rows->cap) {
-		rows->cap += ROWS_REALLOC_STEP;
-		/* Reallocate with new capacity */
-		if (NULL == (rows->arr = realloc(rows->arr, sizeof(Row) * rows->cap))) {
-			err(EXIT_FAILURE, "Failed to grow rows to capacity %zu", rows->cap);
-		}
-	}
+	rows->cap = new_cap;
+	/* Try to reallocate rows container with new capacity */
+	if (NULL == (rows->arr = realloc(rows->arr, sizeof(Row) * rows->cap)))
+		err(EXIT_FAILURE, "Failed to realloc rows with capacity %zu", rows->cap);
+}
+
+void
+rows_init(Rows *const rows)
+{
+	memset(rows, 0, sizeof(*rows));
 }
 
 void
@@ -110,56 +119,40 @@ rows_ins(Rows *const rows, const size_t idx, Row row)
 {
 	/* Validate index */
 	assert(idx <= rows->cnt);
-	/* Check that we need to grow */
-	rows_grow_if_needed(rows);
-	/* Move other rows if needed */
-	if (idx != rows->cnt) {
+
+	/* Check that we need to grow capacity */
+	if (rows->cnt == rows->cap)
+		rows_realloc(rows, rows->cap + ROWS_REALLOC_STEP);
+	/* Move other rows to free space for new row */
+	if (idx != rows->cnt)
 		memmove(
 			&rows->arr[idx + 1],
 			&rows->arr[idx],
-			sizeof(Row) * (rows->cnt - idx)
+			sizeof(*rows->arr) * (rows->cnt - idx)
 		);
-	}
-	/* Write new row */
+
+	/* Insert new row */
 	rows->arr[idx] = row;
 	rows->cnt++;
-}
-
-Rows
-rows_new(void)
-{
-	return (Rows){ .arr = NULL, .cap = 0, .cnt = 0 };
 }
 
 void
 rows_read(Rows *const rows, FILE *const f)
 {
 	Row row;
-	while (row_read(&row, f)) {
-		row_upd_render(&row);
+	/* Read rows until EOF */
+	while (row_read(&row, f) != NULL)
+		/* Insert readed row */
 		rows_ins(rows, rows->cnt, row);
-	}
-}
-
-static void
-rows_shrink_if_needed(Rows *const rows)
-{
-	if (rows->cnt + ROWS_REALLOC_STEP <= rows->cap) {
-		rows->cap = rows->cnt;
-		/* Reallocate with new capacity */
-		if (NULL == (rows->arr = realloc(rows->arr, sizeof(Row) * rows->cap))) {
-			err(EXIT_FAILURE, "Failed to shrink rows to capacity %zu", rows->cap);
-		}
-	}
 }
 
 size_t
-rows_write(Rows *const rows, FILE *const f)
+rows_write(const Rows *const rows, FILE *const f)
 {
+	size_t i;
 	size_t len = 0;
-	size_t row_i;
-	for (row_i = 0; row_i < rows->cnt; row_i++) {
+	/* Write rows and collect written length */
+	for (i = 0; i < rows->cnt; i++)
 		len += row_write(&rows->arr[row_i], f);
-	}
 	return len;
 }

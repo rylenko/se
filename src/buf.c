@@ -1,6 +1,5 @@
 #include <err.h>
 #include <stdarg.h>
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
@@ -8,56 +7,59 @@
 #include "math.h"
 
 enum {
-	REALLOC_STEP = 4096,
-	FMT_STR_LEN = 256,
+	BUF_REALLOC_STEP = 4096, /* Realloc step if there is no space for new data */
+	BUF_FMTED_STR_MAX_LEN = 255, /* Maximum length of formatted string */
 };
 
-/* Grows buffer capacity. */
-static void buf_grow(Buf *buf, size_t by);
+/* Reallocates buffer with new capacity. */
+static void buf_realloc(Buf *const buf, const size_t new_cap);
 
-Buf
-buf_alloc(void)
+void
+buf_init(Buf *const buf)
 {
-	return (Buf){ .data = NULL, .len = 0, .cap = 0 };
+	memset(buf, 0, sizeof(*buf));
 }
 
 void
 buf_flush(const Buf *const buf, const int fd)
 {
-	if (write(fd, buf->data, buf->len) < 0) {
+	/* Write buffer's data to file by its descriptor */
+	if (write(fd, buf->data, buf->len) < 0)
 		err(EXIT_FAILURE, "Failed to flush the buffer with length %zu", buf->len);
-	}
+
+	/* Refresh buffer to continue from scratch */
+	buf_free(buf);
 }
 
 void
 buf_free(Buf *const buf)
 {
+	/* Free allocated data */
 	free(buf->data);
-	buf->data = NULL;
-	buf->len = 0;
-	buf->cap = 0;
+	/* Zeroize memory */
+	memset(buf, 0, sizeof(*buf));
 }
 
 static void
-buf_grow(Buf *const buf, const size_t by)
+buf_realloc(Buf *const buf, const size_t new_cap)
 {
-	buf->cap += by;
-	if (NULL == (buf->data = realloc(buf->data, buf->cap))) {
-		err(EXIT_FAILURE, "Failed to reallocate buffer with capacity %zu", buf->cap);
-	}
+	if (NULL == (buf->data = realloc(buf->data, new_cap)))
+		err(EXIT_FAILURE, "Failed to reallocate buffer with capacity %zu", new_cap);
+	/* Set new capacity */
+	buf->cap = new_cap;
 }
 
 size_t
-buf_write(Buf *const buf, const char *const part, const size_t len)
+buf_write(Buf *const buf, const char *const str, const size_t len)
 {
-	/* Check that we need to grow */
-	const size_t new_len = buf->len + len;
-	if (new_len > buf->cap) {
-		buf_grow(buf, MAX(new_len - buf->cap, REALLOC_STEP));
-	}
-	/* Append the part to buffer */
-	memcpy(&buf->data[buf->len], part, len);
-	buf->len = new_len;
+	/* Realloce if there is no space for new data */
+	if (buf->len + len > buf->cap)
+		buf_realloc(buf, MAX(buf->cap + BUF_REALLOC_STEP, buf->len + len));
+
+	/* Copy new string to buffer */
+	memcpy(&buf->data[buf->len], str, len);
+	/* Update buffer length */
+	buf->len += len;
 	return len;
 }
 
@@ -66,13 +68,13 @@ buf_writef(Buf *const buf, const char *const fmt, ...)
 {
 	va_list args;
 	int len;
-	char part[FMT_STR_LEN] = {0};
-	/* Collect variadic arguments and print to new part of buffer */
+	char str[BUF_FMTED_STR_MAX_LEN + 1] = {0};
+
+	/* Collect variadic arguments and print formatted string to array */
 	va_start(args, fmt);
-	len = vsnprintf(part, FMT_STR_LEN, fmt, args);
+	len = vsnprintf(part, sizeof(str), fmt, args);
 	va_end(args);
 
-	/* Write new formatted part */
-	buf_write(buf, part, len);
-	return len;
+	/* Write formatted string to buffer */
+	return buf_write(buf, str, len);
 }
