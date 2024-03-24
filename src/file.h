@@ -29,4 +29,18 @@ Do not forget to close file.
 */
 void file_open(File *, const char *);
 
+/*
+Saves file to passed path. Saves to opened file's path if argument is `NULL`.
+
+Returns written bytes count or zero if failed to save the file.
+*/
+size_t file_save(File *, const char *);
+
+/*
+Saves file to spare directory. Useful if no privileges.
+
+Returns written bytes count.
+*/
+size_t file_save_to_spare_dir(File *);
+
 #endif /* _FILE_H */

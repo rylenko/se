@@ -23,14 +23,11 @@ typedef struct {
 	unsigned char quit_presses_rem; /* Greater than 1 if file is dirty */
 } Ed;
 
-/* Closes opened editor. */
-void ed_close(Ed *);
-
 /* Writes digit to the number input. Argument must be a digit. */
 void ed_input_num(Ed *, unsigned char);
 
-/* Sets formatted message to the user. */
-void ed_set_msg(Ed *, const char *, ...);
+/* Determines that we need to quit. */
+char ed_need_to_quit(const Ed *);
 
 /* Marks the file as dirty and sets several presses to quit without saving. */
 void ed_on_file_ch(Ed *);
@@ -41,5 +38,17 @@ Opens a file and binds editor to specified file descriptors.
 Do not forget to close the editor.
 */
 void ed_open(Ed *, const char *, int, int);
+
+/* Quits opened editor. */
+void ed_quit(Ed *);
+
+/* Saves opened file. */
+void ed_save(Ed *const ed);
+
+/* Saves opened file to spare dir. Useful if no privileges. */
+void ed_save_to_spare_dir(Ed *const ed);
+
+/* Sets formatted message to the user. */
+void ed_set_msg(Ed *, const char *, ...);
 
 #endif /* _ED_H */

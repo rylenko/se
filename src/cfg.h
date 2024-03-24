@@ -7,7 +7,6 @@ static const char cfg_spare_save_dir[] = "/tmp";
 /* Different editor settings. */
 typedef enum {
 	CFG_DIRTY_FILE_QUIT_PRESSES_CNT = 4, /* Press to exit without saving */
-	CFG_SPARE_SAVE_PATH_MAX_LEN = 256, /* Max length of full spare path */
 	CFG_TAB_SIZE = 8, /* Count of spaces, which equals to one tab */
 } Cfg;
 
