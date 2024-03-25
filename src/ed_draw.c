@@ -1,16 +1,24 @@
 #include "buf.h"
 #include "ed.h"
 #include "esc.h"
+#include "math.h"
 #include "mode.h"
+#include "row.h"
+
+/* Draws cursor at his position. */
+static void ed_draw_cur(const Ed *const ed, Buf *const buf);
+
+/* Draws file rows. */
+static void ed_draw_rows(const Ed *const ed, Buf *const buf);
 
 /* Draws status on last row. */
-static size_t ed_draw_stat(Ed *const ed, Buf *const buf);
+static void ed_draw_stat(Ed *const ed, Buf *const buf);
 
 /* Drows left part of status. */
 static size_t ed_draw_stat_left(Ed *const ed, Buf *const buf);
 
 /* Draws right part of status. */
-static size_t ed_draw_stat_right(
+static void ed_draw_stat_right(
 	Ed *const ed,
 	Buf *const buf,
 	const size_t left_len
@@ -49,9 +57,50 @@ ed_draw(Ed *const ed)
 }
 
 static void
+ed_draw_cur(const Ed *const ed, Buf *const buf)
+{
+	/* Draw cursor using escape code */
+	esc_cur_set(buf, &ed->win.cur);
+}
+
+static void
+ed_draw_rows(const Ed *const ed, Buf *const buf)
+{
+	const Row *row;
+	size_t row_i;
+	size_t file_row_i;
+
+	/* Draw rows */
+	for (row_i = 0; row_i < ed->win.size.ws_row - 1; row_i++) {
+		/* Clear row to draw new content */
+		esc_clr_right(buf);
+
+		/* Get row's index at file scale */
+		file_row_i = row_i + ed->win.offset.y;
+
+		/* Check that we went out of file */
+		if (file__row_i >= ed->file.rows.cnt) {
+			buf_write(buf, "~", 1);
+			continue;
+		}
+
+		/* Get row by its index */
+		row = &ed->file.rows.arr[file_row_i];
+
+		/* Check row is present in the window */
+		if (row->render_len > ed->win.offset.cols)
+			buf_write(
+				buf,
+				&row->render[ed->win.offset.cols],
+				NIN(ed->win.size.ws_col, row->render_len - ed->win.offset.cols)
+			);
+	}
+}
+
+static void
 ed_draw_stat(Ed *const ed, Buf *const buf)
 {
-	size_t left_len = 0;
+	size_t len = 0;
 
 	/* Clear row before drawing */
 	esc_clr_right(buf);
@@ -89,9 +138,10 @@ ed_draw_stat_left(Ed *const ed, Buf *const buf)
 	return len;
 }
 
-static size_t
+static void
 ed_draw_stat_right(const Ed *const ed, Buf *const buf, const size_t left_len)
 {
+	char coords[32];
 	char num_input[32];
 	size_t right_len = 0;
 
@@ -113,5 +163,5 @@ ed_draw_stat_right(const Ed *const ed, Buf *const buf, const size_t left_len)
 		buf_write(buf, " ", 1);
 
 	/* Write right part */
-	buf_writef(buf,
+	buf_writef(buf, "%s%s", num_input, coords_len);
 }
