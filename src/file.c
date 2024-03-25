@@ -4,7 +4,6 @@
 #include <time.h>
 #include "cfg.h"
 #include "file.h"
-#include "pos.h"
 #include "row.h"
 #include "rows.h"
 
@@ -28,7 +27,8 @@ file_open(File *const file, const char *const path)
 	FILE *inner_file;
 
 	/* Initialize file */
-	pos_init(&file->pos);
+	file->pos.col = 0;
+	file->pos.row = 0;
 	file->is_dirty = 0;
 	if (NULL == (file->path = strdup(path))) {
 		err(EXIT_FAILURE, "Failed to duplicate file path");

@@ -2,11 +2,11 @@
 #define _CUR_H
 
 typedef struct {
-	unsigned short x; /* x coordinate, starts from zero */
-	unsigned short y; /* y coordinate, starts from zero */
+	unsigned short x; /* X coordinate in the window, starts from zero */
+	unsigned short y; /* Y coordinate in the window, starts from zero */
 } Cur;
 
-/* Initializes the cursor. */
+/* Initializes the cursor with zeros. */
 void cur_init(Cur *);
 
 #endif /* _CUR_H */

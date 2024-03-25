@@ -22,9 +22,9 @@ void buf_init(Buf *);
 /*
 Flushes the buffer to file by its descritor using single `write` call.
 
-After flush frees the buffer to continue usage from scratch.
+After flush frees and zeroizes the buffer to continue usage from scratch.
 */
-void buf_flush(const Buf *, int);
+void buf_flush(Buf *, int);
 
 /* Frees the buffer. */
 void buf_free(Buf *);

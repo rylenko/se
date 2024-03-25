@@ -21,7 +21,7 @@ buf_init(Buf *const buf)
 }
 
 void
-buf_flush(const Buf *const buf, const int fd)
+buf_flush(Buf *const buf, const int fd)
 {
 	/* Write buffer's data to file by its descriptor */
 	if (write(fd, buf->data, buf->len) < 0)
@@ -29,6 +29,7 @@ buf_flush(const Buf *const buf, const int fd)
 
 	/* Refresh buffer to continue from scratch */
 	buf_free(buf);
+	memset(buf, 0, sizeof(*buf));
 }
 
 void

@@ -12,8 +12,8 @@ typedef enum {
 
 /* Colors of displayed content. 256-color codes are used as colors. */
 typedef enum {
-	CFG_COLOR_STAT_BG = 25,
-	CFG_COLOR_STAT_FG = 245,
+	CFG_COLOR_STAT_BG = 25, /* Blue */
+	CFG_COLOR_STAT_FG = 245, /* Gray */
 } CfgColor;
 
 /* Ascii keys to control the editor. */

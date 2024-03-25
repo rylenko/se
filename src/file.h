@@ -11,7 +11,10 @@ If you need a position in the window where each tab byte expands into several
 characters, then use a window.
 */
 typedef struct {
-	Pos pos; /* Current position in the file */
+	struct {
+		size_t row;
+		size_t col;
+	} pos; /* Current position in the file */
 	Rows rows; /* Rows of readed file */
 	char is_dirty; /* The file has been modified and not saved */
 	char *path; /* Path of readed file. This is where the default save occurs */
