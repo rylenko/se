@@ -3,12 +3,13 @@
 
 #include <stddef.h>
 #include <sys/ioctl.h>
+#include "buf.h"
 
 /* Deinitializes terminal and disables raw mode. */
 void term_deinit(void);
 
 /* Flushes the buffer to terminal. */
-void term_flush(const Buf *);
+void term_flush(Buf *);
 
 /* Gets terminal's window size. */
 void term_get_win_size(struct winsize *);

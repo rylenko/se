@@ -1,7 +1,6 @@
 #ifndef _FILE_H
 #define _FILE_H
 
-#include "pos.h"
 #include "rows.h"
 
 /*

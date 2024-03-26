@@ -29,8 +29,8 @@ void ed_input_num(Ed *, unsigned char);
 /* Determines that we need to quit. */
 char ed_need_to_quit(const Ed *);
 
-/* Marks the file as dirty and sets several presses to quit without saving. */
-void ed_on_file_ch(Ed *);
+/* Use it when user presses quit key. Interacts with the remaining counter. */
+void ed_on_quit_press(Ed *);
 
 /*
 Opens a file and binds editor to specified file descriptors.

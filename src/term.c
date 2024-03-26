@@ -1,7 +1,8 @@
 #include <err.h>
 #include <stdlib.h>
-#include <string.h>
 #include <termios.h>
+#include <unistd.h>
+#include "buf.h"
 #include "term.h"
 
 enum {
@@ -24,9 +25,12 @@ term_deinit(void)
 	/* Restore original termios parameters to disable raw mode */
 	if (tcsetattr(term.ifd, TCSAFLUSH, &term.orig_termios) < 0)
 		err(EXIT_FAILURE, "Failed to restore original termios parameters");
+}
 
-	/* Zeroize terminal parameters */
-	memset(&term, 0, sizeof(term));
+void
+term_flush(Buf *const buf)
+{
+	buf_flush(buf, term.ofd);
 }
 
 void
@@ -64,16 +68,16 @@ term_init(int ifd, int ofd)
 static void
 term_set_raw_mode_params(struct termios *const params)
 {
-	params.c_iflag &= ~(BRKINT | ICRNL | INPCK | ISTRIP | IXON);
-	params.c_oflag &= ~OPOST;
-	params.c_cflag |= CS8;
-	params.c_lflag &= ~(ECHO | ICANON | IEXTEN | ISIG);
-	params.c_cc[VMIN] = 0;
-	params.c_cc[VTIME] = TERM_TIMEOUT;
+	params->c_iflag &= ~(BRKINT | ICRNL | INPCK | ISTRIP | IXON);
+	params->c_oflag &= ~OPOST;
+	params->c_cflag |= CS8;
+	params->c_lflag &= ~(ECHO | ICANON | IEXTEN | ISIG);
+	params->c_cc[VMIN] = 0;
+	params->c_cc[VTIME] = TERM_TIMEOUT;
 }
 
 size_t
-term_wait_key_seq(char *const seq, const size_t len)
+term_wait_key(char *const seq, const size_t len)
 {
 	ssize_t readed = 0;
 	/* Read input up to specified length */

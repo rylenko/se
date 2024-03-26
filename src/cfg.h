@@ -4,6 +4,11 @@
 /* If no privilege to save the file, you can save it to this directory */
 static const char cfg_spare_save_dir[] = "/tmp";
 
+/* Helpers for configuration. */
+enum {
+	CTRL_OFFSET = 96,
+};
+
 /* Different editor settings. */
 typedef enum {
 	CFG_DIRTY_FILE_QUIT_PRESSES_CNT = 4, /* Press to exit without saving */
@@ -13,17 +18,17 @@ typedef enum {
 /* Colors of displayed content. 256-color codes are used as colors. */
 typedef enum {
 	CFG_COLOR_STAT_BG = 25, /* Blue */
-	CFG_COLOR_STAT_FG = 245, /* Gray */
+	CFG_COLOR_STAT_FG = 255, /* Gray */
 } CfgColor;
 
 /* Ascii keys to control the editor. */
 typedef enum {
 	/* Row management */
 	CFG_KEY_DEL = 127, /* Backspace */
-	CFG_KEY_DEL_ROW = 'd' - 96, /* CTRL-d */
+	CFG_KEY_DEL_ROW = 'd' - CTRL_OFFSET, /* CTRL-d */
 	CFG_KEY_INS_BREAK = 13, /* Enter */
 	CFG_KEY_INS_ROW_BELOW = 'n', /* n */
-	CFG_KEY_INS_ROW_TOP = 'n' - 96, /* CTRL-n */
+	CFG_KEY_INS_ROW_TOP = 'n' - CTRL_OFFSET, /* CTRL-n */
 
 	/* Modes switching */
 	CFG_KEY_MODE_INS = 'i', /* i */
@@ -41,10 +46,10 @@ typedef enum {
 	CFG_KEY_MV_RIGHT = 'l', /* l */
 	CFG_KEY_MV_UP = 'k', /* k */
 
-	/* Content management */
-	CFG_KEY_SAVE = 's' - 96, /* CTRL-s */
-	CFG_KEY_SAVE_TO_SPARE_DIR = 'x' - 96, /* CTRL-x */
-	CFG_KEY_TRY_QUIT = 'q' - 96, /* CTRL-q */
+	/* Save or quit */
+	CFG_KEY_QUIT = 'q' - CTRL_OFFSET, /* CTRL-q */
+	CFG_KEY_SAVE = 's' - CTRL_OFFSET, /* CTRL-s */
+	CFG_KEY_SAVE_TO_SPARE_DIR = 'x' - CTRL_OFFSET, /* CTRL-x */
 } CfgKey;
 
 #endif /* _CFG_H */

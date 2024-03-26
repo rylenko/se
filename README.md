@@ -118,22 +118,22 @@ $ make gen-readme
 	</tr></thead>
 	<tbody><tr>
 		<th>C</th>
-		<th>21</th>
-		<th>1627</th>
-		<th>136</th>
-		<th>173</th>
-		<th>1318</th>
-		<th>233</th>
-		<th>35101</th>
+		<th>15</th>
+		<th>1239</th>
+		<th>183</th>
+		<th>200</th>
+		<th>856</th>
+		<th>150</th>
+		<th>27688</th>
 	</tr><tr>
 		<th>C Header</th>
-		<th>22</th>
-		<th>534</th>
-		<th>129</th>
-		<th>121</th>
-		<th>284</th>
+		<th>16</th>
+		<th>488</th>
+		<th>103</th>
+		<th>172</th>
+		<th>213</th>
 		<th>0</th>
-		<th>11422</th>
+		<th>11463</th>
 	</tr><tr>
 		<th>Markdown</th>
 		<th>2</th>
@@ -146,12 +146,12 @@ $ make gen-readme
 	</tr><tr>
 		<th>Makefile</th>
 		<th>2</th>
-		<th>70</th>
+		<th>69</th>
 		<th>14</th>
 		<th>12</th>
-		<th>44</th>
+		<th>43</th>
 		<th>0</th>
-		<th>1534</th>
+		<th>1439</th>
 	</tr><tr>
 		<th>Shell</th>
 		<th>1</th>
@@ -182,13 +182,13 @@ $ make gen-readme
 	</tr></tbody>
 	<tfoot><tr>
 		<th>Total</th>
-		<th>50</th>
-		<th>2510</th>
-		<th>346</th>
-		<th>312</th>
-		<th>1852</th>
-		<th>233</th>
-    	<th>53050</th>
+		<th>38</th>
+		<th>2075</th>
+		<th>367</th>
+		<th>390</th>
+		<th>1318</th>
+		<th>150</th>
+    	<th>45583</th>
 	</tr></tfoot>
 	</table>
 
@@ -196,12 +196,9 @@ $ make gen-readme
 
 |Path|Line|Description|
 |-|-|-|
-|**src/main.c**|**1**|**[1] fix offset shifting with tabs in the window. See `Pos` todo**|
-|**src/main.c**|**2**|**[1] Create `Pos` struct to store file position and window position**|
-|**src/main.c**|**3**|**[1] Spend time on refactoring and arch after [1] todos**|
-|**src/main.c**|**4**|**[2] Add local clipboard. Use it in functions.**|
-|**src/main.c**|**5**|**[2] Use linked list for rows array and row's content parts. Benchmark!**|
-|**src/main.c**|**6**|**[2] Undo operations. Also rename "del" to "remove" where needed**|
-|**src/main.c**|**7**|**[3] Xclip patch to use with local clipboard**|
-|**src/main.c**|**8**|**[3] Support huge files**|
-|**src/rows.h**|**22**|**[2] rename to `rows_remove` if undo is done.**|
+|**src/rows.h**|**14**|**do not forget to rerender after absorb**|
+|**src/main.c**|**1**|**[1] Add local clipboard. Use it in functions.**|
+|**src/main.c**|**2**|**[1] Use linked list for rows array and row's content parts. Benchmark!**|
+|**src/main.c**|**3**|**[1] Undo operations. Also rename "del" to "remove" where needed**|
+|**src/main.c**|**4**|**[2] Xclip patch to use with local clipboard**|
+|**src/main.c**|**5**|**[2] Support huge files**|

@@ -1,5 +1,5 @@
 NAME = se
 PREFIX = /usr/local
 
-CFLAGS = -Wall -Werror -Wextra -pedantic -std=c99 -O2
+CFLAGS = -O2 -pedantic -std=c99 -Wall -Werror -Wextra
 CC = cc

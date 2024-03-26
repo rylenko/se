@@ -8,6 +8,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include "ed.h"
+#include "ed_draw.h"
+#include "ed_key.h"
 
 static const char *const usage = "Usage:\n\t$ se <filename>";
 

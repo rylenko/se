@@ -1,11 +1,14 @@
 #include <err.h>
+#include <libgen.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
 #include "cfg.h"
 #include "file.h"
 #include "row.h"
 #include "rows.h"
+#include "str.h"
 
 enum {
 	SPARE_SAVE_PATH_MAX_LEN = 256, /* Max len of formatted path for spare save */
@@ -29,10 +32,9 @@ file_open(File *const file, const char *const path)
 	/* Initialize file */
 	file->pos.col = 0;
 	file->pos.row = 0;
+	rows_init(&file->rows);
 	file->is_dirty = 0;
-	if (NULL == (file->path = strdup(path))) {
-		err(EXIT_FAILURE, "Failed to duplicate file path");
-	}
+	file->path = str_copy(path, strlen(path));
 
 	/* Open file, read rows and close the file */
 	if (NULL == (inner_file = fopen(path, "r"))) {
@@ -48,7 +50,6 @@ file_open(File *const file, const char *const path)
 		row_init(&empty_row);
 		rows_ins(&file->rows, 0, empty_row);
 	}
-	return ret;
 }
 
 size_t
@@ -58,18 +59,19 @@ file_save(File *const file, const char *const path)
 	size_t len;
 
 	/* Try to open file */
-	if (NULL == (f = fopen(path == NULL ? ed->path : path, "w")))
+	if (NULL == (inner = fopen(path == NULL ? file->path : path, "w")))
 		return 0;
 	/* Write rows to opened file */
-	len = rows_write(&ed->rows, f);
+	len = rows_write(&file->rows, inner);
 	/* Flush and close the file */
-	if (fflush(f) == EOF)
+	if (fflush(inner) == EOF)
 		err(EXIT_FAILURE, "Failed to flush saved file");
-	else if (fclose(f) == EOF)
+	else if (fclose(inner) == EOF)
 		err(EXIT_FAILURE, "Failed to close saved file");
 
 	/* Remove dirty flag because file was saved */
 	file->is_dirty = 0;
+	return len;
 }
 
 size_t

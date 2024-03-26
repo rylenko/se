@@ -20,7 +20,7 @@ typedef struct {
 } Win;
 
 /* Deinitializes window's from terminal. */
-void win_deinit(Win *);
+void win_deinit(void);
 
 /*
 Initializes and connects window to terminal using passed file descriptors.

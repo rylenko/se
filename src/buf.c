@@ -1,5 +1,6 @@
 #include <err.h>
 #include <stdarg.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
@@ -71,7 +72,7 @@ buf_writef(Buf *const buf, const char *const fmt, ...)
 
 	/* Collect variadic arguments and print formatted string to array */
 	va_start(args, fmt);
-	len = vsnprintf(part, sizeof(str), fmt, args);
+	len = vsnprintf(str, sizeof(str), fmt, args);
 	va_end(args);
 
 	/* Write formatted string to buffer */

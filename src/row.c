@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include "cfg.h"
 #include "math.h"
 #include "row.h"
 
@@ -131,7 +132,7 @@ row_realloc(Row *const row, size_t new_cap)
 	if (NULL == (row->cont = realloc(row->cont, new_cap)))
 		err(EXIT_FAILURE, "Failed to realloc a row to capacity %zu", new_cap);
 	/* Update capacity */
-	row->cap = new_cap
+	row->cap = new_cap;
 }
 
 void

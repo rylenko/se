@@ -15,10 +15,10 @@ esc_clr_win(Buf *const buf)
 }
 
 void
-esc_color_begin(Buf *const buf, unsigned char fd, unsigned char bg)
+esc_color_begin(Buf *const buf, unsigned char fg, unsigned char bg)
 {
 	/* Write foreground and background to buffer */
-	buf_writef(buf, "\x1b[38;5;%hhu" "\x1b[48;5;%hhu", fg, bg);
+	buf_writef(buf, "\x1b[38;5;%hhum" "\x1b[48;5;%hhum", fg, bg);
 }
 
 void

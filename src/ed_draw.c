@@ -1,9 +1,12 @@
+#include <libgen.h>
 #include "buf.h"
+#include "cfg.h"
 #include "ed.h"
 #include "esc.h"
 #include "math.h"
 #include "mode.h"
 #include "row.h"
+#include "term.h"
 
 /* Draws cursor at his position. */
 static void ed_draw_cur(const Ed *const ed, Buf *const buf);
@@ -19,7 +22,7 @@ static size_t ed_draw_stat_left(Ed *const ed, Buf *const buf);
 
 /* Draws right part of status. */
 static void ed_draw_stat_right(
-	Ed *const ed,
+	const Ed *const ed,
 	Buf *const buf,
 	const size_t left_len
 );
@@ -53,7 +56,7 @@ ed_draw(Ed *const ed)
 	}
 
 	/* Flush and free the buffer */
-	buf_flush(&buf);
+	term_flush(&buf);
 }
 
 static void
@@ -71,15 +74,15 @@ ed_draw_rows(const Ed *const ed, Buf *const buf)
 	size_t file_row_i;
 
 	/* Draw rows */
-	for (row_i = 0; row_i < ed->win.size.ws_row - 1; row_i++) {
+	for (row_i = 0; row_i + 1 < ed->win.size.ws_row; row_i++) {
 		/* Clear row to draw new content */
 		esc_clr_right(buf);
 
 		/* Get row's index at file scale */
-		file_row_i = row_i + ed->win.offset.y;
+		file_row_i = row_i + ed->win.offset.rows;
 
 		/* Check that we went out of file */
-		if (file__row_i >= ed->file.rows.cnt) {
+		if (file_row_i >= ed->file.rows.cnt) {
 			buf_write(buf, "~", 1);
 			continue;
 		}
@@ -92,21 +95,24 @@ ed_draw_rows(const Ed *const ed, Buf *const buf)
 			buf_write(
 				buf,
 				&row->render[ed->win.offset.cols],
-				NIN(ed->win.size.ws_col, row->render_len - ed->win.offset.cols)
+				MIN(ed->win.size.ws_col, row->render_len - ed->win.offset.cols)
 			);
+
+		/* Move to start of next row */
+		buf_write(buf, "\r\n", 2);
 	}
 }
 
 static void
 ed_draw_stat(Ed *const ed, Buf *const buf)
 {
-	size_t len = 0;
+	size_t left_len = 0;
 
 	/* Clear row before drawing */
 	esc_clr_right(buf);
 
 	/* Begin colored output */
-	esc_color_begin(buf, CFG_COLOR_STAT_BG, CFG_COLOR_STAT_FG);
+	esc_color_begin(buf, CFG_COLOR_STAT_FG, CFG_COLOR_STAT_BG);
 
 	/* Draw left and right parts of status */
 	left_len += ed_draw_stat_left(ed, buf);
@@ -124,10 +130,10 @@ ed_draw_stat_left(Ed *const ed, Buf *const buf)
 	size_t len = 0;
 
 	/* Write mode and opened file's name */
-	len += buf_writef(buf, "%s > %s", mode_str(ed->mode), filename);
+	len += buf_writef(buf, " %s > %s", mode_str(ed->mode), filename);
 
 	/* Add mark if file is dirty */
-	if (ed->is_dirty)
+	if (ed->file.is_dirty)
 		len += buf_write(buf, " [+]", 4);
 
 	/* Write message if exists */
@@ -141,6 +147,7 @@ ed_draw_stat_left(Ed *const ed, Buf *const buf)
 static void
 ed_draw_stat_right(const Ed *const ed, Buf *const buf, const size_t left_len)
 {
+	size_t i;
 	char coords[32];
 	char num_input[32];
 	size_t right_len = 0;
@@ -163,5 +170,5 @@ ed_draw_stat_right(const Ed *const ed, Buf *const buf, const size_t left_len)
 		buf_write(buf, " ", 1);
 
 	/* Write right part */
-	buf_writef(buf, "%s%s", num_input, coords_len);
+	buf_writef(buf, "%s%s", coords, num_input);
 }

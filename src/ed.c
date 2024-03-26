@@ -32,11 +32,17 @@ ed_need_to_quit(const Ed *const ed)
 }
 
 void
-ed_on_file_ch(Ed *const ed)
+ed_on_quit_press(Ed *const ed)
 {
-	/* Mark file as dirty and set quit presses count */
-	ed->is_dirty = 1;
-	ed->quit_presses_rem = CFG_DIRTY_FILE_QUIT_PRESSES_CNT;
+	if (ed->quit_presses_rem > 0) {
+		/* Decrease remaining quit presses */
+		ed->quit_presses_rem--;
+
+		/* Set message with remaining count if no need to quit */
+		if (!ed_need_to_quit(ed)) {
+			ed_set_msg(ed, "File is dirty. Presses remain: %hhu", ed->quit_presses_rem);
+		}
+	}
 }
 
 void
@@ -63,7 +69,7 @@ ed_quit(Ed *const ed)
 	/* Close opened file */
 	file_close(&ed->file);
 	/* Deinitialize window */
-	win_deinit(&ed->win);
+	win_deinit();
 }
 
 void

@@ -1,4 +1,7 @@
+#include <assert.h>
+#include <err.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include "row.h"
 #include "rows.h"
@@ -92,7 +95,7 @@ rows_free(Rows *const rows)
 {
 	/* Free rows and its container */
 	while (rows->cnt-- > 0)
-		row_free(&rows->arr[i]);
+		row_free(&rows->arr[rows->cnt]);
 	free(rows->arr);
 }
 
@@ -146,10 +149,10 @@ rows_read(Rows *const rows, FILE *const f)
 size_t
 rows_write(const Rows *const rows, FILE *const f)
 {
-	size_t i;
+	size_t row_i;
 	size_t len = 0;
 	/* Write rows and collect written length */
-	for (i = 0; i < rows->cnt; i++)
+	for (row_i = 0; row_i < rows->cnt; row_i++)
 		len += row_write(&rows->arr[row_i], f);
 	return len;
 }
