@@ -1,6 +1,8 @@
 #ifndef _CFG_H
 #define _CFG_H
 
+#include "color.h"
+
 /* If no privilege to save the file, you can save it to this directory */
 static const char cfg_spare_save_dir[] = "/tmp";
 
@@ -14,12 +16,6 @@ typedef enum {
 	CFG_DIRTY_FILE_QUIT_PRESSES_CNT = 4, /* Press to exit without saving */
 	CFG_TAB_SIZE = 8, /* Count of spaces, which equals to one tab */
 } Cfg;
-
-/* Colors of displayed content. 256-color codes are used as colors. */
-typedef enum {
-	CFG_COLOR_STAT_BG = 25, /* Blue */
-	CFG_COLOR_STAT_FG = 255, /* Gray */
-} CfgColor;
 
 /* Ascii keys to control the editor. */
 typedef enum {
@@ -51,5 +47,9 @@ typedef enum {
 	CFG_KEY_SAVE = 's' - CTRL_OFFSET, /* CTRL-s */
 	CFG_KEY_SAVE_TO_SPARE_DIR = 'x' - CTRL_OFFSET, /* CTRL-x */
 } CfgKey;
+
+/* Colors of displayed content */
+static const Color cfg_color_stat_bg = COLOR_NEW(66, 165, 245); /* Blue */
+static const Color cfg_color_stat_fg = COLOR_NEW(245, 245, 245); /* White */
 
 #endif /* _CFG_H */

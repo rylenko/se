@@ -1,4 +1,5 @@
 #include "buf.h"
+#include "color.h"
 #include "cur.h"
 #include "esc.h"
 
@@ -15,10 +16,14 @@ esc_clr_win(Buf *const buf)
 }
 
 void
-esc_color_begin(Buf *const buf, unsigned char fg, unsigned char bg)
+esc_color_begin(Buf *const buf, const Color *const fg, const Color *const bg)
 {
-	/* Write foreground and background to buffer */
-	buf_writef(buf, "\x1b[38;5;%hhum" "\x1b[48;5;%hhum", fg, bg);
+	/* Write foreground if set */
+	if (fg != NULL)
+		buf_writef(buf, "\x1b[38;2;%hhu;%hhu;%hhum", fg->r, fg->g, fg->b);
+	/* Write background if set */
+	if (bg != NULL)
+		buf_writef(buf, "\x1b[48;2;%hhu;%hhu;%hhum", bg->r, bg->g, bg->b);
 }
 
 void

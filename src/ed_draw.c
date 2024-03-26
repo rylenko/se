@@ -112,7 +112,7 @@ ed_draw_stat(Ed *const ed, Buf *const buf)
 	esc_clr_right(buf);
 
 	/* Begin colored output */
-	esc_color_begin(buf, CFG_COLOR_STAT_FG, CFG_COLOR_STAT_BG);
+	esc_color_begin(buf, &cfg_color_stat_fg, &cfg_color_stat_bg);
 
 	/* Draw left and right parts of status */
 	left_len += ed_draw_stat_left(ed, buf);

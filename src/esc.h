@@ -2,6 +2,7 @@
 #define _ESC_H
 
 #include "buf.h"
+#include "color.h"
 #include "cur.h"
 
 /* Clears the row on the right. */
@@ -10,8 +11,8 @@ void esc_clr_right(Buf *);
 /* Clears all window. */
 void esc_clr_win(Buf *);
 
-/* Sets 256-color foreground and background. */
-void esc_color_begin(Buf *, unsigned char, unsigned char);
+/* Sets colored foreground and background. `NULL` if no color. */
+void esc_color_begin(Buf *, const Color *, const Color *);
 
 /* Ends colored output. */
 void esc_color_end(Buf *);
