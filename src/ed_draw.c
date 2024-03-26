@@ -137,7 +137,7 @@ ed_draw_stat_left(Ed *const ed, Buf *const buf)
 		len += buf_write(buf, " [+]", 4);
 
 	/* Write message if exists */
-	if (ed->msg[0]) {
+	if (ed->msg[0] != 0) {
 		len += buf_writef(buf, ": %s", ed->msg);
 		ed->msg[0] = 0;
 	}
@@ -148,8 +148,8 @@ static void
 ed_draw_stat_right(const Ed *const ed, Buf *const buf, const size_t left_len)
 {
 	size_t i;
-	char coords[32];
-	char num_input[32];
+	char coords[32] = {0};
+	char num_input[32] = {0};
 	size_t right_len = 0;
 
 	/* Write number input */

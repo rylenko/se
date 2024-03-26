@@ -68,7 +68,7 @@ buf_writef(Buf *const buf, const char *const fmt, ...)
 {
 	va_list args;
 	int len;
-	char str[BUF_FMTED_STR_MAX_LEN + 1] = {0};
+	char str[BUF_FMTED_STR_MAX_LEN + 1];
 
 	/* Collect variadic arguments and print formatted string to array */
 	va_start(args, fmt);
