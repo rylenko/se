@@ -84,19 +84,17 @@ ed_draw_rows(const Ed *const ed, Buf *const buf)
 		/* Check that we went out of file */
 		if (file_row_i >= ed->file.rows.cnt) {
 			buf_write(buf, "~", 1);
-			continue;
+		} else {
+			/* Get row by its index */
+			row = &ed->file.rows.arr[file_row_i];
+			/* Check row is present in the window */
+			if (row->render_len > ed->win.offset.cols)
+				buf_write(
+					buf,
+					&row->render[ed->win.offset.cols],
+					MIN(ed->win.size.ws_col, row->render_len - ed->win.offset.cols)
+				);
 		}
-
-		/* Get row by its index */
-		row = &ed->file.rows.arr[file_row_i];
-
-		/* Check row is present in the window */
-		if (row->render_len > ed->win.offset.cols)
-			buf_write(
-				buf,
-				&row->render[ed->win.offset.cols],
-				MIN(ed->win.size.ws_col, row->render_len - ed->win.offset.cols)
-			);
 
 		/* Move to start of next row */
 		buf_write(buf, "\r\n", 2);
