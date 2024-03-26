@@ -146,9 +146,9 @@ static void
 ed_draw_stat_right(const Ed *const ed, Buf *const buf, const size_t left_len)
 {
 	size_t i;
-	char coords[32] = {0};
 	char num_input[32] = {0};
 	size_t right_len = 0;
+	char pos[32] = {0};
 
 	/* Write number input */
 	if (ed->num_input != SIZE_MAX)
@@ -156,8 +156,8 @@ ed_draw_stat_right(const Ed *const ed, Buf *const buf, const size_t left_len)
 
 	/* Write current position in the file */
 	right_len += snprintf(
-		coords,
-		sizeof(coords),
+		pos,
+		sizeof(pos),
 		"%zu, %zu ",
 		ed->file.pos.col,
 		ed->file.pos.row
@@ -168,5 +168,5 @@ ed_draw_stat_right(const Ed *const ed, Buf *const buf, const size_t left_len)
 		buf_write(buf, " ", 1);
 
 	/* Write right part */
-	buf_writef(buf, "%s%s", coords, num_input);
+	buf_writef(buf, "%s%s", pos, num_input);
 }
