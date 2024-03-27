@@ -1,4 +1,5 @@
 #include <libgen.h>
+#include <signal.h>
 #include "buf.h"
 #include "cfg.h"
 #include "ed.h"
@@ -7,6 +8,7 @@
 #include "mode.h"
 #include "row.h"
 #include "term.h"
+#include "win.h"
 
 /* Draws cursor at his position. */
 static void ed_draw_cur(const Ed *const ed, Buf *const buf);
@@ -64,6 +66,17 @@ ed_draw_cur(const Ed *const ed, Buf *const buf)
 {
 	/* Draw cursor using escape code */
 	esc_cur_set(buf, &ed->win.cur);
+}
+
+void
+ed_draw_handle_signal(Ed *const ed, const int signal)
+{
+	/* Handle signals for window */
+	win_handle_signal(&ed->win, signal);
+
+	/* Handle window size change signal */
+	if (SIGWINCH == signal)
+		ed_draw(ed);
 }
 
 static void

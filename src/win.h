@@ -22,6 +22,9 @@ typedef struct {
 /* Deinitializes window's from terminal. */
 void win_deinit(void);
 
+/* Handles signal. */
+void win_handle_signal(Win *, int);
+
 /*
 Initializes and connects window to terminal using passed file descriptors.
 

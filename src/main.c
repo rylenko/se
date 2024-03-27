@@ -5,6 +5,7 @@
 /* TODO: [2] Support huge files */
 
 #include <err.h>
+#include <signal.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include "ed.h"
@@ -13,17 +14,30 @@
 
 static const char *const usage = "Usage:\n\t$ se <filename>";
 
+/* Handle editor signals. */
+static void handle_signal(int signal);
+
+static Ed ed;
+
+static void
+handle_signal(int signal)
+{
+	ed_draw_handle_signal(&ed, signal);
+}
+
 int
 main(const int argc, const char *const *const argv)
 {
-	Ed ed;
-
 	/* Check filename in arguments */
 	if (argc != 2)
 		errx(EXIT_FAILURE, usage);
 
 	/* Opens file in the editor */
 	ed_open(&ed, argv[1], STDIN_FILENO, STDOUT_FILENO);
+
+	/* Register signals handler */
+	if (signal(SIGWINCH, handle_signal) == SIG_ERR)
+		err(EXIT_FAILURE, "Failed to set signal handler.");
 
 	while (1) {
 		/* Draws editor's content on the screen */
