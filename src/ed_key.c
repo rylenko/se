@@ -38,6 +38,11 @@ ed_key_proc_norm(Ed *const ed, const char key)
 	case CFG_KEY_QUIT:
 		ed_on_quit_press(ed);
 		return;
+	case CFG_KEY_SAVE:
+		ed_save(ed);
+		return;
+	case CFG_KEY_SAVE_TO_SPARE_DIR:
+		ed_save_to_spare_dir(ed);
 	}
 }
 

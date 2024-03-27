@@ -41,8 +41,11 @@ size_t file_save(File *, const char *);
 /*
 Saves file to spare directory. Useful if no privileges.
 
+Writes final path to passed buffer up to passed length. The buffer must have a
+capacity one greater than the length for a null byte.
+
 Returns written bytes count.
 */
-size_t file_save_to_spare_dir(File *);
+size_t file_save_to_spare_dir(File *, char *, size_t);
 
 #endif /* _FILE_H */

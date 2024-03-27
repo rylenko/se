@@ -14,6 +14,7 @@ enum {
 /* Different editor settings. */
 typedef enum {
 	CFG_DIRTY_FILE_QUIT_PRESSES_CNT = 4, /* Press to exit without saving */
+	CFG_SPARE_PATH_MAX_LEN = 255, /* Max length of formatted spare save path */
 	CFG_TAB_SIZE = 8, /* Count of spaces, which equals to one tab */
 } Cfg;
 

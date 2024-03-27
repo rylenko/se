@@ -77,9 +77,10 @@ ed_save(Ed *const ed)
 {
 	/* Save file to current file path */
 	size_t len = file_save(&ed->file, NULL);
-	/* Check save failed or not */
+
+	/* Check save failed */
 	if (len == 0) {
-		ed_set_msg(ed, "Failed to open file for save: %s", strerror(errno));
+		ed_set_msg(ed, "Failed to save: %s", strerror(errno));
 	} else {
 		ed_set_msg(ed, "%zu bytes saved", len);
 		/* Update quit presses */
@@ -90,10 +91,11 @@ ed_save(Ed *const ed)
 void
 ed_save_to_spare_dir(Ed *const ed)
 {
+	char path[CFG_SPARE_PATH_MAX_LEN + 1];
 	/* Save file to the spare dir */
-	size_t len = file_save_to_spare_dir(&ed->file);
+	size_t len = file_save_to_spare_dir(&ed->file, path, sizeof(path));
 	/* Set message */
-	ed_set_msg(ed, "%zu bytes saved to spare dir", len);
+	ed_set_msg(ed, "%zu bytes saved to %s", len, path);
 	/* Update quit presses */
 	ed->quit_presses_rem = 1;
 }

@@ -10,10 +10,6 @@
 #include "rows.h"
 #include "str.h"
 
-enum {
-	SPARE_SAVE_PATH_MAX_LEN = 256, /* Max len of formatted path for spare save */
-};
-
 void
 file_close(File *const file)
 {
@@ -75,12 +71,11 @@ file_save(File *const file, const char *const path)
 }
 
 size_t
-file_save_to_spare_dir(File *const file)
+file_save_to_spare_dir(File *const file, char *const path, size_t len)
 {
 	char date[15];
 	const char *const filename = basename(file->path);
 	const struct tm *local;
-	char path[SPARE_SAVE_PATH_MAX_LEN];
 	time_t utc;
 
 	/* Get timestamp */
@@ -94,7 +89,9 @@ file_save_to_spare_dir(File *const file)
 		errx(EXIT_FAILURE, "Failed to convert time to string to save to spare dir.");
 
 	/* Build full spare path */
-	snprintf(path, sizeof(path), "%s/%s_%s", cfg_spare_save_dir, filename, date);
+	len = snprintf(path, len, "%s/%s_%s", cfg_spare_save_dir, filename, date);
+	path[len] = 0;
+
 	/* Save file using built path */
 	return file_save(file, path);
 }
