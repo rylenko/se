@@ -19,7 +19,7 @@ typedef struct {
 	Win win; /* Info about terminal's view. This is what the user sees */
 	Mode mode; /* Input mode */
 	char msg[ED_MSG_ARR_LEN]; /* Message for the user */
-	size_t num_input; /* Number input. Maximum if not set */
+	size_t num_input; /* Number input. 0 if not set */
 	unsigned char quit_presses_rem; /* Greater than 1 if file is dirty */
 } Ed;
 

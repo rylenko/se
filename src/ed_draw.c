@@ -151,7 +151,7 @@ ed_draw_stat_right(const Ed *const ed, Buf *const buf, const size_t left_len)
 	char pos[32] = {0};
 
 	/* Write number input */
-	if (ed->num_input != SIZE_MAX)
+	if (ed->num_input > 0)
 		right_len += snprintf(num_input, sizeof(num_input), "%zu < ", ed->num_input);
 
 	/* Write current position in the file */
@@ -168,5 +168,5 @@ ed_draw_stat_right(const Ed *const ed, Buf *const buf, const size_t left_len)
 		buf_write(buf, " ", 1);
 
 	/* Write right part */
-	buf_writef(buf, "%s%s", pos, num_input);
+	buf_writef(buf, "%s%s", num_input, pos);
 }

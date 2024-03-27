@@ -44,6 +44,10 @@ ed_key_proc_norm(Ed *const ed, const char key)
 	case CFG_KEY_SAVE_TO_SPARE_DIR:
 		ed_save_to_spare_dir(ed);
 	}
+
+	/* Process number input */
+	if ('0' <= key && key <= '9')
+		ed_input_num(ed, key - '0');
 }
 
 void

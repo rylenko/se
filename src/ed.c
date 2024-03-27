@@ -14,13 +14,9 @@ ed_input_num(Ed *const ed, const unsigned char digit)
 	/* Validate digit */
 	assert(digit < 10);
 
-	/* Prepare for first digit if input is not set */
-	if (SIZE_MAX == ed->num_input)
-		ed->num_input = 0;
-
 	/* Zeroize input if current digit overflows. Otherwise add digit */
-	if ((SIZE_MAX - digit) / 10 <= ed->num_input)
-		ed->num_input = SIZE_MAX;
+	if ((SIZE_MAX - digit) / 10 < ed->num_input)
+		ed->num_input = 0;
 	else
 		ed->num_input = (ed->num_input * 10) + digit;
 }
@@ -57,7 +53,7 @@ ed_open(Ed *const ed, const char *const path, const int ifd, const int ofd)
 	/* Set zero length to message */
 	ed->msg[0] = 0;
 	/* Make number input inactive */
-	ed->num_input = SIZE_MAX;
+	ed->num_input = 0;
 	/* File is not dirty by default so we may quit using one key press */
 	ed->quit_presses_rem = 1;
 }
