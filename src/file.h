@@ -39,7 +39,7 @@ Returns written bytes count or zero if failed to save the file.
 size_t file_save(File *, const char *);
 
 /*
-Saves file to spare directory. Useful if no privileges.
+Saves file to spare directory with generated path. Useful if no privileges.
 
 Writes final path to passed buffer up to passed length. The buffer must have a
 capacity one greater than the length for a null byte.
