@@ -79,9 +79,8 @@ row_ins(Row *const row, const size_t idx, const char ch)
 	/* Write new character to string */
 	row->cont[idx] = ch;
 	/* Increase the length if it is not a zero byte appended to the end */
-	if (!(0 == ch && idx == row->len)) {
+	if (!(0 == ch && idx == row->len))
 		row->len++;
-	}
 }
 
 Row*
@@ -142,9 +141,8 @@ row_render(Row *const row)
 	size_t tabs_cnt = 0;
 
 	/* No content to render */
-	if (row->len == 0) {
+	if (row->len == 0)
 		return;
-	}
 
 	/* Free old render */
 	free(row->render);

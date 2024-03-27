@@ -39,9 +39,8 @@ ed_on_quit_press(Ed *const ed)
 		ed->quit_presses_rem--;
 
 		/* Set message with remaining count if no need to quit */
-		if (!ed_need_to_quit(ed)) {
+		if (!ed_need_to_quit(ed))
 			ed_set_msg(ed, "File is dirty. Presses remain: %hhu", ed->quit_presses_rem);
-		}
 	}
 }
 

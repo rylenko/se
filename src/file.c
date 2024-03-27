@@ -33,13 +33,11 @@ file_open(File *const file, const char *const path)
 	file->path = str_copy(path, strlen(path));
 
 	/* Open file, read rows and close the file */
-	if (NULL == (inner_file = fopen(path, "r"))) {
+	if (NULL == (inner_file = fopen(path, "r")))
 		err(EXIT_FAILURE, "Failed to open file %s", path);
-	}
 	rows_read(&file->rows, inner_file);
-	if (fclose(inner_file) == EOF) {
+	if (fclose(inner_file) == EOF)
 		err(EXIT_FAILURE, "Failed to close readed file");
-	}
 
 	/* Add empty row if there is no rows */
 	if (file->rows.cnt == 0) {
