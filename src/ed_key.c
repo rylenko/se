@@ -3,6 +3,9 @@
 #include "mode.h"
 #include "term.h"
 
+/* Processes arrow key. Key must be between 'A' and 'D'. */
+static void ed_key_proc_arrow(Ed *const ed, const char key);
+
 /* Process key in insertion mode. */
 static void ed_key_proc_ins(Ed *const ed, const char key);
 
@@ -17,24 +20,43 @@ static void ed_key_proc_seq(
 static void ed_key_proc_norm(Ed *const ed, const char key);
 
 static void
-ed_key_proc_ins(Ed *const ed, const char key)
+ed_key_proc_arrow(Ed *const ed, const char key)
 {
 	(void)ed;
 	(void)key;
 }
 
 static void
+ed_key_proc_ins(Ed *const ed, const char key)
+{
+	switch (key) {
+	case CFG_KEY_MODE_NORM:
+		ed->mode = MODE_NORM;
+		return;
+	}
+}
+
+static void
 ed_key_proc_seq(Ed *const ed, const char *const seq, const size_t len)
 {
-	(void)ed;
-	(void)seq;
-	(void)len;
+	/* Arrows */
+	if (
+		3 == len
+		&& '\x1b' == seq[0]
+		&& '[' == seq[1]
+		&& 'A' <= seq[2]
+		&& seq[2] <= 'D'
+	)
+		ed_key_proc_arrow(ed, seq[2]);
 }
 
 static void
 ed_key_proc_norm(Ed *const ed, const char key)
 {
 	switch (key) {
+	case CFG_KEY_MODE_INS:
+		ed->mode = MODE_INS;
+		return;
 	case CFG_KEY_QUIT:
 		ed_on_quit_press(ed);
 		return;

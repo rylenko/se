@@ -141,7 +141,7 @@ row_render(Row *const row)
 	size_t tabs_cnt = 0;
 
 	/* No content to render */
-	if (row->len == 0)
+	if (0 == row->len)
 		return;
 
 	/* Free old render */

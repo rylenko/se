@@ -24,7 +24,7 @@ ed_input_num(Ed *const ed, const unsigned char digit)
 char
 ed_need_to_quit(const Ed *const ed)
 {
-	return ed->quit_presses_rem == 0;
+	return 0 == ed->quit_presses_rem;
 }
 
 void
@@ -74,7 +74,7 @@ ed_save(Ed *const ed)
 	size_t len = file_save(&ed->file, NULL);
 
 	/* Check save failed */
-	if (len == 0) {
+	if (0 == len) {
 		ed_set_msg(ed, "Failed to save: %s", strerror(errno));
 	} else {
 		ed_set_msg(ed, "%zu bytes saved", len);

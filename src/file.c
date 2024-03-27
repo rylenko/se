@@ -40,7 +40,7 @@ file_open(File *const file, const char *const path)
 		err(EXIT_FAILURE, "Failed to close readed file");
 
 	/* Add empty row if there is no rows */
-	if (file->rows.cnt == 0) {
+	if (0 == file->rows.cnt) {
 		row_init(&empty_row);
 		rows_ins(&file->rows, 0, empty_row);
 	}
