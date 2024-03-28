@@ -32,10 +32,10 @@ typedef enum {
 	CFG_KEY_MODE_NORM = 27, /* Escape */
 
 	/* Movement */
-	CFG_KEY_MV_TO_BEGIN_OF_F = 'w', /* w */
+	CFG_KEY_MV_TO_BEGIN_OF_FILE = 'w', /* w */
 	CFG_KEY_MV_TO_BEGIN_OF_ROW = 'a', /* a */
 	CFG_KEY_MV_DOWN = 'j', /* j */
-	CFG_KEY_MV_TO_END_OF_F = 's', /* s */
+	CFG_KEY_MV_TO_END_OF_FILE = 's', /* s */
 	CFG_KEY_MV_TO_END_OF_ROW = 'd', /* d */
 	CFG_KEY_MV_LEFT = 'h', /* h */
 	CFG_KEY_MV_TO_NEXT_WORD = 'e', /* e */

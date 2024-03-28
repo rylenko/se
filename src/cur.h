@@ -2,8 +2,8 @@
 #define _CUR_H
 
 typedef struct {
-	unsigned short x; /* X coordinate in the window, starts from zero */
-	unsigned short y; /* Y coordinate in the window, starts from zero */
+	unsigned short col; /* Row's number, starts from zero */
+	unsigned short row; /* Column's number, starts from zero */
 } Cur;
 
 /* Initializes the cursor with zeros. */

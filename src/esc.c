@@ -41,7 +41,7 @@ esc_cur_hide(Buf *const buf)
 void
 esc_cur_set(Buf *const buf, const Cur *const cur)
 {
-	buf_writef(buf, "\x1b[%hu;%huH", cur->y + 1, cur->x + 1);
+	buf_writef(buf, "\x1b[%hu;%huH", cur->row + 1, cur->col + 1);
 }
 
 void

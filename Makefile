@@ -3,9 +3,9 @@
 include cfg.mk
 
 # Code files
-SRC = src/buf.c src/cur.c src/ed.c src/ed_draw.c src/ed_key.c src/esc.c \
-	src/file.c src/main.c src/mode.c src/row.c src/rows.c src/str.c src/term.c \
-	src/win.c src/word.c
+SRC = src/buf.c src/cur.c src/ed.c src/ed_draw.c src/ed_key.c src/ed_mv.c \
+	src/esc.c src/file.c src/main.c src/mode.c src/row.c src/rows.c src/str.c \
+	src/term.c src/win.c src/word.c
 OBJ = $(SRC:.c=.o)
 
 # Paths

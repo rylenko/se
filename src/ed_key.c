@@ -1,5 +1,6 @@
 #include "cfg.h"
 #include "ed.h"
+#include "ed_mv.h"
 #include "mode.h"
 #include "term.h"
 
@@ -65,6 +66,12 @@ ed_key_proc_norm(Ed *const ed, const char key)
 		return;
 	case CFG_KEY_SAVE_TO_SPARE_DIR:
 		ed_save_to_spare_dir(ed);
+		return;
+	case CFG_KEY_MV_TO_BEGIN_OF_FILE:
+		ed_mv_to_begin_of_file(ed);
+		return;
+	case CFG_KEY_MV_TO_BEGIN_OF_ROW:
+		ed_mv_to_begin_of_row(ed);
 		return;
 	}
 
