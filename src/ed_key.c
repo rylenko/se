@@ -73,6 +73,9 @@ ed_key_proc_norm(Ed *const ed, const char key)
 	case CFG_KEY_MV_TO_BEGIN_OF_ROW:
 		ed_mv_to_begin_of_row(ed);
 		return;
+	case CFG_KEY_MV_TO_END_OF_FILE:
+		ed_mv_to_end_of_file(ed);
+		return;
 	}
 
 	/* Process number input */
