@@ -35,7 +35,7 @@ win_draw_lines(const Win *const win, Buf *const buf)
 			/* Get current line */
 			line = &win->file.lines.arr[win->offset.rows + row];
 
-			/* Expand offset column with tabs */
+			/* Get expanded with tabs offset's column */
 			exp_offset_col = win_exp_col(line, win->offset.cols);
 
 			/* Draw line if not empty and not hidden behind offset */

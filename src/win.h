@@ -22,11 +22,22 @@ typedef struct {
 	size_t cols;
 } WinOffset;
 
-/* Information about what the user sees on the screen. */
+/*
+Working with a window is divided into two cases: working with internal and
+rendered (or expanded) content.
+
+For example, when we consider a tab as one character, then most likely we are
+working with internal content, and when we consider a tab as several
+characters that the user can see, then we are working with rendered content.
+
+In structure, the offset and cursor are for internal content. The file contains
+a method for getting the index of a expanded column from an internal column, a
+method for clamping the internal column in the rendered window, and others.
+*/
 typedef struct {
 	File file; /* Opened file */
-	WinOffset offset; /* Offset of current view */
-	WinCur cur;
+	WinOffset offset; /* Offset of current view. Counts tabs as 1 character */
+	WinCur cur; /* Pointer to window's content. Counts tabs as 1 character */
 	struct winsize size; /* Window size */
 } Win;
 
@@ -44,7 +55,7 @@ size_t win_exp_col(const Line *, size_t);
 
 /*
 Fixes expanded cursor column for current line. Used than expanded cursor goes
-off window.
+off window, but the internal cursor is still here.
 */
 void win_fix_exp_cur_col(Win *);
 
