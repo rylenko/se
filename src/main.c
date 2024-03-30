@@ -1,3 +1,4 @@
+/* TODO: [1] Use ptrdiff_t where needed. */
 /* TODO: [1] Add local clipboard. Use it in functions. */
 /* TODO: [1] Use linked list for lines array and line's content parts. */
 /* TODO: [1] Undo operations. Also rename "del" to "remove" where needed */

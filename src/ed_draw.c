@@ -118,8 +118,8 @@ ed_draw_stat_right(const Ed *const ed, Buf *const buf, const size_t left_len)
 		pos,
 		sizeof(pos),
 		"%zu, %zu ",
-		ed->win.curr_line_cont_idx,
-		ed->win.curr_line_idx
+		ed->win.offset.rows + ed->win.cur.row,
+		ed->win.offset.cols + ed->win.cur.col
 	);
 
 	/* Write empty space */

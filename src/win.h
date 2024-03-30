@@ -7,22 +7,46 @@
 #include "line.h"
 
 enum {
-	WIN_STAT_ROWS_CNT = 1, /* Count of rows reserved for status */
+	STAT_ROWS_CNT = 1, /* Count of rows reserved for status */
 };
+
+/* Cursor's poisition in the window. */
+typedef struct {
+	unsigned short row;
+	unsigned short col;
+} WinCur;
+
+/* Offset in the file for current view. */
+typedef struct {
+	size_t rows;
+	size_t cols;
+} WinOffset;
 
 /* Information about what the user sees on the screen. */
 typedef struct {
 	File file; /* Opened file */
-	size_t top_line_idx; /* Index of the top line in the window */
-	size_t curr_line_idx; /* Index of the current line in the window */
-	size_t curr_line_cont_idx; /* Content's index of current line */
-	size_t curr_line_render_idx; /* Render's index of current line */
-	size_t bot_line_idx; /* Index of the bottom line. Set after redraw */
+	WinOffset offset; /* Offset of current view */
+	WinCur cur;
 	struct winsize size; /* Window size */
 } Win;
 
+/* Clamps cursor to the line. Useful when moving between lines. */
+void win_clamp_cur_to_line(Win *);
+
 /* Closes the window. */
 void win_close(Win *);
+
+/*
+Gets the count of characters by which the part of line is expanded using tabs.
+The part of the line from the beginning to the passed column is considered.
+*/
+size_t win_exp_col(const Win *, size_t);
+
+/* Used than expanded cursor goes off window. */
+void win_fix_exp_cur_col(Win *);
+
+/* Gets current line. */
+Line *win_get_curr_line(const Win *);
 
 /* Handles signal. */
 void win_handle_signal(Win *, int);

@@ -23,13 +23,18 @@ static void ed_key_proc_norm(Ed *const ed, const char key);
 static void
 ed_key_proc_arrow(Ed *const ed, const char key)
 {
-	(void)ed;
 	switch (key) {
+	case 'A':
+		win_mv_up(&ed->win, ed_get_repeat_times(ed));
+		break;
 	case 'B':
-		/* win_mv_down(&ed->win, ed_get_repeat_times(ed)); */
+		win_mv_down(&ed->win, ed_get_repeat_times(ed));
 		break;
 	case 'C':
-		/* win_mv_right(&ed->win, ed_get_repeat_times(ed)); */
+		win_mv_right(&ed->win, ed_get_repeat_times(ed));
+		break;
+	case 'D':
+		win_mv_left(&ed->win, ed_get_repeat_times(ed));
 		break;
 	}
 }
@@ -75,19 +80,25 @@ ed_key_proc_norm(Ed *const ed, const char key)
 		ed_save_to_spare_dir(ed);
 		break;
 	case CFG_KEY_MV_DOWN:
-		/* win_mv_down(&ed->win, ed_get_repeat_times(ed)); */
+		win_mv_down(&ed->win, ed_get_repeat_times(ed));
+		break;
+	case CFG_KEY_MV_LEFT:
+		win_mv_left(&ed->win, ed_get_repeat_times(ed));
 		break;
 	case CFG_KEY_MV_RIGHT:
-		/* win_mv_right(&ed->win, ed_get_repeat_times(ed)); */
+		win_mv_right(&ed->win, ed_get_repeat_times(ed));
+		break;
+	case CFG_KEY_MV_UP:
+		win_mv_up(&ed->win, ed_get_repeat_times(ed));
 		break;
 	case CFG_KEY_MV_TO_BEGIN_OF_FILE:
-		/* win_mv_to_begin_of_file(&ed->win); */
+		win_mv_to_begin_of_file(&ed->win);
 		break;
 	case CFG_KEY_MV_TO_BEGIN_OF_LINE:
 		win_mv_to_begin_of_line(&ed->win);
 		break;
 	case CFG_KEY_MV_TO_END_OF_FILE:
-		/* win_mv_to_end_of_file(&ed->win); */
+		win_mv_to_end_of_file(&ed->win);
 		break;
 	case CFG_KEY_MV_TO_END_OF_LINE:
 		win_mv_to_end_of_line(&ed->win);

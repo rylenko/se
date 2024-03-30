@@ -1,4 +1,5 @@
 #include "buf.h"
+#include "cfg.h"
 #include "esc.h"
 #include "line.h"
 #include "math.h"
@@ -7,65 +8,40 @@
 void
 win_draw_cur(const Win *const win, Buf *const buf)
 {
-	unsigned short col = 0;
-	size_t idx;
-	unsigned short row = 0;
+	/* Expand offset and file columns */
+	size_t exp_offset_col = win_exp_col(win, win->offset.cols);
+	size_t exp_file_col = win_exp_col(win, win->offset.cols + win->cur.col);
 
-	/* Offset from previous rows */
-	for (idx = win->top_line_idx; idx < win->curr_line_idx; idx++)
-		/* Determining how many rows a line takes up */
-		row += win->file.lines.arr[idx].render_len / win->size.ws_col + 1;
-
-	/* Offset form current row */
-	row += win->curr_line_render_idx / win->size.ws_col;
-	col += win->curr_line_render_idx % win->size.ws_col;
-
-	/* Set the cursor */
-	esc_cur_set(buf, row, col);
+	/* Substract expanded columns to get real column in the window */
+	esc_cur_set(buf, win->cur.row, exp_file_col - exp_offset_col);
 }
 
 void
-win_draw_lines(Win *const win, Buf *const buf)
+win_draw_lines(const Win *const win, Buf *const buf)
 {
-	size_t len_to_draw;
-	size_t line_idx;
+	size_t exp_offset_col;
 	size_t row;
+	size_t len_to_draw;
 	const Line *line;
 
-	/* Draw rows */
-	for (
-		row = 0, line_idx = win->top_line_idx;
-		row + WIN_STAT_ROWS_CNT < win->size.ws_row;
-		row++, line_idx++
-	) {
-		/* Check no more lines */
-		if (line_idx >= win->file.lines.cnt) {
+	for (row = 0; row + STAT_ROWS_CNT < win->size.ws_row; row++) {
+		/* Checking if there is a line to draw at this row */
+		if (win->offset.rows + row >= win->file.lines.cnt) {
 			buf_write(buf, "~", 1);
 		} else {
-			/* Get current line by its index */
-			line = &win->file.lines.arr[line_idx];
+			/* Get current line */
+			line = &win->file.lines.arr[win->offset.rows + row];
+			/* Draw line if not empty and not hidden behind offset */
+			if (line->render_len > win->offset.cols) {
+				/* Expand offset column with tabs to get render's length to draw */
+				exp_offset_col = win_exp_col(win, win->offset.cols);
+				len_to_draw = MIN(win->size.ws_col, line->render_len - exp_offset_col);
 
-			if (line->render_len > 0) {
-				/* We determine how much length it is possible to draw and draw */
-				len_to_draw = MIN(
-					line->render_len,
-					(win->size.ws_row - row - WIN_STAT_ROWS_CNT) * win->size.ws_col
-				);
-				buf_write(buf, line->render, len_to_draw);
-
-				/* Determine how many full rows spent on this line */
-				row += len_to_draw / win->size.ws_col;
-
-				/* Reserve one more line if the next character of the line goes to it */
-				if (len_to_draw % win->size.ws_col == 0)
-					buf_write(buf, "\r\n", 2);
-
-				/* Update bottom row's index */
-				win->bot_line_idx = line_idx;
+				buf_write(buf, &line->render[exp_offset_col], len_to_draw);
 			}
 		}
 
-		/* Move to start of next row */
+		/* Move to the beginning of the next row */
 		buf_write(buf, "\r\n", 2);
 	}
 }

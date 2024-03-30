@@ -8,6 +8,6 @@
 void win_draw_cur(const Win *, Buf *);
 
 /* Draws window rows. */
-void win_draw_lines(Win *, Buf *);
+void win_draw_lines(const Win *, Buf *);
 
 #endif /* _WIN_DRAW_H */

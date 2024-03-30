@@ -120,21 +120,21 @@ $ make gen-readme
 	<tbody><tr>
 		<th>C</th>
 		<th>16</th>
-		<th>1312</th>
-		<th>184</th>
-		<th>206</th>
-		<th>922</th>
-		<th>177</th>
-		<th>30060</th>
+		<th>1494</th>
+		<th>205</th>
+		<th>223</th>
+		<th>1066</th>
+		<th>214</th>
+		<th>34602</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>18</th>
-		<th>518</th>
-		<th>115</th>
-		<th>173</th>
-		<th>230</th>
+		<th>560</th>
+		<th>127</th>
+		<th>188</th>
+		<th>245</th>
 		<th>0</th>
-		<th>12592</th>
+		<th>13389</th>
 	</tr><tr>
 		<th>Markdown</th>
 		<th>2</th>
@@ -184,12 +184,12 @@ $ make gen-readme
 	<tfoot><tr>
 		<th>Total</th>
 		<th>41</th>
-		<th>2180</th>
-		<th>380</th>
-		<th>397</th>
-		<th>1403</th>
-		<th>177</th>
-    	<th>49178</th>
+		<th>2404</th>
+		<th>413</th>
+		<th>429</th>
+		<th>1562</th>
+		<th>214</th>
+    	<th>54517</th>
 	</tr></tfoot>
 	</table>
 
@@ -197,10 +197,10 @@ $ make gen-readme
 
 |Path|Line|Description|
 |-|-|-|
-|**src/win.c**|**47**|**-**|
-|**src/main.c**|**1**|**[1] Add local clipboard. Use it in functions.**|
-|**src/main.c**|**2**|**[1] Use linked list for lines array and line's content parts.**|
-|**src/main.c**|**3**|**[1] Undo operations. Also rename "del" to "remove" where needed**|
-|**src/main.c**|**4**|**[2] Xclip patch to use with local clipboard**|
-|**src/main.c**|**5**|**[2] Support huge files**|
 |**src/lines.h**|**14**|**do not forget to rerender after absorb**|
+|**src/main.c**|**1**|**[1] Use ptrdiff_t where needed.**|
+|**src/main.c**|**2**|**[1] Add local clipboard. Use it in functions.**|
+|**src/main.c**|**3**|**[1] Use linked list for lines array and line's content parts.**|
+|**src/main.c**|**4**|**[1] Undo operations. Also rename "del" to "remove" where needed**|
+|**src/main.c**|**5**|**[2] Xclip patch to use with local clipboard**|
+|**src/main.c**|**6**|**[2] Support huge files**|
