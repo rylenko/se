@@ -8,7 +8,7 @@ word_next(const char *const str, const size_t len)
 	size_t i;
 	char space_visited = 0;
 
-	for (i = 0; i + 1 < len; i++) {
+	for (i = 0; i < len; i++) {
 		/* First appearance of non-space after spaces */
 		if (!isspace(str[i]) && space_visited)
 			return i;

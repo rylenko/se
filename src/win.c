@@ -47,12 +47,10 @@ win_cur_init(WinCur *const cur)
 }
 
 size_t
-win_exp_col(const Win *const win, const size_t col)
+win_exp_col(const Line *const line, const size_t col)
 {
 	size_t i;
 	size_t ret;
-	const Line *const line = win_get_curr_line(win);
-
 	/* Iterate over every character in the visible part of line */
 	for (i = 0, ret = 0; i < col; i++, ret++) {
 		/* Expand tabs */
@@ -65,13 +63,16 @@ win_exp_col(const Win *const win, const size_t col)
 void
 win_fix_exp_cur_col(Win *const win)
 {
+	const Line *const line = win_get_curr_line(win);
 	/* Shift column offset until we see expanded cursor */
 	while (
-		win_exp_col(win, win->offset.cols + win->cur.col)
-			- win_exp_col(win, win->offset.cols)
+		win_exp_col(line, win->offset.cols + win->cur.col)
+			- win_exp_col(line, win->offset.cols)
 				>= win->size.ws_col
-	)
+	) {
 		win->offset.cols++;
+		win->cur.col--;
+	}
 }
 
 Line*

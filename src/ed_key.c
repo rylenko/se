@@ -103,6 +103,9 @@ ed_key_proc_norm(Ed *const ed, const char key)
 	case CFG_KEY_MV_TO_END_OF_LINE:
 		win_mv_to_end_of_line(&ed->win);
 		break;
+	case CFG_KEY_MV_TO_NEXT_WORD:
+		win_mv_to_next_word(&ed->win, ed_get_repeat_times(ed));
+		break;
 	}
 }
 

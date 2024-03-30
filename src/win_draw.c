@@ -8,9 +8,12 @@
 void
 win_draw_cur(const Win *const win, Buf *const buf)
 {
+	/* Get current line */
+	const Line *const line = win_get_curr_line(win);
+
 	/* Expand offset and file columns */
-	size_t exp_offset_col = win_exp_col(win, win->offset.cols);
-	size_t exp_file_col = win_exp_col(win, win->offset.cols + win->cur.col);
+	size_t exp_offset_col = win_exp_col(line, win->offset.cols);
+	size_t exp_file_col = win_exp_col(line, win->offset.cols + win->cur.col);
 
 	/* Substract expanded columns to get real column in the window */
 	esc_cur_set(buf, win->cur.row, exp_file_col - exp_offset_col);
@@ -31,12 +34,14 @@ win_draw_lines(const Win *const win, Buf *const buf)
 		} else {
 			/* Get current line */
 			line = &win->file.lines.arr[win->offset.rows + row];
-			/* Draw line if not empty and not hidden behind offset */
-			if (line->render_len > win->offset.cols) {
-				/* Expand offset column with tabs to get render's length to draw */
-				exp_offset_col = win_exp_col(win, win->offset.cols);
-				len_to_draw = MIN(win->size.ws_col, line->render_len - exp_offset_col);
 
+			/* Expand offset column with tabs */
+			exp_offset_col = win_exp_col(line, win->offset.cols);
+
+			/* Draw line if not empty and not hidden behind offset */
+			if (line->render_len > exp_offset_col) {
+				/* Calculate length to draw using expanded length and draw */
+				len_to_draw = MIN(win->size.ws_col, line->render_len - exp_offset_col);
 				buf_write(buf, &line->render[exp_offset_col], len_to_draw);
 			}
 		}

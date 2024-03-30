@@ -1,6 +1,7 @@
 #include "math.h"
 #include "win.h"
 #include "win_mv.h"
+#include "word.h"
 
 void
 win_mv_down(Win *const win, size_t times)
@@ -42,6 +43,8 @@ win_mv_left(Win *const win, size_t times)
 			win->cur.col--;
 		}
 	}
+
+	win_fix_exp_cur_col(win);
 }
 
 void
@@ -117,6 +120,34 @@ win_mv_to_end_of_line(Win *const win)
 		win->offset.cols = line->len - win->size.ws_col + 1;
 		win->cur.col = win->size.ws_col - 1;
 	}
+}
+
+void
+win_mv_to_next_word(Win *const win, size_t times)
+{
+	size_t cont_i;
+	size_t word_i;
+	const Line *const line = win_get_curr_line(win);
+
+	while (times-- > 0) {
+		/* Find next word from current position until end of line */
+		cont_i = win->offset.cols + win->cur.col;
+		word_i = word_next(line->cont + cont_i, line->len - cont_i);
+
+		/* Check that word in the current window */
+		if (win->cur.col + word_i < win->size.ws_col) {
+			win->cur.col += word_i;
+		} else {
+			win->offset.cols = cont_i + word_i - win->size.ws_col;
+			win->cur.col = win->size.ws_col - 1;
+		}
+
+		/* Check that we at end of line */
+		if (cont_i + word_i == line->len)
+			break;
+	}
+
+	win_fix_exp_cur_col(win);
 }
 
 void

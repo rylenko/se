@@ -40,9 +40,12 @@ void win_close(Win *);
 Gets the count of characters by which the part of line is expanded using tabs.
 The part of the line from the beginning to the passed column is considered.
 */
-size_t win_exp_col(const Win *, size_t);
+size_t win_exp_col(const Line *, size_t);
 
-/* Used than expanded cursor goes off window. */
+/*
+Fixes expanded cursor column for current line. Used than expanded cursor goes
+off window.
+*/
 void win_fix_exp_cur_col(Win *);
 
 /* Gets current line. */
