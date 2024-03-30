@@ -7,12 +7,6 @@
 #include "term.h"
 #include "win.h"
 
-/* Initializes window's cursor. */
-static void win_cur_init(WinCur *const cur);
-
-/* Initializes window's offset. */
-static void win_offset_init(WinOffset *const offset);
-
 /* Updates window's size using terminal. */
 static void win_upd_size(Win *const win);
 
@@ -38,12 +32,6 @@ win_close(Win *const win)
 {
 	term_deinit();
 	file_close(&win->file);
-}
-
-static void
-win_cur_init(WinCur *const cur)
-{
-	memset(cur, 0, sizeof(*cur));
 }
 
 size_t
@@ -88,20 +76,14 @@ win_handle_signal(Win *const win, const int signal)
 		win_upd_size(win);
 }
 
-static void
-win_offset_init(WinOffset *const offset)
-{
-	memset(offset, 0, sizeof(*offset));
-}
-
 void
 win_open(Win *const win, const char *const path, const int ifd, const int ofd)
 {
 	/* Open file */
 	file_open(&win->file, path);
 	/* Initialize offset and cursor */
-	win_offset_init(&win->offset);
-	win_cur_init(&win->cur);
+	memset(&win->offset, 0, sizeof(win->offset));
+	memset(&win->cur, 0, sizeof(win->cur));
 
 	/* Initialize terminal with accepted descriptors */
 	term_init(ifd, ofd);
