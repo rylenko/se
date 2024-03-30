@@ -1,13 +1,6 @@
 #include "buf.h"
 #include "color.h"
-#include "cur.h"
 #include "esc.h"
-
-void
-esc_clr_right(Buf *const buf)
-{
-	buf_write(buf, "\x1b[0K", 4);
-}
 
 void
 esc_clr_win(Buf *const buf)
@@ -39,9 +32,9 @@ esc_cur_hide(Buf *const buf)
 }
 
 void
-esc_cur_set(Buf *const buf, const Cur *const cur)
+esc_cur_set(Buf *const buf, const unsigned short row, const unsigned short col)
 {
-	buf_writef(buf, "\x1b[%hu;%huH", cur->row + 1, cur->col + 1);
+	buf_writef(buf, "\x1b[%hu;%huH", row + 1, col + 1);
 }
 
 void

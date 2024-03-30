@@ -3,6 +3,7 @@
 
 #include <stddef.h>
 
+/* Divides two numbers, but rounds up if the division has a remainder. */
 #define MIN(x, y) ((x) < (y) ? (x) : (y))
 #define MAX(x, y) ((x) > (y) ? (x) : (y))
 

@@ -6,15 +6,15 @@
 #include <time.h>
 #include "cfg.h"
 #include "file.h"
-#include "row.h"
-#include "rows.h"
+#include "line.h"
+#include "lines.h"
 #include "str.h"
 
 void
 file_close(File *const file)
 {
-	/* Free readed rows */
-	rows_free(&file->rows);
+	/* Free readed lines */
+	lines_free(&file->lines);
 	/* Freeing the path since we cloned it earlier */
 	free(file->path);
 }
@@ -22,27 +22,25 @@ file_close(File *const file)
 void
 file_open(File *const file, const char *const path)
 {
-	Row empty_row;
+	Line empty_line;
 	FILE *inner_file;
 
 	/* Initialize file */
-	file->pos.col = 0;
-	file->pos.row = 0;
-	rows_init(&file->rows);
+	lines_init(&file->lines);
 	file->is_dirty = 0;
 	file->path = str_copy(path, strlen(path));
 
-	/* Open file, read rows and close the file */
+	/* Open file, read lines and close the file */
 	if (NULL == (inner_file = fopen(path, "r")))
 		err(EXIT_FAILURE, "Failed to open file %s", path);
-	rows_read(&file->rows, inner_file);
+	lines_read(&file->lines, inner_file);
 	if (fclose(inner_file) == EOF)
 		err(EXIT_FAILURE, "Failed to close readed file");
 
-	/* Add empty row if there is no rows */
-	if (0 == file->rows.cnt) {
-		row_init(&empty_row);
-		rows_ins(&file->rows, 0, empty_row);
+	/* Add empty line if there is no lines */
+	if (0 == file->lines.cnt) {
+		line_init(&empty_line);
+		lines_ins(&file->lines, 0, empty_line);
 	}
 }
 
@@ -55,8 +53,8 @@ file_save(File *const file, const char *const path)
 	/* Try to open file */
 	if (NULL == (inner = fopen(path == NULL ? file->path : path, "w")))
 		return 0;
-	/* Write rows to opened file */
-	len = rows_write(&file->rows, inner);
+	/* Write lines to opened file */
+	len = lines_write(&file->lines, inner);
 	/* Flush and close the file */
 	if (fflush(inner) == EOF)
 		err(EXIT_FAILURE, "Failed to flush saved file");

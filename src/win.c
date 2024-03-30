@@ -1,36 +1,48 @@
-#include <err.h>
 #include <signal.h>
-#include <stdlib.h>
-#include <string.h>
-#include "cur.h"
+#include "file.h"
 #include "term.h"
 #include "win.h"
 
+/* Updates window's size using terminal. */
+static void win_upd_size(Win *const win);
+
 void
-win_deinit(void)
+win_close(Win *const win)
 {
-	/* Deinitialize terminal */
 	term_deinit();
+	file_close(&win->file);
 }
 
 void
 win_handle_signal(Win *const win, const int signal)
 {
 	if (SIGWINCH == signal)
-		/* Update window size using terminal */
-		term_get_win_size(&win->size);
+		win_upd_size(win);
 }
 
 void
-win_init(Win *const win, const int ifd, const int ofd)
+win_open(Win *const win, const char *const path, const int ifd, const int ofd)
 {
-	/* Initialize cursor and offset */
-	cur_init(&win->cur);
-	win->offset.cols = 0;
-	win->offset.rows = 0;
+	/* Open file */
+	file_open(&win->file, path);
+	/* Set lines */
+	win->top_line_idx = 0;
+	win->curr_line_idx = 0;
+	win->curr_line_cont_idx = 0;
+	win->curr_line_render_idx = 0;
+	win->bot_line_idx = 0;
 
 	/* Initialize terminal with accepted descriptors */
 	term_init(ifd, ofd);
 	/* Get window size */
 	term_get_win_size(&win->size);
+}
+
+static void
+win_upd_size(Win *const win)
+{
+	/* Update size using terminal */
+	term_get_win_size(&win->size);
+
+	/* TODO: - */
 }

@@ -1,20 +1,11 @@
 #ifndef _FILE_H
 #define _FILE_H
 
-#include "rows.h"
+#include "lines.h"
 
-/*
-Internal information about the open file.
-
-If you need a position in the window where each tab byte expands into several
-characters, then use a window.
-*/
+/* Internal information about the open file. */
 typedef struct {
-	struct {
-		size_t row;
-		size_t col;
-	} pos; /* Current position in the file */
-	Rows rows; /* Rows of readed file */
+	Lines lines; /* Lines of readed file. There is always at least one line */
 	char is_dirty; /* The file has been modified and not saved */
 	char *path; /* Path of readed file. This is where the default save occurs */
 } File;
@@ -25,7 +16,7 @@ void file_close(File *);
 /*
 Reads the contents of file.
 
-Adds an empty row if there are no rows in the file.
+Adds an empty line if there are no lines in the file.
 
 Do not forget to close file.
 */

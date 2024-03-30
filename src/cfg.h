@@ -15,17 +15,17 @@ enum {
 typedef enum {
 	CFG_DIRTY_FILE_QUIT_PRESSES_CNT = 4, /* Press to exit without saving */
 	CFG_SPARE_PATH_MAX_LEN = 255, /* Max length of formatted spare save path */
-	CFG_TAB_SIZE = 8, /* Count of spaces, which equals to one tab */
+	CFG_TAB_SIZE = 4, /* Count of spaces, which equals to one tab */
 } Cfg;
 
 /* Ascii keys to control the editor. */
 typedef enum {
 	/* Row management */
 	CFG_KEY_DEL = 127, /* Backspace */
-	CFG_KEY_DEL_ROW = 'd' - CTRL_OFFSET, /* CTRL-d */
+	CFG_KEY_DEL_LINE = 'd' - CTRL_OFFSET, /* CTRL-d */
 	CFG_KEY_INS_BREAK = 13, /* Enter */
-	CFG_KEY_INS_ROW_BELOW = 'n', /* n */
-	CFG_KEY_INS_ROW_TOP = 'n' - CTRL_OFFSET, /* CTRL-n */
+	CFG_KEY_INS_LINE_BELOW = 'n', /* n */
+	CFG_KEY_INS_LINE_TOP = 'n' - CTRL_OFFSET, /* CTRL-n */
 
 	/* Modes switching */
 	CFG_KEY_MODE_INS = 'i', /* i */
@@ -33,10 +33,10 @@ typedef enum {
 
 	/* Movement */
 	CFG_KEY_MV_TO_BEGIN_OF_FILE = 'w', /* w */
-	CFG_KEY_MV_TO_BEGIN_OF_ROW = 'a', /* a */
+	CFG_KEY_MV_TO_BEGIN_OF_LINE = 'a', /* a */
 	CFG_KEY_MV_DOWN = 'j', /* j */
 	CFG_KEY_MV_TO_END_OF_FILE = 's', /* s */
-	CFG_KEY_MV_TO_END_OF_ROW = 'd', /* d */
+	CFG_KEY_MV_TO_END_OF_LINE = 'd', /* d */
 	CFG_KEY_MV_LEFT = 'h', /* h */
 	CFG_KEY_MV_TO_NEXT_WORD = 'e', /* e */
 	CFG_KEY_MV_TO_PREV_WORD = 'q', /* q */

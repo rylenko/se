@@ -3,10 +3,6 @@
 
 #include "buf.h"
 #include "color.h"
-#include "cur.h"
-
-/* Clears the row on the right. */
-void esc_clr_right(Buf *);
 
 /* Clears all window. */
 void esc_clr_win(Buf *);
@@ -20,8 +16,8 @@ void esc_color_end(Buf *);
 /* Hides the cursor. Used to avoid blinking during redrawing. */
 void esc_cur_hide(Buf *);
 
-/* Sets the cursor in the window. */
-void esc_cur_set(Buf *, const Cur *);
+/* Sets the cursor in the window. Values start from zero. */
+void esc_cur_set(Buf *, unsigned short, unsigned short);
 
 /* Shows the cursor. */
 void esc_cur_show(Buf *);

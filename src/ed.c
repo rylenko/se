@@ -8,14 +8,20 @@
 #include "math.h"
 #include "mode.h"
 
+size_t
+ed_get_repeat_times(const Ed *const ed)
+{
+	return 0 == ed->num_input ? 1 : ed->num_input;
+}
+
 void
-ed_input_num(Ed *const ed, const unsigned char digit)
+ed_input_num(Ed *const ed, const char digit)
 {
 	/* Validate digit */
-	assert(digit < 10);
+	assert((0 <= digit && digit <= 9) || ED_INPUT_NUM_RESET == digit);
 
-	/* Zeroize input if current digit overflows. Otherwise add digit */
-	if ((SIZE_MAX - digit) / 10 < ed->num_input)
+	/* Zeroize input if current digit overflows or need to reset */
+	if (ED_INPUT_NUM_RESET == digit || (SIZE_MAX - digit) / 10 < ed->num_input)
 		ed->num_input = 0;
 	else
 		ed->num_input = (ed->num_input * 10) + digit;
@@ -43,10 +49,8 @@ ed_on_quit_press(Ed *const ed)
 void
 ed_open(Ed *const ed, const char *const path, const int ifd, const int ofd)
 {
-	/* Open file */
-	file_open(&ed->file, path);
-	/* Initialize window with accepted file descriptors */
-	win_init(&ed->win, ifd, ofd);
+	/* Open window with accepted file and descriptors */
+	win_open(&ed->win, path, ifd, ofd);
 
 	/* Set default editting mode */
 	ed->mode = MODE_NORM;
@@ -61,17 +65,15 @@ ed_open(Ed *const ed, const char *const path, const int ifd, const int ofd)
 void
 ed_quit(Ed *const ed)
 {
-	/* Close opened file */
-	file_close(&ed->file);
-	/* Deinitialize window */
-	win_deinit();
+	/* Close the window */
+	win_close(&ed->win);
 }
 
 void
 ed_save(Ed *const ed)
 {
 	/* Save file to current file path */
-	size_t len = file_save(&ed->file, NULL);
+	size_t len = file_save(&ed->win.file, NULL);
 
 	/* Check save failed */
 	if (0 == len) {
@@ -88,7 +90,7 @@ ed_save_to_spare_dir(Ed *const ed)
 {
 	char path[CFG_SPARE_PATH_MAX_LEN + 1];
 	/* Save file to the spare dir */
-	size_t len = file_save_to_spare_dir(&ed->file, path, sizeof(path));
+	size_t len = file_save_to_spare_dir(&ed->win.file, path, sizeof(path));
 	/* Set message */
 	ed_set_msg(ed, "%zu bytes saved to %s", len, path);
 	/* Update quit presses */

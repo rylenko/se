@@ -4,17 +4,9 @@
 #include "cfg.h"
 #include "ed.h"
 #include "esc.h"
-#include "math.h"
 #include "mode.h"
-#include "row.h"
 #include "term.h"
-#include "win.h"
-
-/* Draws cursor at his position. */
-static void ed_draw_cur(const Ed *const ed, Buf *const buf);
-
-/* Draws file rows. */
-static void ed_draw_rows(const Ed *const ed, Buf *const buf);
+#include "win_draw.h"
 
 /* Draws status on last row. */
 static void ed_draw_stat(Ed *const ed, Buf *const buf);
@@ -36,22 +28,20 @@ ed_draw(Ed *const ed)
 	Buf buf;
 	buf_init(&buf);
 
-	/* Go to start of window */
+	/* Go to start of window and clear the window */
 	esc_go_home(&buf);
+	esc_clr_win(&buf);
 
-	if (ed_need_to_quit(ed)) {
-		/* Only clear the window on quit */
-		esc_clr_win(&buf);
-	} else {
+	if (!ed_need_to_quit(ed)) {
 		/* Hide cursor to not flicker */
 		esc_cur_hide(&buf);
 
-		/* Draw rows of file */
-		ed_draw_rows(ed, &buf);
+		/* Draw lines of file */
+		win_draw_lines(&ed->win, &buf);
 		/* Draw status */
 		ed_draw_stat(ed, &buf);
-		/* Draw cursor */
-		ed_draw_cur(ed, &buf);
+		/* Draw expanded cursor */
+		win_draw_cur(&ed->win, &buf);
 
 		/* Show hidden cursor */
 		esc_cur_show(&buf);
@@ -59,13 +49,6 @@ ed_draw(Ed *const ed)
 
 	/* Flush and free the buffer */
 	term_flush(&buf);
-}
-
-static void
-ed_draw_cur(const Ed *const ed, Buf *const buf)
-{
-	/* Draw cursor using escape code */
-	esc_cur_set(buf, &ed->win.cur);
 }
 
 void
@@ -76,51 +59,14 @@ ed_draw_handle_signal(Ed *const ed, const int signal)
 
 	/* Handle window size change signal */
 	if (SIGWINCH == signal)
+		/* Redraw after window resizing */
 		ed_draw(ed);
-}
-
-static void
-ed_draw_rows(const Ed *const ed, Buf *const buf)
-{
-	const Row *row;
-	size_t row_i;
-	size_t file_row_i;
-
-	/* Draw rows */
-	for (row_i = 0; row_i + 1 < ed->win.size.ws_row; row_i++) {
-		/* Clear row to draw new content */
-		esc_clr_right(buf);
-
-		/* Get row's index at file scale */
-		file_row_i = row_i + ed->win.offset.rows;
-
-		/* Check that we went out of file */
-		if (file_row_i >= ed->file.rows.cnt) {
-			buf_write(buf, "~", 1);
-		} else {
-			/* Get row by its index */
-			row = &ed->file.rows.arr[file_row_i];
-			/* Check row is present in the window */
-			if (row->render_len > ed->win.offset.cols)
-				buf_write(
-					buf,
-					&row->render[ed->win.offset.cols],
-					MIN(ed->win.size.ws_col, row->render_len - ed->win.offset.cols)
-				);
-		}
-
-		/* Move to start of next row */
-		buf_write(buf, "\r\n", 2);
-	}
 }
 
 static void
 ed_draw_stat(Ed *const ed, Buf *const buf)
 {
 	size_t left_len = 0;
-
-	/* Clear row before drawing */
-	esc_clr_right(buf);
 
 	/* Begin colored output */
 	esc_color_begin(buf, &cfg_color_stat_fg, &cfg_color_stat_bg);
@@ -137,14 +83,14 @@ static size_t
 ed_draw_stat_left(Ed *const ed, Buf *const buf)
 {
 	/* Get filename of opened file */
-	char *filename = basename(ed->file.path);
+	char *filename = basename(ed->win.file.path);
 	size_t len = 0;
 
 	/* Write mode and opened file's name */
 	len += buf_writef(buf, " %s > %s", mode_str(ed->mode), filename);
 
 	/* Add mark if file is dirty */
-	if (ed->file.is_dirty)
+	if (ed->win.file.is_dirty)
 		len += buf_write(buf, " [+]", 4);
 
 	/* Write message if exists */
@@ -158,7 +104,7 @@ ed_draw_stat_left(Ed *const ed, Buf *const buf)
 static void
 ed_draw_stat_right(const Ed *const ed, Buf *const buf, const size_t left_len)
 {
-	size_t i;
+	size_t col;
 	char num_input[32] = {0};
 	size_t right_len = 0;
 	char pos[32] = {0};
@@ -172,12 +118,12 @@ ed_draw_stat_right(const Ed *const ed, Buf *const buf, const size_t left_len)
 		pos,
 		sizeof(pos),
 		"%zu, %zu ",
-		ed->file.pos.col,
-		ed->file.pos.row
+		ed->win.curr_line_cont_idx,
+		ed->win.curr_line_idx
 	);
 
 	/* Write empty space */
-	for (i = left_len + right_len; i < ed->win.size.ws_col; i++)
+	for (col = left_len + right_len; col < ed->win.size.ws_col; col++)
 		buf_write(buf, " ", 1);
 
 	/* Write right part */

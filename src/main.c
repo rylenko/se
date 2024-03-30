@@ -1,5 +1,5 @@
 /* TODO: [1] Add local clipboard. Use it in functions. */
-/* TODO: [1] Use linked list for rows array and row's content parts. Benchmark! */
+/* TODO: [1] Use linked list for lines array and line's content parts. */
 /* TODO: [1] Undo operations. Also rename "del" to "remove" where needed */
 /* TODO: [2] Xclip patch to use with local clipboard */
 /* TODO: [2] Support huge files */

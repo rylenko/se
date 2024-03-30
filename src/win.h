@@ -1,35 +1,35 @@
 #ifndef _WIN_H
 #define _WIN_H
 
+#include <stddef.h>
 #include <sys/ioctl.h>
-#include "cur.h"
+#include "file.h"
+#include "line.h"
 
-/*
-Information about what the user sees on the screen.
+enum {
+	WIN_STAT_ROWS_CNT = 1, /* Count of rows reserved for status */
+};
 
-The position in the window may differ from the position in the file, for
-example due to tabs.
-*/
+/* Information about what the user sees on the screen. */
 typedef struct {
-	struct {
-		size_t rows;
-		size_t cols;
-	} offset; /* Rows and columns offset from start */
-	Cur cur; /* Coordinates of current position in the window */
+	File file; /* Opened file */
+	size_t top_line_idx; /* Index of the top line in the window */
+	size_t curr_line_idx; /* Index of the current line in the window */
+	size_t curr_line_cont_idx; /* Content's index of current line */
+	size_t curr_line_render_idx; /* Render's index of current line */
+	size_t bot_line_idx; /* Index of the bottom line. Set after redraw */
 	struct winsize size; /* Window size */
 } Win;
 
-/* Deinitializes window's from terminal. */
-void win_deinit(void);
+/* Closes the window. */
+void win_close(Win *);
 
 /* Handles signal. */
 void win_handle_signal(Win *, int);
 
 /*
-Initializes and connects window to terminal using passed file descriptors.
-
-Do not forget to deinitialize it.
+Opens window with file and initializes terminal. Do not forget to close it.
 */
-void win_init(Win *, int, int);
+void win_open(Win *, const char *, int, int);
 
 #endif /* WIN_H */

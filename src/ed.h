@@ -1,11 +1,11 @@
 #ifndef _ED_H
 #define _ED_H
 
-#include "file.h"
 #include "mode.h"
 #include "win.h"
 
 enum {
+	ED_INPUT_NUM_RESET = -1, /* Flag to reset number input */
 	ED_MSG_ARR_LEN = 64, /* Capacity of message buffer */
 };
 
@@ -15,7 +15,6 @@ Editor options.
 To edit, you need to connect the editor to the terminal and then open the file.
 */
 typedef struct {
-	File file; /* Opened file's info. This is what the user edits */
 	Win win; /* Info about terminal's view. This is what the user sees */
 	Mode mode; /* Input mode */
 	char msg[ED_MSG_ARR_LEN]; /* Message for the user */
@@ -23,8 +22,13 @@ typedef struct {
 	unsigned char quit_presses_rem; /* Greater than 1 if file is dirty */
 } Ed;
 
-/* Writes digit to the number input. Argument must be a digit. */
-void ed_input_num(Ed *, unsigned char);
+/* Determines how many times the next action needs to be repeated. */
+size_t ed_get_repeat_times(const Ed *);
+
+/*
+Writes digit to the number input. Resets if argument is reset flag.
+*/
+void ed_input_num(Ed *, char);
 
 /* Determines that we need to quit. */
 char ed_need_to_quit(const Ed *);
