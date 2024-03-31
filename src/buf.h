@@ -3,21 +3,11 @@
 
 #include <stddef.h>
 
-/*
-During redrawing content may flicker because `printf` buffers the output but
-flushes it to the terminal after receiving '\n'.
+/* Alias for opaque struct of buffer. */
+typedef struct Buf Buf;
 
-This buffer is needed to write strings into one large buffer and print them on
-the window in one call.
-*/
-typedef struct {
-	char *data; /* Dynamic array with buffer data */
-	size_t len; /* Length of data */
-	size_t cap; /* Current capacity of dynamic array with data */
-} Buf;
-
-/* Initializes buffer with default values. Do not forget to free it. */
-void buf_init(Buf *);
+/* Allocatees buffer. Do not forget to free it. */
+Buf *buf_alloc(void);
 
 /*
 Flushes the buffer to file by its descritor using single `write` call.

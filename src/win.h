@@ -3,75 +3,75 @@
 
 #include <stddef.h>
 #include <sys/ioctl.h>
-#include "file.h"
-#include "line.h"
+#include "buf.h"
 
-enum {
-	STAT_ROWS_CNT = 1, /* Count of rows reserved for status */
-};
-
-/* Cursor's poisition in the window. */
-typedef struct {
-	unsigned short row;
-	unsigned short col;
-} WinCur;
-
-/* Offset in the file for current view. */
-typedef struct {
-	size_t rows;
-	size_t cols;
-} WinOffset;
-
-/*
-Working with a window is divided into two cases: working with internal and
-rendered (or expanded) content.
-
-For example, when we consider a tab as one character, then most likely we are
-working with internal content, and when we consider a tab as several
-characters that the user can see, then we are working with rendered content.
-
-In structure, the offset and cursor are for internal content. The file contains
-a method for getting the index of a expanded column from an internal column, a
-method for clamping the internal column in the rendered window, and others.
-*/
-typedef struct {
-	File file; /* Opened file */
-	WinOffset offset; /* Offset of current view. Counts tabs as 1 character */
-	WinCur cur; /* Pointer to window's content. Counts tabs as 1 character */
-	struct winsize size; /* Window size */
-} Win;
-
-/* Clamps cursor to the line. Useful when moving between lines. */
-void win_clamp_cur_to_line(Win *);
+/* Alias for opaque struct with window parameters. */
+typedef struct Win Win;
 
 /* Closes the window. */
 void win_close(Win *);
 
 /*
-Gets the count of characters by which the part of line is expanded using tabs.
-The part of the line from the beginning to the passed column is considered.
+Deletes the passed number of lines starting from the current one.
+
+Returns zero on success and negative number if there is only one line which
+cannot be deleted.
 */
-size_t win_exp_col(const Line *, size_t);
+int win_del_line(Win *, size_t);
 
-/*
-Fixes expanded cursor column for current line. Used than expanded cursor goes
-off window, but the internal cursor is still here.
-*/
-void win_fix_exp_cur_col(Win *);
+/* Draws cursor. */
+void win_draw_cur(const Win *, Buf *);
 
-/* Gets current line. */
-Line *win_get_curr_line(const Win *);
+/* Draws window rows. */
+void win_draw_lines(const Win *, Buf *);
 
-/* Gets line by its index. */
-Line *win_get_line(const Win *, size_t);
+/* Checks that opened file is dirty. */
+char win_file_is_dirty(const Win *);
+
+/* Gets path of opened file. */
+char *win_file_path(const Win *);
+
+/* Gets current line's index. */
+size_t win_get_curr_line_idx(const Win *);
+
+/* Gets current line content's index. */
+size_t win_get_curr_line_cont_idx(const Win *);
 
 /* Handles signal. */
 void win_handle_signal(Win *, int);
 
-/*
-Opens window with file and initializes terminal. Do not forget to close it.
-*/
-void win_open(Win *, const char *, int, int);
+/* Move down several times. */
+void win_mv_down(Win *, size_t);
+
+/* Move left several times. */
+void win_mv_left(Win *, size_t);
+
+/* Move right several times. */
+void win_mv_right(Win *, size_t);
+
+/* Moves to begin of first line. */
+void win_mv_to_begin_of_file(Win *);
+
+/* Moves to begin of current line. */
+void win_mv_to_begin_of_line(Win *);
+
+/* Moves to begin of last line. */
+void win_mv_to_end_of_file(Win *);
+
+/* Moves to begin of current line. */
+void win_mv_to_end_of_line(Win *);
+
+/* Moves to next word. */
+void win_mv_to_next_word(Win *, size_t);
+
+/* Moves to previous word. */
+void win_mv_to_prev_word(Win *, size_t);
+
+/* Moves up several times. */
+void win_mv_up(Win *, size_t);
+
+/* Opens terminal window with file. Do not forget to close it. */
+Win *win_open(const char *, int, int);
 
 /* Saves opened file. Returns saved bytes count. */
 size_t win_save_file(Win *);
@@ -81,5 +81,8 @@ Saves opened file to spare directory. Returns saved bytes count. Writes path to
 passed buffer.
 */
 size_t win_save_file_to_spare_dir(Win *, char *, size_t);
+
+/* Gets size of window. */
+struct winsize win_size(const Win *);
 
 #endif /* WIN_H */

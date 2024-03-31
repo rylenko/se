@@ -15,20 +15,18 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include "ed.h"
-#include "ed_draw.h"
-#include "ed_key.h"
 
 static const char *const usage = "Usage:\n\t$ se <filename>";
 
 /* Handle editor signals. */
 static void handle_signal(int signal);
 
-static Ed ed;
+static Ed *ed;
 
 static void
 handle_signal(int signal)
 {
-	ed_draw_handle_signal(&ed, signal);
+	ed_handle_signal(ed, signal);
 }
 
 int
@@ -39,7 +37,7 @@ main(const int argc, const char *const *const argv)
 		errx(EXIT_FAILURE, usage);
 
 	/* Opens file in the editor */
-	ed_open(&ed, argv[1], STDIN_FILENO, STDOUT_FILENO);
+	ed = ed_open(argv[1], STDIN_FILENO, STDOUT_FILENO);
 
 	/* Register signals handler */
 	if (signal(SIGWINCH, handle_signal) == SIG_ERR)
@@ -47,15 +45,15 @@ main(const int argc, const char *const *const argv)
 
 	while (1) {
 		/* Draws editor's content on the screen */
-		ed_draw(&ed);
+		ed_draw(ed);
 		/* Check that we need to quit. Need here to clear screen before quit */
-		if (ed_need_to_quit(&ed))
+		if (ed_need_to_quit(ed))
 			break;
 		/* Wait and process key presses */
-		ed_key_wait_and_proc(&ed);
+		ed_wait_and_proc_key(ed);
 	}
 
 	/* Quit the editor */
-	ed_quit(&ed);
+	ed_quit(ed);
 	return EXIT_SUCCESS;
 }

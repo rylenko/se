@@ -10,6 +10,13 @@
 #include "lines.h"
 #include "str.h"
 
+/* Internal information about the open file. */
+struct File {
+	Lines lines; /* Lines of readed file. There is always at least one line */
+	char is_dirty; /* The file has been modified and not saved */
+	char *path; /* Path of readed file. This is where the default save occurs */
+};
+
 void
 file_close(File *const file)
 {
@@ -17,6 +24,8 @@ file_close(File *const file)
 	lines_free(&file->lines);
 	/* Freeing the path since we cloned it earlier */
 	free(file->path);
+	/* Free allocated opaque struct */
+	free(file);
 }
 
 void
@@ -33,11 +42,27 @@ file_get(const File *const file, const size_t idx)
 	return lines_get(&file->lines, idx);
 }
 
-void
-file_open(File *const file, const char *const path)
+char
+file_is_dirty(const File *const file)
+{
+	return file->is_dirty;
+}
+
+size_t
+file_lines_cnt(const File *const file)
+{
+	return file->lines.cnt;
+}
+
+File*
+file_open(const char *const path)
 {
 	Line empty_line;
 	FILE *inner_file;
+	/* Allocate struct */
+	File *file = malloc(sizeof(*file));
+	if (NULL == file)
+		err(EXIT_FAILURE, "Failed to allocate file");
 
 	/* Initialize file */
 	lines_init(&file->lines);
@@ -56,6 +81,13 @@ file_open(File *const file, const char *const path)
 		line_init(&empty_line);
 		lines_ins(&file->lines, 0, empty_line);
 	}
+	return file;
+}
+
+char*
+file_path(const File *const file)
+{
+	return file->path;
 }
 
 size_t

@@ -1,15 +1,11 @@
 #ifndef _FILE_H
 #define _FILE_H
 
+#include <stddef.h>
 #include "line.h"
-#include "lines.h"
 
-/* Internal information about the open file. */
-typedef struct {
-	Lines lines; /* Lines of readed file. There is always at least one line */
-	char is_dirty; /* The file has been modified and not saved */
-	char *path; /* Path of readed file. This is where the default save occurs */
-} File;
+/* Alias for opaque struct of opened file. */
+typedef struct File File;
 
 /* Closes file and frees memory. */
 void file_close(File *);
@@ -20,6 +16,12 @@ void file_del(File *, size_t);
 /* Gets line by its index. */
 Line *file_get(const File *, size_t);
 
+/* Checks that file is dirty. */
+char file_is_dirty(const File *);
+
+/* Gets lines count in the file. */
+size_t file_lines_cnt(const File *);
+
 /*
 Reads the contents of file.
 
@@ -27,7 +29,10 @@ Adds an empty line if there are no lines in the file.
 
 Do not forget to close file.
 */
-void file_open(File *, const char *);
+File *file_open(const char *);
+
+/* Gets path of opened file. */
+char *file_path(const File *);
 
 /*
 Saves file to passed path. Saves to opened file's path if argument is `NULL`.
