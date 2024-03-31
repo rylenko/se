@@ -1,6 +1,7 @@
 #ifndef _FILE_H
 #define _FILE_H
 
+#include "line.h"
 #include "lines.h"
 
 /* Internal information about the open file. */
@@ -12,6 +13,12 @@ typedef struct {
 
 /* Closes file and frees memory. */
 void file_close(File *);
+
+/* Deletes line from the file. */
+void file_del(File *, size_t);
+
+/* Gets line by its index. */
+Line *file_get(const File *, size_t);
 
 /*
 Reads the contents of file.

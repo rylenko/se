@@ -28,6 +28,9 @@ void lines_del(Lines *, size_t);
 /* Frees the lines container. */
 void lines_free(Lines *);
 
+/* Gets the line by its index. */
+Line *lines_get(const Lines *, size_t);
+
 /* Initializes lines with default values. Do not forget to free it. */
 void lines_init(Lines *);
 

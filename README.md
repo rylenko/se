@@ -119,22 +119,22 @@ $ make gen-readme
 	</tr></thead>
 	<tbody><tr>
 		<th>C</th>
-		<th>16</th>
-		<th>1552</th>
-		<th>214</th>
-		<th>233</th>
-		<th>1105</th>
-		<th>224</th>
-		<th>36228</th>
+		<th>19</th>
+		<th>1712</th>
+		<th>234</th>
+		<th>247</th>
+		<th>1231</th>
+		<th>239</th>
+		<th>38987</th>
 	</tr><tr>
 		<th>C Header</th>
-		<th>18</th>
-		<th>580</th>
-		<th>129</th>
-		<th>204</th>
-		<th>247</th>
+		<th>21</th>
+		<th>652</th>
+		<th>151</th>
+		<th>225</th>
+		<th>276</th>
 		<th>0</th>
-		<th>14222</th>
+		<th>16087</th>
 	</tr><tr>
 		<th>Markdown</th>
 		<th>2</th>
@@ -152,7 +152,7 @@ $ make gen-readme
 		<th>12</th>
 		<th>43</th>
 		<th>0</th>
-		<th>1459</th>
+		<th>1498</th>
 	</tr><tr>
 		<th>Shell</th>
 		<th>1</th>
@@ -183,13 +183,13 @@ $ make gen-readme
 	</tr></tbody>
 	<tfoot><tr>
 		<th>Total</th>
-		<th>41</th>
-		<th>2482</th>
-		<th>424</th>
-		<th>455</th>
-		<th>1603</th>
-		<th>224</th>
-    	<th>57156</th>
+		<th>47</th>
+		<th>2714</th>
+		<th>466</th>
+		<th>490</th>
+		<th>1758</th>
+		<th>239</th>
+    	<th>61819</th>
 	</tr></tfoot>
 	</table>
 
@@ -199,12 +199,13 @@ $ make gen-readme
 |-|-|-|
 |**src/lines.h**|**14**|**do not forget to rerender after absorb**|
 |**src/main.c**|**1**|**[1] Use ptrdiff_t where needed.**|
-|**src/main.c**|**2**|**[1] Try to make code easier and less bloated.**|
-|**src/main.c**|**3**|**[1] Add more clear docs and comments.**|
-|**src/main.c**|**4**|**[1] Handle non-printable characters.**|
-|**src/main.c**|**5**|**[2] Add local clipboard. Use it in functions.**|
-|**src/main.c**|**6**|**[2] Xclip patch to use with local clipboard.**|
-|**src/main.c**|**7**|**[2] Use linked list for lines array and line's content parts.**|
-|**src/main.c**|**8**|**[3] Support huge files.**|
-|**src/main.c**|**9**|**[3] Undo operations. Also rename "del" to "remove" where needed.**|
-|**src/main.c**|**10**|**[4] API with status codes instead of err.h and tests**|
+|**src/main.c**|**2**|**[1] Remove unused includes.**|
+|**src/main.c**|**3**|**[1] Try to make code easier and less bloated.**|
+|**src/main.c**|**4**|**[1] Add more clear docs and comments.**|
+|**src/main.c**|**5**|**[1] Handle non-printable characters.**|
+|**src/main.c**|**6**|**[2] Add local clipboard. Use it in functions.**|
+|**src/main.c**|**7**|**[2] Xclip patch to use with local clipboard.**|
+|**src/main.c**|**8**|**[2] Use linked list for lines array and line's content parts.**|
+|**src/main.c**|**9**|**[3] Support huge files.**|
+|**src/main.c**|**10**|**[3] Undo operations. Also rename "del" to "remove" where needed.**|
+|**src/main.c**|**11**|**[4] API with status codes instead of err.h and tests**|

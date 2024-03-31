@@ -68,7 +68,13 @@ win_fix_exp_cur_col(Win *const win)
 Line*
 win_get_curr_line(const Win *const win)
 {
-	return &win->file.lines.arr[win->offset.rows + win->cur.row];
+	return win_get_line(win, win->offset.rows + win->cur.row);
+}
+
+Line*
+win_get_line(const Win *const win, const size_t idx)
+{
+	return file_get(&win->file, idx);
 }
 
 void

@@ -1,4 +1,5 @@
 /* TODO: [1] Use ptrdiff_t where needed. */
+/* TODO: [1] Remove unused includes. */
 /* TODO: [1] Try to make code easier and less bloated. */
 /* TODO: [1] Add more clear docs and comments. */
 /* TODO: [1] Handle non-printable characters. */

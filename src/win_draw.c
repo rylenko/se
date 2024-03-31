@@ -33,7 +33,7 @@ win_draw_lines(const Win *const win, Buf *const buf)
 			buf_write(buf, "~", 1);
 		} else {
 			/* Get current line */
-			line = &win->file.lines.arr[win->offset.rows + row];
+			line = win_get_line(win, win->offset.rows + row);
 
 			/* Get expanded with tabs offset's column */
 			exp_offset_col = win_exp_col(line, win->offset.cols);

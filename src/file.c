@@ -20,6 +20,20 @@ file_close(File *const file)
 }
 
 void
+file_del(File *const file, const size_t idx)
+{
+	/* Delete the line and mark file as dirty */
+	lines_del(&file->lines, idx);
+	file->is_dirty = 1;
+}
+
+Line*
+file_get(const File *const file, const size_t idx)
+{
+	return lines_get(&file->lines, idx);
+}
+
+void
 file_open(File *const file, const char *const path)
 {
 	Line empty_line;

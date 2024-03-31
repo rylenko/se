@@ -1,8 +1,9 @@
 #include "cfg.h"
 #include "ed.h"
+#include "ed_del.h"
+#include "ed_mv.h"
 #include "mode.h"
 #include "term.h"
-#include "win_mv.h"
 
 /* Processes arrow key. Key must be between 'A' and 'D'. */
 static void ed_key_proc_arrow(Ed *const ed, const char key);
@@ -25,16 +26,16 @@ ed_key_proc_arrow(Ed *const ed, const char key)
 {
 	switch (key) {
 	case 'A':
-		win_mv_up(&ed->win, ed_get_repeat_times(ed));
+		ed_mv_up(ed);
 		break;
 	case 'B':
-		win_mv_down(&ed->win, ed_get_repeat_times(ed));
+		ed_mv_down(ed);
 		break;
 	case 'C':
-		win_mv_right(&ed->win, ed_get_repeat_times(ed));
+		ed_mv_right(ed);
 		break;
 	case 'D':
-		win_mv_left(&ed->win, ed_get_repeat_times(ed));
+		ed_mv_left(ed);
 		break;
 	}
 }
@@ -67,6 +68,9 @@ static void
 ed_key_proc_norm(Ed *const ed, const char key)
 {
 	switch (key) {
+	case CFG_KEY_DEL_LINE:
+		ed_del_line(ed);
+		break;
 	case CFG_KEY_MODE_INS:
 		ed->mode = MODE_INS;
 		break;
@@ -80,34 +84,35 @@ ed_key_proc_norm(Ed *const ed, const char key)
 		ed_save_to_spare_dir(ed);
 		break;
 	case CFG_KEY_MV_DOWN:
-		win_mv_down(&ed->win, ed_get_repeat_times(ed));
+		ed_mv_down(ed);
 		break;
 	case CFG_KEY_MV_LEFT:
-		win_mv_left(&ed->win, ed_get_repeat_times(ed));
+		ed_mv_left(ed);
 		break;
 	case CFG_KEY_MV_RIGHT:
-		win_mv_right(&ed->win, ed_get_repeat_times(ed));
+		ed_mv_right(ed);
 		break;
 	case CFG_KEY_MV_UP:
-		win_mv_up(&ed->win, ed_get_repeat_times(ed));
+		ed_mv_up(ed);
 		break;
 	case CFG_KEY_MV_TO_BEGIN_OF_FILE:
-		win_mv_to_begin_of_file(&ed->win);
+		ed_mv_to_begin_of_file(ed);
 		break;
 	case CFG_KEY_MV_TO_BEGIN_OF_LINE:
-		win_mv_to_begin_of_line(&ed->win);
+		ed_mv_to_begin_of_line(ed);
 		break;
 	case CFG_KEY_MV_TO_END_OF_FILE:
-		win_mv_to_end_of_file(&ed->win);
+		ed_mv_to_end_of_file(ed);
 		break;
 	case CFG_KEY_MV_TO_END_OF_LINE:
-		win_mv_to_end_of_line(&ed->win);
+		ed_mv_to_end_of_line(ed);
 		break;
 	case CFG_KEY_MV_TO_NEXT_WORD:
-		win_mv_to_next_word(&ed->win, ed_get_repeat_times(ed));
+		ed_mv_to_next_word(ed);
 		break;
 	case CFG_KEY_MV_TO_PREV_WORD:
-		win_mv_to_prev_word(&ed->win, ed_get_repeat_times(ed));
+		ed_mv_to_prev_word(ed);
+		break;
 	}
 }
 

@@ -62,6 +62,9 @@ void win_fix_exp_cur_col(Win *);
 /* Gets current line. */
 Line *win_get_curr_line(const Win *);
 
+/* Gets line by its index. */
+Line *win_get_line(const Win *, size_t);
+
 /* Handles signal. */
 void win_handle_signal(Win *, int);
 

@@ -6,45 +6,50 @@
 void
 win_mv_down(Win *const win, size_t times)
 {
-	while (times-- > 0) {
-		/* Break if there is no more space to move down */
-		if (win->offset.rows + win->cur.row + 1 >= win->file.lines.cnt)
-			break;
+	if (times > 0) {
+		while (times-- > 0) {
+			/* Break if there is no more space to move down */
+			if (win->offset.rows + win->cur.row + 1 >= win->file.lines.cnt)
+				break;
 
-		/* Check that there is no space in current window */
-		if (win->cur.row + STAT_ROWS_CNT + 1 == win->size.ws_row)
-			win->offset.rows++;
-		else
-			win->cur.row++;
+			/* Check that there is no space in current window */
+			if (win->cur.row + STAT_ROWS_CNT + 1 == win->size.ws_row)
+				win->offset.rows++;
+			else
+				win->cur.row++;
+		}
+
+		/* Clamp cursor to line after move down several times */
+		win_clamp_cur_to_line(win);
 	}
-
-	/* Clamp cursor to line after move down several times */
-	win_clamp_cur_to_line(win);
 }
 
 void
 win_mv_left(Win *const win, size_t times)
 {
-	while (times-- > 0) {
-		/* Move to the beginning of next line if there is not space to move right */
-		if (win->offset.cols + win->cur.col == 0) {
-			/* Check there is no next line */
-			if (win->offset.rows + win->cur.row == 0)
-				break;
+	if (times > 0) {
+		while (times-- > 0) {
+			/* Move to the beginning of next line if there is not space to move right */
+			if (win->offset.cols + win->cur.col == 0) {
+				/* Check there is no next line */
+				if (win->offset.rows + win->cur.row == 0)
+					break;
 
-			/* Move to the end of previous line */
-			win_mv_up(win, 1);
-			win_mv_to_end_of_line(win);
-		} else if (win->cur.col == 0) {
-			/* We are at the right of window */
-			win->offset.cols--;
-		} else {
-			/* We are have enough space to move right in the current window */
-			win->cur.col--;
+				/* Move to the end of previous line */
+				win_mv_up(win, 1);
+				win_mv_to_end_of_line(win);
+			} else if (win->cur.col == 0) {
+				/* We are at the right of window */
+				win->offset.cols--;
+			} else {
+				/* We are have enough space to move right in the current window */
+				win->cur.col--;
+			}
 		}
-	}
 
-	win_fix_exp_cur_col(win);
+		/* Fix expanded cursor column during left movement */
+		win_fix_exp_cur_col(win);
+	}
 }
 
 void
@@ -52,27 +57,30 @@ win_mv_right(Win *const win, size_t times)
 {
 	const Line *line = win_get_curr_line(win);
 
-	while (times-- > 0) {
-		/* Move to the beginning of next line if there is not space to move right */
-		if (win->offset.cols + win->cur.col == line->len) {
-			/* Check there is no next line */
-			if (win->offset.rows + win->cur.row + 1 == win->file.lines.cnt)
-				break;
+	if (times > 0) {
+		while (times-- > 0) {
+			/* Move to the beginning of next line if there is not space to move right */
+			if (win->offset.cols + win->cur.col == line->len) {
+				/* Check there is no next line */
+				if (win->offset.rows + win->cur.row + 1 == win->file.lines.cnt)
+					break;
 
-			/* Move to the beginning of next line */
-			win_mv_to_begin_of_line(win);
-			win_mv_down(win, 1);
-			line++;
-		} else if (win->cur.col + 1 == win->size.ws_col) {
-			/* We are at the right of window */
-			win->offset.cols++;
-		} else {
-			/* We are have enough space to move right in the current window */
-			win->cur.col++;
+				/* Move to the beginning of next line */
+				win_mv_to_begin_of_line(win);
+				win_mv_down(win, 1);
+				line++;
+			} else if (win->cur.col + 1 == win->size.ws_col) {
+				/* We are at the right of window */
+				win->offset.cols++;
+			} else {
+				/* We are have enough space to move right in the current window */
+				win->cur.col++;
+			}
 		}
-	}
 
-	win_fix_exp_cur_col(win);
+		/* Fix expanded cursor column during right movement */
+		win_fix_exp_cur_col(win);
+	}
 }
 
 void
@@ -129,25 +137,28 @@ win_mv_to_next_word(Win *const win, size_t times)
 	size_t word_i;
 	const Line *const line = win_get_curr_line(win);
 
-	while (times-- > 0) {
-		/* Find next word from current position until end of line */
-		cont_i = win->offset.cols + win->cur.col;
-		word_i = word_next(&line->cont[cont_i], line->len - cont_i);
+	if (times > 0) {
+		while (times-- > 0) {
+			/* Find next word from current position until end of line */
+			cont_i = win->offset.cols + win->cur.col;
+			word_i = word_next(&line->cont[cont_i], line->len - cont_i);
 
-		/* Check that word in the current window */
-		if (win->cur.col + word_i < win->size.ws_col) {
-			win->cur.col += word_i;
-		} else {
-			win->offset.cols = cont_i + word_i - win->size.ws_col + 1;
-			win->cur.col = win->size.ws_col - 1;
+			/* Check that word in the current window */
+			if (win->cur.col + word_i < win->size.ws_col) {
+				win->cur.col += word_i;
+			} else {
+				win->offset.cols = cont_i + word_i - win->size.ws_col + 1;
+				win->cur.col = win->size.ws_col - 1;
+			}
+
+			/* Check that we at end of line */
+			if (cont_i + word_i == line->len)
+				break;
 		}
 
-		/* Check that we at end of line */
-		if (cont_i + word_i == line->len)
-			break;
+		/* Fix expanded cursor column during right movement */
+		win_fix_exp_cur_col(win);
 	}
-
-	win_fix_exp_cur_col(win);
 }
 
 void
@@ -157,42 +168,47 @@ win_mv_to_prev_word(Win *const win, size_t times)
 	size_t word_i;
 	const Line *const line = win_get_curr_line(win);
 
-	while (times-- > 0) {
-		/* Find next word from current position until start of line */
-		cont_i = win->offset.cols + win->cur.col;
-		word_i = word_rnext(line->cont, cont_i);
+	if (times > 0) {
+		while (times-- > 0) {
+			/* Find next word from current position until start of line */
+			cont_i = win->offset.cols + win->cur.col;
+			word_i = word_rnext(line->cont, cont_i);
 
-		/* Check that word in the current window */
-		if (word_i >= win->offset.cols) {
-			win->cur.col = word_i - win->offset.cols;
-		} else {
-			win->offset.cols = word_i - 1;
-			win->cur.col = 1;
+			/* Check that word in the current window */
+			if (word_i >= win->offset.cols) {
+				win->cur.col = word_i - win->offset.cols;
+			} else {
+				win->offset.cols = word_i - 1;
+				win->cur.col = 1;
+			}
+
+			/* Check that we at start of line */
+			if (word_i == 0)
+				break;
 		}
 
-		/* Check that we at start of line */
-		if (word_i == 0)
-			break;
+		/* Fix expanded cursor column during left movement */
+		win_fix_exp_cur_col(win);
 	}
-
-	win_fix_exp_cur_col(win);
 }
 
 void
 win_mv_up(Win *const win, size_t times)
 {
-	while (times-- > 0) {
-		/* Break if there is no more space to move down */
-		if (win->offset.rows + win->cur.row == 0)
-			break;
+	if (times > 0) {
+		while (times-- > 0) {
+			/* Break if there is no more space to move down */
+			if (win->offset.rows + win->cur.row == 0)
+				break;
 
-		/* Check that there is no space in current window */
-		if (0 == win->cur.row)
-			win->offset.rows--;
-		else
-			win->cur.row--;
+			/* Check that there is no space in current window */
+			if (0 == win->cur.row)
+				win->offset.rows--;
+			else
+				win->cur.row--;
+		}
+
+		/* Clamp cursor to line after move down several times */
+		win_clamp_cur_to_line(win);
 	}
-
-	/* Clamp cursor to line after move down several times */
-	win_clamp_cur_to_line(win);
 }

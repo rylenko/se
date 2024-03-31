@@ -99,6 +99,12 @@ lines_free(Lines *const lines)
 	free(lines->arr);
 }
 
+Line*
+lines_get(const Lines *const lines, const size_t idx)
+{
+	return &lines->arr[idx];
+}
+
 static void
 lines_realloc(Lines *const lines, const size_t new_cap)
 {
