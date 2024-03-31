@@ -99,6 +99,18 @@ win_open(Win *const win, const char *const path, const int ifd, const int ofd)
 	term_get_win_size(&win->size);
 }
 
+size_t
+win_save_file(Win *const win)
+{
+	return file_save(&win->file, NULL);
+}
+
+size_t
+win_save_file_to_spare_dir(Win *const win, char *const  path, size_t len)
+{
+	return file_save_to_spare_dir(&win->file, path, len);
+}
+
 static void
 win_upd_size(Win *const win)
 {

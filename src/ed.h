@@ -47,10 +47,10 @@ void ed_open(Ed *, const char *, int, int);
 void ed_quit(Ed *);
 
 /* Saves opened file. */
-void ed_save(Ed *const ed);
+void ed_save_file(Ed *const ed);
 
 /* Saves opened file to spare dir. Useful if no privileges. */
-void ed_save_to_spare_dir(Ed *const ed);
+void ed_save_file_to_spare_dir(Ed *const ed);
 
 /* Sets formatted message to the user. */
 void ed_set_msg(Ed *, const char *, ...);

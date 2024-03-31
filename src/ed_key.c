@@ -78,10 +78,10 @@ ed_key_proc_norm(Ed *const ed, const char key)
 		ed_on_quit_press(ed);
 		break;
 	case CFG_KEY_SAVE:
-		ed_save(ed);
+		ed_save_file(ed);
 		break;
 	case CFG_KEY_SAVE_TO_SPARE_DIR:
-		ed_save_to_spare_dir(ed);
+		ed_save_file_to_spare_dir(ed);
 		break;
 	case CFG_KEY_MV_DOWN:
 		ed_mv_down(ed);

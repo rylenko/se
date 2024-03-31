@@ -70,10 +70,10 @@ ed_quit(Ed *const ed)
 }
 
 void
-ed_save(Ed *const ed)
+ed_save_file(Ed *const ed)
 {
 	/* Save file to current file path */
-	size_t len = file_save(&ed->win.file, NULL);
+	size_t len = win_save_file(&ed->win);
 
 	/* Check save failed */
 	if (0 == len) {
@@ -86,11 +86,11 @@ ed_save(Ed *const ed)
 }
 
 void
-ed_save_to_spare_dir(Ed *const ed)
+ed_save_file_to_spare_dir(Ed *const ed)
 {
 	char path[CFG_SPARE_PATH_MAX_LEN + 1];
 	/* Save file to the spare dir */
-	size_t len = file_save_to_spare_dir(&ed->win.file, path, sizeof(path));
+	size_t len = win_save_file_to_spare_dir(&ed->win, path, sizeof(path));
 	/* Set message */
 	ed_set_msg(ed, "%zu bytes saved to %s", len, path);
 	/* Update quit presses */

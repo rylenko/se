@@ -73,4 +73,13 @@ Opens window with file and initializes terminal. Do not forget to close it.
 */
 void win_open(Win *, const char *, int, int);
 
+/* Saves opened file. Returns saved bytes count. */
+size_t win_save_file(Win *);
+
+/*
+Saves opened file to spare directory. Returns saved bytes count. Writes path to
+passed buffer.
+*/
+size_t win_save_file_to_spare_dir(Win *, char *, size_t);
+
 #endif /* WIN_H */
