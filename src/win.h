@@ -4,6 +4,7 @@
 #include <stddef.h>
 #include <sys/ioctl.h>
 #include "buf.h"
+#include "file.h"
 
 /* Alias for opaque struct with window parameters. */
 typedef struct Win Win;
@@ -25,11 +26,8 @@ void win_draw_cur(const Win *, Buf *);
 /* Draws window rows. */
 void win_draw_lines(const Win *, Buf *);
 
-/* Checks that opened file is dirty. */
-char win_file_is_dirty(const Win *);
-
-/* Gets path of opened file. */
-const char *win_file_path(const Win *);
+/* Returns opened file in the current window. */
+const File *win_file(const Win *);
 
 /* Gets current line's index. */
 size_t win_get_curr_line_idx(const Win *);

@@ -194,16 +194,10 @@ win_exp_col(const Line *const line, const size_t col)
 	return ret;
 }
 
-char
-win_file_is_dirty(const Win *const win)
+const File*
+win_file(const Win *const win)
 {
-	return file_is_dirty(win->file);
-}
-
-const char*
-win_file_path(const Win *const win)
-{
-	return file_path(win->file);
+	return win->file;
 }
 
 static void
