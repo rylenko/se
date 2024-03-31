@@ -125,7 +125,7 @@ $ make gen-readme
 		<th>233</th>
 		<th>1105</th>
 		<th>224</th>
-		<th>36193</th>
+		<th>36228</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>18</th>
@@ -189,7 +189,7 @@ $ make gen-readme
 		<th>455</th>
 		<th>1603</th>
 		<th>224</th>
-    	<th>57121</th>
+    	<th>57156</th>
 	</tr></tfoot>
 	</table>
 
@@ -207,4 +207,4 @@ $ make gen-readme
 |**src/main.c**|**7**|**[2] Use linked list for lines array and line's content parts.**|
 |**src/main.c**|**8**|**[3] Support huge files.**|
 |**src/main.c**|**9**|**[3] Undo operations. Also rename "del" to "remove" where needed.**|
-|**src/main.c**|**10**|**[4] API and tests**|
+|**src/main.c**|**10**|**[4] API with status codes instead of err.h and tests**|
