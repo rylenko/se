@@ -27,6 +27,9 @@ void win_mv_to_end_of_line(Win *);
 /* Moves to next word. */
 void win_mv_to_next_word(Win *, size_t);
 
+/* Moves to previous word. */
+void win_mv_to_prev_word(Win *, size_t);
+
 /* Moves up several times. */
 void win_mv_up(Win *, size_t);
 
