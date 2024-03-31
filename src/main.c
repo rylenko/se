@@ -3,10 +3,11 @@
 /* TODO: [1] Add more clear docs and comments. */
 /* TODO: [1] Handle non-printable characters. */
 /* TODO: [2] Add local clipboard. Use it in functions. */
+/* TODO: [2] Xclip patch to use with local clipboard. */
 /* TODO: [2] Use linked list for lines array and line's content parts. */
-/* TODO: [2] Undo operations. Also rename "del" to "remove" where needed. */
-/* TODO: [3] Xclip patch to use with local clipboard. */
 /* TODO: [3] Support huge files. */
+/* TODO: [3] Undo operations. Also rename "del" to "remove" where needed. */
+/* TODO: [4] API and tests */
 
 #include <err.h>
 #include <signal.h>
