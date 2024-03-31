@@ -37,14 +37,14 @@ Normal mode keys:
 
 - `a` - start of line.
 - `d` - end of line.
-- `e` - go to begin of next token.
-- `h` - go left.
+- `e` - go to begin of next word.
+- `h` or `Left arrow` - go left.
 - `i` - switch to insert mode.
-- `j` - go down.
-- `k` - go up.
-- `l` - go right.
+- `j` or `Down arrow` - go down.
+- `k` or `Up arrow` - go up.
+- `l` or `Right arrow` - go right.
 - `n` - create a line below the current line and move to it.
-- `q` - go to begin of previous token.
+- `q` - go to begin of previous word.
 - (X) `r` - redo last undo;
 - `s` - go to end of file.
 - (X) `u` - undo last change.
@@ -61,9 +61,9 @@ You can also repeat a key by pressing `<number><key>`. For example, `5n` will cr
 Insert mode keys:
 
 - `ESC` - switch to normal mode.
-- `Backspace` - erase character before cursor.
+- `Backspace` - delete character before cursor.
 - `Enter` - break line.
-- Otherwise the character is inserted.
+- Otherwise, if character is printable, the character is inserted.
 
 # Build and install
 

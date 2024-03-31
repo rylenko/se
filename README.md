@@ -37,14 +37,14 @@ Normal mode keys:
 
 - `a` - start of line.
 - `d` - end of line.
-- `e` - go to begin of next token.
-- `h` - go left.
+- `e` - go to begin of next word.
+- `h` or `Left arrow` - go left.
 - `i` - switch to insert mode.
-- `j` - go down.
-- `k` - go up.
-- `l` - go right.
+- `j` or `Down arrow` - go down.
+- `k` or `Up arrow` - go up.
+- `l` or `Right arrow` - go right.
 - `n` - create a line below the current line and move to it.
-- `q` - go to begin of previous token.
+- `q` - go to begin of previous word.
 - (X) `r` - redo last undo;
 - `s` - go to end of file.
 - (X) `u` - undo last change.
@@ -61,9 +61,9 @@ You can also repeat a key by pressing `<number><key>`. For example, `5n` will cr
 Insert mode keys:
 
 - `ESC` - switch to normal mode.
-- `Backspace` - erase character before cursor.
+- `Backspace` - delete character before cursor.
 - `Enter` - break line.
-- Otherwise the character is inserted.
+- Otherwise, if character is printable, the character is inserted.
 
 # Build and install
 
@@ -120,12 +120,12 @@ $ make gen-readme
 	<tbody><tr>
 		<th>C</th>
 		<th>16</th>
-		<th>1550</th>
+		<th>1551</th>
 		<th>214</th>
-		<th>231</th>
+		<th>232</th>
 		<th>1105</th>
 		<th>224</th>
-		<th>36113</th>
+		<th>36162</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>18</th>
@@ -143,7 +143,7 @@ $ make gen-readme
 		<th>0</th>
 		<th>155</th>
 		<th>0</th>
-		<th>3828</th>
+		<th>4008</th>
 	</tr><tr>
 		<th>Makefile</th>
 		<th>2</th>
@@ -184,12 +184,12 @@ $ make gen-readme
 	<tfoot><tr>
 		<th>Total</th>
 		<th>41</th>
-		<th>2480</th>
+		<th>2481</th>
 		<th>424</th>
-		<th>453</th>
+		<th>454</th>
 		<th>1603</th>
 		<th>224</th>
-    	<th>56861</th>
+    	<th>57090</th>
 	</tr></tfoot>
 	</table>
 
@@ -201,8 +201,9 @@ $ make gen-readme
 |**src/main.c**|**1**|**[1] Use ptrdiff_t where needed.**|
 |**src/main.c**|**2**|**[1] Try to make code easier and less bloated.**|
 |**src/main.c**|**3**|**[1] Add more clear docs and comments.**|
-|**src/main.c**|**4**|**[1] Add local clipboard. Use it in functions.**|
-|**src/main.c**|**5**|**[1] Use linked list for lines array and line's content parts.**|
-|**src/main.c**|**6**|**[1] Undo operations. Also rename "del" to "remove" where needed.**|
-|**src/main.c**|**7**|**[2] Xclip patch to use with local clipboard.**|
-|**src/main.c**|**8**|**[2] Support huge files.**|
+|**src/main.c**|**4**|**[1] Handle non-printable characters.**|
+|**src/main.c**|**5**|**[2] Add local clipboard. Use it in functions.**|
+|**src/main.c**|**6**|**[2] Use linked list for lines array and line's content parts.**|
+|**src/main.c**|**7**|**[2] Undo operations. Also rename "del" to "remove" where needed.**|
+|**src/main.c**|**8**|**[3] Xclip patch to use with local clipboard.**|
+|**src/main.c**|**9**|**[3] Support huge files.**|
