@@ -32,7 +32,7 @@ Do not forget to close file.
 File *file_open(const char *);
 
 /* Gets path of opened file. */
-char *file_path(const File *);
+const char *file_path(const File *);
 
 /*
 Saves file to passed path. Saves to opened file's path if argument is `NULL`.

@@ -200,7 +200,7 @@ win_file_is_dirty(const Win *const win)
 	return file_is_dirty(win->file);
 }
 
-char*
+const char*
 win_file_path(const Win *const win)
 {
 	return file_path(win->file);

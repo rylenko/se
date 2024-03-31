@@ -84,7 +84,7 @@ file_open(const char *const path)
 	return file;
 }
 
-char*
+const char*
 file_path(const File *const file)
 {
 	return file->path;

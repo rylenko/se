@@ -1,7 +1,6 @@
 #include <assert.h>
 #include <err.h>
 #include <errno.h>
-#include <libgen.h>
 #include <signal.h>
 #include <stdarg.h>
 #include <stdlib.h>
@@ -14,6 +13,7 @@
 #include "file.h"
 #include "math.h"
 #include "mode.h"
+#include "path.h"
 #include "term.h"
 #include "win.h"
 
@@ -172,7 +172,7 @@ static size_t
 ed_draw_stat_left(Ed *const ed, Buf *const buf)
 {
 	/* Get filename of opened file */
-	char *filename = basename(win_file_path(ed->win));
+	const char *const filename = path_get_filename(win_file_path(ed->win));
 	size_t len = 0;
 
 	/* Write mode and opened file's name */

@@ -29,7 +29,7 @@ void win_draw_lines(const Win *, Buf *);
 char win_file_is_dirty(const Win *);
 
 /* Gets path of opened file. */
-char *win_file_path(const Win *);
+const char *win_file_path(const Win *);
 
 /* Gets current line's index. */
 size_t win_get_curr_line_idx(const Win *);
