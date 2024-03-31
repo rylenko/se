@@ -129,12 +129,12 @@ $ make gen-readme
 	</tr><tr>
 		<th>C Header</th>
 		<th>15</th>
-		<th>508</th>
+		<th>511</th>
 		<th>122</th>
-		<th>184</th>
+		<th>187</th>
 		<th>202</th>
 		<th>0</th>
-		<th>12045</th>
+		<th>12113</th>
 	</tr><tr>
 		<th>Markdown</th>
 		<th>2</th>
@@ -184,12 +184,12 @@ $ make gen-readme
 	<tfoot><tr>
 		<th>Total</th>
 		<th>35</th>
-		<th>2803</th>
+		<th>2806</th>
 		<th>485</th>
-		<th>509</th>
+		<th>512</th>
 		<th>1809</th>
 		<th>248</th>
-    	<th>64046</th>
+    	<th>64114</th>
 	</tr></tfoot>
 	</table>
 
@@ -197,7 +197,9 @@ $ make gen-readme
 
 |Path|Line|Description|
 |-|-|-|
-|**src/lines.h**|**14**|**do not forget to rerender after absorb**|
+|**src/line.h**|**6**|**opaque**|
+|**src/lines.h**|**7**|**opaque**|
+|**src/lines.h**|**15**|**do not forget to rerender after absorb**|
 |**src/main.c**|**1**|**[1] Use ptrdiff_t where needed.**|
 |**src/main.c**|**2**|**[1] Remove unused includes.**|
 |**src/main.c**|**3**|**[1] Try to make code easier and less bloated.**|

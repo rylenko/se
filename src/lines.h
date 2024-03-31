@@ -4,7 +4,8 @@
 #include <stdio.h>
 #include "line.h"
 
-/* Liness of the file. */
+/* TODO: opaque */
+/* Lines of the file. */
 typedef struct {
 	Line *arr; /* Dynamic array with liness */
 	size_t cnt; /* Count of lines */

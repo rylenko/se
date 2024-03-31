@@ -3,6 +3,8 @@
 
 #include <stdio.h>
 
+/* TODO: opaque */
+/* Line of the opened file. */
 typedef struct {
 	char *cont; /* Raw content of the line */
 	size_t len; /* Length of content */
