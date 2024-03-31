@@ -39,7 +39,7 @@ win_exp_col(const Line *const line, const size_t col)
 {
 	size_t i;
 	size_t ret;
-	size_t end = MIN(col, line->render_len);
+	size_t end = MIN(col, line->len);
 
 	/* Iterate over every character in the visible part of line */
 	for (i = 0, ret = 0; i < end; i++, ret++) {

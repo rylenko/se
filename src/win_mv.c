@@ -132,13 +132,13 @@ win_mv_to_next_word(Win *const win, size_t times)
 	while (times-- > 0) {
 		/* Find next word from current position until end of line */
 		cont_i = win->offset.cols + win->cur.col;
-		word_i = word_next(line->cont + cont_i, line->len - cont_i);
+		word_i = word_next(&line->cont[cont_i], line->len - cont_i);
 
 		/* Check that word in the current window */
 		if (win->cur.col + word_i < win->size.ws_col) {
 			win->cur.col += word_i;
 		} else {
-			win->offset.cols = cont_i + word_i - win->size.ws_col;
+			win->offset.cols = cont_i + word_i - win->size.ws_col + 1;
 			win->cur.col = win->size.ws_col - 1;
 		}
 
@@ -166,7 +166,7 @@ win_mv_to_prev_word(Win *const win, size_t times)
 		if (word_i >= win->offset.cols) {
 			win->cur.col = word_i - win->offset.cols;
 		} else {
-			win->offset.cols = word_i;
+			win->offset.cols = word_i - 1;
 			win->cur.col = 1;
 		}
 
