@@ -101,12 +101,7 @@ Returns written bytes count.
 */
 static size_t line_write(Line *, FILE *);
 
-/* TODO: do not forget to rerender after absorb */
-/*
-Extends specified line with next line, then frees next line.
-
-Does not update the render so you can do it yourself after several operations.
-*/
+/* Extends specified line with next line, then frees next line. */
 static void lines_absorb_next(Lines *, size_t);
 
 /* Initializes lines container. Do not forget to free it. */
@@ -167,7 +162,9 @@ file_del_line(File *const file, const size_t idx)
 void
 file_del_line_char(File *const file, const size_t idx, const size_t pos)
 {
+	/* Delete character and update render */
 	line_del(&file->lines.arr[idx], pos);
+	line_render(&file->lines.arr[idx]);
 }
 
 void
@@ -498,6 +495,8 @@ lines_absorb_next(Lines *const lines, const size_t idx)
 	if (idx + 1 < lines->cnt) {
 		/* Extend specified line with next line */
 		line_extend(&lines->arr[idx], &lines->arr[idx + 1]);
+		/* Update line's render */
+		line_render(&lines->arr[idx]);
 
 		/* Delete absorbed line */
 		lines_del(lines, idx + 1);
