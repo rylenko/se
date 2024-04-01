@@ -125,7 +125,8 @@ ed_del_line(Ed *const ed)
 void
 ed_draw(Ed *const ed)
 {
-	/* Initialize buffer to write to terminal */
+	/* TODO: allocate in opening, free in quit, write and flush here */
+	/* Allocate buffer to write to terminal */
 	Buf *const buf = buf_alloc();
 
 	/* Go to start of window and clear the window */

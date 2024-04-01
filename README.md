@@ -120,12 +120,12 @@ $ make gen-readme
 	<tbody><tr>
 		<th>C</th>
 		<th>13</th>
-		<th>1959</th>
+		<th>1960</th>
 		<th>283</th>
-		<th>309</th>
+		<th>310</th>
 		<th>1367</th>
 		<th>250</th>
-		<th>45758</th>
+		<th>45825</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>15</th>
@@ -184,12 +184,12 @@ $ make gen-readme
 	<tfoot><tr>
 		<th>Total</th>
 		<th>35</th>
-		<th>2817</th>
+		<th>2818</th>
 		<th>486</th>
-		<th>514</th>
+		<th>515</th>
 		<th>1817</th>
 		<th>250</th>
-    	<th>64457</th>
+    	<th>64524</th>
 	</tr></tfoot>
 	</table>
 
@@ -211,3 +211,4 @@ $ make gen-readme
 |**src/main.c**|**9**|**[3] Support huge files.**|
 |**src/main.c**|**10**|**[3] Undo operations. Also rename "del" to "remove" where needed.**|
 |**src/main.c**|**11**|**[4] API with status codes instead of err.h and tests**|
+|**src/ed.c**|**128**|**allocate in opening, free in quit, write and flush here**|
