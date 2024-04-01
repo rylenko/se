@@ -81,7 +81,9 @@ static Line *line_read(Line *, FILE *);
 /* Reallocates line with new capacity. */
 static void line_realloc(Line *, size_t);
 
-/* Renders line's content how it should look in the window. Frees old content. */
+/*
+Renders line's content how it should look in the window and frees old content.
+*/
 static void line_render(Line *);
 
 /*
@@ -166,6 +168,19 @@ void
 file_del_line_char(File *const file, const size_t idx, const size_t pos)
 {
 	line_del(&file->lines.arr[idx], pos);
+}
+
+void
+file_ins_empty_line(File *const file, const size_t idx)
+{
+	/* Initialize empty line */
+	Line empty_line;
+	line_init(&empty_line);
+
+	/* Insert empty line */
+	lines_ins(&file->lines, idx, empty_line);
+	/* Mark file as dirty */
+	file->is_dirty = 1;
 }
 
 char
@@ -490,12 +505,6 @@ lines_absorb_next(Lines *const lines, const size_t idx)
 }
 
 static void
-lines_init(Lines *const lines)
-{
-	memset(lines, 0, sizeof(*lines));
-}
-
-static void
 lines_break(Lines *const lines, const size_t idx, const size_t pos)
 {
 	Line new_line;
@@ -563,6 +572,12 @@ lines_free(Lines *const lines)
 		line_free(&lines->arr[lines->cnt]);
 	/* Free dynamic array */
 	free(lines->arr);
+}
+
+static void
+lines_init(Lines *const lines)
+{
+	memset(lines, 0, sizeof(*lines));
 }
 
 static void

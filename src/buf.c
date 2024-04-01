@@ -27,7 +27,7 @@ struct Buf {
 };
 
 /* Reallocates buffer with new capacity. */
-static void buf_realloc(Buf *const buf, const size_t new_cap);
+static void buf_realloc(Buf *, size_t);
 
 Buf*
 buf_alloc(void)

@@ -35,90 +35,85 @@ struct Ed {
 };
 
 /* Deletes the inputed number of lines from file. */
-static void ed_del_line(Ed *const ed);
+static void ed_del_line(Ed *);
 
 /* Draws status on last row. */
-static void ed_draw_stat(Ed *const ed, Buf *const buf);
+static void ed_draw_stat(Ed *, Buf *);
 
 /* Drows left part of status. */
-static size_t ed_draw_stat_left(Ed *const ed, Buf *const buf);
+static size_t ed_draw_stat_left(Ed *, Buf *);
 
 /* Draws right part of status. */
-static void ed_draw_stat_right(
-	const Ed *const ed,
-	Buf *const buf,
-	const size_t left_len
-);
-
-/* Determines how many times the next action needs to be repeated. */
-static size_t ed_get_repeat_times(const Ed *const ed);
+static void ed_draw_stat_right(const Ed *, Buf *, size_t);
 
 /* Writes digit to the number input. Resets if argument is reset flag. */
-static void ed_input_num(Ed *const ed, const char digit);
+static void ed_input_num(Ed *, char);
+
+/* Inserts below several empty lines. */
+static void ed_ins_empty_line_below(Ed *);
 
 /* Use it when user presses quit key. Interacts with the remaining counter. */
-static void ed_on_quit_press(Ed *const ed);
+static void ed_on_quit_press(Ed *);
 
 /* Processes arrow key. Key must be between 'A' and 'D'. */
-static void ed_proc_arrow_key(Ed *const ed, const char key);
+static void ed_proc_arrow_key(Ed *, char);
 
 /* Process key in insertion mode. */
-static void ed_proc_ins_key(Ed *const ed, const char key);
+static void ed_proc_ins_key(Ed *, char);
 
 /* Processes key sequence. Useful if single key press is several characters */
-static void ed_proc_seq_key(
-	Ed *const ed,
-	const char *const seq,
-	const size_t len
-);
+static void ed_proc_seq_key(Ed *, const char *, size_t);
 
 /* Process key in normal mode. */
-static void ed_proc_norm_key(Ed *const ed, const char key);
+static void ed_proc_norm_key(Ed *, char);
 
 /* Moves editor down. */
-static void ed_mv_down(Ed *const ed);
+static void ed_mv_down(Ed *);
 
 /* Moves editor left. */
-static void ed_mv_left(Ed *const ed);
+static void ed_mv_left(Ed *);
 
 /* Moves editor right. */
-static void ed_mv_right(Ed *const ed);
+static void ed_mv_right(Ed *);
 
 /* Moves editor up. */
-static void ed_mv_up(Ed *const ed);
+static void ed_mv_up(Ed *);
 
 /* Moves editor to begin of file. */
-static void ed_mv_to_begin_of_file(Ed *const ed);
+static void ed_mv_to_begin_of_file(Ed *);
 
 /* Moves editor to begin of line. */
-static void ed_mv_to_begin_of_line(Ed *const ed);
+static void ed_mv_to_begin_of_line(Ed *);
 
 /* Moves editor to end of line. */
-static void ed_mv_to_end_of_file(Ed *const ed);
+static void ed_mv_to_end_of_file(Ed *);
 
 /* Moves editor to end of line. */
-static void ed_mv_to_end_of_line(Ed *const ed);
+static void ed_mv_to_end_of_line(Ed *);
 
 /* Moves editor to next word. */
-static void ed_mv_to_next_word(Ed *const ed);
+static void ed_mv_to_next_word(Ed *);
 
 /* Moves editor to previous word. */
-static void ed_mv_to_prev_word(Ed *const ed);
+static void ed_mv_to_prev_word(Ed *);
+
+/* Determines how many times the next action needs to be repeated. */
+static size_t ed_repeat_times(const Ed *);
 
 /* Saves opened file. */
-static void ed_save_file(Ed *const ed);
+static void ed_save_file(Ed *);
 
 /* Saves opened file to spare dir. Useful if no privileges. */
-static void ed_save_file_to_spare_dir(Ed *const ed);
+static void ed_save_file_to_spare_dir(Ed *);
 
 /* Sets formatted message to the user. */
-static void ed_set_msg(Ed *const ed, const char *const fmt, ...);
+static void ed_set_msg(Ed *, const char *, ...);
 
 static void
 ed_del_line(Ed *const ed)
 {
 	/* Try to delete lines or set error message */
-	if (win_del_line(ed->win, ed_get_repeat_times(ed)) < 0)
+	if (win_del_line(ed->win, ed_repeat_times(ed)) < 0)
 		ed_set_msg(ed, "A single line in a file cannot be deleted.");
 	else
 		/* Set quit presses count after file change */
@@ -219,12 +214,6 @@ ed_draw_stat_right(const Ed *const ed, Buf *const buf, const size_t left_len)
 	buf_writef(buf, "%s%s", num_input, pos);
 }
 
-static size_t
-ed_get_repeat_times(const Ed *const ed)
-{
-	return 0 == ed->num_input ? 1 : ed->num_input;
-}
-
 void
 ed_handle_signal(Ed *const ed, const int signal)
 {
@@ -250,28 +239,39 @@ ed_input_num(Ed *const ed, const char digit)
 		ed->num_input = (ed->num_input * 10) + digit;
 }
 
+static void
+ed_ins_empty_line_below(Ed *const ed)
+{
+	win_ins_empty_line_below(ed->win, ed_repeat_times(ed));
+
+	/* Set quit presses count after file change */
+	ed->quit_presses_rem = CFG_DIRTY_FILE_QUIT_PRESSES_CNT;
+	/* Switch mode for comfort */
+	ed->mode = MODE_INS;
+}
+
 void
 ed_mv_down(Ed *const ed)
 {
-	win_mv_down(ed->win, ed_get_repeat_times(ed));
+	win_mv_down(ed->win, ed_repeat_times(ed));
 }
 
 void
 ed_mv_left(Ed *const ed)
 {
-	win_mv_left(ed->win, ed_get_repeat_times(ed));
+	win_mv_left(ed->win, ed_repeat_times(ed));
 }
 
 void
 ed_mv_right(Ed *const ed)
 {
-	win_mv_right(ed->win, ed_get_repeat_times(ed));
+	win_mv_right(ed->win, ed_repeat_times(ed));
 }
 
 void
 ed_mv_up(Ed *const ed)
 {
-	win_mv_up(ed->win, ed_get_repeat_times(ed));
+	win_mv_up(ed->win, ed_repeat_times(ed));
 }
 
 void
@@ -301,13 +301,13 @@ ed_mv_to_end_of_line(Ed *const ed)
 void
 ed_mv_to_next_word(Ed *const ed)
 {
-	win_mv_to_next_word(ed->win, ed_get_repeat_times(ed));
+	win_mv_to_next_word(ed->win, ed_repeat_times(ed));
 }
 
 void
 ed_mv_to_prev_word(Ed *const ed)
 {
-	win_mv_to_prev_word(ed->win, ed_get_repeat_times(ed));
+	win_mv_to_prev_word(ed->win, ed_repeat_times(ed));
 }
 
 char
@@ -399,6 +399,9 @@ ed_proc_norm_key(Ed *const ed, const char key)
 	case CFG_KEY_DEL_LINE:
 		ed_del_line(ed);
 		break;
+	case CFG_KEY_INS_LINE_BELOW:
+		ed_ins_empty_line_below(ed);
+		return;
 	case CFG_KEY_MODE_INS:
 		ed->mode = MODE_INS;
 		break;
@@ -453,6 +456,12 @@ ed_quit(Ed *const ed)
 	win_close(ed->win);
 	/* Free opaque struct */
 	free(ed);
+}
+
+static size_t
+ed_repeat_times(const Ed *const ed)
+{
+	return 0 == ed->num_input ? 1 : ed->num_input;
 }
 
 static void

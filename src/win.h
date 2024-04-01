@@ -12,6 +12,12 @@ typedef struct Win Win;
 /* Closes the window. */
 void win_close(Win *);
 
+/* Gets current line's index. */
+size_t win_curr_line_idx(const Win *);
+
+/* Gets current line content's index. */
+size_t win_curr_line_cont_idx(const Win *);
+
 /*
 Deletes the passed number of lines starting from the current one.
 
@@ -32,14 +38,11 @@ char win_file_is_dirty(const Win *);
 /* Returns opened file's path. */
 const char *win_file_path(const Win *);
 
-/* Gets current line's index. */
-size_t win_curr_line_idx(const Win *);
-
-/* Gets current line content's index. */
-size_t win_curr_line_cont_idx(const Win *);
-
 /* Handles signal. */
 void win_handle_signal(Win *, int);
+
+/* Inserts empty line below several times. */
+void win_ins_empty_line_below(Win *, size_t);
 
 /* Move down several times. */
 void win_mv_down(Win *, size_t);

@@ -3,7 +3,7 @@
 #include "err_alloc.h"
 
 /* Validates allocated pointer against `NULL`. Returns passed pointer. */
-static void *err_alloc_validate(void *const ptr);
+static void *err_alloc_validate(void *);
 
 static void*
 err_alloc_validate(void *const ptr)

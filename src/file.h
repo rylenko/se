@@ -9,6 +9,9 @@ typedef struct File File;
 /* Closes file and frees memory. */
 void file_close(File *);
 
+/* Inserts empty line at index. */
+void file_ins_empty_line(File *, size_t);
+
 /* Checks that file is dirty. */
 char file_is_dirty(const File *);
 

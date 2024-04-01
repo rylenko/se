@@ -17,7 +17,7 @@ struct {
 } term;
 
 /* Sets raw mode parameters to termios instance. */
-static void term_set_raw_mode_params(struct termios *const params);
+static void term_set_raw_mode_params(struct termios *);
 
 void
 term_deinit(void)

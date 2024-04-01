@@ -51,26 +51,22 @@ struct Win {
 };
 
 /* Clamps cursor to the line. Useful when moving between lines. */
-static void win_clamp_cur_to_line(Win *const win);
+static void win_clamp_cur_to_line(Win *);
 
 /*
 Gets the count of characters by which the part of line is expanded using tabs.
 The part of the line from the beginning to the passed column is considered.
 */
-static size_t win_exp_col(
-	const char *const cont,
-	const size_t len,
-	const size_t col
-);
+static size_t win_exp_col(const char *, size_t, size_t);
 
 /*
 Fixes expanded cursor column for current line. Used than expanded cursor goes
 off window, but the internal cursor is still here.
 */
-static void win_fix_exp_cur_col(Win *const win);
+static void win_fix_exp_cur_col(Win *);
 
 /* Updates window's size using terminal. */
-static void win_upd_size(Win *const win);
+static void win_upd_size(Win *);
 
 static void
 win_clamp_cur_to_line(Win *const win)
@@ -95,6 +91,18 @@ win_close(Win *const win)
 	term_deinit();
 	file_close(win->file);
 	free(win);
+}
+
+size_t
+win_curr_line_idx(const Win *const win)
+{
+	return win->offset.rows + win->cur.row;
+}
+
+size_t
+win_curr_line_cont_idx(const Win *const win)
+{
+	return win->offset.cols + win->cur.col;
 }
 
 int
@@ -226,23 +234,25 @@ win_fix_exp_cur_col(Win *const win)
 	}
 }
 
-size_t
-win_curr_line_idx(const Win *const win)
-{
-	return win->offset.rows + win->cur.row;
-}
-
-size_t
-win_curr_line_cont_idx(const Win *const win)
-{
-	return win->offset.cols + win->cur.col;
-}
-
 void
 win_handle_signal(Win *const win, const int signal)
 {
 	if (SIGWINCH == signal)
 		win_upd_size(win);
+}
+
+void
+win_ins_empty_line_below(Win *const win, size_t times)
+{
+	size_t i;
+
+	/* Remove column offsets */
+	win_mv_to_begin_of_line(win);
+	/* Insert empty lines */
+	for (i = 0; i < times; i++)
+		file_ins_empty_line(win->file, win->offset.rows + win->cur.row + i + 1);
+	/* Move to last inserted line */
+	win_mv_down(win, times);
 }
 
 void
