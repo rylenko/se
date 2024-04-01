@@ -120,21 +120,21 @@ $ make gen-readme
 	<tbody><tr>
 		<th>C</th>
 		<th>13</th>
-		<th>1941</th>
-		<th>281</th>
-		<th>307</th>
-		<th>1353</th>
-		<th>248</th>
-		<th>45278</th>
+		<th>1959</th>
+		<th>283</th>
+		<th>309</th>
+		<th>1367</th>
+		<th>250</th>
+		<th>45758</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>15</th>
-		<th>511</th>
-		<th>121</th>
+		<th>509</th>
+		<th>122</th>
 		<th>187</th>
-		<th>203</th>
+		<th>200</th>
 		<th>0</th>
-		<th>12121</th>
+		<th>12040</th>
 	</tr><tr>
 		<th>Markdown</th>
 		<th>2</th>
@@ -184,12 +184,12 @@ $ make gen-readme
 	<tfoot><tr>
 		<th>Total</th>
 		<th>35</th>
-		<th>2801</th>
-		<th>483</th>
-		<th>512</th>
-		<th>1806</th>
-		<th>248</th>
-    	<th>64058</th>
+		<th>2817</th>
+		<th>486</th>
+		<th>514</th>
+		<th>1817</th>
+		<th>250</th>
+    	<th>64457</th>
 	</tr></tfoot>
 	</table>
 
@@ -199,8 +199,7 @@ $ make gen-readme
 |-|-|-|
 |**src/file.h**|**17**|**file_lines + lines_get**|
 |**src/line.h**|**6**|**opaque**|
-|**src/lines.h**|**7**|**opaque**|
-|**src/lines.h**|**15**|**do not forget to rerender after absorb**|
+|**src/lines.h**|**10**|**do not forget to rerender after absorb**|
 |**src/main.c**|**1**|**[1] Use ptrdiff_t where needed.**|
 |**src/main.c**|**2**|**[1] Remove unused includes.**|
 |**src/main.c**|**3**|**[1] Try to make code easier and less bloated.**|

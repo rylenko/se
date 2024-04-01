@@ -104,16 +104,16 @@ win_close(Win *const win)
 int
 win_del_line(Win *const win, size_t times)
 {
-	size_t lines_cnt = file_lines(win->file)->cnt;
+	size_t file_lines_cnt = lines_cnt(file_lines(win->file));
 
-	if (1 >= lines_cnt) {
+	if (1 >= file_lines_cnt) {
 		return -1;
 	} else if (times > 0) {
 		/* Get real repeat times */
-		times = MIN(times, lines_cnt - win->offset.rows - win->cur.row);
+		times = MIN(times, file_lines_cnt - win->offset.rows - win->cur.row);
 
 		/* The file must contain at least one line */
-		if (times == lines_cnt)
+		if (times == file_lines_cnt)
 			times--;
 
 		/* Remove column offsets */
@@ -125,7 +125,7 @@ win_del_line(Win *const win, size_t times)
 			file_del(win->file, win->offset.rows + win->cur.row);
 
 		/* Move up if we deleted the last line and stayed there */
-		if (win->offset.rows + win->cur.row == file_lines(win->file)->cnt)
+		if (win->offset.rows + win->cur.row == lines_cnt(file_lines(win->file)))
 			win_mv_up(win, 1);
 	}
 	return 0;
@@ -151,12 +151,12 @@ win_draw_lines(const Win *const win, Buf *const buf)
 	size_t exp_offset_col;
 	size_t row;
 	size_t len_to_draw;
-	size_t lines_cnt = file_lines(win->file)->cnt;
+	size_t file_lines_cnt = lines_cnt(file_lines(win->file));
 	const Line *line;
 
 	for (row = 0; row + STAT_ROWS_CNT < win->size.ws_row; row++) {
 		/* Checking if there is a line to draw at this row */
-		if (win->offset.rows + row >= lines_cnt) {
+		if (win->offset.rows + row >= file_lines_cnt) {
 			buf_write(buf, "~", 1);
 		} else {
 			/* Get current line */
@@ -249,12 +249,12 @@ win_handle_signal(Win *const win, const int signal)
 void
 win_mv_down(Win *const win, size_t times)
 {
-	size_t lines_cnt = file_lines(win->file)->cnt;
+	size_t file_lines_cnt = lines_cnt(file_lines(win->file));
 
 	if (times > 0) {
 		while (times-- > 0) {
 			/* Break if there is no more space to move down */
-			if (win->offset.rows + win->cur.row + 1 >= lines_cnt)
+			if (win->offset.rows + win->cur.row + 1 >= file_lines_cnt)
 				break;
 
 			/* Check that there is no space in current window */
@@ -300,7 +300,7 @@ win_mv_left(Win *const win, size_t times)
 void
 win_mv_right(Win *const win, size_t times)
 {
-	size_t lines_cnt = file_lines(win->file)->cnt;
+	size_t file_lines_cnt = lines_cnt(file_lines(win->file));
 	const Line *line = win_get_curr_line(win);
 
 	if (times > 0) {
@@ -308,7 +308,7 @@ win_mv_right(Win *const win, size_t times)
 			/* Move to the beginning of next line if there is not space to move right */
 			if (win->offset.cols + win->cur.col == line->len) {
 				/* Check there is no next line */
-				if (win->offset.rows + win->cur.row + 1 == lines_cnt)
+				if (win->offset.rows + win->cur.row + 1 == file_lines_cnt)
 					break;
 
 				/* Move to the beginning of next line */
@@ -349,16 +349,16 @@ win_mv_to_begin_of_line(Win *const win)
 void
 win_mv_to_end_of_file(Win *const win)
 {
-	size_t lines_cnt = file_lines(win->file)->cnt;
+	size_t file_lines_cnt = lines_cnt(file_lines(win->file));
 	/* Move to begin of last line */
 	win_mv_to_begin_of_line(win);
 
 	/* Check that line on initial frame */
-	if (lines_cnt < win->size.ws_row) {
+	if (file_lines_cnt < win->size.ws_row) {
 		win->offset.rows = 0;
-		win->cur.row = lines_cnt - 1;
+		win->cur.row = file_lines_cnt - 1;
 	} else {
-		win->offset.rows = lines_cnt - (win->size.ws_row - STAT_ROWS_CNT);
+		win->offset.rows = file_lines_cnt - (win->size.ws_row - STAT_ROWS_CNT);
 		win->cur.row = win->size.ws_row - STAT_ROWS_CNT - 1;
 	}
 }

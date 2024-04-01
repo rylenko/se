@@ -12,7 +12,7 @@
 
 /* Internal information about the open file. */
 struct File {
-	Lines lines; /* Lines of readed file. There is always at least one line */
+	Lines *lines; /* Lines of readed file. There is always at least one line */
 	char is_dirty; /* The file has been modified and not saved */
 	char *path; /* Path of readed file. This is where the default save occurs */
 };
@@ -21,7 +21,7 @@ void
 file_close(File *const file)
 {
 	/* Free readed lines */
-	lines_free(&file->lines);
+	lines_free(file->lines);
 	/* Freeing the path since we cloned it earlier */
 	free(file->path);
 	/* Free allocated opaque struct */
@@ -32,14 +32,14 @@ void
 file_del(File *const file, const size_t idx)
 {
 	/* Delete the line and mark file as dirty */
-	lines_del(&file->lines, idx);
+	lines_del(file->lines, idx);
 	file->is_dirty = 1;
 }
 
 Line*
 file_get(const File *const file, const size_t idx)
 {
-	return lines_get(&file->lines, idx);
+	return lines_get(file->lines, idx);
 }
 
 char
@@ -51,7 +51,7 @@ file_is_dirty(const File *const file)
 const Lines*
 file_lines(const File *const file)
 {
-	return &file->lines;
+	return file->lines;
 }
 
 File*
@@ -65,21 +65,21 @@ file_open(const char *const path)
 		err(EXIT_FAILURE, "Failed to allocate file");
 
 	/* Initialize file */
-	lines_init(&file->lines);
+	file->lines = lines_alloc();
 	file->is_dirty = 0;
 	file->path = str_copy(path, strlen(path));
 
 	/* Open file, read lines and close the file */
 	if (NULL == (inner_file = fopen(path, "r")))
 		err(EXIT_FAILURE, "Failed to open file %s", path);
-	lines_read(&file->lines, inner_file);
+	lines_read(file->lines, inner_file);
 	if (fclose(inner_file) == EOF)
 		err(EXIT_FAILURE, "Failed to close readed file");
 
 	/* Add empty line if there is no lines */
-	if (0 == file->lines.cnt) {
+	if (0 == lines_cnt(file->lines)) {
 		line_init(&empty_line);
-		lines_ins(&file->lines, 0, empty_line);
+		lines_ins(file->lines, 0, empty_line);
 	}
 	return file;
 }
@@ -100,7 +100,7 @@ file_save(File *const file, const char *const path)
 	if (NULL == (inner = fopen(path == NULL ? file->path : path, "w")))
 		return 0;
 	/* Write lines to opened file */
-	len = lines_write(&file->lines, inner);
+	len = lines_write(file->lines, inner);
 	/* Flush and close the file */
 	if (fflush(inner) == EOF)
 		err(EXIT_FAILURE, "Failed to flush saved file");

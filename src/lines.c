@@ -11,6 +11,13 @@ enum {
 	LINES_REALLOC_STEP = 32,
 };
 
+/* Lines of the file. */
+struct Lines {
+	Line *arr; /* Dynamic array with lines */
+	size_t cnt; /* Count of lines */
+	size_t cap; /* Reserved capacity for dynamic array */
+};
+
 /* Reallocates lines container's capacity. */
 static void lines_realloc(Lines *const lines, const size_t new_cap);
 
@@ -25,6 +32,15 @@ lines_absorb_next(Lines *const lines, const size_t idx)
 		/* Delete absorbed line */
 		lines_del(lines, idx + 1);
 	}
+}
+
+Lines*
+lines_alloc(void)
+{
+	Lines *const lines = calloc(1, sizeof(Lines));
+	if (NULL == lines)
+		err(EXIT_FAILURE, "Failed to allocate lines");
+	return lines;
 }
 
 void
@@ -68,6 +84,12 @@ lines_break(Lines *const lines, const size_t idx, const size_t pos)
 	lines_ins(lines, idx + 1, new_line);
 }
 
+size_t
+lines_cnt(const Lines *const lines)
+{
+	return lines->cnt;
+}
+
 void
 lines_del(Lines *const lines, const size_t idx)
 {
@@ -93,10 +115,12 @@ lines_del(Lines *const lines, const size_t idx)
 void
 lines_free(Lines *const lines)
 {
-	/* Free lines and its container */
+	/* Free lines */
 	while (lines->cnt-- > 0)
 		line_free(&lines->arr[lines->cnt]);
+	/* Free dynamic array and opaque struct */
 	free(lines->arr);
+	free(lines);
 }
 
 Line*
@@ -112,12 +136,6 @@ lines_realloc(Lines *const lines, const size_t new_cap)
 	/* Try to reallocate lines container with new capacity */
 	if (NULL == (lines->arr = realloc(lines->arr, sizeof(Line) * lines->cap)))
 		err(EXIT_FAILURE, "Failed to realloc lines with capacity %zu", lines->cap);
-}
-
-void
-lines_init(Lines *const lines)
-{
-	memset(lines, 0, sizeof(*lines));
 }
 
 void
