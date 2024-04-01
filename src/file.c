@@ -48,10 +48,10 @@ file_is_dirty(const File *const file)
 	return file->is_dirty;
 }
 
-size_t
-file_lines_cnt(const File *const file)
+const Lines*
+file_lines(const File *const file)
 {
-	return file->lines.cnt;
+	return &file->lines;
 }
 
 File*

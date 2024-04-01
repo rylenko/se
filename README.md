@@ -125,16 +125,16 @@ $ make gen-readme
 		<th>307</th>
 		<th>1353</th>
 		<th>248</th>
-		<th>45273</th>
+		<th>45278</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>15</th>
-		<th>509</th>
+		<th>511</th>
 		<th>121</th>
-		<th>186</th>
-		<th>202</th>
+		<th>187</th>
+		<th>203</th>
 		<th>0</th>
-		<th>12065</th>
+		<th>12121</th>
 	</tr><tr>
 		<th>Markdown</th>
 		<th>2</th>
@@ -184,12 +184,12 @@ $ make gen-readme
 	<tfoot><tr>
 		<th>Total</th>
 		<th>35</th>
-		<th>2799</th>
+		<th>2801</th>
 		<th>483</th>
-		<th>511</th>
-		<th>1805</th>
+		<th>512</th>
+		<th>1806</th>
 		<th>248</th>
-    	<th>63997</th>
+    	<th>64058</th>
 	</tr></tfoot>
 	</table>
 
@@ -197,6 +197,7 @@ $ make gen-readme
 
 |Path|Line|Description|
 |-|-|-|
+|**src/file.h**|**17**|**file_lines + lines_get**|
 |**src/line.h**|**6**|**opaque**|
 |**src/lines.h**|**7**|**opaque**|
 |**src/lines.h**|**15**|**do not forget to rerender after absorb**|

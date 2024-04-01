@@ -3,6 +3,7 @@
 
 #include <stddef.h>
 #include "line.h"
+#include "lines.h"
 
 /* Alias for opaque struct of opened file. */
 typedef struct File File;
@@ -13,6 +14,7 @@ void file_close(File *);
 /* Deletes line from the file. */
 void file_del(File *, size_t);
 
+/* TODO: file_lines + lines_get */
 /* Gets line by its index. */
 Line *file_get(const File *, size_t);
 
@@ -20,7 +22,7 @@ Line *file_get(const File *, size_t);
 char file_is_dirty(const File *);
 
 /* Gets lines count in the file. */
-size_t file_lines_cnt(const File *);
+const Lines *file_lines(const File *);
 
 /*
 Reads the contents of file.

@@ -104,7 +104,7 @@ win_close(Win *const win)
 int
 win_del_line(Win *const win, size_t times)
 {
-	size_t lines_cnt = file_lines_cnt(win->file);
+	size_t lines_cnt = file_lines(win->file)->cnt;
 
 	if (1 >= lines_cnt) {
 		return -1;
@@ -125,7 +125,7 @@ win_del_line(Win *const win, size_t times)
 			file_del(win->file, win->offset.rows + win->cur.row);
 
 		/* Move up if we deleted the last line and stayed there */
-		if (win->offset.rows + win->cur.row == file_lines_cnt(win->file))
+		if (win->offset.rows + win->cur.row == file_lines(win->file)->cnt)
 			win_mv_up(win, 1);
 	}
 	return 0;
@@ -151,7 +151,7 @@ win_draw_lines(const Win *const win, Buf *const buf)
 	size_t exp_offset_col;
 	size_t row;
 	size_t len_to_draw;
-	size_t lines_cnt = file_lines_cnt(win->file);
+	size_t lines_cnt = file_lines(win->file)->cnt;
 	const Line *line;
 
 	for (row = 0; row + STAT_ROWS_CNT < win->size.ws_row; row++) {
@@ -249,7 +249,7 @@ win_handle_signal(Win *const win, const int signal)
 void
 win_mv_down(Win *const win, size_t times)
 {
-	size_t lines_cnt = file_lines_cnt(win->file);
+	size_t lines_cnt = file_lines(win->file)->cnt;
 
 	if (times > 0) {
 		while (times-- > 0) {
@@ -300,7 +300,7 @@ win_mv_left(Win *const win, size_t times)
 void
 win_mv_right(Win *const win, size_t times)
 {
-	size_t lines_cnt = file_lines_cnt(win->file);
+	size_t lines_cnt = file_lines(win->file)->cnt;
 	const Line *line = win_get_curr_line(win);
 
 	if (times > 0) {
@@ -349,7 +349,7 @@ win_mv_to_begin_of_line(Win *const win)
 void
 win_mv_to_end_of_file(Win *const win)
 {
-	size_t lines_cnt = file_lines_cnt(win->file);
+	size_t lines_cnt = file_lines(win->file)->cnt;
 	/* Move to begin of last line */
 	win_mv_to_begin_of_line(win);
 
