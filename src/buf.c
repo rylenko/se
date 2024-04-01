@@ -5,6 +5,7 @@
 #include <string.h>
 #include <unistd.h>
 #include "buf.h"
+#include "err_alloc.h"
 #include "math.h"
 
 enum {
@@ -31,11 +32,7 @@ static void buf_realloc(Buf *const buf, const size_t new_cap);
 Buf*
 buf_alloc(void)
 {
-	/* Allocate buffer with zeros */
-	Buf *buf = calloc(1, sizeof(*buf));
-	if (NULL == buf)
-		err(EXIT_FAILURE, "Failed to allocate buffer.");
-	return buf;
+	return err_calloc(1, sizeof(Buf));
 }
 
 void
@@ -59,9 +56,8 @@ buf_free(Buf *const buf)
 static void
 buf_realloc(Buf *const buf, const size_t new_cap)
 {
-	if (NULL == (buf->data = realloc(buf->data, new_cap)))
-		err(EXIT_FAILURE, "Failed to reallocate buffer with capacity %zu", new_cap);
-	/* Set new capacity */
+	/* Reallocate and update capacity */
+	buf->data = err_realloc(buf->data, new_cap);
 	buf->cap = new_cap;
 }
 

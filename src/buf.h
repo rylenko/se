@@ -6,7 +6,7 @@
 /* Alias for opaque struct of buffer. */
 typedef struct Buf Buf;
 
-/* Allocatees buffer. Do not forget to free it. */
+/* Allocatees empty buffer. Do not forget to free it. */
 Buf *buf_alloc(void);
 
 /*

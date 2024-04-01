@@ -18,10 +18,9 @@ method for clamping the internal column in the rendered window, and others.
 #include <sys/ioctl.h>
 #include "buf.h"
 #include "cfg.h"
+#include "err_alloc.h"
 #include "esc.h"
 #include "file.h"
-#include "line.h"
-#include "lines.h"
 #include "math.h"
 #include "term.h"
 #include "win.h"
@@ -58,7 +57,11 @@ static void win_clamp_cur_to_line(Win *const win);
 Gets the count of characters by which the part of line is expanded using tabs.
 The part of the line from the beginning to the passed column is considered.
 */
-static size_t win_exp_col(const Line *const line, const size_t col);
+static size_t win_exp_col(
+	const char *const cont,
+	const size_t len,
+	const size_t col
+);
 
 /*
 Fixes expanded cursor column for current line. Used than expanded cursor goes
@@ -66,28 +69,21 @@ off window, but the internal cursor is still here.
 */
 static void win_fix_exp_cur_col(Win *const win);
 
-/* Gets current line. */
-static Line *win_get_curr_line(const Win *const win);
-
-/* Gets line by its index. */
-static Line *win_get_line(const Win *const win, const size_t idx);
-
 /* Updates window's size using terminal. */
 static void win_upd_size(Win *const win);
 
 static void
 win_clamp_cur_to_line(Win *const win)
 {
-	const Line *const line = win_get_curr_line(win);
-
+	const size_t line_len = file_line_len(win->file, win_curr_line_idx(win));
 	/* Check that cursor out of the line */
-	if (win->offset.cols + win->cur.col > line->len) {
+	if (win->offset.cols + win->cur.col > line_len) {
 		/* Check that line not in the window */
-		if (line->len <= win->offset.cols) {
-			win->offset.cols = 0 == line->len ? 0 : line->len - 1;
-			win->cur.col = 0 == line->len ? 0 : 1;
+		if (line_len <= win->offset.cols) {
+			win->offset.cols = 0 == line_len ? 0 : line_len - 1;
+			win->cur.col = 0 == line_len ? 0 : 1;
 		} else {
-			win->cur.col = line->len - win->offset.cols;
+			win->cur.col = line_len - win->offset.cols;
 		}
 	}
 }
@@ -104,17 +100,16 @@ win_close(Win *const win)
 int
 win_del_line(Win *const win, size_t times)
 {
-	Lines *lines = file_lines(win->file);
-	size_t file_lines_cnt = lines_cnt(lines);
+	size_t lines_cnt = file_lines_cnt(win->file);
 
-	if (1 >= file_lines_cnt) {
+	if (1 >= lines_cnt) {
 		return -1;
 	} else if (times > 0) {
 		/* Get real repeat times */
-		times = MIN(times, file_lines_cnt - win->offset.rows - win->cur.row);
+		times = MIN(times, lines_cnt - win->offset.rows - win->cur.row);
 
 		/* The file must contain at least one line */
-		if (times == file_lines_cnt)
+		if (times == lines_cnt)
 			times--;
 
 		/* Remove column offsets */
@@ -123,10 +118,10 @@ win_del_line(Win *const win, size_t times)
 		/* Times is never zero here */
 		while (times-- > 0)
 			/* Delete lines */
-			lines_del(lines, win->offset.rows + win->cur.row);
+			file_del_line(win->file, win->offset.rows + win->cur.row);
 
 		/* Move up if we deleted the last line and stayed there */
-		if (win->offset.rows + win->cur.row == lines_cnt(lines))
+		if (win->offset.rows + win->cur.row == file_lines_cnt(win->file))
 			win_mv_up(win, 1);
 	}
 	return 0;
@@ -136,11 +131,12 @@ void
 win_draw_cur(const Win *const win, Buf *const buf)
 {
 	/* Get current line */
-	const Line *const line = win_get_curr_line(win);
+	const char *const cont = file_line_cont(win->file, win_curr_line_idx(win));
+	const size_t len = file_line_len(win->file, win_curr_line_idx(win));
 
 	/* Expand offset and file columns */
-	size_t exp_offset_col = win_exp_col(line, win->offset.cols);
-	size_t exp_file_col = win_exp_col(line, win->offset.cols + win->cur.col);
+	size_t exp_offset_col = win_exp_col(cont, len, win->offset.cols);
+	size_t exp_file_col = win_exp_col(cont, len, win->offset.cols + win->cur.col);
 
 	/* Substract expanded columns to get real column in the window */
 	esc_cur_set(buf, win->cur.row, exp_file_col - exp_offset_col);
@@ -149,28 +145,34 @@ win_draw_cur(const Win *const win, Buf *const buf)
 void
 win_draw_lines(const Win *const win, Buf *const buf)
 {
+	const char *cont;
 	size_t exp_offset_col;
 	size_t row;
+	size_t len;
 	size_t len_to_draw;
-	size_t file_lines_cnt = lines_cnt(file_lines(win->file));
-	const Line *line;
+	size_t lines_cnt = file_lines_cnt(win->file);
+	size_t render_len;
+	const char *render;
 
 	for (row = 0; row + STAT_ROWS_CNT < win->size.ws_row; row++) {
 		/* Checking if there is a line to draw at this row */
-		if (win->offset.rows + row >= file_lines_cnt) {
+		if (win->offset.rows + row >= lines_cnt) {
 			buf_write(buf, "~", 1);
 		} else {
-			/* Get current line */
-			line = win_get_line(win, win->offset.rows + row);
+			/* Get current line details */
+			cont = file_line_cont(win->file, win->offset.rows + row);
+			len = file_line_len(win->file, win->offset.rows + row);
+			render = file_line_render(win->file, win->offset.rows + row);
+			render_len = file_line_render_len(win->file, win->offset.rows + row);
 
 			/* Get expanded with tabs offset's column */
-			exp_offset_col = win_exp_col(line, win->offset.cols);
+			exp_offset_col = win_exp_col(cont, len, win->offset.cols);
 
 			/* Draw line if not empty and not hidden behind offset */
-			if (line->render_len > exp_offset_col) {
+			if (render_len > exp_offset_col) {
 				/* Calculate length to draw using expanded length and draw */
-				len_to_draw = MIN(win->size.ws_col, line->render_len - exp_offset_col);
-				buf_write(buf, &line->render[exp_offset_col], len_to_draw);
+				len_to_draw = MIN(win->size.ws_col, render_len - exp_offset_col);
+				buf_write(buf, &render[exp_offset_col], len_to_draw);
 			}
 		}
 
@@ -180,35 +182,43 @@ win_draw_lines(const Win *const win, Buf *const buf)
 }
 
 static size_t
-win_exp_col(const Line *const line, const size_t col)
+win_exp_col(const char *const cont, const size_t len, const size_t col)
 {
 	size_t i;
 	size_t ret;
-	size_t end = MIN(col, line->len);
+	size_t end = MIN(col, len);
 
 	/* Iterate over every character in the visible part of line */
 	for (i = 0, ret = 0; i < end; i++, ret++) {
 		/* Expand tabs */
-		if ('\t' == line->cont[i])
+		if ('\t' == cont[i])
 			ret += CFG_TAB_SIZE - ret % CFG_TAB_SIZE - 1;
 	}
 	return ret;
 }
 
-File*
-win_file(const Win *const win)
+char
+win_file_is_dirty(const Win *const win)
 {
-	return win->file;
+	return file_is_dirty(win->file);
+}
+
+const char*
+win_file_path(const Win *const win)
+{
+	return file_path(win->file);
 }
 
 static void
 win_fix_exp_cur_col(Win *const win)
 {
-	const Line *const line = win_get_curr_line(win);
+	/* Get current line's content and length */
+	const char *const cont = file_line_cont(win->file, win_curr_line_idx(win));
+	const size_t len = file_line_len(win->file, win_curr_line_idx(win));
 	/* Shift column offset until we see expanded cursor */
 	while (
-		win_exp_col(line, win->offset.cols + win->cur.col)
-			- win_exp_col(line, win->offset.cols)
+		win_exp_col(cont, len, win->offset.cols + win->cur.col)
+			- win_exp_col(cont, len, win->offset.cols)
 				>= win->size.ws_col
 	) {
 		win->offset.cols++;
@@ -216,28 +226,16 @@ win_fix_exp_cur_col(Win *const win)
 	}
 }
 
-static Line*
-win_get_curr_line(const Win *const win)
-{
-	return win_get_line(win, win->offset.rows + win->cur.row);
-}
-
 size_t
-win_get_curr_line_idx(const Win *const win)
+win_curr_line_idx(const Win *const win)
 {
 	return win->offset.rows + win->cur.row;
 }
 
 size_t
-win_get_curr_line_cont_idx(const Win *const win)
+win_curr_line_cont_idx(const Win *const win)
 {
 	return win->offset.cols + win->cur.col;
-}
-
-static Line*
-win_get_line(const Win *const win, const size_t idx)
-{
-	return lines_get(file_lines(win->file), idx);
 }
 
 void
@@ -250,12 +248,12 @@ win_handle_signal(Win *const win, const int signal)
 void
 win_mv_down(Win *const win, size_t times)
 {
-	size_t file_lines_cnt = lines_cnt(file_lines(win->file));
+	size_t lines_cnt = file_lines_cnt(win->file);
 
 	if (times > 0) {
 		while (times-- > 0) {
 			/* Break if there is no more space to move down */
-			if (win->offset.rows + win->cur.row + 1 >= file_lines_cnt)
+			if (win->offset.rows + win->cur.row + 1 >= lines_cnt)
 				break;
 
 			/* Check that there is no space in current window */
@@ -301,21 +299,21 @@ win_mv_left(Win *const win, size_t times)
 void
 win_mv_right(Win *const win, size_t times)
 {
-	size_t file_lines_cnt = lines_cnt(file_lines(win->file));
-	const Line *line = win_get_curr_line(win);
+	size_t lines_cnt = file_lines_cnt(win->file);
+	size_t line_len = file_line_len(win->file, win_curr_line_idx(win));
 
 	if (times > 0) {
 		while (times-- > 0) {
 			/* Move to the beginning of next line if there is not space to move right */
-			if (win->offset.cols + win->cur.col == line->len) {
+			if (win->offset.cols + win->cur.col == line_len) {
 				/* Check there is no next line */
-				if (win->offset.rows + win->cur.row + 1 == file_lines_cnt)
+				if (win->offset.rows + win->cur.row + 1 == lines_cnt)
 					break;
 
 				/* Move to the beginning of next line */
 				win_mv_to_begin_of_line(win);
 				win_mv_down(win, 1);
-				line++;
+				line_len = file_line_len(win->file, win_curr_line_idx(win));
 			} else if (win->cur.col + 1 == win->size.ws_col) {
 				/* We are at the right of window */
 				win->offset.cols++;
@@ -350,16 +348,16 @@ win_mv_to_begin_of_line(Win *const win)
 void
 win_mv_to_end_of_file(Win *const win)
 {
-	size_t file_lines_cnt = lines_cnt(file_lines(win->file));
+	size_t lines_cnt = file_lines_cnt(win->file);
 	/* Move to begin of last line */
 	win_mv_to_begin_of_line(win);
 
 	/* Check that line on initial frame */
-	if (file_lines_cnt < win->size.ws_row) {
+	if (lines_cnt < win->size.ws_row) {
 		win->offset.rows = 0;
-		win->cur.row = file_lines_cnt - 1;
+		win->cur.row = lines_cnt - 1;
 	} else {
-		win->offset.rows = file_lines_cnt - (win->size.ws_row - STAT_ROWS_CNT);
+		win->offset.rows = lines_cnt - (win->size.ws_row - STAT_ROWS_CNT);
 		win->cur.row = win->size.ws_row - STAT_ROWS_CNT - 1;
 	}
 }
@@ -367,13 +365,13 @@ win_mv_to_end_of_file(Win *const win)
 void
 win_mv_to_end_of_line(Win *const win)
 {
-	const Line *const line = win_get_curr_line(win);
+	const size_t line_len = file_line_len(win->file, win_curr_line_idx(win));
 
 	/* Check that end of line in the current window */
-	if (line->len < win->offset.cols + win->size.ws_col) {
-		win->cur.col = line->len - win->offset.cols;
+	if (line_len < win->offset.cols + win->size.ws_col) {
+		win->cur.col = line_len - win->offset.cols;
 	} else {
-		win->offset.cols = line->len - win->size.ws_col + 1;
+		win->offset.cols = line_len - win->size.ws_col + 1;
 		win->cur.col = win->size.ws_col - 1;
 	}
 }
@@ -383,13 +381,14 @@ win_mv_to_next_word(Win *const win, size_t times)
 {
 	size_t cont_i;
 	size_t word_i;
-	const Line *const line = win_get_curr_line(win);
+	const char *const cont = file_line_cont(win->file, win_curr_line_idx(win));
+	const size_t len = file_line_len(win->file, win_curr_line_idx(win));
 
 	if (times > 0) {
 		while (times-- > 0) {
 			/* Find next word from current position until end of line */
-			cont_i = win->offset.cols + win->cur.col;
-			word_i = word_next(&line->cont[cont_i], line->len - cont_i);
+			cont_i = win_curr_line_cont_idx(win);
+			word_i = word_next(&cont[cont_i], len - cont_i);
 
 			/* Check that word in the current window */
 			if (win->cur.col + word_i < win->size.ws_col) {
@@ -400,7 +399,7 @@ win_mv_to_next_word(Win *const win, size_t times)
 			}
 
 			/* Check that we at end of line */
-			if (cont_i + word_i == line->len)
+			if (cont_i + word_i == len)
 				break;
 		}
 
@@ -412,15 +411,13 @@ win_mv_to_next_word(Win *const win, size_t times)
 void
 win_mv_to_prev_word(Win *const win, size_t times)
 {
-	size_t cont_i;
 	size_t word_i;
-	const Line *const line = win_get_curr_line(win);
+	const char *const cont = file_line_cont(win->file, win_curr_line_idx(win));
 
 	if (times > 0) {
 		while (times-- > 0) {
 			/* Find next word from current position until start of line */
-			cont_i = win->offset.cols + win->cur.col;
-			word_i = word_rnext(line->cont, cont_i);
+			word_i = word_rnext(cont, win_curr_line_cont_idx(win));
 
 			/* Check that word in the current window */
 			if (word_i >= win->offset.cols) {
@@ -465,10 +462,7 @@ Win*
 win_open(const char *const path, const int ifd, const int ofd)
 {
 	/* Allocate window */
-	Win *const win = malloc(sizeof(*win));
-	if (NULL == win)
-		err(EXIT_FAILURE, "Failed to allocate window");
-
+	Win *const win = err_malloc(sizeof(*win));
 	/* Open file */
 	win->file = file_open(path);
 	/* Initialize offset and cursor */

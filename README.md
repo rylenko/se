@@ -119,22 +119,22 @@ $ make gen-readme
 	</tr></thead>
 	<tbody><tr>
 		<th>C</th>
-		<th>13</th>
-		<th>1948</th>
-		<th>278</th>
-		<th>309</th>
-		<th>1361</th>
-		<th>250</th>
-		<th>45615</th>
+		<th>12</th>
+		<th>2057</th>
+		<th>294</th>
+		<th>360</th>
+		<th>1403</th>
+		<th>230</th>
+		<th>48609</th>
 	</tr><tr>
 		<th>C Header</th>
-		<th>15</th>
-		<th>502</th>
-		<th>120</th>
-		<th>184</th>
-		<th>198</th>
+		<th>14</th>
+		<th>404</th>
+		<th>104</th>
+		<th>129</th>
+		<th>171</th>
 		<th>0</th>
-		<th>11862</th>
+		<th>9836</th>
 	</tr><tr>
 		<th>Markdown</th>
 		<th>2</th>
@@ -152,7 +152,7 @@ $ make gen-readme
 		<th>12</th>
 		<th>42</th>
 		<th>0</th>
-		<th>1412</th>
+		<th>1405</th>
 	</tr><tr>
 		<th>Shell</th>
 		<th>1</th>
@@ -183,13 +183,13 @@ $ make gen-readme
 	</tr></tbody>
 	<tfoot><tr>
 		<th>Total</th>
-		<th>35</th>
-		<th>2799</th>
+		<th>33</th>
+		<th>2810</th>
 		<th>479</th>
-		<th>511</th>
-		<th>1809</th>
-		<th>250</th>
-    	<th>64136</th>
+		<th>507</th>
+		<th>1824</th>
+		<th>230</th>
+    	<th>65097</th>
 	</tr></tfoot>
 	</table>
 
@@ -197,8 +197,7 @@ $ make gen-readme
 
 |Path|Line|Description|
 |-|-|-|
-|**src/line.h**|**6**|**opaque**|
-|**src/lines.h**|**10**|**do not forget to rerender after absorb**|
+|**src/file.c**|**102**|**do not forget to rerender after absorb**|
 |**src/main.c**|**1**|**[1] Use ptrdiff_t where needed.**|
 |**src/main.c**|**2**|**[1] Remove unused includes.**|
 |**src/main.c**|**3**|**[1] Try to make code easier and less bloated.**|

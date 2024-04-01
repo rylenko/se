@@ -3,12 +3,14 @@
 #include <errno.h>
 #include <signal.h>
 #include <stdarg.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/ioctl.h>
 #include "buf.h"
 #include "cfg.h"
 #include "ed.h"
+#include "err_alloc.h"
 #include "esc.h"
 #include "file.h"
 #include "math.h"
@@ -169,15 +171,14 @@ static size_t
 ed_draw_stat_left(Ed *const ed, Buf *const buf)
 {
 	/* Get filename of opened file */
-	const File *const file = win_file(ed->win);
-	const char *const filename = path_get_filename(file_path(file));
+	const char *const filename = path_get_filename(win_file_path(ed->win));
 	size_t len = 0;
 
 	/* Write mode and opened file's name */
 	len += buf_writef(buf, " %s > %s", mode_str(ed->mode), filename);
 
 	/* Add mark if file is dirty */
-	if (file_is_dirty(file))
+	if (win_file_is_dirty(ed->win))
 		len += buf_write(buf, " [+]", 4);
 
 	/* Write message if exists */
@@ -206,8 +207,8 @@ ed_draw_stat_right(const Ed *const ed, Buf *const buf, const size_t left_len)
 		pos,
 		sizeof(pos),
 		"%zu, %zu ",
-		win_get_curr_line_idx(ed->win),
-		win_get_curr_line_cont_idx(ed->win)
+		win_curr_line_idx(ed->win),
+		win_curr_line_cont_idx(ed->win)
 	);
 
 	/* Write empty space */
@@ -332,10 +333,7 @@ Ed*
 ed_open(const char *const path, const int ifd, const int ofd)
 {
 	/* Allocate opaque struct */
-	Ed *const ed = malloc(sizeof(Ed));
-	if (NULL == ed)
-		err(EXIT_FAILURE, "Failed to allocate editor");
-
+	Ed *const ed = err_malloc(sizeof(*ed));
 	/* Allocate buffer for all drawn content */
 	ed->buf = buf_alloc();
 	/* Open window with accepted file and descriptors */

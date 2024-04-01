@@ -2,8 +2,6 @@
 #define _FILE_H
 
 #include <stddef.h>
-#include "line.h"
-#include "lines.h"
 
 /* Alias for opaque struct of opened file. */
 typedef struct File File;
@@ -14,8 +12,23 @@ void file_close(File *);
 /* Checks that file is dirty. */
 char file_is_dirty(const File *);
 
-/* Gets lines container of the file. */
-Lines *file_lines(const File *);
+/* Deletes line by its index. */
+void file_del_line(File *, size_t idx);
+
+/* Finds line by passed index and returns its raw content. */
+const char *file_line_cont(const File *, size_t);
+
+/* Finds line by passed index and returns its length. */
+size_t file_line_len(const File *, size_t);
+
+/* Finds line by passed index and returns its render. */
+const char *file_line_render(const File *, size_t);
+
+/* Finds line by passed index and returns its render len. */
+size_t file_line_render_len(const File *, size_t);
+
+/* Returns lines count of opened file. */
+size_t file_lines_cnt(const File *);
 
 /*
 Reads the contents of file.

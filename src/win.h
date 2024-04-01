@@ -26,14 +26,17 @@ void win_draw_cur(const Win *, Buf *);
 /* Draws window rows. */
 void win_draw_lines(const Win *, Buf *);
 
-/* Returns opened file in the current window. */
-File *win_file(const Win *);
+/* Checks that opened file is dirty. */
+char win_file_is_dirty(const Win *);
+
+/* Returns opened file's path. */
+const char *win_file_path(const Win *);
 
 /* Gets current line's index. */
-size_t win_get_curr_line_idx(const Win *);
+size_t win_curr_line_idx(const Win *);
 
 /* Gets current line content's index. */
-size_t win_get_curr_line_cont_idx(const Win *);
+size_t win_curr_line_cont_idx(const Win *);
 
 /* Handles signal. */
 void win_handle_signal(Win *, int);
