@@ -27,7 +27,7 @@ void win_draw_cur(const Win *, Buf *);
 void win_draw_lines(const Win *, Buf *);
 
 /* Returns opened file in the current window. */
-const File *win_file(const Win *);
+File *win_file(const Win *);
 
 /* Gets current line's index. */
 size_t win_get_curr_line_idx(const Win *);

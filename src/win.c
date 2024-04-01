@@ -104,7 +104,8 @@ win_close(Win *const win)
 int
 win_del_line(Win *const win, size_t times)
 {
-	size_t file_lines_cnt = lines_cnt(file_lines(win->file));
+	Lines *lines = file_lines(win->file);
+	size_t file_lines_cnt = lines_cnt(lines);
 
 	if (1 >= file_lines_cnt) {
 		return -1;
@@ -122,10 +123,10 @@ win_del_line(Win *const win, size_t times)
 		/* Times is never zero here */
 		while (times-- > 0)
 			/* Delete lines */
-			file_del(win->file, win->offset.rows + win->cur.row);
+			lines_del(lines, win->offset.rows + win->cur.row);
 
 		/* Move up if we deleted the last line and stayed there */
-		if (win->offset.rows + win->cur.row == lines_cnt(file_lines(win->file)))
+		if (win->offset.rows + win->cur.row == lines_cnt(lines))
 			win_mv_up(win, 1);
 	}
 	return 0;
@@ -194,7 +195,7 @@ win_exp_col(const Line *const line, const size_t col)
 	return ret;
 }
 
-const File*
+File*
 win_file(const Win *const win)
 {
 	return win->file;
@@ -236,7 +237,7 @@ win_get_curr_line_cont_idx(const Win *const win)
 static Line*
 win_get_line(const Win *const win, const size_t idx)
 {
-	return file_get(win->file, idx);
+	return lines_get(file_lines(win->file), idx);
 }
 
 void

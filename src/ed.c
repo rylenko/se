@@ -24,6 +24,7 @@ enum {
 
 /* Editor options. */
 struct Ed {
+	Buf *buf; /* Buffer for all drawn content. */
 	Win *win; /* Info about terminal's view. This is what the user sees */
 	Mode mode; /* Input mode */
 	char msg[ED_MSG_ARR_LEN]; /* Message for the user */
@@ -125,32 +126,27 @@ ed_del_line(Ed *const ed)
 void
 ed_draw(Ed *const ed)
 {
-	/* TODO: allocate in opening, free in quit, write and flush here */
-	/* Allocate buffer to write to terminal */
-	Buf *const buf = buf_alloc();
-
 	/* Go to start of window and clear the window */
-	esc_go_home(buf);
-	esc_clr_win(buf);
+	esc_go_home(ed->buf);
+	esc_clr_win(ed->buf);
 
 	if (!ed_need_to_quit(ed)) {
 		/* Hide cursor to not flicker */
-		esc_cur_hide(buf);
+		esc_cur_hide(ed->buf);
 
 		/* Draw lines of file */
-		win_draw_lines(ed->win, buf);
+		win_draw_lines(ed->win, ed->buf);
 		/* Draw status */
-		ed_draw_stat(ed, buf);
+		ed_draw_stat(ed, ed->buf);
 		/* Draw expanded cursor */
-		win_draw_cur(ed->win, buf);
+		win_draw_cur(ed->win, ed->buf);
 
 		/* Show hidden cursor */
-		esc_cur_show(buf);
+		esc_cur_show(ed->buf);
 	}
 
-	/* Flush and free the buffer */
-	term_flush(buf);
-	buf_free(buf);
+	/* Flush the buffer to terminal */
+	term_flush(ed->buf);
 }
 
 static void
@@ -340,9 +336,10 @@ ed_open(const char *const path, const int ifd, const int ofd)
 	if (NULL == ed)
 		err(EXIT_FAILURE, "Failed to allocate editor");
 
+	/* Allocate buffer for all drawn content */
+	ed->buf = buf_alloc();
 	/* Open window with accepted file and descriptors */
 	ed->win = win_open(path, ifd, ofd);
-
 	/* Set default editting mode */
 	ed->mode = MODE_NORM;
 	/* Set zero length to message */
@@ -452,6 +449,8 @@ ed_proc_norm_key(Ed *const ed, const char key)
 void
 ed_quit(Ed *const ed)
 {
+	/* Free content buffer */
+	buf_free(ed->buf);
 	/* Close the window */
 	win_close(ed->win);
 	/* Free opaque struct */

@@ -120,21 +120,21 @@ $ make gen-readme
 	<tbody><tr>
 		<th>C</th>
 		<th>13</th>
-		<th>1960</th>
-		<th>283</th>
-		<th>310</th>
-		<th>1367</th>
+		<th>1948</th>
+		<th>278</th>
+		<th>309</th>
+		<th>1361</th>
 		<th>250</th>
-		<th>45825</th>
+		<th>45615</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>15</th>
-		<th>509</th>
-		<th>122</th>
-		<th>187</th>
-		<th>200</th>
+		<th>502</th>
+		<th>120</th>
+		<th>184</th>
+		<th>198</th>
 		<th>0</th>
-		<th>12040</th>
+		<th>11862</th>
 	</tr><tr>
 		<th>Markdown</th>
 		<th>2</th>
@@ -184,12 +184,12 @@ $ make gen-readme
 	<tfoot><tr>
 		<th>Total</th>
 		<th>35</th>
-		<th>2818</th>
-		<th>486</th>
-		<th>515</th>
-		<th>1817</th>
+		<th>2799</th>
+		<th>479</th>
+		<th>511</th>
+		<th>1809</th>
 		<th>250</th>
-    	<th>64524</th>
+    	<th>64136</th>
 	</tr></tfoot>
 	</table>
 
@@ -197,7 +197,6 @@ $ make gen-readme
 
 |Path|Line|Description|
 |-|-|-|
-|**src/file.h**|**17**|**file_lines + lines_get**|
 |**src/line.h**|**6**|**opaque**|
 |**src/lines.h**|**10**|**do not forget to rerender after absorb**|
 |**src/main.c**|**1**|**[1] Use ptrdiff_t where needed.**|
@@ -211,4 +210,3 @@ $ make gen-readme
 |**src/main.c**|**9**|**[3] Support huge files.**|
 |**src/main.c**|**10**|**[3] Undo operations. Also rename "del" to "remove" where needed.**|
 |**src/main.c**|**11**|**[4] API with status codes instead of err.h and tests**|
-|**src/ed.c**|**128**|**allocate in opening, free in quit, write and flush here**|

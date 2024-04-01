@@ -28,12 +28,10 @@ struct Buf {
 /* Reallocates buffer with new capacity. */
 static void buf_realloc(Buf *const buf, const size_t new_cap);
 
-/* Deallocates internal data and sets zero capacity and length. */
-static void buf_zeroize(Buf *const buf);
-
 Buf*
 buf_alloc(void)
 {
+	/* Allocate buffer with zeros */
 	Buf *buf = calloc(1, sizeof(*buf));
 	if (NULL == buf)
 		err(EXIT_FAILURE, "Failed to allocate buffer.");
@@ -46,10 +44,8 @@ buf_flush(Buf *const buf, const int fd)
 	/* Write buffer's data to file by its descriptor */
 	if (write(fd, buf->data, buf->len) < 0)
 		err(EXIT_FAILURE, "Failed to flush the buffer with length %zu", buf->len);
-
-	/* Refresh buffer to continue from scratch */
-	buf_zeroize(buf);
-	memset(buf, 0, sizeof(*buf));
+	/* Refresh length to continue from scratch */
+	buf->len = 0;
 }
 
 void
@@ -97,12 +93,4 @@ buf_writef(Buf *const buf, const char *const fmt, ...)
 
 	/* Write formatted string to buffer */
 	return buf_write(buf, str, len);
-}
-
-static void
-buf_zeroize(Buf *const buf)
-{
-	/* Free allocated data and zeroize struct */
-	free(buf->data);
-	memset(buf, 0, sizeof(*buf));
 }

@@ -11,18 +11,11 @@ typedef struct File File;
 /* Closes file and frees memory. */
 void file_close(File *);
 
-/* Deletes line from the file. */
-void file_del(File *, size_t);
-
-/* TODO: file_lines + lines_get */
-/* Gets line by its index. */
-Line *file_get(const File *, size_t);
-
 /* Checks that file is dirty. */
 char file_is_dirty(const File *);
 
-/* Gets lines count in the file. */
-const Lines *file_lines(const File *);
+/* Gets lines container of the file. */
+Lines *file_lines(const File *);
 
 /*
 Reads the contents of file.

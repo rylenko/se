@@ -48,7 +48,7 @@ file_is_dirty(const File *const file)
 	return file->is_dirty;
 }
 
-const Lines*
+Lines*
 file_lines(const File *const file)
 {
 	return file->lines;
