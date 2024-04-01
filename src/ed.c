@@ -12,7 +12,6 @@
 #include "ed.h"
 #include "err_alloc.h"
 #include "esc.h"
-#include "file.h"
 #include "math.h"
 #include "mode.h"
 #include "path.h"

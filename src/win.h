@@ -4,7 +4,6 @@
 #include <stddef.h>
 #include <sys/ioctl.h>
 #include "buf.h"
-#include "file.h"
 
 /* Alias for opaque struct with window parameters. */
 typedef struct Win Win;
