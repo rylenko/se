@@ -33,6 +33,9 @@ struct Ed {
 	unsigned char quit_presses_rem; /* Greater than 1 if file is dirty */
 };
 
+/* Deletes character before the cursor. */
+static void ed_del_char(Ed *);
+
 /* Deletes the inputed number of lines from file. */
 static void ed_del_line(Ed *);
 
@@ -49,7 +52,7 @@ static void ed_draw_stat_right(const Ed *, Buf *, size_t);
 static void ed_input_num(Ed *, char);
 
 /* Inserts character to editor. */
-static void ed_ins(Ed *, char);
+static void ed_ins_char(Ed *, char);
 
 /* Inserts below several empty lines. */
 static void ed_ins_empty_line_below(Ed *);
@@ -113,6 +116,14 @@ static void ed_save_file_to_spare_dir(Ed *);
 
 /* Sets formatted message to the user. */
 static void ed_set_msg(Ed *, const char *, ...);
+
+static void
+ed_del_char(Ed *const ed)
+{
+	win_del_char(ed->win);
+	/* Set quit presses count after file change */
+	ed->quit_presses_rem = CFG_DIRTY_FILE_QUIT_PRESSES_CNT;
+}
 
 static void
 ed_del_line(Ed *const ed)
@@ -245,10 +256,10 @@ ed_input_num(Ed *const ed, const char digit)
 }
 
 static void
-ed_ins(Ed *const ed, const char ch)
+ed_ins_char(Ed *const ed, const char ch)
 {
 	if (isprint(ch) || '\t' == ch) {
-		win_ins(ed->win, ch);
+		win_ins_char(ed->win, ch);
 		/* Set quit presses count after file change */
 		ed->quit_presses_rem = CFG_DIRTY_FILE_QUIT_PRESSES_CNT;
 	}
@@ -398,11 +409,14 @@ static void
 ed_proc_ins_key(Ed *const ed, const char key)
 {
 	switch (key) {
+	case CFG_KEY_DEL_CHAR:
+		ed_del_char(ed);
+		break;
 	case CFG_KEY_MODE_NORM:
 		ed->mode = MODE_NORM;
 		break;
 	default:
-		ed_ins(ed, key);
+		ed_ins_char(ed, key);
 		break;
 	}
 }

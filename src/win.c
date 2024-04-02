@@ -105,6 +105,27 @@ win_curr_line_cont_idx(const Win *const win)
 	return win->offset.cols + win->cur.col;
 }
 
+void
+win_del_char(Win *const win)
+{
+	const size_t cont_idx = win_curr_line_cont_idx(win);
+
+	/* Check that we are not at the beginning of the line */
+	if (cont_idx > 0) {
+		/* Delete character */
+		file_del_char(win->file, win_curr_line_idx(win), cont_idx - 1);
+		/* Move left after deleting */
+		win_mv_left(win, 1);
+	} else if (win_curr_line_idx(win) > 0) {
+		/* Absorb current line to next line if we are at the beginning of the line */
+		win_mv_left(win, 1);
+		file_absorb_next_line(win->file, win_curr_line_idx(win));
+	}
+
+	/* Fix expanded cursor column */
+	win_fix_exp_cur_col(win);
+}
+
 int
 win_del_line(Win *const win, size_t times)
 {
@@ -242,10 +263,12 @@ win_handle_signal(Win *const win, const int signal)
 }
 
 void
-win_ins(Win *const win, const char ch)
+win_ins_char(Win *const win, const char ch)
 {
 	/* Insert character and mark file as dirty */
-	file_ins(win->file, win_curr_line_idx(win), win_curr_line_cont_idx(win),  ch);
+	const size_t idx = win_curr_line_idx(win);
+	const size_t pos = win_curr_line_cont_idx(win);
+	file_ins_char(win->file, idx, pos, ch);
 	/* Move right after insertion */
 	win_mv_right(win, 1);
 	/* Fix expanded cursor column */

@@ -46,7 +46,7 @@ Deletes character from the line.
 
 Does not update the render so you can do it yourself after several operations.
 */
-static void line_del(Line *, size_t);
+static void line_del_char(Line *, size_t);
 
 /*
 Extends line with another line's content.
@@ -101,7 +101,11 @@ Returns written bytes count.
 */
 static size_t line_write(Line *, FILE *);
 
-/* Extends specified line with next line, then frees next line. */
+/*
+Extends specified line with next line, then frees next line.
+
+Does not update the render so you can do it yourself after several operations.
+*/
 static void lines_absorb_next(Lines *, size_t);
 
 /* Initializes lines container. Do not forget to free it. */
@@ -111,7 +115,7 @@ static void lines_init(Lines *);
 static void lines_break(Lines *, size_t, size_t);
 
 /* Deletes line by index. */
-static void lines_del(Lines *, size_t);
+static void lines_del_line(Lines *, size_t);
 
 /* Frees the lines container. */
 static void lines_free(Lines *);
@@ -135,8 +139,10 @@ static void lines_realloc(Lines *const lines, const size_t new_cap);
 void
 file_absorb_next_line(File *const file, const size_t idx)
 {
-	/* Absorb next line and mark file as dirty */
+	/* Absorb next line and update current line's render */
 	lines_absorb_next(&file->lines, idx);
+	line_render(&file->lines.arr[idx]);
+	/* Mark file as dirty */
 	file->is_dirty = 1;
 }
 
@@ -152,27 +158,29 @@ file_close(File *const file)
 }
 
 void
-file_del_line(File *const file, const size_t idx)
+file_del_char(File *const file, const size_t idx, const size_t pos)
 {
-	/* Delete the line and mark file as dirty */
-	lines_del(&file->lines, idx);
+	/* Delete character and update render */
+	line_del_char(&file->lines.arr[idx], pos);
+	line_render(&file->lines.arr[idx]);
+	/* Mark file as dirty */
 	file->is_dirty = 1;
 }
 
 void
-file_del_line_char(File *const file, const size_t idx, const size_t pos)
+file_del_line(File *const file, const size_t idx)
 {
-	/* Delete character and update render */
-	line_del(&file->lines.arr[idx], pos);
-	line_render(&file->lines.arr[idx]);
+	/* Delete the line and mark file as dirty */
+	lines_del_line(&file->lines, idx);
+	file->is_dirty = 1;
 }
 
 void
-file_ins(File *const file, const size_t idx, const size_t pos, const char ch)
+file_ins_char(File *const file, const size_t i, const size_t pos, const char c)
 {
 	/* Insert character to file and update line's render */
-	line_ins(&file->lines.arr[idx], pos, ch);
-	line_render(&file->lines.arr[idx]);
+	line_ins(&file->lines.arr[i], pos, c);
+	line_render(&file->lines.arr[i]);
 	/* Mark file as dirty */
 	file->is_dirty = 1;
 }
@@ -317,7 +325,7 @@ file_save_to_spare_dir(File *const file, char *const path, size_t len)
 }
 
 static void
-line_del(Line *const line, const size_t idx)
+line_del_char(Line *const line, const size_t idx)
 {
 	/* Validate index */
 	assert(idx < line->len);
@@ -505,11 +513,9 @@ lines_absorb_next(Lines *const lines, const size_t idx)
 	if (idx + 1 < lines->cnt) {
 		/* Extend specified line with next line */
 		line_extend(&lines->arr[idx], &lines->arr[idx + 1]);
-		/* Update line's render */
-		line_render(&lines->arr[idx]);
 
 		/* Delete absorbed line */
-		lines_del(lines, idx + 1);
+		lines_del_line(lines, idx + 1);
 	}
 }
 
@@ -552,7 +558,7 @@ lines_break(Lines *const lines, const size_t idx, const size_t pos)
 }
 
 static void
-lines_del(Lines *const lines, const size_t idx)
+lines_del_line(Lines *const lines, const size_t idx)
 {
 	/* Validate index */
 	assert(idx < lines->cnt);

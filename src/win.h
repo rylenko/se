@@ -17,6 +17,9 @@ size_t win_curr_line_idx(const Win *);
 /* Gets current line content's index. */
 size_t win_curr_line_cont_idx(const Win *);
 
+/* Deletes character before the cursor. */
+void win_del_char(Win *);
+
 /*
 Deletes the passed number of lines starting from the current one.
 
@@ -41,7 +44,7 @@ const char *win_file_path(const Win *);
 void win_handle_signal(Win *, int);
 
 /* Inserts character to the file. */
-void win_ins(Win *, char);
+void win_ins_char(Win *, char);
 
 /* Inserts empty line below several times. */
 void win_ins_empty_line_below(Win *, size_t);

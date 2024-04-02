@@ -6,11 +6,17 @@
 /* Alias for opaque struct of opened file. */
 typedef struct File File;
 
+/* Finds line by passed index and absorbs next line. */
+void file_absorb_next_line(File *, size_t);
+
 /* Closes file and frees memory. */
 void file_close(File *);
 
+/* Deletes character in file's line at passed position. */
+void file_del_char(File *, size_t, size_t);
+
 /* Inserts character to the file's line at passed position. */
-void file_ins(File *, size_t, size_t, char);
+void file_ins_char(File *, size_t, size_t, char);
 
 /* Inserts empty line at index. */
 void file_ins_empty_line(File *, size_t);

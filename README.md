@@ -120,21 +120,21 @@ $ make gen-readme
 	<tbody><tr>
 		<th>C</th>
 		<th>12</th>
-		<th>2152</th>
-		<th>308</th>
-		<th>379</th>
-		<th>1465</th>
-		<th>237</th>
-		<th>50677</th>
+		<th>2195</th>
+		<th>313</th>
+		<th>391</th>
+		<th>1491</th>
+		<th>240</th>
+		<th>51909</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>14</th>
-		<th>424</th>
-		<th>112</th>
-		<th>134</th>
-		<th>178</th>
+		<th>433</th>
+		<th>115</th>
+		<th>137</th>
+		<th>181</th>
 		<th>0</th>
-		<th>10334</th>
+		<th>10624</th>
 	</tr><tr>
 		<th>Markdown</th>
 		<th>2</th>
@@ -184,12 +184,12 @@ $ make gen-readme
 	<tfoot><tr>
 		<th>Total</th>
 		<th>33</th>
-		<th>2925</th>
-		<th>501</th>
-		<th>531</th>
-		<th>1893</th>
-		<th>237</th>
-    	<th>67663</th>
+		<th>2977</th>
+		<th>509</th>
+		<th>546</th>
+		<th>1922</th>
+		<th>240</th>
+    	<th>69185</th>
 	</tr></tfoot>
 	</table>
 
@@ -197,7 +197,7 @@ $ make gen-readme
 
 |Path|Line|Description|
 |-|-|-|
-|**src/main.c**|**1**|**[1] Remove unused includes.**|
+|**src/main.c**|**1**|**Fix treating tabs behind offset as one character: erased as 1 character, other lines move slowly when inserting multiple tabs.**|
 |**src/main.c**|**2**|**[1] Try to make code easier and less bloated.**|
 |**src/main.c**|**3**|**[1] Add more clear docs and comments.**|
 |**src/main.c**|**4**|**[1] Handle non-printable characters.**|

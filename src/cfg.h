@@ -21,7 +21,7 @@ typedef enum {
 /* Ascii keys to control the editor. */
 typedef enum {
 	/* Row management */
-	CFG_KEY_DEL = 127, /* Backspace */
+	CFG_KEY_DEL_CHAR = 127, /* Backspace */
 	CFG_KEY_DEL_LINE = 'd' - CTRL_OFFSET, /* CTRL-d */
 	CFG_KEY_INS_BREAK = 13, /* Enter */
 	CFG_KEY_INS_LINE_BELOW = 'n', /* n */
