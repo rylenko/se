@@ -25,7 +25,7 @@ typedef enum {
 	CFG_KEY_DEL_LINE = 'd' - CTRL_OFFSET, /* CTRL-d */
 	CFG_KEY_INS_BREAK = 13, /* Enter */
 	CFG_KEY_INS_LINE_BELOW = 'n', /* n */
-	CFG_KEY_INS_LINE_TOP = 'n' - CTRL_OFFSET, /* CTRL-n */
+	CFG_KEY_INS_LINE_ON_TOP = 'n' - CTRL_OFFSET, /* CTRL-n */
 
 	/* Modes switching */
 	CFG_KEY_MODE_INS = 'i', /* i */

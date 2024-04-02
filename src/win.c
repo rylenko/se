@@ -242,18 +242,30 @@ win_handle_signal(Win *const win, const int signal)
 }
 
 void
-win_ins_empty_line_below(Win *const win, size_t times)
+win_ins_empty_line_below(Win *const win, const size_t times)
 {
-	size_t i;
+	size_t times_i = times;
 
 	if (times > 0) {
 		/* Remove column offsets */
 		win_mv_to_begin_of_line(win);
 		/* Insert empty lines */
-		for (i = 0; i < times; i++)
-			file_ins_empty_line(win->file, win->offset.rows + win->cur.row + i + 1);
+		while (times_i-- > 0)
+			file_ins_empty_line(win->file, win_curr_line_idx(win) + 1);
 		/* Move to last inserted line */
 		win_mv_down(win, times);
+	}
+}
+
+void
+win_ins_empty_line_on_top(Win *const win, size_t times)
+{
+	if (times > 0) {
+		/* Reove column offsets */
+		win_mv_to_begin_of_line(win);
+		/* Insert empty lines */
+		while (times-- > 0)
+			file_ins_empty_line(win->file, win_curr_line_idx(win));
 	}
 }
 

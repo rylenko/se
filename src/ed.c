@@ -51,6 +51,9 @@ static void ed_input_num(Ed *, char);
 /* Inserts below several empty lines. */
 static void ed_ins_empty_line_below(Ed *);
 
+/* Inserts on top several empty lines. */
+static void ed_ins_empty_line_on_top(Ed *);
+
 /* Use it when user presses quit key. Interacts with the remaining counter. */
 static void ed_on_quit_press(Ed *);
 
@@ -249,6 +252,17 @@ ed_ins_empty_line_below(Ed *const ed)
 	ed->mode = MODE_INS;
 }
 
+static void
+ed_ins_empty_line_on_top(Ed *const ed)
+{
+	win_ins_empty_line_on_top(ed->win, ed_repeat_times(ed));
+
+	/* Set quit presses count after file change */
+	ed->quit_presses_rem = CFG_DIRTY_FILE_QUIT_PRESSES_CNT;
+	/* Switch mode for comfort */
+	ed->mode = MODE_INS;
+}
+
 void
 ed_mv_down(Ed *const ed)
 {
@@ -400,6 +414,9 @@ ed_proc_norm_key(Ed *const ed, const char key)
 		break;
 	case CFG_KEY_INS_LINE_BELOW:
 		ed_ins_empty_line_below(ed);
+		return;
+	case CFG_KEY_INS_LINE_ON_TOP:
+		ed_ins_empty_line_on_top(ed);
 		return;
 	case CFG_KEY_MODE_INS:
 		ed->mode = MODE_INS;

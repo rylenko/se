@@ -43,6 +43,9 @@ void win_handle_signal(Win *, int);
 /* Inserts empty line below several times. */
 void win_ins_empty_line_below(Win *, size_t);
 
+/* Inserts empty line on top of cursor several times. */
+void win_ins_empty_line_on_top(Win *, size_t);
+
 /* Move down several times. */
 void win_mv_down(Win *, size_t);
 
