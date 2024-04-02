@@ -1,6 +1,8 @@
 #ifndef _ERR_ALLOC_H
 #define _ERR_ALLOC_H
 
+#include <stddef.h>
+
 /* Like `calloc`, but exits with formatted error message on fail. */
 void *err_calloc(size_t, size_t);
 

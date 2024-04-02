@@ -120,21 +120,21 @@ $ make gen-readme
 	<tbody><tr>
 		<th>C</th>
 		<th>12</th>
-		<th>2120</th>
-		<th>305</th>
-		<th>373</th>
-		<th>1442</th>
+		<th>2114</th>
+		<th>304</th>
+		<th>372</th>
+		<th>1438</th>
 		<th>234</th>
-		<th>49874</th>
+		<th>49765</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>14</th>
-		<th>412</th>
-		<th>107</th>
+		<th>418</th>
+		<th>110</th>
 		<th>132</th>
-		<th>173</th>
+		<th>176</th>
 		<th>0</th>
-		<th>10097</th>
+		<th>10160</th>
 	</tr><tr>
 		<th>Markdown</th>
 		<th>2</th>
@@ -185,11 +185,11 @@ $ make gen-readme
 		<th>Total</th>
 		<th>33</th>
 		<th>2881</th>
-		<th>493</th>
-		<th>523</th>
-		<th>1865</th>
+		<th>495</th>
+		<th>522</th>
+		<th>1864</th>
 		<th>234</th>
-    	<th>66623</th>
+    	<th>66577</th>
 	</tr></tfoot>
 	</table>
 
@@ -197,14 +197,13 @@ $ make gen-readme
 
 |Path|Line|Description|
 |-|-|-|
-|**src/main.c**|**1**|**[1] Use ptrdiff_t where needed.**|
-|**src/main.c**|**2**|**[1] Remove unused includes.**|
-|**src/main.c**|**3**|**[1] Try to make code easier and less bloated.**|
-|**src/main.c**|**4**|**[1] Add more clear docs and comments.**|
-|**src/main.c**|**5**|**[1] Handle non-printable characters.**|
-|**src/main.c**|**6**|**[2] Add local clipboard. Use it in functions.**|
-|**src/main.c**|**7**|**[2] Xclip patch to use with local clipboard.**|
-|**src/main.c**|**8**|**[2] Use linked list for lines array and line's content parts.**|
-|**src/main.c**|**9**|**[3] Support huge files.**|
-|**src/main.c**|**10**|**[3] Undo operations. Also rename "del" to "remove" where needed.**|
-|**src/main.c**|**11**|**[4] API with status codes instead of err.h and tests**|
+|**src/main.c**|**1**|**[1] Remove unused includes.**|
+|**src/main.c**|**2**|**[1] Try to make code easier and less bloated.**|
+|**src/main.c**|**3**|**[1] Add more clear docs and comments.**|
+|**src/main.c**|**4**|**[1] Handle non-printable characters.**|
+|**src/main.c**|**5**|**[2] Add local clipboard. Use it in functions.**|
+|**src/main.c**|**6**|**[2] Xclip patch to use with local clipboard.**|
+|**src/main.c**|**7**|**[2] Use linked list for lines array and line's content parts.**|
+|**src/main.c**|**8**|**[3] Support huge files.**|
+|**src/main.c**|**9**|**[3] Undo operations. Also rename "del" to "remove" where needed.**|
+|**src/main.c**|**10**|**[4] API with status codes instead of err.h and tests**|

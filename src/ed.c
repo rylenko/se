@@ -1,5 +1,4 @@
 #include <assert.h>
-#include <err.h>
 #include <errno.h>
 #include <signal.h>
 #include <stdarg.h>
@@ -522,10 +521,8 @@ void
 ed_wait_and_proc_key(Ed *const ed)
 {
 	char seq[3];
-	size_t seq_len;
-
 	/* Wait key press */
-	seq_len = term_wait_key(seq, sizeof(seq));
+	size_t seq_len = term_wait_key(seq, sizeof(seq));
 
 	/* Process key if key is more than one character */
 	if (seq_len > 1) {
