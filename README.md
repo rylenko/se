@@ -4,7 +4,7 @@
 
 - Ease of configuring, building and use.
 - Fast movement and editing.
-- Small code base of up to 2000 lines.
+- The middle ground between readable code and a small code base of up to 3000 lines.
 - No dependencies.
 - Extensibility.
 
@@ -143,7 +143,7 @@ $ make gen-readme
 		<th>0</th>
 		<th>155</th>
 		<th>0</th>
-		<th>4008</th>
+		<th>4100</th>
 	</tr><tr>
 		<th>Makefile</th>
 		<th>2</th>
@@ -189,7 +189,7 @@ $ make gen-readme
 		<th>546</th>
 		<th>1922</th>
 		<th>240</th>
-    	<th>69185</th>
+    	<th>69277</th>
 	</tr></tfoot>
 	</table>
 
