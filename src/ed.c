@@ -33,6 +33,9 @@ struct Ed {
 	unsigned char quit_presses_rem; /* Greater than 1 if file is dirty */
 };
 
+/* Breaks current line at the current cursor's position */
+static void ed_break_line(Ed *);
+
 /* Deletes character before the cursor. */
 static void ed_del_char(Ed *);
 
@@ -116,6 +119,14 @@ static void ed_save_file_to_spare_dir(Ed *);
 
 /* Sets formatted message to the user. */
 static void ed_set_msg(Ed *, const char *, ...);
+
+static void
+ed_break_line(Ed *const ed)
+{
+	win_break_line(ed->win);
+	/* Set quit presses count after file change */
+	ed->quit_presses_rem = CFG_DIRTY_FILE_QUIT_PRESSES_CNT;
+}
 
 static void
 ed_del_char(Ed *const ed)
@@ -411,6 +422,9 @@ ed_proc_ins_key(Ed *const ed, const char key)
 	switch (key) {
 	case CFG_KEY_DEL_CHAR:
 		ed_del_char(ed);
+		break;
+	case CFG_KEY_INS_LINE_BREAK:
+		ed_break_line(ed);
 		break;
 	case CFG_KEY_MODE_NORM:
 		ed->mode = MODE_NORM;

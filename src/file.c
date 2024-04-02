@@ -106,13 +106,10 @@ Extends specified line with next line, then frees next line.
 
 Does not update the render so you can do it yourself after several operations.
 */
-static void lines_absorb_next(Lines *, size_t);
-
-/* Initializes lines container. Do not forget to free it. */
-static void lines_init(Lines *);
+static void lines_absorb_next_line(Lines *, size_t);
 
 /* Finds the line by index and breaks it at specified position. */
-static void lines_break(Lines *, size_t, size_t);
+static void lines_break_line(Lines *, size_t, size_t);
 
 /* Deletes line by index. */
 static void lines_del_line(Lines *, size_t);
@@ -120,11 +117,17 @@ static void lines_del_line(Lines *, size_t);
 /* Frees the lines container. */
 static void lines_free(Lines *);
 
+/* Initializes lines container. Do not forget to free it. */
+static void lines_init(Lines *);
+
 /* Inserts new line at index. */
-static void lines_ins(Lines *, size_t, Line);
+static void lines_ins_line(Lines *, size_t, Line);
 
 /* Reads lines from the file. */
 static void lines_read(Lines *, FILE *);
+
+/* Reallocates lines container's capacity. */
+static void lines_realloc(Lines *const lines, const size_t new_cap);
 
 /*
 Writes lines to the file.
@@ -133,16 +136,21 @@ Returns written bytes count.
 */
 static size_t lines_write(const Lines *, FILE *);
 
-/* Reallocates lines container's capacity. */
-static void lines_realloc(Lines *const lines, const size_t new_cap);
-
 void
 file_absorb_next_line(File *const file, const size_t idx)
 {
 	/* Absorb next line and update current line's render */
-	lines_absorb_next(&file->lines, idx);
+	lines_absorb_next_line(&file->lines, idx);
 	line_render(&file->lines.arr[idx]);
 	/* Mark file as dirty */
+	file->is_dirty = 1;
+}
+
+void
+file_break_line(File *const file, const size_t idx, const size_t pos)
+{
+	/* Break line and mark file as dirty */
+	lines_break_line(&file->lines, idx, pos);
 	file->is_dirty = 1;
 }
 
@@ -193,7 +201,7 @@ file_ins_empty_line(File *const file, const size_t idx)
 	line_init(&empty_line);
 
 	/* Insert empty line */
-	lines_ins(&file->lines, idx, empty_line);
+	lines_ins_line(&file->lines, idx, empty_line);
 	/* Mark file as dirty */
 	file->is_dirty = 1;
 }
@@ -228,14 +236,6 @@ file_line_render_len(const File *const file, const size_t idx)
 	return file->lines.arr[idx].render_len;
 }
 
-void
-file_break_line(File *const file, const size_t idx, const size_t pos)
-{
-	/* Break line and mark file as dirty */
-	lines_break(&file->lines, idx, pos);
-	file->is_dirty = 1;
-}
-
 size_t
 file_lines_cnt(const File *const file)
 {
@@ -265,7 +265,7 @@ file_open(const char *const path)
 	/* Add empty line if there is no lines */
 	if (0 == file->lines.cnt) {
 		line_init(&empty_line);
-		lines_ins(&file->lines, 0, empty_line);
+		lines_ins_line(&file->lines, 0, empty_line);
 	}
 	return file;
 }
@@ -357,6 +357,13 @@ line_free(Line *const line)
 	/* Free raw content and render */
 	free(line->cont);
 	free(line->render);
+
+	/*
+	In the code we will want to free the line if it becomes empty. Thanks to
+	initialization, we will nullify the pointers and avoid the segmentation fault
+	during double free.
+	*/
+	line_init(line);
 }
 
 static void
@@ -507,7 +514,7 @@ line_write(Line *const line, FILE *const f)
 }
 
 static void
-lines_absorb_next(Lines *const lines, const size_t idx)
+lines_absorb_next_line(Lines *const lines, const size_t idx)
 {
 	/* Check that next line exists */
 	if (idx + 1 < lines->cnt) {
@@ -520,12 +527,13 @@ lines_absorb_next(Lines *const lines, const size_t idx)
 }
 
 static void
-lines_break(Lines *const lines, const size_t idx, const size_t pos)
+lines_break_line(Lines *const lines, const size_t idx, const size_t pos)
 {
 	Line new_line;
 	Line *const line = &lines->arr[idx];
 
-	/* Update new line's length */
+	/* Update new line and set its length */
+	line_init(&new_line);
 	new_line.len = line->len - pos;
 
 	/* Copy content to new line if it is not empty */
@@ -554,7 +562,7 @@ lines_break(Lines *const lines, const size_t idx, const size_t pos)
 	/* Render new line */
 	line_render(&new_line);
 	/* Insert new line */
-	lines_ins(lines, idx + 1, new_line);
+	lines_ins_line(lines, idx + 1, new_line);
 }
 
 static void
@@ -604,7 +612,7 @@ lines_realloc(Lines *const lines, const size_t new_cap)
 }
 
 static void
-lines_ins(Lines *const lines, const size_t idx, const Line line)
+lines_ins_line(Lines *const lines, const size_t idx, const Line line)
 {
 	/* Validate index */
 	assert(idx <= lines->cnt);
@@ -632,7 +640,7 @@ lines_read(Lines *const lines, FILE *const f)
 	/* Read lines until EOF */
 	while (line_read(&line, f) != NULL)
 		/* Insert readed line */
-		lines_ins(lines, lines->cnt, line);
+		lines_ins_line(lines, lines->cnt, line);
 }
 
 static size_t

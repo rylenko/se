@@ -9,6 +9,9 @@ typedef struct File File;
 /* Finds line by passed index and absorbs next line. */
 void file_absorb_next_line(File *, size_t);
 
+/* Finds line by its index and breaks it at passed position. */
+void file_break_line(File *, size_t, size_t);
+
 /* Closes file and frees memory. */
 void file_close(File *);
 

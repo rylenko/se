@@ -106,6 +106,20 @@ win_curr_line_cont_idx(const Win *const win)
 }
 
 void
+win_break_line(Win *const win)
+{
+	/* Break current line at current cursor's position */
+	file_break_line(
+		win->file,
+		win_curr_line_idx(win),
+		win_curr_line_cont_idx(win)
+	);
+	/* Move to the beginning of the next line */
+	win_mv_to_begin_of_line(win);
+	win_mv_down(win, 1);
+}
+
+void
 win_del_char(Win *const win)
 {
 	const size_t cont_idx = win_curr_line_cont_idx(win);

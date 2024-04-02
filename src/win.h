@@ -17,6 +17,9 @@ size_t win_curr_line_idx(const Win *);
 /* Gets current line content's index. */
 size_t win_curr_line_cont_idx(const Win *);
 
+/* Breaks current line at cursor position. */
+void win_break_line(Win *);
+
 /* Deletes character before the cursor. */
 void win_del_char(Win *);
 
