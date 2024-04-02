@@ -103,3 +103,7 @@ Regenerate README.md:
 $ make gen-readme
 ```
 
+# Configuration
+
+You can set up convenient key bindings and convenient colors in `src/cfg.h`.
+

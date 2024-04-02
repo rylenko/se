@@ -103,6 +103,10 @@ Regenerate README.md:
 $ make gen-readme
 ```
 
+# Configuration
+
+You can set up convenient key bindings and convenient colors in `src/cfg.h`.
+
 
 # Lines of code
 
@@ -138,12 +142,12 @@ $ make gen-readme
 	</tr><tr>
 		<th>Markdown</th>
 		<th>2</th>
-		<th>213</th>
-		<th>58</th>
+		<th>221</th>
+		<th>62</th>
 		<th>0</th>
-		<th>155</th>
+		<th>159</th>
 		<th>0</th>
-		<th>4100</th>
+		<th>4290</th>
 	</tr><tr>
 		<th>Makefile</th>
 		<th>2</th>
@@ -184,12 +188,12 @@ $ make gen-readme
 	<tfoot><tr>
 		<th>Total</th>
 		<th>33</th>
-		<th>3019</th>
-		<th>515</th>
+		<th>3027</th>
+		<th>519</th>
 		<th>557</th>
-		<th>1947</th>
+		<th>1951</th>
 		<th>240</th>
-    	<th>70377</th>
+    	<th>70567</th>
 	</tr></tfoot>
 	</table>
 
