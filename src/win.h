@@ -40,6 +40,9 @@ const char *win_file_path(const Win *);
 /* Handles signal. */
 void win_handle_signal(Win *, int);
 
+/* Inserts character to the file. */
+void win_ins(Win *, char);
+
 /* Inserts empty line below several times. */
 void win_ins_empty_line_below(Win *, size_t);
 

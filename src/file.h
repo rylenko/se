@@ -9,6 +9,9 @@ typedef struct File File;
 /* Closes file and frees memory. */
 void file_close(File *);
 
+/* Inserts character to the file's line at passed position. */
+void file_ins(File *, size_t, size_t, char);
+
 /* Inserts empty line at index. */
 void file_ins_empty_line(File *, size_t);
 

@@ -168,6 +168,16 @@ file_del_line_char(File *const file, const size_t idx, const size_t pos)
 }
 
 void
+file_ins(File *const file, const size_t idx, const size_t pos, const char ch)
+{
+	/* Insert character to file and update line's render */
+	line_ins(&file->lines.arr[idx], pos, ch);
+	line_render(&file->lines.arr[idx]);
+	/* Mark file as dirty */
+	file->is_dirty = 1;
+}
+
+void
 file_ins_empty_line(File *const file, const size_t idx)
 {
 	/* Initialize empty line */

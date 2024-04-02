@@ -242,6 +242,17 @@ win_handle_signal(Win *const win, const int signal)
 }
 
 void
+win_ins(Win *const win, const char ch)
+{
+	/* Insert character and mark file as dirty */
+	file_ins(win->file, win_curr_line_idx(win), win_curr_line_cont_idx(win),  ch);
+	/* Move right after insertion */
+	win_mv_right(win, 1);
+	/* Fix expanded cursor column */
+	win_fix_exp_cur_col(win);
+}
+
+void
 win_ins_empty_line_below(Win *const win, const size_t times)
 {
 	size_t times_i = times;

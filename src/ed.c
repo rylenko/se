@@ -1,4 +1,5 @@
 #include <assert.h>
+#include <ctype.h>
 #include <errno.h>
 #include <signal.h>
 #include <stdarg.h>
@@ -46,6 +47,9 @@ static void ed_draw_stat_right(const Ed *, Buf *, size_t);
 
 /* Writes digit to the number input. Resets if argument is reset flag. */
 static void ed_input_num(Ed *, char);
+
+/* Inserts character to editor. */
+static void ed_ins(Ed *, char);
 
 /* Inserts below several empty lines. */
 static void ed_ins_empty_line_below(Ed *);
@@ -241,6 +245,16 @@ ed_input_num(Ed *const ed, const char digit)
 }
 
 static void
+ed_ins(Ed *const ed, const char ch)
+{
+	if (isprint(ch) || '\t' == ch) {
+		win_ins(ed->win, ch);
+		/* Set quit presses count after file change */
+		ed->quit_presses_rem = CFG_DIRTY_FILE_QUIT_PRESSES_CNT;
+	}
+}
+
+static void
 ed_ins_empty_line_below(Ed *const ed)
 {
 	win_ins_empty_line_below(ed->win, ed_repeat_times(ed));
@@ -386,6 +400,9 @@ ed_proc_ins_key(Ed *const ed, const char key)
 	switch (key) {
 	case CFG_KEY_MODE_NORM:
 		ed->mode = MODE_NORM;
+		break;
+	default:
+		ed_ins(ed, key);
 		break;
 	}
 }
