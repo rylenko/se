@@ -39,7 +39,7 @@ Normal mode keys:
 - `d` - end of line.
 - `e` - go to begin of next word.
 - `h` or `Left arrow` - go left.
-- `i` - switch to insert mode.
+- `i` - switch to inserting mode.
 - `j` or `Down arrow` - go down.
 - `k` or `Up arrow` - go up.
 - `l` or `Right arrow` - go right.
@@ -58,14 +58,14 @@ Normal mode keys:
 
 You can also repeat a key by pressing `<number><key>`. For example, `5n` will create 5 lines below the cursor.
 
-Insert mode keys:
+Inserting mode keys:
 
 - `Esc` - switch to normal mode.
 - `Backspace` - delete character before cursor.
 - `Enter` - break line.
 - Otherwise, if character is printable, the character is inserted.
 
-Search mode keys:
+Searching mode keys:
 
 - `Esc` - switch to normal mode.
 - `Backspace` - delete last character in search query.
