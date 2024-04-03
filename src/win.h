@@ -88,6 +88,9 @@ void win_mv_up(Win *, size_t);
 /* Opens terminal window with file. Do not forget to close it. */
 Win *win_open(const char *, int, int);
 
+/* Searches forward with passed query. */
+void win_search_fwd(Win *, const char *);
+
 /* Saves opened file. Returns saved bytes count. */
 size_t win_save_file(Win *);
 

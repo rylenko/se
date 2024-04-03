@@ -74,4 +74,10 @@ Returns written bytes count.
 */
 size_t file_save_to_spare_dir(File *, char *, size_t);
 
+/*
+Searches forward from passed line index and passes line position. Modifies
+index and position if results found. Do nothing otherwise.
+*/
+void file_search_fwd(const File *, size_t *, size_t *, const char *);
+
 #endif /* _FILE_H */

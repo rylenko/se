@@ -50,15 +50,14 @@ typedef enum {
 	CFG_KEY_SAVE_TO_SPARE_DIR = 'x' - CTRL_OFFSET, /* CTRL-x */
 
 	/* Search keys */
-	CFG_KEY_SEARCH_BACKWARD = '\t', /* Tab */
-	CFG_KEY_SEARCH_FORWARD = 13, /* Enter */
+	CFG_KEY_SEARCH_BWD = '\t', /* Tab */
+	CFG_KEY_SEARCH_FWD = 13, /* Enter */
 	CFG_KEY_SEARCH_DEL_CHAR = 127, /* Backspace */
 } CfgKey;
 
 /* Colors of displayed content */
-static const Color cfg_color_lines_fg = COLOR_NEW(192, 233, 233); /* White */
-static const Color cfg_color_lines_bg = COLOR_NEW(0, 0, 0); /* Black */
-static const Color cfg_color_stat_bg = COLOR_NEW(66, 165, 245); /* Blue */
-static const Color cfg_color_stat_fg = COLOR_NEW(245, 245, 245); /* White */
+static const Color cfg_color_lines_fg = COLOR_NEW(192, 233, 233);
+static const Color cfg_color_stat_bg = COLOR_NEW(66, 165, 245);
+static const Color cfg_color_stat_fg = COLOR_NEW(245, 245, 245);
 
 #endif /* _CFG_H */

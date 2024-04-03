@@ -132,21 +132,21 @@ You can set up convenient key bindings and convenient colors in `src/cfg.h`.
 	<tbody><tr>
 		<th>C</th>
 		<th>12</th>
-		<th>2314</th>
-		<th>322</th>
-		<th>418</th>
-		<th>1574</th>
-		<th>251</th>
-		<th>55159</th>
+		<th>2399</th>
+		<th>335</th>
+		<th>439</th>
+		<th>1625</th>
+		<th>260</th>
+		<th>56924</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>14</th>
-		<th>448</th>
-		<th>118</th>
-		<th>140</th>
-		<th>190</th>
+		<th>456</th>
+		<th>120</th>
+		<th>145</th>
+		<th>191</th>
 		<th>0</th>
-		<th>11097</th>
+		<th>11277</th>
 	</tr><tr>
 		<th>Markdown</th>
 		<th>2</th>
@@ -196,12 +196,12 @@ You can set up convenient key bindings and convenient colors in `src/cfg.h`.
 	<tfoot><tr>
 		<th>Total</th>
 		<th>33</th>
-		<th>3135</th>
-		<th>529</th>
-		<th>576</th>
-		<th>2030</th>
-		<th>251</th>
-    	<th>73702</th>
+		<th>3228</th>
+		<th>544</th>
+		<th>602</th>
+		<th>2082</th>
+		<th>260</th>
+    	<th>75647</th>
 	</tr></tfoot>
 	</table>
 
@@ -209,13 +209,15 @@ You can set up convenient key bindings and convenient colors in `src/cfg.h`.
 
 |Path|Line|Description|
 |-|-|-|
-|**src/main.c**|**1**|**[1] Fix treating tabs behind offset as one character: erased as 1 character, other lines move slowly when inserting multiple tabs.**|
-|**src/main.c**|**2**|**[1] Try to make code easier and less bloated.**|
-|**src/main.c**|**3**|**[1] Add more clear docs and comments.**|
-|**src/main.c**|**4**|**[1] Handle non-printable characters.**|
-|**src/main.c**|**5**|**[2] Add local clipboard. Use it in functions.**|
-|**src/main.c**|**6**|**[2] Xclip patch to use with local clipboard.**|
-|**src/main.c**|**7**|**[2] Use linked list for lines array and line's content parts.**|
-|**src/main.c**|**8**|**[3] Support huge files.**|
-|**src/main.c**|**9**|**[3] Undo operations. Also rename "del" to "remove" where needed.**|
-|**src/main.c**|**10**|**[4] API with status codes instead of err.h and tests**|
+|**src/main.c**|**1**|**[1] Optimize and review searching code.**|
+|**src/main.c**|**2**|**[1] Normalize searching with tabs.**|
+|**src/main.c**|**3**|**[1] Fix treating tabs behind offset as one character: erased as 1 character, other lines move slowly when inserting multiple tabs.**|
+|**src/main.c**|**4**|**[1] Try to make code easier and less bloated.**|
+|**src/main.c**|**5**|**[1] Add more clear docs and comments.**|
+|**src/main.c**|**6**|**[1] Handle non-printable characters.**|
+|**src/main.c**|**7**|**[2] Add local clipboard. Use it in functions.**|
+|**src/main.c**|**8**|**[2] Xclip patch to use with local clipboard.**|
+|**src/main.c**|**9**|**[2] Use linked list for lines array and line's content parts.**|
+|**src/main.c**|**10**|**[3] Support huge files.**|
+|**src/main.c**|**11**|**[3] Undo operations. Also rename "del" to "remove" where needed.**|
+|**src/main.c**|**12**|**[4] API with status codes instead of err.h and tests**|

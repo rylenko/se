@@ -324,6 +324,52 @@ file_save_to_spare_dir(File *const file, char *const path, size_t len)
 	return file_save(file, path);
 }
 
+/* void */
+/* file_search_bwd( */
+	/* const File *const file, */
+	/* size_t *const idx, */
+	/* size_t *const pos, */
+	/* const char *const query */
+/* ) { */
+
+/* } */
+
+void
+file_search_fwd(
+	const File *const file,
+	size_t *const idx,
+	size_t *const pos,
+	const char *const query
+) {
+	size_t idx_i = *idx;
+	size_t pos_i = *pos;
+	const char *res;
+
+	/* Validate line index and content position */
+	assert(idx_i < file->lines.cnt);
+	assert(pos_i <= file->lines.arr[idx_i].len);
+
+	while (1) {
+		/* Try to search forward on the current line */
+		if (
+			/* Skip empty lines */
+			0 == file->lines.arr[idx_i].len
+			/* There is no results in current line */
+			|| NULL == (res = strstr(&file->lines.arr[idx_i].cont[pos_i], query))
+		) {
+			/* Move to the beginning of the next line or return if no results */
+			if (++idx_i >= file->lines.cnt)
+				break;
+			pos_i = 0;
+		} else {
+			/* Set results */
+			*idx = idx_i;
+			*pos = res - file->lines.arr[idx_i].cont;
+			break;
+		}
+	}
+}
+
 static void
 line_del_char(Line *const line, const size_t idx)
 {

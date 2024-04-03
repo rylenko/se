@@ -50,39 +50,17 @@ struct Win {
 	struct winsize size; /* Window size */
 };
 
-/* Clamps cursor to the line. Useful when moving between lines. */
-static void win_clamp_cur_to_line(Win *);
-
 /*
 Gets the count of characters by which the part of line is expanded using tabs.
 The part of the line from the beginning to the passed column is considered.
 */
 static size_t win_exp_col(const char *, size_t, size_t);
 
-/*
-Fixes expanded cursor column for current line. Used than expanded cursor goes
-off window, but the internal cursor is still here.
-*/
-static void win_fix_exp_cur_col(Win *);
+/* Collection of methods to fix cursor. */
+static void win_fix_cur(Win *);
 
 /* Updates window's size using terminal. */
 static void win_upd_size(Win *);
-
-static void
-win_clamp_cur_to_line(Win *const win)
-{
-	const size_t line_len = file_line_len(win->file, win_curr_line_idx(win));
-	/* Check that cursor out of the line */
-	if (win->offset.cols + win->cur.col > line_len) {
-		/* Check that line not in the window */
-		if (line_len <= win->offset.cols) {
-			win->offset.cols = 0 == line_len ? 0 : line_len - 1;
-			win->cur.col = 0 == line_len ? 0 : 1;
-		} else {
-			win->cur.col = line_len - win->offset.cols;
-		}
-	}
-}
 
 void
 win_close(Win *const win)
@@ -137,7 +115,7 @@ win_del_char(Win *const win)
 	}
 
 	/* Fix expanded cursor column */
-	win_fix_exp_cur_col(win);
+	win_fix_cur(win);
 }
 
 int
@@ -198,7 +176,7 @@ win_draw_lines(const Win *const win, Buf *const buf)
 	const char *render;
 
 	/* Set colors */
-	esc_color_begin(buf, &cfg_color_lines_fg, &cfg_color_lines_bg);
+	esc_color_begin(buf, &cfg_color_lines_fg, NULL);
 
 	for (row = 0; row + STAT_ROWS_CNT < win->size.ws_row; row++) {
 		/* Checking if there is a line to draw at this row */
@@ -259,15 +237,45 @@ win_file_path(const Win *const win)
 }
 
 static void
-win_fix_exp_cur_col(Win *const win)
+win_fix_cur(Win *const win)
 {
-	/* Get current line's content and length */
-	const char *const cont = file_line_cont(win->file, win_curr_line_idx(win));
-	const size_t len = file_line_len(win->file, win_curr_line_idx(win));
-	/* Shift column offset until we see expanded cursor */
+	const char *cont;
+	size_t line_len;
+
+	/* Scroll to overflowed cursor position. Useful after window resizing */
+	if (win->cur.row + STAT_ROWS_CNT >= win->size.ws_row) {
+		win->offset.rows += win->cur.row + STAT_ROWS_CNT + 1 - win->size.ws_row;
+		win->cur.row = win->size.ws_row - STAT_ROWS_CNT - 1;
+	}
+	if (win->cur.col >= win->size.ws_col) {
+		win->offset.cols += win->cur.col + 1 - win->size.ws_col;
+		win->cur.col = win->size.ws_col - 1;
+	}
+
+	/* Get current line's length */
+	line_len = file_line_len(win->file, win_curr_line_idx(win));
+
+	/* Check that cursor out of the line. Useful after move down and up */
+	if (win->offset.cols + win->cur.col > line_len) {
+		/* Check that line not in the window */
+		if (line_len <= win->offset.cols) {
+			win->offset.cols = 0 == line_len ? 0 : line_len - 1;
+			win->cur.col = 0 == line_len ? 0 : 1;
+		} else {
+			win->cur.col = line_len - win->offset.cols;
+		}
+	}
+
+	/* Get current line's content */
+	cont = file_line_cont(win->file, win_curr_line_idx(win));
+
+	/*
+	Shift column offset until we see expanded cursor. Useful after moving between
+	lines with tabs
+	*/
 	while (
-		win_exp_col(cont, len, win->offset.cols + win->cur.col)
-			- win_exp_col(cont, len, win->offset.cols)
+		win_exp_col(cont, line_len, win->offset.cols + win->cur.col)
+			- win_exp_col(cont, line_len, win->offset.cols)
 				>= win->size.ws_col
 	) {
 		win->offset.cols++;
@@ -292,7 +300,7 @@ win_ins_char(Win *const win, const char ch)
 	/* Move right after insertion */
 	win_mv_right(win, 1);
 	/* Fix expanded cursor column */
-	win_fix_exp_cur_col(win);
+	win_fix_cur(win);
 }
 
 void
@@ -342,7 +350,7 @@ win_mv_down(Win *const win, size_t times)
 		}
 
 		/* Clamp cursor to line after move down several times */
-		win_clamp_cur_to_line(win);
+		win_fix_cur(win);
 	}
 }
 
@@ -370,7 +378,7 @@ win_mv_left(Win *const win, size_t times)
 		}
 
 		/* Fix expanded cursor column during left movement */
-		win_fix_exp_cur_col(win);
+		win_fix_cur(win);
 	}
 }
 
@@ -402,7 +410,7 @@ win_mv_right(Win *const win, size_t times)
 		}
 
 		/* Fix expanded cursor column during right movement */
-		win_fix_exp_cur_col(win);
+		win_fix_cur(win);
 	}
 }
 
@@ -482,7 +490,7 @@ win_mv_to_next_word(Win *const win, size_t times)
 		}
 
 		/* Fix expanded cursor column during right movement */
-		win_fix_exp_cur_col(win);
+		win_fix_cur(win);
 	}
 }
 
@@ -511,7 +519,7 @@ win_mv_to_prev_word(Win *const win, size_t times)
 		}
 
 		/* Fix expanded cursor column during left movement */
-		win_fix_exp_cur_col(win);
+		win_fix_cur(win);
 	}
 }
 
@@ -532,7 +540,7 @@ win_mv_up(Win *const win, size_t times)
 		}
 
 		/* Clamp cursor to line after move down several times */
-		win_clamp_cur_to_line(win);
+		win_fix_cur(win);
 	}
 }
 
@@ -561,9 +569,30 @@ win_save_file(Win *const win)
 }
 
 size_t
-win_save_file_to_spare_dir(Win *const win, char *const  path, size_t len)
+win_save_file_to_spare_dir(Win *const win, char *const path, size_t len)
 {
 	return file_save_to_spare_dir(win->file, path, len);
+}
+
+void
+win_search_fwd(Win *const win, const char *const query)
+{
+	size_t idx;
+	size_t pos;
+
+	/* Move forward to not collide with previous result */
+	win_mv_right(win, 1);
+	idx = win_curr_line_idx(win);
+	pos = win_curr_line_cont_idx(win);
+	/* Search with accepted query */
+	file_search_fwd(win->file, &idx, &pos, query);
+
+	/* Move to result */
+	win_mv_down(win, idx - win_curr_line_idx(win));
+	win_mv_right(win, pos - win_curr_line_cont_idx(win));
+
+	/* Fix expanded cursor column during movement */
+	win_fix_cur(win);
 }
 
 struct winsize
@@ -575,12 +604,7 @@ win_size(const Win *const win)
 static void
 win_upd_size(Win *const win)
 {
-	/* Update size using terminal */
+	/* Update size using terminal and fix cursor */
 	term_get_win_size(&win->size);
-	/* Clamp cursor to window */
-	win->cur.row = MIN(win->cur.row, win->size.ws_row - STAT_ROWS_CNT - 1);
-	win->cur.col = MIN(win->cur.col, win->size.ws_col - 1);
-
-	/* Clamp cursor to new row */
-	win_clamp_cur_to_line(win);
+	win_fix_cur(win);
 }
