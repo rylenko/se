@@ -146,7 +146,7 @@ You can set up convenient key bindings and convenient colors in `src/cfg.h`.
 		<th>140</th>
 		<th>190</th>
 		<th>0</th>
-		<th>11071</th>
+		<th>11097</th>
 	</tr><tr>
 		<th>Markdown</th>
 		<th>2</th>
@@ -201,7 +201,7 @@ You can set up convenient key bindings and convenient colors in `src/cfg.h`.
 		<th>576</th>
 		<th>2030</th>
 		<th>251</th>
-    	<th>73658</th>
+    	<th>73684</th>
 	</tr></tfoot>
 	</table>
 
