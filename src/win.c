@@ -197,6 +197,9 @@ win_draw_lines(const Win *const win, Buf *const buf)
 	size_t render_len;
 	const char *render;
 
+	/* Set colors */
+	esc_color_begin(buf, &cfg_color_lines_fg, &cfg_color_lines_bg);
+
 	for (row = 0; row + STAT_ROWS_CNT < win->size.ws_row; row++) {
 		/* Checking if there is a line to draw at this row */
 		if (win->offset.rows + row >= lines_cnt) {
@@ -222,6 +225,9 @@ win_draw_lines(const Win *const win, Buf *const buf)
 		/* Move to the beginning of the next row */
 		buf_write(buf, "\r\n", 2);
 	}
+
+	/* End colored output */
+	esc_color_end(buf);
 }
 
 static size_t

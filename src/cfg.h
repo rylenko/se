@@ -50,6 +50,8 @@ typedef enum {
 } CfgKey;
 
 /* Colors of displayed content */
+static const Color cfg_color_lines_fg = COLOR_NEW(192, 233, 233); /* White */
+static const Color cfg_color_lines_bg = COLOR_NEW(0, 0, 0); /* Black */
 static const Color cfg_color_stat_bg = COLOR_NEW(66, 165, 245); /* Blue */
 static const Color cfg_color_stat_fg = COLOR_NEW(245, 245, 245); /* White */
 

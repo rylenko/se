@@ -124,21 +124,21 @@ You can set up convenient key bindings and convenient colors in `src/cfg.h`.
 	<tbody><tr>
 		<th>C</th>
 		<th>12</th>
-		<th>2231</th>
-		<th>317</th>
-		<th>400</th>
-		<th>1514</th>
+		<th>2237</th>
+		<th>319</th>
+		<th>402</th>
+		<th>1516</th>
 		<th>240</th>
-		<th>52818</th>
+		<th>52950</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>14</th>
-		<th>439</th>
+		<th>441</th>
 		<th>117</th>
 		<th>139</th>
-		<th>183</th>
+		<th>185</th>
 		<th>0</th>
-		<th>10815</th>
+		<th>10965</th>
 	</tr><tr>
 		<th>Markdown</th>
 		<th>2</th>
@@ -188,12 +188,12 @@ You can set up convenient key bindings and convenient colors in `src/cfg.h`.
 	<tfoot><tr>
 		<th>Total</th>
 		<th>33</th>
-		<th>3027</th>
-		<th>519</th>
-		<th>557</th>
-		<th>1951</th>
+		<th>3035</th>
+		<th>521</th>
+		<th>559</th>
+		<th>1955</th>
 		<th>240</th>
-    	<th>70567</th>
+    	<th>70849</th>
 	</tr></tfoot>
 	</table>
 
