@@ -22,7 +22,7 @@ enum {
 	/* Search */
 	ED_SEARCH_INPUT_ARR_LEN = 64, /* Capacity of search query buffer */
 	ED_INPUT_SEARCH_DEL_CHAR = -1, /* Flag to delete last character in search */
-	ED_INPUT_SEARCH_RESET = -2, /* Flag to reset search input*/
+	ED_INPUT_SEARCH_RESET = -2, /* Flag to reset search input */
 	/* Other */
 	ED_INPUT_NUM_RESET = -1, /* Flag to reset number input */
 	ED_MSG_ARR_LEN = 64, /* Capacity of message buffer */

@@ -137,7 +137,7 @@ You can set up convenient key bindings and convenient colors in `src/cfg.h`.
 		<th>439</th>
 		<th>1625</th>
 		<th>260</th>
-		<th>56994</th>
+		<th>56995</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>14</th>
@@ -201,7 +201,7 @@ You can set up convenient key bindings and convenient colors in `src/cfg.h`.
 		<th>602</th>
 		<th>2082</th>
 		<th>260</th>
-    	<th>75717</th>
+    	<th>75718</th>
 	</tr></tfoot>
 	</table>
 
