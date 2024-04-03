@@ -24,29 +24,35 @@ typedef enum {
 	CFG_KEY_DEL_CHAR = 127, /* Backspace */
 	CFG_KEY_DEL_LINE = 'd' - CTRL_OFFSET, /* CTRL-d */
 	CFG_KEY_INS_LINE_BREAK = 13, /* Enter */
-	CFG_KEY_INS_LINE_BELOW = 'n', /* n */
+	CFG_KEY_INS_LINE_BELOW = 'n',
 	CFG_KEY_INS_LINE_ON_TOP = 'n' - CTRL_OFFSET, /* CTRL-n */
 
 	/* Modes switching */
-	CFG_KEY_MODE_INS = 'i', /* i */
+	CFG_KEY_MODE_INS = 'i',
 	CFG_KEY_MODE_NORM = 27, /* Escape */
+	CFG_KEY_MODE_SEARCH = 47, /* / */
 
 	/* Movement */
-	CFG_KEY_MV_TO_BEGIN_OF_FILE = 'w', /* w */
-	CFG_KEY_MV_TO_BEGIN_OF_LINE = 'a', /* a */
-	CFG_KEY_MV_DOWN = 'j', /* j */
-	CFG_KEY_MV_TO_END_OF_FILE = 's', /* s */
-	CFG_KEY_MV_TO_END_OF_LINE = 'd', /* d */
-	CFG_KEY_MV_LEFT = 'h', /* h */
-	CFG_KEY_MV_TO_NEXT_WORD = 'e', /* e */
-	CFG_KEY_MV_TO_PREV_WORD = 'q', /* q */
-	CFG_KEY_MV_RIGHT = 'l', /* l */
-	CFG_KEY_MV_UP = 'k', /* k */
+	CFG_KEY_MV_TO_BEGIN_OF_FILE = 'w',
+	CFG_KEY_MV_TO_BEGIN_OF_LINE = 'a',
+	CFG_KEY_MV_DOWN = 'j',
+	CFG_KEY_MV_TO_END_OF_FILE = 's',
+	CFG_KEY_MV_TO_END_OF_LINE = 'd',
+	CFG_KEY_MV_LEFT = 'h',
+	CFG_KEY_MV_TO_NEXT_WORD = 'e',
+	CFG_KEY_MV_TO_PREV_WORD = 'q',
+	CFG_KEY_MV_RIGHT = 'l',
+	CFG_KEY_MV_UP = 'k',
 
 	/* Save or quit */
 	CFG_KEY_QUIT = 'q' - CTRL_OFFSET, /* CTRL-q */
 	CFG_KEY_SAVE = 's' - CTRL_OFFSET, /* CTRL-s */
 	CFG_KEY_SAVE_TO_SPARE_DIR = 'x' - CTRL_OFFSET, /* CTRL-x */
+
+	/* Search keys */
+	CFG_KEY_SEARCH_BACKWARD = '\t', /* Tab */
+	CFG_KEY_SEARCH_FORWARD = 13, /* Enter */
+	CFG_KEY_SEARCH_DEL_CHAR = 127, /* Backspace */
 } CfgKey;
 
 /* Colors of displayed content */

@@ -9,6 +9,8 @@ mode_str(const Mode mode)
 		return "INSERT";
 	case MODE_NORM:
 		return "NORMAL";
+	case MODE_SEARCH:
+		return "SEARCH";
 	default:
 		return NULL;
 	}

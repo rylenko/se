@@ -19,8 +19,14 @@
 #include "win.h"
 
 enum {
+	/* Search */
+	ED_SEARCH_INPUT_ARR_LEN = 64, /* Capacity of search query buffer */
+	ED_INPUT_SEARCH_DEL_CHAR = -1, /* Flag to delete current character in search */
+	ED_INPUT_SEARCH_RESET = -2, /* Flag to reset search input*/
+	/* Other */
 	ED_INPUT_NUM_RESET = -1, /* Flag to reset number input */
 	ED_MSG_ARR_LEN = 64, /* Capacity of message buffer */
+	ED_STAT_RIGHT_ARR_LEN = 128, /* Capacity of right part of the status */
 };
 
 /* Editor options. */
@@ -30,6 +36,8 @@ struct Ed {
 	Mode mode; /* Input mode */
 	char msg[ED_MSG_ARR_LEN]; /* Message for the user */
 	size_t num_input; /* Number input. 0 if not set */
+	char search_input[ED_SEARCH_INPUT_ARR_LEN]; /* Search input */
+	size_t search_input_len; /* Search query input length */
 	unsigned char quit_presses_rem; /* Greater than 1 if file is dirty */
 };
 
@@ -54,6 +62,14 @@ static void ed_draw_stat_right(const Ed *, Buf *, size_t);
 /* Writes digit to the number input. Resets if argument is reset flag. */
 static void ed_input_num(Ed *, char);
 
+/*
+Writes character to the search input.
+
+Deletes last character if argument is delete flag and resets if argument is
+reset flag.
+*/
+static void ed_input_search(Ed *, char);
+
 /* Inserts character to editor. */
 static void ed_ins_char(Ed *, char);
 
@@ -71,6 +87,9 @@ static void ed_proc_arrow_key(Ed *, char);
 
 /* Process key in insertion mode. */
 static void ed_proc_ins_key(Ed *, char);
+
+/* Process key in search mode. */
+static void ed_proc_search_key(Ed *, char);
 
 /* Processes key sequence. Useful if single key press is several characters */
 static void ed_proc_seq_key(Ed *, const char *, size_t);
@@ -215,30 +234,40 @@ static void
 ed_draw_stat_right(const Ed *const ed, Buf *const buf, const size_t left_len)
 {
 	size_t col;
-	char num_input[32] = {0};
+	const size_t cont_idx = win_curr_line_cont_idx(ed->win);
+	const size_t idx = win_curr_line_idx(ed->win);
+	char right[ED_STAT_RIGHT_ARR_LEN];
 	size_t right_len = 0;
-	char pos[32] = {0};
-	struct winsize winsize = win_size(ed->win);
+	const struct winsize winsize = win_size(ed->win);
 
-	/* Write number input */
+	/* Write right part of the status */
 	if (ed->num_input > 0)
-		right_len += snprintf(num_input, sizeof(num_input), "%zu < ", ed->num_input);
-
-	/* Write current position in the file */
-	right_len += snprintf(
-		pos,
-		sizeof(pos),
-		"%zu, %zu ",
-		win_curr_line_idx(ed->win),
-		win_curr_line_cont_idx(ed->win)
-	);
+		right_len += snprintf(
+			right,
+			sizeof(right),
+			"%zu < %zu, %zu ",
+			ed->num_input,
+			idx,
+			cont_idx
+		);
+	else if (ed->search_input_len > 0)
+		right_len += snprintf(
+			right,
+			sizeof(right),
+			"%s < %zu, %zu ",
+			ed->search_input,
+			idx,
+			cont_idx
+		);
+	else
+		right_len += snprintf(right, sizeof(right), "%zu, %zu ", idx, cont_idx);
 
 	/* Write empty space */
 	for (col = left_len + right_len; col < winsize.ws_col; col++)
 		buf_write(buf, " ", 1);
 
 	/* Write right part */
-	buf_writef(buf, "%s%s", num_input, pos);
+	buf_writef(buf, right, right_len);
 }
 
 void
@@ -264,6 +293,24 @@ ed_input_num(Ed *const ed, const char digit)
 		ed->num_input = 0;
 	else
 		ed->num_input = (ed->num_input * 10) + digit;
+}
+
+static void
+ed_input_search(Ed *const ed, const char ch)
+{
+	if (ED_INPUT_SEARCH_RESET == ch) {
+		/* Reset search input */
+		ed->search_input_len = 0;
+		ed->search_input[0] = 0;
+	} else if (ED_INPUT_SEARCH_DEL_CHAR == ch && ed->search_input_len > 0) {
+		/* Delete last character in the input */
+		ed->search_input[--ed->search_input_len] = 0;
+	} else if (ed->search_input_len + 1 < sizeof(ed->search_input) && isprint(ch))
+	{
+		/* Write new character if there is place for null byte */
+		ed->search_input[ed->search_input_len++] = ch;
+		ed->search_input[ed->search_input_len] = 0;
+	}
 }
 
 static void
@@ -391,7 +438,9 @@ ed_open(const char *const path, const int ifd, const int ofd)
 	/* Set zero length to message */
 	ed->msg[0] = 0;
 	/* Make number input inactive */
-	ed->num_input = 0;
+	ed_input_num(ed, ED_INPUT_NUM_RESET);
+	/* Set zero length to search query */
+	ed_input_search(ed, ED_INPUT_SEARCH_RESET);
 	/* File is not dirty by default so we may quit using one key press */
 	ed->quit_presses_rem = 1;
 	return ed;
@@ -436,6 +485,26 @@ ed_proc_ins_key(Ed *const ed, const char key)
 }
 
 static void
+ed_proc_search_key(Ed *const ed, const char key)
+{
+	switch (key) {
+	case CFG_KEY_MODE_NORM:
+		/* Switch to normal mode and reset search input */
+		ed->mode = MODE_NORM;
+		ed_input_search(ed, ED_INPUT_SEARCH_RESET);
+		break;
+	case CFG_KEY_SEARCH_DEL_CHAR:
+		/* Delete last character */
+		ed_input_search(ed, ED_INPUT_SEARCH_DEL_CHAR);
+		break;
+	default:
+		/* Insert new character */
+		ed_input_search(ed, key);
+		break;
+	}
+}
+
+static void
 ed_proc_seq_key(Ed *const ed, const char *const seq, const size_t len)
 {
 	/* Arrows */
@@ -464,6 +533,9 @@ ed_proc_norm_key(Ed *const ed, const char key)
 		return;
 	case CFG_KEY_MODE_INS:
 		ed->mode = MODE_INS;
+		break;
+	case CFG_KEY_MODE_SEARCH:
+		ed->mode = MODE_SEARCH;
 		break;
 	case CFG_KEY_QUIT:
 		ed_on_quit_press(ed);
@@ -505,6 +577,12 @@ ed_proc_norm_key(Ed *const ed, const char key)
 		ed_mv_to_prev_word(ed);
 		break;
 	}
+
+	/* Process number input */
+	if ('0' <= key && key <= '9')
+		ed_input_num(ed, key - '0');
+	else
+		ed_input_num(ed, ED_INPUT_NUM_RESET);
 }
 
 void
@@ -582,13 +660,10 @@ ed_wait_and_proc_key(Ed *const ed)
 			/* Process key in insertion mode */
 			ed_proc_ins_key(ed, seq[0]);
 			break;
+		case MODE_SEARCH:
+			/* Process key in search mode */
+			ed_proc_search_key(ed, seq[0]);
+			break;
 		}
-	}
-
-	/* Process number input */
-	if ('0' <= seq[0] && seq[0] <= '9') {
-		ed_input_num(ed, seq[0] - '0');
-	} else {
-		ed_input_num(ed, ED_INPUT_NUM_RESET);
 	}
 }

@@ -1,4 +1,4 @@
-/* TODO: Fix treating tabs behind offset as one character: erased as 1 character, other lines move slowly when inserting multiple tabs. */
+/* TODO: [1] Fix treating tabs behind offset as one character: erased as 1 character, other lines move slowly when inserting multiple tabs. */
 /* TODO: [1] Try to make code easier and less bloated. */
 /* TODO: [1] Add more clear docs and comments. */
 /* TODO: [1] Handle non-printable characters. */

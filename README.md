@@ -49,21 +49,29 @@ Normal mode keys:
 - `s` - go to end of file.
 - (X) `u` - undo last change.
 - `w` - go to begin of file.
-- (X) `/` - start or end search.
-- `CTRL+d` - delete current line.
-- `CTRL+n` - create a line above the current line and move to it.
-- `CTRL+s` - save.
-- `CTRL+q` - quit. If you changed the file, you will need to either save it or press this key several times.
-- `CTRL+x` - save to spare directory. Useful if no privilege to write to opened file.
+- `/` - switch to searching mode.
+- `Ctrl+d` - delete current line.
+- `Ctrl+n` - create a line above the current line and move to it.
+- `Ctrl+s` - save.
+- `Ctrl+q` - quit. If you changed the file, you will need to either save it or press this key several times.
+- `Ctrl+x` - save to spare directory. Useful if no privilege to write to opened file.
 
 You can also repeat a key by pressing `<number><key>`. For example, `5n` will create 5 lines below the cursor.
 
 Insert mode keys:
 
-- `ESC` - switch to normal mode.
+- `Esc` - switch to normal mode.
 - `Backspace` - delete character before cursor.
 - `Enter` - break line.
 - Otherwise, if character is printable, the character is inserted.
+
+Search mode keys:
+
+- `Esc` - switch to normal mode.
+- `Backspace` - delete last character in search query.
+- `Enter` - search forward.
+- `Tab` - search backward.
+- Otherwise, if character is printable, the character is inserted to search query.
 
 # Build and install
 
@@ -124,30 +132,30 @@ You can set up convenient key bindings and convenient colors in `src/cfg.h`.
 	<tbody><tr>
 		<th>C</th>
 		<th>12</th>
-		<th>2237</th>
-		<th>319</th>
-		<th>402</th>
-		<th>1516</th>
-		<th>240</th>
-		<th>52950</th>
+		<th>2314</th>
+		<th>322</th>
+		<th>418</th>
+		<th>1574</th>
+		<th>251</th>
+		<th>55159</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>14</th>
-		<th>441</th>
-		<th>117</th>
-		<th>139</th>
-		<th>185</th>
+		<th>448</th>
+		<th>118</th>
+		<th>140</th>
+		<th>190</th>
 		<th>0</th>
-		<th>10965</th>
+		<th>11071</th>
 	</tr><tr>
 		<th>Markdown</th>
 		<th>2</th>
-		<th>221</th>
-		<th>62</th>
+		<th>237</th>
+		<th>66</th>
 		<th>0</th>
-		<th>159</th>
+		<th>171</th>
 		<th>0</th>
-		<th>4290</th>
+		<th>4784</th>
 	</tr><tr>
 		<th>Makefile</th>
 		<th>2</th>
@@ -188,12 +196,12 @@ You can set up convenient key bindings and convenient colors in `src/cfg.h`.
 	<tfoot><tr>
 		<th>Total</th>
 		<th>33</th>
-		<th>3035</th>
-		<th>521</th>
-		<th>559</th>
-		<th>1955</th>
-		<th>240</th>
-    	<th>70849</th>
+		<th>3135</th>
+		<th>529</th>
+		<th>576</th>
+		<th>2030</th>
+		<th>251</th>
+    	<th>73658</th>
 	</tr></tfoot>
 	</table>
 
@@ -201,7 +209,7 @@ You can set up convenient key bindings and convenient colors in `src/cfg.h`.
 
 |Path|Line|Description|
 |-|-|-|
-|**src/main.c**|**1**|**Fix treating tabs behind offset as one character: erased as 1 character, other lines move slowly when inserting multiple tabs.**|
+|**src/main.c**|**1**|**[1] Fix treating tabs behind offset as one character: erased as 1 character, other lines move slowly when inserting multiple tabs.**|
 |**src/main.c**|**2**|**[1] Try to make code easier and less bloated.**|
 |**src/main.c**|**3**|**[1] Add more clear docs and comments.**|
 |**src/main.c**|**4**|**[1] Handle non-printable characters.**|

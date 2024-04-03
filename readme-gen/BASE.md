@@ -49,21 +49,29 @@ Normal mode keys:
 - `s` - go to end of file.
 - (X) `u` - undo last change.
 - `w` - go to begin of file.
-- (X) `/` - start or end search.
-- `CTRL+d` - delete current line.
-- `CTRL+n` - create a line above the current line and move to it.
-- `CTRL+s` - save.
-- `CTRL+q` - quit. If you changed the file, you will need to either save it or press this key several times.
-- `CTRL+x` - save to spare directory. Useful if no privilege to write to opened file.
+- `/` - switch to searching mode.
+- `Ctrl+d` - delete current line.
+- `Ctrl+n` - create a line above the current line and move to it.
+- `Ctrl+s` - save.
+- `Ctrl+q` - quit. If you changed the file, you will need to either save it or press this key several times.
+- `Ctrl+x` - save to spare directory. Useful if no privilege to write to opened file.
 
 You can also repeat a key by pressing `<number><key>`. For example, `5n` will create 5 lines below the cursor.
 
 Insert mode keys:
 
-- `ESC` - switch to normal mode.
+- `Esc` - switch to normal mode.
 - `Backspace` - delete character before cursor.
 - `Enter` - break line.
 - Otherwise, if character is printable, the character is inserted.
+
+Search mode keys:
+
+- `Esc` - switch to normal mode.
+- `Backspace` - delete last character in search query.
+- `Enter` - search forward.
+- `Tab` - search backward.
+- Otherwise, if character is printable, the character is inserted to search query.
 
 # Build and install
 
