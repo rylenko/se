@@ -577,6 +577,13 @@ win_save_file_to_spare_dir(Win *const win, char *const path, size_t len)
 }
 
 void
+win_search_bwd(Win *const win, const char *const query)
+{
+	(void)win;
+	(void)query;
+}
+
+void
 win_search_fwd(Win *const win, const char *const query)
 {
 	size_t idx;

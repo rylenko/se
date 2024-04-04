@@ -132,21 +132,21 @@ You can set up convenient key bindings and convenient colors in `src/cfg.h`.
 	<tbody><tr>
 		<th>C</th>
 		<th>12</th>
-		<th>2410</th>
-		<th>337</th>
-		<th>439</th>
-		<th>1634</th>
+		<th>2431</th>
+		<th>340</th>
+		<th>442</th>
+		<th>1649</th>
 		<th>262</th>
-		<th>57364</th>
+		<th>57896</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>14</th>
-		<th>458</th>
-		<th>120</th>
-		<th>147</th>
-		<th>191</th>
+		<th>461</th>
+		<th>121</th>
+		<th>148</th>
+		<th>192</th>
 		<th>0</th>
-		<th>11315</th>
+		<th>11401</th>
 	</tr><tr>
 		<th>Markdown</th>
 		<th>2</th>
@@ -196,12 +196,12 @@ You can set up convenient key bindings and convenient colors in `src/cfg.h`.
 	<tfoot><tr>
 		<th>Total</th>
 		<th>33</th>
-		<th>3241</th>
-		<th>546</th>
-		<th>604</th>
-		<th>2091</th>
+		<th>3265</th>
+		<th>550</th>
+		<th>608</th>
+		<th>2107</th>
 		<th>262</th>
-    	<th>76125</th>
+    	<th>76743</th>
 	</tr></tfoot>
 	</table>
 
@@ -212,11 +212,12 @@ You can set up convenient key bindings and convenient colors in `src/cfg.h`.
 |**src/main.c**|**1**|**v1.1: Optimize and review searching code.**|
 |**src/main.c**|**2**|**v1.1: Normalize searching with tabs.**|
 |**src/main.c**|**3**|**v1.1: Test where we do not need win_scroll.**|
-|**src/main.c**|**4**|**v1.2: Create Cell struct to handle all symbols including UTF-8. Create structs Win->Renders->Render->Cells->Cell. Rerender lines on window side**|
-|**src/main.c**|**5**|**v1.2: Undo operations. Also rename "del" to "remove" where needed.**|
-|**src/main.c**|**6**|**v1.2: Use linked list for lines array and line's content parts.**|
-|**src/main.c**|**7**|**v1.3: Add local clipboard. Use it in functions.**|
-|**src/main.c**|**8**|**v1.3: Xclip patch to use with local clipboard.**|
-|**src/main.c**|**9**|**v1.4: Add more clear docs and comments.**|
-|**src/main.c**|**10**|**v1.4: Support huge files.**|
-|**src/main.c**|**11**|**v1.5: API with status codes instead of err.h. Add tests**|
+|**src/main.c**|**4**|**v1.1: Just input search query in search mode. After Enter key save search query (do not show it on the status). Move forward using Enter and move backward using Tab.**|
+|**src/main.c**|**5**|**v1.2: Create Cell struct to handle all symbols including UTF-8. Create structs Win->Renders->Render->Cells->Cell. Rerender lines on window side**|
+|**src/main.c**|**6**|**v1.2: Undo operations. Also rename "del" to "remove" where needed.**|
+|**src/main.c**|**7**|**v1.2: Use linked list for lines array and line's content parts.**|
+|**src/main.c**|**8**|**v1.3: Add local clipboard. Use it in functions.**|
+|**src/main.c**|**9**|**v1.3: Xclip patch to use with local clipboard.**|
+|**src/main.c**|**10**|**v1.4: Add more clear docs and comments.**|
+|**src/main.c**|**11**|**v1.4: Support huge files.**|
+|**src/main.c**|**12**|**v1.5: API with status codes instead of err.h. Add tests**|

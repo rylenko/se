@@ -136,6 +136,9 @@ static void ed_save_file(Ed *);
 /* Saves opened file to spare dir. Useful if no privileges. */
 static void ed_save_file_to_spare_dir(Ed *);
 
+/* Searches backward with inputed search query. */
+static void ed_search_bwd(Ed *const ed);
+
 /* Searches forward with inputed search query. */
 static void ed_search_fwd(Ed *const ed);
 
@@ -500,6 +503,10 @@ ed_proc_search_key(Ed *const ed, const char key)
 		/* Delete last character */
 		ed_input_search(ed, ED_INPUT_SEARCH_DEL_CHAR);
 		break;
+	case CFG_KEY_SEARCH_BWD:
+		/* Search backward */
+		ed_search_bwd(ed);
+		break;
 	case CFG_KEY_SEARCH_FWD:
 		/* Search forward */
 		ed_search_fwd(ed);
@@ -635,6 +642,12 @@ ed_save_file_to_spare_dir(Ed *const ed)
 	ed_set_msg(ed, "%zu bytes saved to %s", len, path);
 	/* Update quit presses */
 	ed->quit_presses_rem = 1;
+}
+
+static void
+ed_search_bwd(Ed *const ed)
+{
+	win_search_bwd(ed->win, ed->search_input);
 }
 
 static void
