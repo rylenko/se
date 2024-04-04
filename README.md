@@ -132,12 +132,12 @@ You can set up convenient key bindings and convenient colors in `src/cfg.h`.
 	<tbody><tr>
 		<th>C</th>
 		<th>12</th>
-		<th>2431</th>
+		<th>2438</th>
 		<th>340</th>
 		<th>442</th>
-		<th>1649</th>
+		<th>1656</th>
 		<th>262</th>
-		<th>57896</th>
+		<th>58875</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>14</th>
@@ -196,12 +196,12 @@ You can set up convenient key bindings and convenient colors in `src/cfg.h`.
 	<tfoot><tr>
 		<th>Total</th>
 		<th>33</th>
-		<th>3265</th>
+		<th>3272</th>
 		<th>550</th>
 		<th>608</th>
-		<th>2107</th>
+		<th>2114</th>
 		<th>262</th>
-    	<th>76743</th>
+    	<th>77722</th>
 	</tr></tfoot>
 	</table>
 

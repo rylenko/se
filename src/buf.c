@@ -27,16 +27,16 @@ struct Buf {
 };
 
 /* Reallocates buffer with new capacity. */
-static void buf_realloc(Buf *, size_t);
+static void buf_realloc(struct Buf *, size_t);
 
-Buf*
+struct Buf*
 buf_alloc(void)
 {
-	return err_calloc(1, sizeof(Buf));
+	return err_calloc(1, sizeof(struct Buf));
 }
 
 void
-buf_flush(Buf *const buf, const int fd)
+buf_flush(struct Buf *const buf, const int fd)
 {
 	/* Write buffer's data to file by its descriptor */
 	if (write(fd, buf->data, buf->len) < 0)
@@ -46,7 +46,7 @@ buf_flush(Buf *const buf, const int fd)
 }
 
 void
-buf_free(Buf *const buf)
+buf_free(struct Buf *const buf)
 {
 	/* Deallocate internal data and buffer */
 	free(buf->data);
@@ -54,7 +54,7 @@ buf_free(Buf *const buf)
 }
 
 static void
-buf_realloc(Buf *const buf, const size_t new_cap)
+buf_realloc(struct Buf *const buf, const size_t new_cap)
 {
 	/* Reallocate and update capacity */
 	buf->data = err_realloc(buf->data, new_cap);
@@ -62,7 +62,7 @@ buf_realloc(Buf *const buf, const size_t new_cap)
 }
 
 size_t
-buf_write(Buf *const buf, const char *const str, const size_t len)
+buf_write(struct Buf *const buf, const char *const str, const size_t len)
 {
 	/* Realloce if there is no space for new data */
 	if (buf->len + len > buf->cap)
@@ -76,7 +76,7 @@ buf_write(Buf *const buf, const char *const str, const size_t len)
 }
 
 size_t
-buf_writef(Buf *const buf, const char *const fmt, ...)
+buf_writef(struct Buf *const buf, const char *const fmt, ...)
 {
 	va_list args;
 	int len;

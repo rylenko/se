@@ -137,7 +137,7 @@ Returns written bytes count.
 static size_t lines_write(const struct Lines *, FILE *);
 
 void
-file_absorb_next_line(File *const file, const size_t idx)
+file_absorb_next_line(struct File *const file, const size_t idx)
 {
 	/* Absorb next line and update current line's render */
 	lines_absorb_next_line(&file->lines, idx);
@@ -147,7 +147,7 @@ file_absorb_next_line(File *const file, const size_t idx)
 }
 
 void
-file_break_line(File *const file, const size_t idx, const size_t pos)
+file_break_line(struct File *const file, const size_t idx, const size_t pos)
 {
 	/* Break line and mark file as dirty */
 	lines_break_line(&file->lines, idx, pos);
@@ -155,7 +155,7 @@ file_break_line(File *const file, const size_t idx, const size_t pos)
 }
 
 void
-file_close(File *const file)
+file_close(struct File *const file)
 {
 	/* Free readed lines */
 	lines_free(&file->lines);
@@ -166,7 +166,7 @@ file_close(File *const file)
 }
 
 void
-file_del_char(File *const file, const size_t idx, const size_t pos)
+file_del_char(struct File *const file, const size_t idx, const size_t pos)
 {
 	/* Delete character and update render */
 	line_del_char(&file->lines.arr[idx], pos);
@@ -176,7 +176,7 @@ file_del_char(File *const file, const size_t idx, const size_t pos)
 }
 
 void
-file_del_line(File *const file, const size_t idx)
+file_del_line(struct File *const file, const size_t idx)
 {
 	/* Delete the line and mark file as dirty */
 	lines_del_line(&file->lines, idx);
@@ -184,17 +184,21 @@ file_del_line(File *const file, const size_t idx)
 }
 
 void
-file_ins_char(File *const file, const size_t i, const size_t pos, const char c)
-{
+file_ins_char(
+	struct File *const file,
+	const size_t i,
+	const size_t pos,
+	const char ch
+) {
 	/* Insert character to file and update line's render */
-	line_ins(&file->lines.arr[i], pos, c);
+	line_ins(&file->lines.arr[i], pos, ch);
 	line_render(&file->lines.arr[i]);
 	/* Mark file as dirty */
 	file->is_dirty = 1;
 }
 
 void
-file_ins_empty_line(File *const file, const size_t idx)
+file_ins_empty_line(struct File *const file, const size_t idx)
 {
 	/* Initialize empty line */
 	struct Line empty_line;
@@ -207,49 +211,49 @@ file_ins_empty_line(File *const file, const size_t idx)
 }
 
 char
-file_is_dirty(const File *const file)
+file_is_dirty(const struct File *const file)
 {
 	return file->is_dirty;
 }
 
 const char*
-file_line_cont(const File *const file, const size_t idx)
+file_line_cont(const struct File *const file, const size_t idx)
 {
 	return file->lines.arr[idx].cont;
 }
 
 size_t
-file_line_len(const File *const file, const size_t idx)
+file_line_len(const struct File *const file, const size_t idx)
 {
 	return file->lines.arr[idx].len;
 }
 
 const char*
-file_line_render(const File *const file, const size_t idx)
+file_line_render(const struct File *const file, const size_t idx)
 {
 	return file->lines.arr[idx].render;
 }
 
 size_t
-file_line_render_len(const File *const file, const size_t idx)
+file_line_render_len(const struct File *const file, const size_t idx)
 {
 	return file->lines.arr[idx].render_len;
 }
 
 size_t
-file_lines_cnt(const File *const file)
+file_lines_cnt(const struct File *const file)
 {
 	return file->lines.cnt;
 }
 
-File*
+struct File*
 file_open(const char *const path)
 {
 	struct Line empty_line;
 	FILE *inner_file;
 
 	/* Allocate struct */
-	File *file = err_malloc(sizeof(*file));
+	struct File *file = err_malloc(sizeof(*file));
 	/* Initialize file */
 	file->path = str_copy(path, strlen(path));
 	file->is_dirty = 0;
@@ -271,13 +275,13 @@ file_open(const char *const path)
 }
 
 const char*
-file_path(const File *const file)
+file_path(const struct File *const file)
 {
 	return file->path;
 }
 
 size_t
-file_save(File *const file, const char *const path)
+file_save(struct File *const file, const char *const path)
 {
 	FILE *inner;
 	size_t len;
@@ -299,7 +303,7 @@ file_save(File *const file, const char *const path)
 }
 
 size_t
-file_save_to_spare_dir(File *const file, char *const path, size_t len)
+file_save_to_spare_dir(struct File *const file, char *const path, size_t len)
 {
 	char date[15];
 	const char *const filename = basename(file->path);
@@ -326,7 +330,7 @@ file_save_to_spare_dir(File *const file, char *const path, size_t len)
 
 /* void */
 /* file_search_bwd( */
-	/* const File *const file, */
+	/* const struct File *const file, */
 	/* size_t *const idx, */
 	/* size_t *const pos, */
 	/* const char *const query */
@@ -336,7 +340,7 @@ file_save_to_spare_dir(File *const file, char *const path, size_t len)
 
 char
 file_search_fwd(
-	const File *const file,
+	const struct File *const file,
 	size_t *const idx,
 	size_t *const pos,
 	const char *const query

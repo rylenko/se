@@ -42,12 +42,12 @@ struct Offset {
 	size_t cols;
 };
 
-/* Window parameters. */
+/* struct Window parameters. */
 struct Win {
 	File *file; /* Opened file */
 	struct Offset offset; /* Offset of current view. Counts tabs as 1 character */
 	struct Cur cur; /* Pointer to window's content. Counts tabs as 1 character */
-	struct winsize size; /* Window size */
+	struct winsize size; /* struct Window size */
 };
 
 /*
@@ -57,13 +57,13 @@ The part of the line from the beginning to the passed column is considered.
 static size_t win_exp_col(const char *, size_t, size_t);
 
 /* Collection of methods to scroll and fix cursor. */
-static void win_scroll(Win *);
+static void win_scroll(struct Win *);
 
 /* Updates window's size using terminal. */
-static void win_upd_size(Win *);
+static void win_upd_size(struct Win *);
 
 void
-win_close(Win *const win)
+win_close(struct Win *const win)
 {
 	/* Deinitialize terminal, close file and deallocate opaque struct */
 	term_deinit();
@@ -72,19 +72,19 @@ win_close(Win *const win)
 }
 
 size_t
-win_curr_line_idx(const Win *const win)
+win_curr_line_idx(const struct Win *const win)
 {
 	return win->offset.rows + win->cur.row;
 }
 
 size_t
-win_curr_line_cont_idx(const Win *const win)
+win_curr_line_cont_idx(const struct Win *const win)
 {
 	return win->offset.cols + win->cur.col;
 }
 
 void
-win_break_line(Win *const win)
+win_break_line(struct Win *const win)
 {
 	/* Break current line at current cursor's position */
 	file_break_line(
@@ -98,7 +98,7 @@ win_break_line(Win *const win)
 }
 
 void
-win_del_char(Win *const win)
+win_del_char(struct Win *const win)
 {
 	const size_t cont_idx = win_curr_line_cont_idx(win);
 
@@ -119,7 +119,7 @@ win_del_char(Win *const win)
 }
 
 int
-win_del_line(Win *const win, size_t times)
+win_del_line(struct Win *const win, size_t times)
 {
 	size_t lines_cnt = file_lines_cnt(win->file);
 
@@ -149,7 +149,7 @@ win_del_line(Win *const win, size_t times)
 }
 
 void
-win_draw_cur(const Win *const win, Buf *const buf)
+win_draw_cur(const struct Win *const win, Buf *const buf)
 {
 	/* Get current line */
 	const char *const cont = file_line_cont(win->file, win_curr_line_idx(win));
@@ -164,7 +164,7 @@ win_draw_cur(const Win *const win, Buf *const buf)
 }
 
 void
-win_draw_lines(const Win *const win, Buf *const buf)
+win_draw_lines(const struct Win *const win, Buf *const buf)
 {
 	const char *cont;
 	size_t exp_offset_col;
@@ -225,19 +225,19 @@ win_exp_col(const char *const cont, const size_t len, const size_t col)
 }
 
 char
-win_file_is_dirty(const Win *const win)
+win_file_is_dirty(const struct Win *const win)
 {
 	return file_is_dirty(win->file);
 }
 
 const char*
-win_file_path(const Win *const win)
+win_file_path(const struct Win *const win)
 {
 	return file_path(win->file);
 }
 
 static void
-win_scroll(Win *const win)
+win_scroll(struct Win *const win)
 {
 	const char *cont;
 	size_t line_len;
@@ -284,14 +284,14 @@ win_scroll(Win *const win)
 }
 
 void
-win_handle_signal(Win *const win, const int signal)
+win_handle_signal(struct Win *const win, const int signal)
 {
 	if (SIGWINCH == signal)
 		win_upd_size(win);
 }
 
 void
-win_ins_char(Win *const win, const char ch)
+win_ins_char(struct Win *const win, const char ch)
 {
 	/* Insert character and mark file as dirty */
 	const size_t idx = win_curr_line_idx(win);
@@ -306,7 +306,7 @@ win_ins_char(Win *const win, const char ch)
 }
 
 void
-win_ins_empty_line_below(Win *const win, const size_t times)
+win_ins_empty_line_below(struct Win *const win, const size_t times)
 {
 	size_t times_i = times;
 
@@ -322,7 +322,7 @@ win_ins_empty_line_below(Win *const win, const size_t times)
 }
 
 void
-win_ins_empty_line_on_top(Win *const win, size_t times)
+win_ins_empty_line_on_top(struct Win *const win, size_t times)
 {
 	if (times > 0) {
 		/* Reove column offsets */
@@ -334,7 +334,7 @@ win_ins_empty_line_on_top(Win *const win, size_t times)
 }
 
 void
-win_mv_down(Win *const win, size_t times)
+win_mv_down(struct Win *const win, size_t times)
 {
 	size_t lines_cnt = file_lines_cnt(win->file);
 
@@ -357,7 +357,7 @@ win_mv_down(Win *const win, size_t times)
 }
 
 void
-win_mv_left(Win *const win, size_t times)
+win_mv_left(struct Win *const win, size_t times)
 {
 	if (times > 0) {
 		while (times-- > 0) {
@@ -385,7 +385,7 @@ win_mv_left(Win *const win, size_t times)
 }
 
 void
-win_mv_right(Win *const win, size_t times)
+win_mv_right(struct Win *const win, size_t times)
 {
 	size_t lines_cnt = file_lines_cnt(win->file);
 	size_t line_len = file_line_len(win->file, win_curr_line_idx(win));
@@ -417,7 +417,7 @@ win_mv_right(Win *const win, size_t times)
 }
 
 void
-win_mv_to_begin_of_file(Win *const win)
+win_mv_to_begin_of_file(struct Win *const win)
 {
 	/* Move to begin of first line */
 	win_mv_to_begin_of_line(win);
@@ -426,7 +426,7 @@ win_mv_to_begin_of_file(Win *const win)
 }
 
 void
-win_mv_to_begin_of_line(Win *const win)
+win_mv_to_begin_of_line(struct Win *const win)
 {
 	/* Zeroize column positions */
 	win->offset.cols = 0;
@@ -434,7 +434,7 @@ win_mv_to_begin_of_line(Win *const win)
 }
 
 void
-win_mv_to_end_of_file(Win *const win)
+win_mv_to_end_of_file(struct Win *const win)
 {
 	size_t lines_cnt = file_lines_cnt(win->file);
 	/* Move to begin of last line */
@@ -451,7 +451,7 @@ win_mv_to_end_of_file(Win *const win)
 }
 
 void
-win_mv_to_end_of_line(Win *const win)
+win_mv_to_end_of_line(struct Win *const win)
 {
 	const size_t line_len = file_line_len(win->file, win_curr_line_idx(win));
 
@@ -465,7 +465,7 @@ win_mv_to_end_of_line(Win *const win)
 }
 
 void
-win_mv_to_next_word(Win *const win, size_t times)
+win_mv_to_next_word(struct Win *const win, size_t times)
 {
 	size_t cont_i;
 	size_t word_i;
@@ -497,7 +497,7 @@ win_mv_to_next_word(Win *const win, size_t times)
 }
 
 void
-win_mv_to_prev_word(Win *const win, size_t times)
+win_mv_to_prev_word(struct Win *const win, size_t times)
 {
 	size_t word_i;
 	const char *const cont = file_line_cont(win->file, win_curr_line_idx(win));
@@ -526,7 +526,7 @@ win_mv_to_prev_word(Win *const win, size_t times)
 }
 
 void
-win_mv_up(Win *const win, size_t times)
+win_mv_up(struct Win *const win, size_t times)
 {
 	if (times > 0) {
 		while (times-- > 0) {
@@ -546,11 +546,11 @@ win_mv_up(Win *const win, size_t times)
 	}
 }
 
-Win*
+struct Win*
 win_open(const char *const path, const int ifd, const int ofd)
 {
 	/* Allocate window */
-	Win *const win = err_malloc(sizeof(*win));
+	struct Win *const win = err_malloc(sizeof(*win));
 	/* Open file */
 	win->file = file_open(path);
 	/* Initialize offset and cursor */
@@ -565,26 +565,26 @@ win_open(const char *const path, const int ifd, const int ofd)
 }
 
 size_t
-win_save_file(Win *const win)
+win_save_file(struct Win *const win)
 {
 	return file_save(win->file, NULL);
 }
 
 size_t
-win_save_file_to_spare_dir(Win *const win, char *const path, size_t len)
+win_save_file_to_spare_dir(struct Win *const win, char *const path, size_t len)
 {
 	return file_save_to_spare_dir(win->file, path, len);
 }
 
 void
-win_search_bwd(Win *const win, const char *const query)
+win_search_bwd(struct Win *const win, const char *const query)
 {
 	(void)win;
 	(void)query;
 }
 
 void
-win_search_fwd(Win *const win, const char *const query)
+win_search_fwd(struct Win *const win, const char *const query)
 {
 	size_t idx;
 	size_t pos;
@@ -609,13 +609,13 @@ win_search_fwd(Win *const win, const char *const query)
 }
 
 struct winsize
-win_size(const Win *const win)
+win_size(const struct Win *const win)
 {
 	return win->size;
 }
 
 static void
-win_upd_size(Win *const win)
+win_upd_size(struct Win *const win)
 {
 	/* Update size using terminal and fix cursor */
 	term_get_win_size(&win->size);
