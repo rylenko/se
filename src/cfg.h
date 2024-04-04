@@ -12,14 +12,14 @@ enum {
 };
 
 /* Different editor settings. */
-typedef enum {
+enum {
 	CFG_DIRTY_FILE_QUIT_PRESSES_CNT = 4, /* Press to exit without saving */
 	CFG_SPARE_PATH_MAX_LEN = 255, /* Max length of formatted spare save path */
 	CFG_TAB_SIZE = 4, /* Count of spaces, which equals to one tab */
-} Cfg;
+};
 
 /* Ascii keys to control the editor. */
-typedef enum {
+enum {
 	/* Row management */
 	CFG_KEY_DEL_CHAR = 127, /* Backspace */
 	CFG_KEY_DEL_LINE = 'd' - CTRL_OFFSET, /* CTRL-d */
@@ -53,11 +53,11 @@ typedef enum {
 	CFG_KEY_SEARCH_BWD = '\t', /* Tab */
 	CFG_KEY_SEARCH_FWD = 13, /* Enter */
 	CFG_KEY_SEARCH_DEL_CHAR = 127, /* Backspace */
-} CfgKey;
+};
 
 /* Colors of displayed content */
-static const Color cfg_color_lines_fg = COLOR_NEW(192, 233, 233);
-static const Color cfg_color_stat_bg = COLOR_NEW(66, 165, 245);
-static const Color cfg_color_stat_fg = COLOR_NEW(245, 245, 245);
+static const struct Color cfg_color_lines_fg = COLOR_NEW(192, 233, 233);
+static const struct Color cfg_color_stat_bg = COLOR_NEW(66, 165, 245);
+static const struct Color cfg_color_stat_fg = COLOR_NEW(245, 245, 245);
 
 #endif /* _CFG_H */

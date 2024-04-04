@@ -9,8 +9,11 @@ esc_clr_win(Buf *const buf)
 }
 
 void
-esc_color_begin(Buf *const buf, const Color *const fg, const Color *const bg)
-{
+esc_color_begin(
+	Buf *const buf,
+	const struct Color *const fg,
+	const struct Color *const bg
+) {
 	/* Write foreground if set */
 	if (fg != NULL)
 		buf_writef(buf, "\x1b[38;2;%hhu;%hhu;%hhum", fg->r, fg->g, fg->b);

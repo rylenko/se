@@ -77,7 +77,9 @@ size_t file_save_to_spare_dir(File *, char *, size_t);
 /*
 Searches forward from passed line index and passes line position. Modifies
 index and position if results found. Do nothing otherwise.
+
+Returns 1 if result found, otherwise 0.
 */
-void file_search_fwd(const File *, size_t *, size_t *, const char *);
+char file_search_fwd(const File *, size_t *, size_t *, const char *);
 
 #endif /* _FILE_H */

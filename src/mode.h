@@ -2,13 +2,13 @@
 #define _MODE_H
 
 /* Editting modes. */
-typedef enum {
+enum Mode {
 	MODE_INS, /* Insert mode for text input */
 	MODE_NORM, /* Normal mode for movement, number input, etc. */
 	MODE_SEARCH, /* Text searching mode */
-} Mode;
+};
 
 /* Converts mode to a string. `NULL` if no string for passed mode. */
-char *mode_str(Mode);
+char *mode_str(enum Mode);
 
 #endif /* _MODE_H */

@@ -31,22 +31,22 @@ enum {
 };
 
 /* Cursor's poisition in the window. */
-typedef struct {
+struct Cur {
 	unsigned short row;
 	unsigned short col;
-} WinCur;
+};
 
 /* Offset in the file for current view. */
-typedef struct {
+struct Offset {
 	size_t rows;
 	size_t cols;
-} WinOffset;
+};
 
 /* Window parameters. */
 struct Win {
 	File *file; /* Opened file */
-	WinOffset offset; /* Offset of current view. Counts tabs as 1 character */
-	WinCur cur; /* Pointer to window's content. Counts tabs as 1 character */
+	struct Offset offset; /* Offset of current view. Counts tabs as 1 character */
+	struct Cur cur; /* Pointer to window's content. Counts tabs as 1 character */
 	struct winsize size; /* Window size */
 };
 
@@ -584,17 +584,21 @@ win_search_fwd(Win *const win, const char *const query)
 
 	/* Move forward to not collide with previous result */
 	win_mv_right(win, 1);
+
+	/* Prepare indexes */
 	idx = win_curr_line_idx(win);
 	pos = win_curr_line_cont_idx(win);
+
 	/* Search with accepted query */
-	file_search_fwd(win->file, &idx, &pos, query);
-
-	/* Move to result */
-	win_mv_down(win, idx - win_curr_line_idx(win));
-	win_mv_right(win, pos - win_curr_line_cont_idx(win));
-
-	/* Fix expanded cursor column during movement */
-	win_scroll(win);
+	if (file_search_fwd(win->file, &idx, &pos, query)) {
+		/* Move to result */
+		win_mv_down(win, idx - win_curr_line_idx(win));
+		win_mv_to_begin_of_line(win);
+		win_mv_right(win, pos);
+	} else {
+		/* Move back to start position */
+		win_mv_left(win, 1);
+	}
 }
 
 struct winsize

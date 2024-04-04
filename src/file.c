@@ -19,26 +19,26 @@ enum {
 };
 
 /* Line of the opened file. */
-typedef struct {
+struct Line {
 	char *cont; /* Raw content of the line */
 	size_t len; /* Length of content */
 	size_t cap; /* Capacity of content's buffer */
 	char *render; /* Rendered with tabs expansios content */
 	size_t render_len; /* Length of rendered content */
-} Line;
+};
 
 /* Lines of the file. */
-typedef struct {
-	Line *arr; /* Dynamic array with lines */
+struct Lines {
+	struct Line *arr; /* Dynamic array with lines */
 	size_t cnt; /* Count of lines */
 	size_t cap; /* Reserved capacity for dynamic array */
-} Lines;
+};
 
 /* Internal information about the open file. */
 struct File {
 	char *path; /* Path of readed file. This is where the default save occurs */
 	char is_dirty; /* The file has been modified and not saved */
-	Lines lines; /* Lines of readed file. There is always at least one line */
+	struct Lines lines; /* Lines of file. There is always at least one line */
 };
 
 /*
@@ -46,45 +46,45 @@ Deletes character from the line.
 
 Does not update the render so you can do it yourself after several operations.
 */
-static void line_del_char(Line *, size_t);
+static void line_del_char(struct Line *, size_t);
 
 /*
 Extends line with another line's content.
 
 Does not update the render so you can do it yourself after several operations.
 */
-static void line_extend(Line *, const Line *);
+static void line_extend(struct Line *, const struct Line *);
 
 /* Frees allocated line's buffer. */
-static void line_free(Line *);
+static void line_free(struct Line *);
 
 /*
 Grows line's capacity if there is no space for new characters of passed length.
 */
-static void line_grow_if_needed(Line *, size_t);
+static void line_grow_if_needed(struct Line *, size_t);
 
 /* Initializes line with zeros. Do not forget to free it. */
-static void line_init(Line *);
+static void line_init(struct Line *);
 
 /*
 Inserts character to line at index.
 
 Does not update the render so you can do it yourself after several operations.
 */
-static void line_ins(Line *, size_t, char);
+static void line_ins(struct Line *, size_t, char);
 
 /*
 Reads a line from a file without `'\n'`. Returns `NULL` if `EOF` is reached.
 */
-static Line *line_read(Line *, FILE *);
+static struct Line *line_read(struct Line *, FILE *);
 
 /* Reallocates line with new capacity. */
-static void line_realloc(Line *, size_t);
+static void line_realloc(struct Line *, size_t);
 
 /*
 Renders line's content how it should look in the window and frees old content.
 */
-static void line_render(Line *);
+static void line_render(struct Line *);
 
 /*
 Shrinks line's capacity.
@@ -92,49 +92,49 @@ Shrinks line's capacity.
 If flag is `1`, then function reallocates line with capacity equal to actual
 size. Otherwise it will reallocate memory if a lot of capacity is not used.
 */
-static void line_shrink(Line *, char);
+static void line_shrink(struct Line *, char);
 
 /*
 Writes a line to the file with `'\n'` at the end.
 
 Returns written bytes count.
 */
-static size_t line_write(Line *, FILE *);
+static size_t line_write(struct Line *, FILE *);
 
 /*
 Extends specified line with next line, then frees next line.
 
 Does not update the render so you can do it yourself after several operations.
 */
-static void lines_absorb_next_line(Lines *, size_t);
+static void lines_absorb_next_line(struct Lines *, size_t);
 
 /* Finds the line by index and breaks it at specified position. */
-static void lines_break_line(Lines *, size_t, size_t);
+static void lines_break_line(struct Lines *, size_t, size_t);
 
 /* Deletes line by index. */
-static void lines_del_line(Lines *, size_t);
+static void lines_del_line(struct Lines *, size_t);
 
 /* Frees the lines container. */
-static void lines_free(Lines *);
+static void lines_free(struct Lines *);
 
 /* Initializes lines container. Do not forget to free it. */
-static void lines_init(Lines *);
+static void lines_init(struct Lines *);
 
 /* Inserts new line at index. */
-static void lines_ins_line(Lines *, size_t, Line);
+static void lines_ins_line(struct Lines *, size_t, struct Line);
 
 /* Reads lines from the file. */
-static void lines_read(Lines *, FILE *);
+static void lines_read(struct Lines *, FILE *);
 
 /* Reallocates lines container's capacity. */
-static void lines_realloc(Lines *const lines, const size_t new_cap);
+static void lines_realloc(struct Lines *, size_t);
 
 /*
 Writes lines to the file.
 
 Returns written bytes count.
 */
-static size_t lines_write(const Lines *, FILE *);
+static size_t lines_write(const struct Lines *, FILE *);
 
 void
 file_absorb_next_line(File *const file, const size_t idx)
@@ -197,7 +197,7 @@ void
 file_ins_empty_line(File *const file, const size_t idx)
 {
 	/* Initialize empty line */
-	Line empty_line;
+	struct Line empty_line;
 	line_init(&empty_line);
 
 	/* Insert empty line */
@@ -245,7 +245,7 @@ file_lines_cnt(const File *const file)
 File*
 file_open(const char *const path)
 {
-	Line empty_line;
+	struct Line empty_line;
 	FILE *inner_file;
 
 	/* Allocate struct */
@@ -334,7 +334,7 @@ file_save_to_spare_dir(File *const file, char *const path, size_t len)
 
 /* } */
 
-void
+char
 file_search_fwd(
 	const File *const file,
 	size_t *const idx,
@@ -359,19 +359,19 @@ file_search_fwd(
 		) {
 			/* Move to the beginning of the next line or return if no results */
 			if (++idx_i >= file->lines.cnt)
-				break;
+				return 0;
 			pos_i = 0;
 		} else {
 			/* Set results */
 			*idx = idx_i;
 			*pos = res - file->lines.arr[idx_i].cont;
-			break;
+			return 1;
 		}
 	}
 }
 
 static void
-line_del_char(Line *const line, const size_t idx)
+line_del_char(struct Line *const line, const size_t idx)
 {
 	/* Validate index */
 	assert(idx < line->len);
@@ -384,7 +384,7 @@ line_del_char(Line *const line, const size_t idx)
 }
 
 static void
-line_extend(Line *const dest, const Line *const src)
+line_extend(struct Line *const dest, const struct Line *const src)
 {
 	if (src->len > 0) {
 		/* Line capacity if needed to store source content */
@@ -398,7 +398,7 @@ line_extend(Line *const dest, const Line *const src)
 }
 
 void
-line_free(Line *const line)
+line_free(struct Line *const line)
 {
 	/* Free raw content and render */
 	free(line->cont);
@@ -413,7 +413,7 @@ line_free(Line *const line)
 }
 
 static void
-line_grow_if_needed(Line *const line, size_t new_len)
+line_grow_if_needed(struct Line *const line, size_t new_len)
 {
 	/* Grow line in there is no capacity to insert characters */
 	if (new_len + 1 > line->cap)
@@ -422,13 +422,13 @@ line_grow_if_needed(Line *const line, size_t new_len)
 }
 
 static void
-line_init(Line *const line)
+line_init(struct Line *const line)
 {
 	memset(line, 0, sizeof(*line));
 }
 
 static void
-line_ins(Line *const line, const size_t idx, const char ch)
+line_ins(struct Line *const line, const size_t idx, const char ch)
 {
 	/* Validate index */
 	assert(idx <= line->len);
@@ -445,8 +445,8 @@ line_ins(Line *const line, const size_t idx, const char ch)
 		line->len++;
 }
 
-static Line*
-line_read(Line *const line, FILE *const f)
+static struct Line*
+line_read(struct Line *const line, FILE *const f)
 {
 	int ch;
 	line_init(line);
@@ -484,7 +484,7 @@ line_read(Line *const line, FILE *const f)
 }
 
 static void
-line_realloc(Line *const line, size_t new_cap)
+line_realloc(struct Line *const line, size_t new_cap)
 {
 	/* Reallocate and update capacity */
 	line->cont = err_realloc(line->cont, new_cap);
@@ -492,7 +492,7 @@ line_realloc(Line *const line, size_t new_cap)
 }
 
 static void
-line_render(Line *const line)
+line_render(struct Line *const line)
 {
 	size_t i;
 	size_t tabs_cnt = 0;
@@ -531,7 +531,7 @@ line_render(Line *const line)
 }
 
 static void
-line_shrink(Line *const line, const char hard)
+line_shrink(struct Line *const line, const char hard)
 {
 	if (0 == line->len && line->cap > 0)
 		/* Free allocated memory if line becomes empty */
@@ -546,7 +546,7 @@ line_shrink(Line *const line, const char hard)
 }
 
 static size_t
-line_write(Line *const line, FILE *const f)
+line_write(struct Line *const line, FILE *const f)
 {
 	/* Write line's content and check returned value */
 	const size_t len = fwrite(line->cont, sizeof(char), line->len, f);
@@ -560,7 +560,7 @@ line_write(Line *const line, FILE *const f)
 }
 
 static void
-lines_absorb_next_line(Lines *const lines, const size_t idx)
+lines_absorb_next_line(struct Lines *const lines, const size_t idx)
 {
 	/* Check that next line exists */
 	if (idx + 1 < lines->cnt) {
@@ -573,10 +573,10 @@ lines_absorb_next_line(Lines *const lines, const size_t idx)
 }
 
 static void
-lines_break_line(Lines *const lines, const size_t idx, const size_t pos)
+lines_break_line(struct Lines *const lines, const size_t idx, const size_t pos)
 {
-	Line new_line;
-	Line *const line = &lines->arr[idx];
+	struct Line new_line;
+	struct Line *const line = &lines->arr[idx];
 
 	/* Update new line and set its length */
 	line_init(&new_line);
@@ -612,7 +612,7 @@ lines_break_line(Lines *const lines, const size_t idx, const size_t pos)
 }
 
 static void
-lines_del_line(Lines *const lines, const size_t idx)
+lines_del_line(struct Lines *const lines, const size_t idx)
 {
 	/* Validate index */
 	assert(idx < lines->cnt);
@@ -634,7 +634,7 @@ lines_del_line(Lines *const lines, const size_t idx)
 }
 
 static void
-lines_free(Lines *const lines)
+lines_free(struct Lines *const lines)
 {
 	/* Free lines */
 	while (lines->cnt-- > 0)
@@ -644,13 +644,13 @@ lines_free(Lines *const lines)
 }
 
 static void
-lines_init(Lines *const lines)
+lines_init(struct Lines *const lines)
 {
 	memset(lines, 0, sizeof(*lines));
 }
 
 static void
-lines_realloc(Lines *const lines, const size_t new_cap)
+lines_realloc(struct Lines *const lines, const size_t new_cap)
 {
 	/* Reallocate and update capacity */
 	lines->arr = err_realloc(lines->arr, sizeof(*lines->arr) * new_cap);
@@ -658,8 +658,11 @@ lines_realloc(Lines *const lines, const size_t new_cap)
 }
 
 static void
-lines_ins_line(Lines *const lines, const size_t idx, const Line line)
-{
+lines_ins_line(
+	struct Lines *const lines,
+	const size_t idx,
+	const struct Line line
+) {
 	/* Validate index */
 	assert(idx <= lines->cnt);
 
@@ -680,9 +683,9 @@ lines_ins_line(Lines *const lines, const size_t idx, const Line line)
 }
 
 static void
-lines_read(Lines *const lines, FILE *const f)
+lines_read(struct Lines *const lines, FILE *const f)
 {
-	Line line;
+	struct Line line;
 	/* Read lines until EOF */
 	while (line_read(&line, f) != NULL)
 		/* Insert readed line */
@@ -690,7 +693,7 @@ lines_read(Lines *const lines, FILE *const f)
 }
 
 static size_t
-lines_write(const Lines *const lines, FILE *const f)
+lines_write(const struct Lines *const lines, FILE *const f)
 {
 	size_t line_i;
 	size_t len = 0;

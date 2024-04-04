@@ -8,7 +8,7 @@
 void esc_clr_win(Buf *);
 
 /* Sets colored foreground and background. `NULL` if no color. */
-void esc_color_begin(Buf *, const Color *, const Color *);
+void esc_color_begin(Buf *, const struct Color *, const struct Color *);
 
 /* Ends colored output. */
 void esc_color_end(Buf *);

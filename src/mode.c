@@ -2,7 +2,7 @@
 #include "mode.h"
 
 char*
-mode_str(const Mode mode)
+mode_str(const enum Mode mode)
 {
 	switch (mode) {
 	case MODE_INS:

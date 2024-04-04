@@ -33,7 +33,7 @@ enum {
 struct Ed {
 	Buf *buf; /* Buffer for all drawn content. */
 	Win *win; /* Info about terminal's view. This is what the user sees */
-	Mode mode; /* Input mode */
+	enum Mode mode; /* Input mode */
 	char msg[ED_MSG_ARR_LEN]; /* Message for the user */
 	size_t num_input; /* Number input. 0 if not set */
 	char search_input[ED_SEARCH_INPUT_ARR_LEN]; /* Search input */
