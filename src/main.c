@@ -4,9 +4,9 @@
 /* TODO: [1] Fix treating tabs behind offset as one character: erased as 1 character, other lines move slowly when inserting multiple tabs. */
 /* TODO: [1] Try to make code easier and less bloated. */
 /* TODO: [1] Add more clear docs and comments. */
-/* TODO: [1] Handle non-printable characters. */
 /* TODO: [2] Add local clipboard. Use it in functions. */
 /* TODO: [2] Xclip patch to use with local clipboard. */
+/* TODO: [2] Create Cell struct to handle UTF-8. It should contain bytes length and window columns length. Create Render struct with Cells and bind it to Line. */
 /* TODO: [2] Use linked list for lines array and line's content parts. */
 /* TODO: [3] Support huge files. */
 /* TODO: [3] Undo operations. Also rename "del" to "remove" where needed. */

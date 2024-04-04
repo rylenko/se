@@ -137,7 +137,7 @@ You can set up convenient key bindings and convenient colors in `src/cfg.h`.
 		<th>440</th>
 		<th>1625</th>
 		<th>260</th>
-		<th>57050</th>
+		<th>57164</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>14</th>
@@ -201,7 +201,7 @@ You can set up convenient key bindings and convenient colors in `src/cfg.h`.
 		<th>603</th>
 		<th>2082</th>
 		<th>260</th>
-    	<th>75773</th>
+    	<th>75887</th>
 	</tr></tfoot>
 	</table>
 
@@ -215,9 +215,9 @@ You can set up convenient key bindings and convenient colors in `src/cfg.h`.
 |**src/main.c**|**4**|**[1] Fix treating tabs behind offset as one character: erased as 1 character, other lines move slowly when inserting multiple tabs.**|
 |**src/main.c**|**5**|**[1] Try to make code easier and less bloated.**|
 |**src/main.c**|**6**|**[1] Add more clear docs and comments.**|
-|**src/main.c**|**7**|**[1] Handle non-printable characters.**|
-|**src/main.c**|**8**|**[2] Add local clipboard. Use it in functions.**|
-|**src/main.c**|**9**|**[2] Xclip patch to use with local clipboard.**|
+|**src/main.c**|**7**|**[2] Add local clipboard. Use it in functions.**|
+|**src/main.c**|**8**|**[2] Xclip patch to use with local clipboard.**|
+|**src/main.c**|**9**|**[2] Create Cell struct to handle UTF-8. It should contain bytes length and window columns length. Create Render struct with Cells and bind it to Line.**|
 |**src/main.c**|**10**|**[2] Use linked list for lines array and line's content parts.**|
 |**src/main.c**|**11**|**[3] Support huge files.**|
 |**src/main.c**|**12**|**[3] Undo operations. Also rename "del" to "remove" where needed.**|
