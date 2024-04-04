@@ -6,7 +6,7 @@
 /* TODO: [1] Add more clear docs and comments. */
 /* TODO: [2] Add local clipboard. Use it in functions. */
 /* TODO: [2] Xclip patch to use with local clipboard. */
-/* TODO: [2] Create Cell struct to handle UTF-8. It should contain bytes length and window columns length. Create Render struct with Cells and bind it to Line. */
+/* TODO: [2] Create Cell struct to handle all symbols including UTF-8. Create structs Win->Renders->Render->Cells->Cell. Rerender lines on window side */
 /* TODO: [2] Use linked list for lines array and line's content parts. */
 /* TODO: [3] Support huge files. */
 /* TODO: [3] Undo operations. Also rename "del" to "remove" where needed. */
