@@ -1,16 +1,14 @@
-/* TODO: [1] Optimize and review searching code. */
-/* TODO: [1] Normalize searching with tabs. */
-/* TODO: [1] Test where we do not need win_scroll. */
-/* TODO: [1] Fix treating tabs behind offset as one character: erased as 1 character, other lines move slowly when inserting multiple tabs. */
-/* TODO: [1] Try to make code easier and less bloated. */
-/* TODO: [1] Add more clear docs and comments. */
-/* TODO: [2] Add local clipboard. Use it in functions. */
-/* TODO: [2] Xclip patch to use with local clipboard. */
-/* TODO: [2] Create Cell struct to handle all symbols including UTF-8. Create structs Win->Renders->Render->Cells->Cell. Rerender lines on window side */
-/* TODO: [2] Use linked list for lines array and line's content parts. */
-/* TODO: [3] Support huge files. */
-/* TODO: [3] Undo operations. Also rename "del" to "remove" where needed. */
-/* TODO: [4] API with status codes instead of err.h and tests */
+/* TODO: v1.1: Optimize and review searching code. */
+/* TODO: v1.1: Normalize searching with tabs. */
+/* TODO: v1.1: Test where we do not need win_scroll. */
+/* TODO: v1.2: Create Cell struct to handle all symbols including UTF-8. Create structs Win->Renders->Render->Cells->Cell. Rerender lines on window side */
+/* TODO: v1.2: Undo operations. Also rename "del" to "remove" where needed. */
+/* TODO: v1.2: Use linked list for lines array and line's content parts. */
+/* TODO: v1.3: Add local clipboard. Use it in functions. */
+/* TODO: v1.3: Xclip patch to use with local clipboard. */
+/* TODO: v1.4: Add more clear docs and comments. */
+/* TODO: v1.4: Support huge files. */
+/* TODO: v1.5: API with status codes instead of err.h. Add tests */
 
 #include <err.h>
 #include <signal.h>

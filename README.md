@@ -132,12 +132,12 @@ You can set up convenient key bindings and convenient colors in `src/cfg.h`.
 	<tbody><tr>
 		<th>C</th>
 		<th>12</th>
-		<th>2402</th>
+		<th>2400</th>
 		<th>337</th>
-		<th>440</th>
+		<th>438</th>
 		<th>1625</th>
 		<th>260</th>
-		<th>57155</th>
+		<th>56977</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>14</th>
@@ -196,12 +196,12 @@ You can set up convenient key bindings and convenient colors in `src/cfg.h`.
 	<tfoot><tr>
 		<th>Total</th>
 		<th>33</th>
-		<th>3231</th>
+		<th>3229</th>
 		<th>546</th>
-		<th>603</th>
+		<th>601</th>
 		<th>2082</th>
 		<th>260</th>
-    	<th>75878</th>
+    	<th>75700</th>
 	</tr></tfoot>
 	</table>
 
@@ -209,16 +209,14 @@ You can set up convenient key bindings and convenient colors in `src/cfg.h`.
 
 |Path|Line|Description|
 |-|-|-|
-|**src/main.c**|**1**|**[1] Optimize and review searching code.**|
-|**src/main.c**|**2**|**[1] Normalize searching with tabs.**|
-|**src/main.c**|**3**|**[1] Test where we do not need win_scroll.**|
-|**src/main.c**|**4**|**[1] Fix treating tabs behind offset as one character: erased as 1 character, other lines move slowly when inserting multiple tabs.**|
-|**src/main.c**|**5**|**[1] Try to make code easier and less bloated.**|
-|**src/main.c**|**6**|**[1] Add more clear docs and comments.**|
-|**src/main.c**|**7**|**[2] Add local clipboard. Use it in functions.**|
-|**src/main.c**|**8**|**[2] Xclip patch to use with local clipboard.**|
-|**src/main.c**|**9**|**[2] Create Cell struct to handle all symbols including UTF-8. Create structs Win->Renders->Render->Cells->Cell. Rerender lines on window side**|
-|**src/main.c**|**10**|**[2] Use linked list for lines array and line's content parts.**|
-|**src/main.c**|**11**|**[3] Support huge files.**|
-|**src/main.c**|**12**|**[3] Undo operations. Also rename "del" to "remove" where needed.**|
-|**src/main.c**|**13**|**[4] API with status codes instead of err.h and tests**|
+|**src/main.c**|**1**|**v1.1: Optimize and review searching code.**|
+|**src/main.c**|**2**|**v1.1: Normalize searching with tabs.**|
+|**src/main.c**|**3**|**v1.1: Test where we do not need win_scroll.**|
+|**src/main.c**|**4**|**v1.2: Create Cell struct to handle all symbols including UTF-8. Create structs Win->Renders->Render->Cells->Cell. Rerender lines on window side**|
+|**src/main.c**|**5**|**v1.2: Undo operations. Also rename "del" to "remove" where needed.**|
+|**src/main.c**|**6**|**v1.2: Use linked list for lines array and line's content parts.**|
+|**src/main.c**|**7**|**v1.3: Add local clipboard. Use it in functions.**|
+|**src/main.c**|**8**|**v1.3: Xclip patch to use with local clipboard.**|
+|**src/main.c**|**9**|**v1.4: Add more clear docs and comments.**|
+|**src/main.c**|**10**|**v1.4: Support huge files.**|
+|**src/main.c**|**11**|**v1.5: API with status codes instead of err.h. Add tests**|
