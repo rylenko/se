@@ -132,12 +132,12 @@ You can set up convenient key bindings and convenient colors in `src/cfg.h`.
 	<tbody><tr>
 		<th>C</th>
 		<th>12</th>
-		<th>2399</th>
-		<th>335</th>
-		<th>439</th>
+		<th>2402</th>
+		<th>337</th>
+		<th>440</th>
 		<th>1625</th>
 		<th>260</th>
-		<th>56995</th>
+		<th>57050</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>14</th>
@@ -196,12 +196,12 @@ You can set up convenient key bindings and convenient colors in `src/cfg.h`.
 	<tfoot><tr>
 		<th>Total</th>
 		<th>33</th>
-		<th>3228</th>
-		<th>544</th>
-		<th>602</th>
+		<th>3231</th>
+		<th>546</th>
+		<th>603</th>
 		<th>2082</th>
 		<th>260</th>
-    	<th>75718</th>
+    	<th>75773</th>
 	</tr></tfoot>
 	</table>
 
@@ -211,13 +211,14 @@ You can set up convenient key bindings and convenient colors in `src/cfg.h`.
 |-|-|-|
 |**src/main.c**|**1**|**[1] Optimize and review searching code.**|
 |**src/main.c**|**2**|**[1] Normalize searching with tabs.**|
-|**src/main.c**|**3**|**[1] Fix treating tabs behind offset as one character: erased as 1 character, other lines move slowly when inserting multiple tabs.**|
-|**src/main.c**|**4**|**[1] Try to make code easier and less bloated.**|
-|**src/main.c**|**5**|**[1] Add more clear docs and comments.**|
-|**src/main.c**|**6**|**[1] Handle non-printable characters.**|
-|**src/main.c**|**7**|**[2] Add local clipboard. Use it in functions.**|
-|**src/main.c**|**8**|**[2] Xclip patch to use with local clipboard.**|
-|**src/main.c**|**9**|**[2] Use linked list for lines array and line's content parts.**|
-|**src/main.c**|**10**|**[3] Support huge files.**|
-|**src/main.c**|**11**|**[3] Undo operations. Also rename "del" to "remove" where needed.**|
-|**src/main.c**|**12**|**[4] API with status codes instead of err.h and tests**|
+|**src/main.c**|**3**|**[1] Test where we do not need win_scroll.**|
+|**src/main.c**|**4**|**[1] Fix treating tabs behind offset as one character: erased as 1 character, other lines move slowly when inserting multiple tabs.**|
+|**src/main.c**|**5**|**[1] Try to make code easier and less bloated.**|
+|**src/main.c**|**6**|**[1] Add more clear docs and comments.**|
+|**src/main.c**|**7**|**[1] Handle non-printable characters.**|
+|**src/main.c**|**8**|**[2] Add local clipboard. Use it in functions.**|
+|**src/main.c**|**9**|**[2] Xclip patch to use with local clipboard.**|
+|**src/main.c**|**10**|**[2] Use linked list for lines array and line's content parts.**|
+|**src/main.c**|**11**|**[3] Support huge files.**|
+|**src/main.c**|**12**|**[3] Undo operations. Also rename "del" to "remove" where needed.**|
+|**src/main.c**|**13**|**[4] API with status codes instead of err.h and tests**|

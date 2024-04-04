@@ -56,8 +56,8 @@ The part of the line from the beginning to the passed column is considered.
 */
 static size_t win_exp_col(const char *, size_t, size_t);
 
-/* Collection of methods to fix cursor. */
-static void win_fix_cur(Win *);
+/* Collection of methods to scroll and fix cursor. */
+static void win_scroll(Win *);
 
 /* Updates window's size using terminal. */
 static void win_upd_size(Win *);
@@ -115,7 +115,7 @@ win_del_char(Win *const win)
 	}
 
 	/* Fix expanded cursor column */
-	win_fix_cur(win);
+	win_scroll(win);
 }
 
 int
@@ -237,7 +237,7 @@ win_file_path(const Win *const win)
 }
 
 static void
-win_fix_cur(Win *const win)
+win_scroll(Win *const win)
 {
 	const char *cont;
 	size_t line_len;
@@ -297,10 +297,12 @@ win_ins_char(Win *const win, const char ch)
 	const size_t idx = win_curr_line_idx(win);
 	const size_t pos = win_curr_line_cont_idx(win);
 	file_ins_char(win->file, idx, pos, ch);
+
 	/* Move right after insertion */
 	win_mv_right(win, 1);
+
 	/* Fix expanded cursor column */
-	win_fix_cur(win);
+	win_scroll(win);
 }
 
 void
@@ -350,7 +352,7 @@ win_mv_down(Win *const win, size_t times)
 		}
 
 		/* Clamp cursor to line after move down several times */
-		win_fix_cur(win);
+		win_scroll(win);
 	}
 }
 
@@ -378,7 +380,7 @@ win_mv_left(Win *const win, size_t times)
 		}
 
 		/* Fix expanded cursor column during left movement */
-		win_fix_cur(win);
+		win_scroll(win);
 	}
 }
 
@@ -410,7 +412,7 @@ win_mv_right(Win *const win, size_t times)
 		}
 
 		/* Fix expanded cursor column during right movement */
-		win_fix_cur(win);
+		win_scroll(win);
 	}
 }
 
@@ -490,7 +492,7 @@ win_mv_to_next_word(Win *const win, size_t times)
 		}
 
 		/* Fix expanded cursor column during right movement */
-		win_fix_cur(win);
+		win_scroll(win);
 	}
 }
 
@@ -519,7 +521,7 @@ win_mv_to_prev_word(Win *const win, size_t times)
 		}
 
 		/* Fix expanded cursor column during left movement */
-		win_fix_cur(win);
+		win_scroll(win);
 	}
 }
 
@@ -540,7 +542,7 @@ win_mv_up(Win *const win, size_t times)
 		}
 
 		/* Clamp cursor to line after move down several times */
-		win_fix_cur(win);
+		win_scroll(win);
 	}
 }
 
@@ -592,7 +594,7 @@ win_search_fwd(Win *const win, const char *const query)
 	win_mv_right(win, pos - win_curr_line_cont_idx(win));
 
 	/* Fix expanded cursor column during movement */
-	win_fix_cur(win);
+	win_scroll(win);
 }
 
 struct winsize
@@ -606,5 +608,5 @@ win_upd_size(Win *const win)
 {
 	/* Update size using terminal and fix cursor */
 	term_get_win_size(&win->size);
-	win_fix_cur(win);
+	win_scroll(win);
 }
