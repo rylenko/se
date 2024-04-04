@@ -214,10 +214,10 @@ You can set up convenient key bindings and convenient colors in `src/cfg.h`.
 |**src/main.c**|**3**|**v1.1: Test where we do not need win_scroll.**|
 |**src/main.c**|**4**|**v1.1: Just input search query in search mode. After Enter key save search query (do not show it on the status). Move forward using Enter and move backward using Tab.**|
 |**src/main.c**|**5**|**v1.2: Create Cell struct to handle all symbols including UTF-8. Create structs Win->Renders->Render->Cells->Cell. Rerender lines on window side**|
-|**src/main.c**|**6**|**v1.2: Undo operations. Also rename "del" to "remove" where needed.**|
-|**src/main.c**|**7**|**v1.2: Use linked list for lines array and line's content parts.**|
-|**src/main.c**|**8**|**v1.3: Add local clipboard. Use it in functions.**|
-|**src/main.c**|**9**|**v1.3: Xclip patch to use with local clipboard.**|
-|**src/main.c**|**10**|**v1.4: Add more clear docs and comments.**|
-|**src/main.c**|**11**|**v1.4: Support huge files.**|
-|**src/main.c**|**12**|**v1.5: API with status codes instead of err.h. Add tests**|
+|**src/main.c**|**6**|**v1.3: Use linked list for lines array and line's content parts.**|
+|**src/main.c**|**7**|**v1.3: Undo operations. Also rename "del" to "remove" where needed.**|
+|**src/main.c**|**8**|**v1.4: Add local clipboard. Use it in functions.**|
+|**src/main.c**|**9**|**v1.4: Xclip patch to use with local clipboard.**|
+|**src/main.c**|**10**|**v1.5: Add more clear docs and comments.**|
+|**src/main.c**|**11**|**v1.5: Support huge files.**|
+|**src/main.c**|**12**|**v1.6: API with status codes instead of err.h. Add tests**|
