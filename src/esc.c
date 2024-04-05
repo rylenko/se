@@ -46,6 +46,25 @@ esc_cur_show(Buf *const buf)
 	buf_write(buf, "\x1b[?25h", 6);
 }
 
+int
+esc_get_arrow_key(
+	const char *const seq,
+	const size_t len,
+	enum ArrowKey *const key
+) {
+	if (
+		3 == len
+		&& '\x1b' == seq[0]
+		&& '[' == seq[1]
+		&& 'A' <= seq[2]
+		&& seq[2] <= 'D'
+	) {
+		*key = seq[2];
+		return 0;
+	}
+	return -1;
+}
+
 void
 esc_go_home(Buf *const buf)
 {

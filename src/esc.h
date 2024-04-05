@@ -4,6 +4,13 @@
 #include "buf.h"
 #include "color.h"
 
+enum ArrowKey {
+	ARROW_KEY_UP = 'A',
+	ARROW_KEY_DOWN = 'B',
+	ARROW_KEY_RIGHT = 'C',
+	ARROW_KEY_LEFT = 'D',
+};
+
 /* Clears all window. */
 void esc_clr_win(Buf *);
 
@@ -21,6 +28,9 @@ void esc_cur_set(Buf *, unsigned short, unsigned short);
 
 /* Shows the cursor. */
 void esc_cur_show(Buf *);
+
+/* Gets escape sequence is arrow key. Returns 0 on success, otherwise -1. */
+int esc_get_arrow_key(const char *, const size_t, enum ArrowKey *);
 
 /* Moves the current writing pointer to the beginning of the window. */
 void esc_go_home(Buf *);

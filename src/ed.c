@@ -83,7 +83,7 @@ static void ed_ins_empty_line_on_top(struct Ed *);
 static void ed_on_quit_press(struct Ed *);
 
 /* Processes arrow key. Key must be between 'A' and 'D'. */
-static void ed_proc_arrow_key(struct Ed *, char);
+static void ed_proc_arrow_key(struct Ed *, enum ArrowKey);
 
 /* Process key in insertion mode. */
 static void ed_proc_ins_key(struct Ed *, char);
@@ -456,19 +456,19 @@ ed_open(const char *const path, const int ifd, const int ofd)
 }
 
 static void
-ed_proc_arrow_key(struct Ed *const ed, const char key)
+ed_proc_arrow_key(struct Ed *const ed, const enum ArrowKey key)
 {
 	switch (key) {
-	case 'A':
+	case ARROW_KEY_UP:
 		ed_mv_up(ed);
 		break;
-	case 'B':
+	case ARROW_KEY_DOWN:
 		ed_mv_down(ed);
 		break;
-	case 'C':
+	case ARROW_KEY_RIGHT:
 		ed_mv_right(ed);
 		break;
-	case 'D':
+	case ARROW_KEY_LEFT:
 		ed_mv_left(ed);
 		break;
 	}
@@ -524,15 +524,10 @@ ed_proc_search_key(struct Ed *const ed, const char key)
 static void
 ed_proc_seq_key(struct Ed *const ed, const char *const seq, const size_t len)
 {
+	enum ArrowKey arrow_key;
 	/* Arrows */
-	if (
-		3 == len
-		&& '\x1b' == seq[0]
-		&& '[' == seq[1]
-		&& 'A' <= seq[2]
-		&& seq[2] <= 'D'
-	)
-		ed_proc_arrow_key(ed, seq[2]);
+	if (esc_get_arrow_key(seq, len, &arrow_key) != -1)
+		ed_proc_arrow_key(ed, arrow_key);
 }
 
 static void
