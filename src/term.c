@@ -1,4 +1,5 @@
 #include <err.h>
+#include <errno.h>
 #include <stdlib.h>
 #include <termios.h>
 #include <unistd.h>
@@ -81,9 +82,11 @@ term_wait_key(char *const seq, const size_t len)
 {
 	ssize_t readed = 0;
 	/* Read input up to specified length */
-	while (0 == readed)
-		if ((readed = read(term.ifd, seq, len)) < 0)
+	while (0 == readed) {
+		/* Ignore if system call was interrupted */
+		if ((readed = read(term.ifd, seq, len)) < 0 && errno != EINTR)
 			err(EXIT_FAILURE, "Failed to read key sequence");
+	}
 	/* It is ok to return signed number because of errors check before */
 	return readed;
 }
