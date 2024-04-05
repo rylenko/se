@@ -6,10 +6,6 @@
 #include "buf.h"
 #include "term.h"
 
-enum {
-	TERM_TIMEOUT = 1, /* In tenths of second */
-};
-
 /* Structure for controlling input and output */
 struct {
 	int ifd; /* Input file descriptor. Usually stdin */
@@ -73,20 +69,16 @@ term_set_raw_mode_params(struct termios *const params)
 	params->c_oflag &= ~OPOST;
 	params->c_cflag |= CS8;
 	params->c_lflag &= ~(ECHO | ICANON | IEXTEN | ISIG);
-	params->c_cc[VMIN] = 0;
-	params->c_cc[VTIME] = TERM_TIMEOUT;
+	params->c_cc[VMIN] = 1;
 }
 
 size_t
 term_wait_key(char *const seq, const size_t len)
 {
-	ssize_t readed = 0;
+	ssize_t readed;
 	/* Read input up to specified length */
-	while (0 == readed) {
-		/* Ignore if system call was interrupted */
-		if ((readed = read(term.ifd, seq, len)) == -1 && errno != EINTR)
-			err(EXIT_FAILURE, "Failed to read key sequence");
-	}
+	if ((readed = read(term.ifd, seq, len)) == -1 && errno != EINTR)
+		err(EXIT_FAILURE, "Failed to read key sequence");
 	/* It is ok to return signed number because of errors check before */
 	return readed;
 }
