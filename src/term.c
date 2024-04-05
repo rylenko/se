@@ -65,10 +65,12 @@ term_init(int ifd, int ofd)
 static void
 term_set_raw_mode_params(struct termios *const params)
 {
-	params->c_iflag &= ~(BRKINT | ICRNL | INPCK | ISTRIP | IXON);
+	params->c_iflag &= \
+		~(IGNBRK | BRKINT | PARMRK | ISTRIP | INLCR | IGNCR | ICRNL | IXON);
 	params->c_oflag &= ~OPOST;
+	params->c_lflag &= ~(ECHO | ECHONL | ICANON | ISIG | IEXTEN);
+	params->c_cflag &= ~(CSIZE | PARENB);
 	params->c_cflag |= CS8;
-	params->c_lflag &= ~(ECHO | ICANON | IEXTEN | ISIG);
 	params->c_cc[VMIN] = 1;
 }
 
