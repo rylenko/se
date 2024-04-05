@@ -1,9 +1,9 @@
-/* TODO: v1.1: Calculate window size manually using cursor positions and end of window. */
-/* TODO: v1.1: Detect scroll bar to display status correctly. Normalize in xterm-256color on Ubuntu 23.10. */
 /* TODO: v1.1: Optimize and review searching code. */
 /* TODO: v1.1: Normalize searching with tabs. */
 /* TODO: v1.1: Test where we do not need win_scroll. */
 /* TODO: v1.1: Just input search query in search mode. After Enter key save search query (do not show it on the status). Move forward using Enter and move backward using Tab. */
+/* TODO: v1.1: Handle mouse wheel scrolling */
+/* TODO: v1.1: Test on other distros/OS and other terminals */
 /* TODO: v1.2: Create Cell struct to handle all symbols including UTF-8. Create structs Win->Renders->Render->Cells->Cell. Rerender lines on window side */
 /* TODO: v1.3: Use linked list for lines array and line's content parts. */
 /* TODO: v1.3: Undo operations. Also rename "del" to "remove" where needed. */

@@ -137,7 +137,7 @@ You can set up convenient key bindings and convenient colors in `src/cfg.h`.
 		<th>454</th>
 		<th>1677</th>
 		<th>270</th>
-		<th>59927</th>
+		<th>59836</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>14</th>
@@ -201,7 +201,7 @@ You can set up convenient key bindings and convenient colors in `src/cfg.h`.
 		<th>622</th>
 		<th>2143</th>
 		<th>270</th>
-    	<th>79169</th>
+    	<th>79078</th>
 	</tr></tfoot>
 	</table>
 
@@ -209,12 +209,12 @@ You can set up convenient key bindings and convenient colors in `src/cfg.h`.
 
 |Path|Line|Description|
 |-|-|-|
-|**src/main.c**|**1**|**v1.1: Calculate window size manually using cursor positions and end of window.**|
-|**src/main.c**|**2**|**v1.1: Detect scroll bar to display status correctly. Normalize in xterm-256color on Ubuntu 23.10.**|
-|**src/main.c**|**3**|**v1.1: Optimize and review searching code.**|
-|**src/main.c**|**4**|**v1.1: Normalize searching with tabs.**|
-|**src/main.c**|**5**|**v1.1: Test where we do not need win_scroll.**|
-|**src/main.c**|**6**|**v1.1: Just input search query in search mode. After Enter key save search query (do not show it on the status). Move forward using Enter and move backward using Tab.**|
+|**src/main.c**|**1**|**v1.1: Optimize and review searching code.**|
+|**src/main.c**|**2**|**v1.1: Normalize searching with tabs.**|
+|**src/main.c**|**3**|**v1.1: Test where we do not need win_scroll.**|
+|**src/main.c**|**4**|**v1.1: Just input search query in search mode. After Enter key save search query (do not show it on the status). Move forward using Enter and move backward using Tab.**|
+|**src/main.c**|**5**|**v1.1: Handle mouse wheel scrolling**|
+|**src/main.c**|**6**|**v1.1: Test on other distros/OS and other terminals**|
 |**src/main.c**|**7**|**v1.2: Create Cell struct to handle all symbols including UTF-8. Create structs Win->Renders->Render->Cells->Cell. Rerender lines on window side**|
 |**src/main.c**|**8**|**v1.3: Use linked list for lines array and line's content parts.**|
 |**src/main.c**|**9**|**v1.3: Undo operations. Also rename "del" to "remove" where needed.**|
