@@ -78,7 +78,12 @@ size_t
 term_wait_key(char *const seq, const size_t len)
 {
 	ssize_t readed;
-	/* Read input up to specified length */
+	/*
+	Read input up to specified length.
+
+	We ignore the system call interruption that can occur when the window size is
+	changed, for example, in xterm.
+	*/
 	if ((readed = read(term.ifd, seq, len)) == -1 && errno != EINTR)
 		err(EXIT_FAILURE, "Failed to read key sequence");
 	/* It is ok to return signed number because of errors check before */
