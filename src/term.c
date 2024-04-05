@@ -24,7 +24,7 @@ void
 term_deinit(void)
 {
 	/* Restore original termios parameters to disable raw mode */
-	if (tcsetattr(term.ifd, TCSAFLUSH, &term.orig_termios) < 0)
+	if (tcsetattr(term.ifd, TCSAFLUSH, &term.orig_termios) == -1)
 		err(EXIT_FAILURE, "Failed to restore original termios parameters");
 }
 
@@ -37,7 +37,7 @@ term_flush(Buf *const buf)
 void
 term_get_win_size(struct winsize *const win_size)
 {
-	if (ioctl(term.ofd, TIOCGWINSZ, win_size) < 0)
+	if (ioctl(term.ofd, TIOCGWINSZ, win_size) == -1)
 		err(EXIT_FAILURE, "Failed to get window size for fd %d", term.ofd);
 }
 
@@ -51,7 +51,7 @@ term_init(int ifd, int ofd)
 	term.ofd = ofd;
 
 	/* Save the original termios parameters */
-	if (tcgetattr(ifd, &term.orig_termios) < 0)
+	if (tcgetattr(ifd, &term.orig_termios) == -1)
 		err(EXIT_FAILURE, "Failed to get original termios");
 	/* Set terminal deiniter on exit */
 	else if (atexit(term_deinit) != 0)
@@ -62,7 +62,7 @@ term_init(int ifd, int ofd)
 	term_set_raw_mode_params(&raw_termios);
 
 	/* Enable raw mode with new parameters */
-	if (tcsetattr(term.ifd, TCSAFLUSH, &raw_termios) < 0)
+	if (tcsetattr(term.ifd, TCSAFLUSH, &raw_termios) == -1)
 		err(EXIT_FAILURE, "Failed to enable raw mode");
 }
 
@@ -84,7 +84,7 @@ term_wait_key(char *const seq, const size_t len)
 	/* Read input up to specified length */
 	while (0 == readed) {
 		/* Ignore if system call was interrupted */
-		if ((readed = read(term.ifd, seq, len)) < 0 && errno != EINTR)
+		if ((readed = read(term.ifd, seq, len)) == -1 && errno != EINTR)
 			err(EXIT_FAILURE, "Failed to read key sequence");
 	}
 	/* It is ok to return signed number because of errors check before */

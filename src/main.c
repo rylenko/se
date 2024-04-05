@@ -1,3 +1,4 @@
+/* TODO: v1.1: Detect scroll bar to display status correctly. Normalize in xterm-256color on Ubuntu 23.10. */
 /* TODO: v1.1: Optimize and review searching code. */
 /* TODO: v1.1: Normalize searching with tabs. */
 /* TODO: v1.1: Test where we do not need win_scroll. */

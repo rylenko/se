@@ -165,7 +165,7 @@ static void
 ed_del_line(struct Ed *const ed)
 {
 	/* Try to delete lines or set error message */
-	if (win_del_line(ed->win, ed_repeat_times(ed)) < 0)
+	if (win_del_line(ed->win, ed_repeat_times(ed)) == -1)
 		ed_set_msg(ed, "A single line in a file cannot be deleted.");
 	else
 		/* Set quit presses count after file change */

@@ -39,7 +39,7 @@ void
 buf_flush(struct Buf *const buf, const int fd)
 {
 	/* Write buffer's data to file by its descriptor */
-	if (write(fd, buf->data, buf->len) < 0)
+	if (write(fd, buf->data, buf->len) == -1)
 		err(EXIT_FAILURE, "Failed to flush the buffer with length %zu", buf->len);
 	/* Refresh length to continue from scratch */
 	buf->len = 0;
