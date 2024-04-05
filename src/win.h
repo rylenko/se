@@ -105,4 +105,7 @@ size_t win_save_file_to_spare_dir(Win *, char *, size_t);
 /* Gets size of window. */
 struct winsize win_size(const Win *);
 
+/* Updates size of opened window using terminal. */
+void win_upd_size(Win *);
+
 #endif /* WIN_H */

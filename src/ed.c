@@ -39,6 +39,7 @@ struct Ed {
 	char search_input[ED_SEARCH_INPUT_ARR_LEN]; /* Search input */
 	size_t search_input_len; /* Search query input length */
 	unsigned char quit_presses_rem; /* Greater than 1 if file is dirty */
+	volatile sig_atomic_t sigwinch; /* Resize flag. See signal-safety(7) */
 };
 
 /* Breaks current line at the current cursor's position */
@@ -179,6 +180,12 @@ ed_draw(struct Ed *const ed)
 	esc_go_home(ed->buf);
 	esc_clr_win(ed->buf);
 
+	/* Check flag to update window size. See signal-safety(7) for more */
+	if (ed->sigwinch) {
+		win_upd_size(ed->win);
+		ed->sigwinch = 0;
+	}
+
 	if (!ed_need_to_quit(ed)) {
 		/* Hide cursor to not flicker */
 		esc_cur_hide(ed->buf);
@@ -282,13 +289,12 @@ ed_draw_stat_right(
 void
 ed_handle_signal(struct Ed *const ed, const int signal)
 {
-	/* Handle signals for window */
-	win_handle_signal(ed->win, signal);
-
-	/* Handle window size change signal */
+	/*
+	Set sigwinch flag to resize later in not async-signal-safe function. See
+	signal-safety(7) for more
+	*/
 	if (SIGWINCH == signal)
-		/* Redraw after window resizing */
-		ed_draw(ed);
+		ed->sigwinch = 1;
 }
 
 static void
@@ -452,6 +458,8 @@ ed_open(const char *const path, const int ifd, const int ofd)
 	ed_input_search(ed, ED_INPUT_SEARCH_RESET);
 	/* File is not dirty by default so we may quit using one key press */
 	ed->quit_presses_rem = 1;
+	/* Set signal default values */
+	ed->sigwinch = 0;
 	return ed;
 }
 

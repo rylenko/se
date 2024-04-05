@@ -12,7 +12,6 @@ method for clamping the internal column in the rendered window, and others.
 */
 
 #include <err.h>
-#include <signal.h>
 #include <stdlib.h>
 #include <string.h>
 #include <sys/ioctl.h>
@@ -58,9 +57,6 @@ static size_t win_exp_col(const char *, size_t, size_t);
 
 /* Collection of methods to scroll and fix cursor. */
 static void win_scroll(struct Win *);
-
-/* Updates window's size using terminal. */
-static void win_upd_size(struct Win *);
 
 void
 win_close(struct Win *const win)
@@ -281,13 +277,6 @@ win_scroll(struct Win *const win)
 		win->offset.cols++;
 		win->cur.col--;
 	}
-}
-
-void
-win_handle_signal(struct Win *const win, const int signal)
-{
-	if (SIGWINCH == signal)
-		win_upd_size(win);
 }
 
 void
@@ -551,6 +540,7 @@ win_open(const char *const path, const int ifd, const int ofd)
 {
 	/* Allocate window */
 	struct Win *const win = err_malloc(sizeof(*win));
+
 	/* Open file */
 	win->file = file_open(path);
 	/* Initialize offset and cursor */
@@ -614,7 +604,7 @@ win_size(const struct Win *const win)
 	return win->size;
 }
 
-static void
+void
 win_upd_size(struct Win *const win)
 {
 	/* Update size using terminal and fix cursor */

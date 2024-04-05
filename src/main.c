@@ -16,20 +16,42 @@
 #include <err.h>
 #include <signal.h>
 #include <stdlib.h>
+#include <string.h>
 #include <unistd.h>
 #include "ed.h"
 
 static const char *const usage = "Usage:\n\t$ se <filename>";
 
 /* Handle editor signals. */
-static void handle_signal(int signal);
+static void handle_signal(int signal, siginfo_t *info, void *ctx);
 
 static Ed *ed;
 
 static void
-handle_signal(int signal)
+handle_signal(int signal, siginfo_t *info, void *ctx)
 {
+	(void)info;
+	(void)ctx;
 	ed_handle_signal(ed, signal);
+}
+
+static void
+setup_signal_handler(void)
+{
+	/* Initialize action */
+	struct sigaction action;
+	memset(&action, 0, sizeof(action));
+
+	/* Fill with all signals */
+	sigfillset(&action.sa_mask);
+
+	/* Set handler */
+	action.sa_flags = SA_SIGINFO;
+	action.sa_sigaction = handle_signal;
+
+	/* Register signals */
+	if (sigaction(SIGWINCH, &action, NULL) == -1)
+		err(EXIT_FAILURE, "Failed to register window size change signal");
 }
 
 int
@@ -39,12 +61,9 @@ main(const int argc, const char *const *const argv)
 	if (argc != 2)
 		errx(EXIT_FAILURE, usage);
 
-	/* Opens file in the editor */
+	/* Opens file in the editor and setup signal handler */
 	ed = ed_open(argv[1], STDIN_FILENO, STDOUT_FILENO);
-
-	/* Register signals handler */
-	if (signal(SIGWINCH, handle_signal) == SIG_ERR)
-		err(EXIT_FAILURE, "Failed to set signal handler.");
+	setup_signal_handler();
 
 	while (1) {
 		/* Draws editor's content on the screen */

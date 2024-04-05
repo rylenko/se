@@ -132,21 +132,21 @@ You can set up convenient key bindings and convenient colors in `src/cfg.h`.
 	<tbody><tr>
 		<th>C</th>
 		<th>12</th>
-		<th>2456</th>
-		<th>340</th>
-		<th>449</th>
-		<th>1667</th>
-		<th>271</th>
-		<th>59484</th>
+		<th>2473</th>
+		<th>342</th>
+		<th>454</th>
+		<th>1677</th>
+		<th>270</th>
+		<th>59927</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>14</th>
-		<th>470</th>
-		<th>123</th>
-		<th>148</th>
-		<th>199</th>
+		<th>473</th>
+		<th>124</th>
+		<th>149</th>
+		<th>200</th>
 		<th>0</th>
-		<th>11642</th>
+		<th>11721</th>
 	</tr><tr>
 		<th>Markdown</th>
 		<th>2</th>
@@ -159,12 +159,12 @@ You can set up convenient key bindings and convenient colors in `src/cfg.h`.
 	</tr><tr>
 		<th>Makefile</th>
 		<th>2</th>
-		<th>68</th>
+		<th>69</th>
 		<th>14</th>
-		<th>12</th>
+		<th>13</th>
 		<th>42</th>
 		<th>0</th>
-		<th>1405</th>
+		<th>1480</th>
 	</tr><tr>
 		<th>Shell</th>
 		<th>1</th>
@@ -196,12 +196,12 @@ You can set up convenient key bindings and convenient colors in `src/cfg.h`.
 	<tfoot><tr>
 		<th>Total</th>
 		<th>33</th>
-		<th>3299</th>
-		<th>552</th>
-		<th>615</th>
-		<th>2132</th>
-		<th>271</th>
-    	<th>78572</th>
+		<th>3320</th>
+		<th>555</th>
+		<th>622</th>
+		<th>2143</th>
+		<th>270</th>
+    	<th>79169</th>
 	</tr></tfoot>
 	</table>
 
