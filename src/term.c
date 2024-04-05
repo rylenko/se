@@ -20,7 +20,7 @@ void
 term_deinit(void)
 {
 	/* Restore original termios parameters to disable raw mode */
-	if (tcsetattr(term.ifd, TCSAFLUSH, &term.orig_termios) == -1)
+	if (tcsetattr(term.ifd, TCSANOW, &term.orig_termios) == -1)
 		err(EXIT_FAILURE, "Failed to restore original termios parameters");
 }
 
@@ -58,7 +58,7 @@ term_init(int ifd, int ofd)
 	term_set_raw_mode_params(&raw_termios);
 
 	/* Enable raw mode with new parameters */
-	if (tcsetattr(term.ifd, TCSAFLUSH, &raw_termios) == -1)
+	if (tcsetattr(term.ifd, TCSANOW, &raw_termios) == -1)
 		err(EXIT_FAILURE, "Failed to enable raw mode");
 }
 
