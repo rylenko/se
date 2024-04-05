@@ -132,21 +132,21 @@ You can set up convenient key bindings and convenient colors in `src/cfg.h`.
 	<tbody><tr>
 		<th>C</th>
 		<th>12</th>
-		<th>2438</th>
+		<th>2442</th>
 		<th>340</th>
-		<th>442</th>
-		<th>1656</th>
-		<th>262</th>
-		<th>58875</th>
+		<th>444</th>
+		<th>1658</th>
+		<th>271</th>
+		<th>59087</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>14</th>
-		<th>461</th>
+		<th>460</th>
 		<th>121</th>
-		<th>148</th>
+		<th>147</th>
 		<th>192</th>
 		<th>0</th>
-		<th>11401</th>
+		<th>11385</th>
 	</tr><tr>
 		<th>Markdown</th>
 		<th>2</th>
@@ -196,12 +196,12 @@ You can set up convenient key bindings and convenient colors in `src/cfg.h`.
 	<tfoot><tr>
 		<th>Total</th>
 		<th>33</th>
-		<th>3272</th>
+		<th>3275</th>
 		<th>550</th>
-		<th>608</th>
-		<th>2114</th>
-		<th>262</th>
-    	<th>77722</th>
+		<th>609</th>
+		<th>2116</th>
+		<th>271</th>
+    	<th>77918</th>
 	</tr></tfoot>
 	</table>
 
@@ -209,15 +209,16 @@ You can set up convenient key bindings and convenient colors in `src/cfg.h`.
 
 |Path|Line|Description|
 |-|-|-|
-|**src/main.c**|**1**|**v1.1: Optimize and review searching code.**|
-|**src/main.c**|**2**|**v1.1: Normalize searching with tabs.**|
-|**src/main.c**|**3**|**v1.1: Test where we do not need win_scroll.**|
-|**src/main.c**|**4**|**v1.1: Just input search query in search mode. After Enter key save search query (do not show it on the status). Move forward using Enter and move backward using Tab.**|
-|**src/main.c**|**5**|**v1.2: Create Cell struct to handle all symbols including UTF-8. Create structs Win->Renders->Render->Cells->Cell. Rerender lines on window side**|
-|**src/main.c**|**6**|**v1.3: Use linked list for lines array and line's content parts.**|
-|**src/main.c**|**7**|**v1.3: Undo operations. Also rename "del" to "remove" where needed.**|
-|**src/main.c**|**8**|**v1.4: Add local clipboard. Use it in functions.**|
-|**src/main.c**|**9**|**v1.4: Xclip patch to use with local clipboard.**|
-|**src/main.c**|**10**|**v1.5: Add more clear docs and comments.**|
-|**src/main.c**|**11**|**v1.5: Support huge files.**|
-|**src/main.c**|**12**|**v1.6: API with status codes instead of err.h. Add tests**|
+|**src/main.c**|**1**|**v1.1: Detect scroll bar to display status correctly. Normalize in xterm-256color on Ubuntu 23.10.**|
+|**src/main.c**|**2**|**v1.1: Optimize and review searching code.**|
+|**src/main.c**|**3**|**v1.1: Normalize searching with tabs.**|
+|**src/main.c**|**4**|**v1.1: Test where we do not need win_scroll.**|
+|**src/main.c**|**5**|**v1.1: Just input search query in search mode. After Enter key save search query (do not show it on the status). Move forward using Enter and move backward using Tab.**|
+|**src/main.c**|**6**|**v1.2: Create Cell struct to handle all symbols including UTF-8. Create structs Win->Renders->Render->Cells->Cell. Rerender lines on window side**|
+|**src/main.c**|**7**|**v1.3: Use linked list for lines array and line's content parts.**|
+|**src/main.c**|**8**|**v1.3: Undo operations. Also rename "del" to "remove" where needed.**|
+|**src/main.c**|**9**|**v1.4: Add local clipboard. Use it in functions.**|
+|**src/main.c**|**10**|**v1.4: Xclip patch to use with local clipboard.**|
+|**src/main.c**|**11**|**v1.5: Add more clear docs and comments.**|
+|**src/main.c**|**12**|**v1.5: Support huge files.**|
+|**src/main.c**|**13**|**v1.6: API with status codes instead of err.h. Add tests**|
