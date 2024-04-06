@@ -90,6 +90,9 @@ Win *win_open(const char *, int, int);
 /* Searches backward with passed query. */
 void win_search_bwd(Win *, const char *);
 
+/* Searches backward with passed query. */
+void win_search_bwd(Win *, const char *);
+
 /* Searches forward with passed query. */
 void win_search_fwd(Win *, const char *);
 

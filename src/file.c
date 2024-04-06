@@ -328,15 +328,48 @@ file_save_to_spare_dir(struct File *const file, char *const path, size_t len)
 	return file_save(file, path);
 }
 
-/* void */
-/* file_search_bwd( */
-	/* const struct File *const file, */
-	/* size_t *const idx, */
-	/* size_t *const pos, */
-	/* const char *const query */
-/* ) { */
+char
+file_search_bwd(
+	struct File *const file,
+	size_t *const idx,
+	size_t *const pos,
+	const char *const query
+) {
+	char init_end;
+	const size_t init_pos = *pos;
+	const size_t init_idx = *idx;
+	const char *res;
 
-/* } */
+	/* Check query is empty */
+	if (0 == *query)
+		return 0;
+
+	/* Set end of initial line to do not detect results on the right */
+	init_end = file->lines.arr[init_idx].cont[init_pos];
+	file->lines.arr[init_idx].cont[init_pos] = 0;
+
+	for (;; (*idx)--, *pos = 0) {
+		if (
+			/* Skip empty lines */
+			file->lines.arr[*idx].len > 0
+			/* There is results in current line */
+			&& NULL != (res = strrstr_slow(file->lines.arr[*idx].cont, query))
+		) {
+			/* It is ok to write ptrdiff_t to size_t because substract greater than 0 */
+			*pos = res - file->lines.arr[*idx].cont;
+			/* Restore end of initial line */
+			file->lines.arr[init_idx].cont[init_pos] = init_end;
+			return 1;
+		}
+		/* End of file */
+		if (0 == *idx)
+			break;
+	}
+
+	/* Restore end of initial line */
+	file->lines.arr[init_idx].cont[init_pos] = init_end;
+	return 0;
+}
 
 char
 file_search_fwd(
@@ -345,33 +378,26 @@ file_search_fwd(
 	size_t *const pos,
 	const char *const query
 ) {
-	size_t idx_i = *idx;
-	size_t pos_i = *pos;
 	const char *res;
 
-	/* Validate line index and content position */
-	assert(idx_i < file->lines.cnt);
-	assert(pos_i <= file->lines.arr[idx_i].len);
+	/* Check query is empty */
+	if (0 == *query)
+		return 0;
 
-	while (1) {
+	for (; *idx < file->lines.cnt; (*idx)++, *pos = 0) {
 		/* Try to search forward on the current line */
 		if (
 			/* Skip empty lines */
-			0 == file->lines.arr[idx_i].len
+			file->lines.arr[*idx].len > 0
 			/* There is no results in current line */
-			|| NULL == (res = strstr(&file->lines.arr[idx_i].cont[pos_i], query))
+			&& NULL != (res = strstr(&file->lines.arr[*idx].cont[*pos], query))
 		) {
-			/* Move to the beginning of the next line or return if no results */
-			if (++idx_i >= file->lines.cnt)
-				return 0;
-			pos_i = 0;
-		} else {
-			/* Set results */
-			*idx = idx_i;
-			*pos = res - file->lines.arr[idx_i].cont;
+			/* It is ok to write ptrdiff_t to size_t because substract greater than 0 */
+			*pos = res - file->lines.arr[*idx].cont;
 			return 1;
 		}
 	}
+	return 0;
 }
 
 static void

@@ -569,8 +569,17 @@ win_save_file_to_spare_dir(struct Win *const win, char *const path, size_t len)
 void
 win_search_bwd(struct Win *const win, const char *const query)
 {
-	(void)win;
-	(void)query;
+	/* Prepare indexes */
+	size_t idx = win_curr_line_idx(win);
+	size_t pos = win_curr_line_cont_idx(win);
+
+	/* Search with accepted query */
+	if (file_search_bwd(win->file, &idx, &pos, query)) {
+		/* Move to result */
+		win_mv_to_begin_of_line(win);
+		win_mv_up(win, win_curr_line_idx(win) - idx);
+		win_mv_right(win, pos);
+	}
 }
 
 void
@@ -589,8 +598,8 @@ win_search_fwd(struct Win *const win, const char *const query)
 	/* Search with accepted query */
 	if (file_search_fwd(win->file, &idx, &pos, query)) {
 		/* Move to result */
-		win_mv_down(win, idx - win_curr_line_idx(win));
 		win_mv_to_begin_of_line(win);
+		win_mv_down(win, idx - win_curr_line_idx(win));
 		win_mv_right(win, pos);
 	} else {
 		/* Move back to start position */

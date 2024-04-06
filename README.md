@@ -132,21 +132,21 @@ You can set up convenient key bindings and convenient colors in `src/cfg.h`.
 	<tbody><tr>
 		<th>C</th>
 		<th>12</th>
-		<th>2473</th>
-		<th>342</th>
-		<th>454</th>
-		<th>1677</th>
-		<th>270</th>
-		<th>59836</th>
+		<th>2530</th>
+		<th>349</th>
+		<th>460</th>
+		<th>1721</th>
+		<th>283</th>
+		<th>61250</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>14</th>
-		<th>473</th>
-		<th>124</th>
-		<th>149</th>
-		<th>200</th>
+		<th>489</th>
+		<th>127</th>
+		<th>159</th>
+		<th>203</th>
 		<th>0</th>
-		<th>11721</th>
+		<th>12148</th>
 	</tr><tr>
 		<th>Markdown</th>
 		<th>2</th>
@@ -196,12 +196,12 @@ You can set up convenient key bindings and convenient colors in `src/cfg.h`.
 	<tfoot><tr>
 		<th>Total</th>
 		<th>33</th>
-		<th>3320</th>
-		<th>555</th>
-		<th>622</th>
-		<th>2143</th>
-		<th>270</th>
-    	<th>79078</th>
+		<th>3393</th>
+		<th>565</th>
+		<th>638</th>
+		<th>2190</th>
+		<th>283</th>
+    	<th>80919</th>
 	</tr></tfoot>
 	</table>
 
@@ -209,6 +209,7 @@ You can set up convenient key bindings and convenient colors in `src/cfg.h`.
 
 |Path|Line|Description|
 |-|-|-|
+|**src/str.c**|**15**|**v0.3: make it faster.**|
 |**src/main.c**|**1**|**v0.2: Optimize and review searching code.**|
 |**src/main.c**|**2**|**v0.2: Normalize searching with tabs.**|
 |**src/main.c**|**3**|**v0.2: Test where we do not need win_scroll.**|
