@@ -209,17 +209,17 @@ You can set up convenient key bindings and convenient colors in `src/cfg.h`.
 
 |Path|Line|Description|
 |-|-|-|
-|**src/main.c**|**1**|**v1.1: Optimize and review searching code.**|
-|**src/main.c**|**2**|**v1.1: Normalize searching with tabs.**|
-|**src/main.c**|**3**|**v1.1: Test where we do not need win_scroll.**|
-|**src/main.c**|**4**|**v1.1: Just input search query in search mode. After Enter key save search query (do not show it on the status). Move forward using Enter and move backward using Tab.**|
-|**src/main.c**|**5**|**v1.1: Handle mouse wheel scrolling**|
-|**src/main.c**|**6**|**v1.1: Test on other distros/OS and other terminals**|
-|**src/main.c**|**7**|**v1.2: Create Cell struct to handle all symbols including UTF-8. Create structs Win->Renders->Render->Cells->Cell. Rerender lines on window side**|
-|**src/main.c**|**8**|**v1.3: Use linked list for lines array and line's content parts.**|
-|**src/main.c**|**9**|**v1.3: Undo operations. Also rename "del" to "remove" where needed.**|
-|**src/main.c**|**10**|**v1.4: Add local clipboard. Use it in functions.**|
-|**src/main.c**|**11**|**v1.4: Xclip patch to use with local clipboard.**|
-|**src/main.c**|**12**|**v1.5: Add more clear docs and comments.**|
-|**src/main.c**|**13**|**v1.5: Support huge files.**|
-|**src/main.c**|**14**|**v1.6: API with status codes instead of err.h. Add tests**|
+|**src/main.c**|**1**|**v0.2: Optimize and review searching code.**|
+|**src/main.c**|**2**|**v0.2: Normalize searching with tabs.**|
+|**src/main.c**|**3**|**v0.2: Test where we do not need win_scroll.**|
+|**src/main.c**|**4**|**v0.2: Just input search query in search mode. After Enter key save search query (do not show it on the status). Move forward using Enter and move backward using Tab.**|
+|**src/main.c**|**5**|**v0.2: Handle mouse wheel scrolling**|
+|**src/main.c**|**6**|**v0.2: Test on other distros/OS and other terminals**|
+|**src/main.c**|**7**|**v0.3: Create Cell struct to handle all symbols including UTF-8. Create structs Win->Renders->Render->Cells->Cell. Rerender lines on window side**|
+|**src/main.c**|**8**|**v0.3: Use linked list for lines array and line's content parts.**|
+|**src/main.c**|**9**|**v0.3: Undo operations. Also rename "del" to "remove" where needed.**|
+|**src/main.c**|**10**|**v0.4: Add local clipboard. Use it in functions.**|
+|**src/main.c**|**11**|**v0.4: Xclip patch to use with local clipboard.**|
+|**src/main.c**|**12**|**v0.5: Add more clear docs and comments.**|
+|**src/main.c**|**13**|**v0.5: Support huge files.**|
+|**src/main.c**|**14**|**v0.6: API with status codes instead of err.h. Add tests**|
