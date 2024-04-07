@@ -1,15 +1,15 @@
-#ifndef _ERR_ALLOC_H
-#define _ERR_ALLOC_H
+#ifndef _ALLOC_H
+#define _ALLOC_H
 
 #include <stddef.h>
 
 /* Like `calloc`, but exits with formatted error message on fail. */
-void *err_calloc(size_t, size_t);
+void *calloc_err(size_t, size_t);
 
 /* Like `malloc`, but exits with formatted error message on fail. */
-void *err_malloc(size_t);
+void *malloc_err(size_t);
 
 /* Like `realloc`, but exits with formatted error message on fail. */
-void *err_realloc(void *, size_t);
+void *realloc_err(void *, size_t);
 
-#endif /* _ERR_ALLOC_H */
+#endif /* _ALLOC_H */

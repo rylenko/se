@@ -15,9 +15,9 @@ method for clamping the internal column in the rendered window, and others.
 #include <stdlib.h>
 #include <string.h>
 #include <sys/ioctl.h>
+#include "alloc.h"
 #include "buf.h"
 #include "cfg.h"
-#include "err_alloc.h"
 #include "esc.h"
 #include "file.h"
 #include "math.h"
@@ -539,7 +539,7 @@ struct Win*
 win_open(const char *const path, const int ifd, const int ofd)
 {
 	/* Allocate window */
-	struct Win *const win = err_malloc(sizeof(*win));
+	struct Win *const win = malloc_err(sizeof(*win));
 
 	/* Open file */
 	win->file = file_open(path);

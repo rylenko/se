@@ -4,7 +4,7 @@
 
 - Ease of configuring, building and use.
 - Fast movement and editing.
-- The middle ground between readable code and a small code base of up to 3000 lines.
+- The middle ground between readable code and a small code base of up to 3000 lines of code.
 - No dependencies.
 - Extensibility.
 

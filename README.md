@@ -4,7 +4,7 @@
 
 - Ease of configuring, building and use.
 - Fast movement and editing.
-- The middle ground between readable code and a small code base of up to 3000 lines.
+- The middle ground between readable code and a small code base of up to 3000 lines of code.
 - No dependencies.
 - Extensibility.
 
@@ -137,7 +137,7 @@ You can set up convenient key bindings and convenient colors in `src/cfg.h`.
 		<th>460</th>
 		<th>1721</th>
 		<th>283</th>
-		<th>61250</th>
+		<th>61202</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>14</th>
@@ -146,7 +146,7 @@ You can set up convenient key bindings and convenient colors in `src/cfg.h`.
 		<th>159</th>
 		<th>203</th>
 		<th>0</th>
-		<th>12148</th>
+		<th>12136</th>
 	</tr><tr>
 		<th>Markdown</th>
 		<th>2</th>
@@ -155,7 +155,7 @@ You can set up convenient key bindings and convenient colors in `src/cfg.h`.
 		<th>0</th>
 		<th>171</th>
 		<th>0</th>
-		<th>4802</th>
+		<th>4818</th>
 	</tr><tr>
 		<th>Makefile</th>
 		<th>2</th>
@@ -164,7 +164,7 @@ You can set up convenient key bindings and convenient colors in `src/cfg.h`.
 		<th>13</th>
 		<th>42</th>
 		<th>0</th>
-		<th>1480</th>
+		<th>1476</th>
 	</tr><tr>
 		<th>Shell</th>
 		<th>1</th>
@@ -201,7 +201,7 @@ You can set up convenient key bindings and convenient colors in `src/cfg.h`.
 		<th>638</th>
 		<th>2190</th>
 		<th>283</th>
-    	<th>80919</th>
+    	<th>80871</th>
 	</tr></tfoot>
 	</table>
 

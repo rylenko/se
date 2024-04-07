@@ -4,8 +4,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include "alloc.h"
 #include "buf.h"
-#include "err_alloc.h"
 #include "math.h"
 
 enum {
@@ -32,7 +32,7 @@ static void buf_realloc(struct Buf *, size_t);
 struct Buf*
 buf_alloc(void)
 {
-	return err_calloc(1, sizeof(struct Buf));
+	return calloc_err(1, sizeof(struct Buf));
 }
 
 void
@@ -57,7 +57,7 @@ static void
 buf_realloc(struct Buf *const buf, const size_t new_cap)
 {
 	/* Reallocate and update capacity */
-	buf->data = err_realloc(buf->data, new_cap);
+	buf->data = realloc_err(buf->data, new_cap);
 	buf->cap = new_cap;
 }
 

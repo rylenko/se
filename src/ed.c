@@ -7,10 +7,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/ioctl.h>
+#include "alloc.h"
 #include "buf.h"
 #include "cfg.h"
 #include "ed.h"
-#include "err_alloc.h"
 #include "esc.h"
 #include "math.h"
 #include "mode.h"
@@ -443,7 +443,7 @@ struct Ed*
 ed_open(const char *const path, const int ifd, const int ofd)
 {
 	/* Allocate opaque struct */
-	struct Ed *const ed = err_malloc(sizeof(*ed));
+	struct Ed *const ed = malloc_err(sizeof(*ed));
 	/* Allocate buffer for all drawn content */
 	ed->buf = buf_alloc();
 	/* Open window with accepted file and descriptors */

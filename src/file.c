@@ -5,8 +5,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include "alloc.h"
 #include "cfg.h"
-#include "err_alloc.h"
 #include "file.h"
 #include "math.h"
 #include "str.h"
@@ -253,7 +253,7 @@ file_open(const char *const path)
 	FILE *inner_file;
 
 	/* Allocate struct */
-	struct File *file = err_malloc(sizeof(*file));
+	struct File *file = malloc_err(sizeof(*file));
 	/* Initialize file */
 	file->path = str_copy(path, strlen(path));
 	file->is_dirty = 0;
@@ -517,7 +517,7 @@ static void
 line_realloc(struct Line *const line, size_t new_cap)
 {
 	/* Reallocate and update capacity */
-	line->cont = err_realloc(line->cont, new_cap);
+	line->cont = realloc_err(line->cont, new_cap);
 	line->cap = new_cap;
 }
 
@@ -542,7 +542,7 @@ line_render(struct Line *const line)
 			tabs_cnt++;
 
 	/* Allocate render buffer */
-	line->render = err_malloc(line->len + (CFG_TAB_SIZE - 1) * tabs_cnt + 1);
+	line->render = malloc_err(line->len + (CFG_TAB_SIZE - 1) * tabs_cnt + 1);
 
 	/* Render content */
 	for (i = 0; i < line->len; i++) {
@@ -617,7 +617,7 @@ lines_break_line(struct Lines *const lines, const size_t idx, const size_t pos)
 		/* Set minimum capacity */
 		new_line.cap = new_line.len + 1;
 		/* Try to allocate space for new line's content */
-		new_line.cont = err_malloc(new_line.cap);
+		new_line.cont = malloc_err(new_line.cap);
 		/* Copy content to new line */
 		strcpy(new_line.cont, &line->cont[pos]);
 	}
@@ -683,7 +683,7 @@ static void
 lines_realloc(struct Lines *const lines, const size_t new_cap)
 {
 	/* Reallocate and update capacity */
-	lines->arr = err_realloc(lines->arr, sizeof(*lines->arr) * new_cap);
+	lines->arr = realloc_err(lines->arr, sizeof(*lines->arr) * new_cap);
 	lines->cap = new_cap;
 }
 
