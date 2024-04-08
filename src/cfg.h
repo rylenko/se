@@ -28,9 +28,11 @@ enum {
 	CFG_KEY_INS_LINE_ON_TOP = 'n' - CTRL_OFFSET, /* CTRL-n */
 
 	/* Modes switching */
-	CFG_KEY_MODE_INS = 'i',
-	CFG_KEY_MODE_NORM = 27, /* Escape */
-	CFG_KEY_MODE_SEARCH = 47, /* / */
+	CFG_KEY_MODE_INS_TO_NORM = 27, /* Escape */
+	CFG_KEY_MODE_NORM_TO_INS = 'i',
+	CFG_KEY_MODE_NORM_TO_SEARCH = '/',
+	CFG_KEY_MODE_SEARCH_TO_NORM = 13, /* Enter */
+	CFG_KEY_MODE_SEARCH_TO_NORM_CANCEL = 27, /* Escape */
 
 	/* Movement */
 	CFG_KEY_MV_TO_BEGIN_OF_FILE = 'w',

@@ -21,8 +21,8 @@
 enum {
 	/* Search */
 	ED_SEARCH_INPUT_ARR_LEN = 64, /* Capacity of search query buffer */
+	ED_INPUT_SEARCH_CLEAR = -2, /* Flag to clear search input */
 	ED_INPUT_SEARCH_DEL_CHAR = -1, /* Flag to delete last character in search */
-	ED_INPUT_SEARCH_RESET = -2, /* Flag to reset search input */
 	/* Other */
 	ED_INPUT_NUM_RESET = -1, /* Flag to reset number input */
 	ED_MSG_ARR_LEN = 64, /* Capacity of message buffer */
@@ -146,6 +146,9 @@ static void ed_search_fwd(struct Ed *const ed);
 /* Sets formatted message to the user. */
 static void ed_set_msg(struct Ed *, const char *, ...);
 
+/* Switches editor to passed mode. */
+static void ed_switch_mode(struct Ed *, enum Mode);
+
 static void
 ed_break_line(struct Ed *const ed)
 {
@@ -257,7 +260,8 @@ ed_draw_stat_right(
 	const struct winsize winsize = win_size(ed->win);
 
 	/* Write right part of the status */
-	if (ed->num_input > 0)
+	switch (ed->mode) {
+	case MODE_NORM:
 		right_len += snprintf(
 			right,
 			sizeof(right),
@@ -266,7 +270,8 @@ ed_draw_stat_right(
 			idx,
 			cont_idx
 		);
-	else if (ed->search_input_len > 0)
+		break;
+	case MODE_SEARCH:
 		right_len += snprintf(
 			right,
 			sizeof(right),
@@ -275,8 +280,11 @@ ed_draw_stat_right(
 			idx,
 			cont_idx
 		);
-	else
+		break;
+	default:
 		right_len += snprintf(right, sizeof(right), "%zu, %zu ", idx, cont_idx);
+		break;
+	}
 
 	/* Write empty space */
 	for (col = left_len + right_len; col < winsize.ws_col; col++)
@@ -313,7 +321,7 @@ ed_input_num(struct Ed *const ed, const char digit)
 static void
 ed_input_search(struct Ed *const ed, const char ch)
 {
-	if (ED_INPUT_SEARCH_RESET == ch) {
+	if (ED_INPUT_SEARCH_CLEAR == ch) {
 		/* Reset search input */
 		ed->search_input_len = 0;
 		ed->search_input[0] = 0;
@@ -449,13 +457,13 @@ ed_open(const char *const path, const int ifd, const int ofd)
 	/* Open window with accepted file and descriptors */
 	ed->win = win_open(path, ifd, ofd);
 	/* Set default editting mode */
-	ed->mode = MODE_NORM;
+	ed_switch_mode(ed, MODE_NORM);
 	/* Set zero length to message */
 	ed->msg[0] = 0;
 	/* Make number input inactive */
 	ed_input_num(ed, ED_INPUT_NUM_RESET);
 	/* Set zero length to search query */
-	ed_input_search(ed, ED_INPUT_SEARCH_RESET);
+	ed_input_search(ed, ED_INPUT_SEARCH_CLEAR);
 	/* File is not dirty by default so we may quit using one key press */
 	ed->quit_presses_rem = 1;
 	/* Set signal default values */
@@ -492,50 +500,13 @@ ed_proc_ins_key(struct Ed *const ed, const char key)
 	case CFG_KEY_INS_LINE_BREAK:
 		ed_break_line(ed);
 		break;
-	case CFG_KEY_MODE_NORM:
+	case CFG_KEY_MODE_INS_TO_NORM:
 		ed->mode = MODE_NORM;
 		break;
 	default:
 		ed_ins_char(ed, key);
 		break;
 	}
-}
-
-static void
-ed_proc_search_key(struct Ed *const ed, const char key)
-{
-	switch (key) {
-	case CFG_KEY_MODE_NORM:
-		/* Switch to normal mode and reset search input */
-		ed->mode = MODE_NORM;
-		ed_input_search(ed, ED_INPUT_SEARCH_RESET);
-		break;
-	case CFG_KEY_SEARCH_DEL_CHAR:
-		/* Delete last character */
-		ed_input_search(ed, ED_INPUT_SEARCH_DEL_CHAR);
-		break;
-	case CFG_KEY_SEARCH_BWD:
-		/* Search backward */
-		ed_search_bwd(ed);
-		break;
-	case CFG_KEY_SEARCH_FWD:
-		/* Search forward */
-		ed_search_fwd(ed);
-		break;
-	default:
-		/* Insert new character */
-		ed_input_search(ed, key);
-		break;
-	}
-}
-
-static void
-ed_proc_seq_key(struct Ed *const ed, const char *const seq, const size_t len)
-{
-	enum ArrowKey arrow_key;
-	/* Arrows */
-	if (esc_get_arrow_key(seq, len, &arrow_key) != -1)
-		ed_proc_arrow_key(ed, arrow_key);
 }
 
 static void
@@ -551,11 +522,11 @@ ed_proc_norm_key(struct Ed *const ed, const char key)
 	case CFG_KEY_INS_LINE_ON_TOP:
 		ed_ins_empty_line_on_top(ed);
 		return;
-	case CFG_KEY_MODE_INS:
+	case CFG_KEY_MODE_NORM_TO_INS:
 		ed->mode = MODE_INS;
 		break;
-	case CFG_KEY_MODE_SEARCH:
-		ed->mode = MODE_SEARCH;
+	case CFG_KEY_MODE_NORM_TO_SEARCH:
+		ed_switch_mode(ed, MODE_SEARCH);
 		break;
 	case CFG_KEY_QUIT:
 		ed_on_quit_press(ed);
@@ -596,6 +567,12 @@ ed_proc_norm_key(struct Ed *const ed, const char key)
 	case CFG_KEY_MV_TO_PREV_WORD:
 		ed_mv_to_prev_word(ed);
 		break;
+	case CFG_KEY_SEARCH_BWD:
+		ed_search_bwd(ed);
+		break;
+	case CFG_KEY_SEARCH_FWD:
+		ed_search_fwd(ed);
+		break;
 	}
 
 	/* Process number input */
@@ -603,6 +580,34 @@ ed_proc_norm_key(struct Ed *const ed, const char key)
 		ed_input_num(ed, key - '0');
 	else
 		ed_input_num(ed, ED_INPUT_NUM_RESET);
+}
+
+static void
+ed_proc_search_key(struct Ed *const ed, const char key)
+{
+	switch (key) {
+	case CFG_KEY_MODE_SEARCH_TO_NORM:
+		ed_search_fwd(ed);
+		/* FALLTHROUGH */
+	case CFG_KEY_MODE_SEARCH_TO_NORM_CANCEL:
+		ed_switch_mode(ed, MODE_NORM);
+		break;
+	case CFG_KEY_SEARCH_DEL_CHAR:
+		ed_input_search(ed, ED_INPUT_SEARCH_DEL_CHAR);
+		break;
+	default:
+		ed_input_search(ed, key);
+		break;
+	}
+}
+
+static void
+ed_proc_seq_key(struct Ed *const ed, const char *const seq, const size_t len)
+{
+	enum ArrowKey arrow_key;
+	/* Arrows */
+	if (esc_get_arrow_key(seq, len, &arrow_key) != -1)
+		ed_proc_arrow_key(ed, arrow_key);
 }
 
 void
@@ -670,6 +675,18 @@ ed_set_msg(struct Ed *const ed, const char *const fmt, ...)
 	va_start(args, fmt);
 	vsnprintf(ed->msg, sizeof(ed->msg), fmt, args);
 	va_end(args);
+}
+
+static void
+ed_switch_mode(struct Ed *const ed, const enum Mode mode)
+{
+	switch (mode) {
+	case MODE_SEARCH:
+		ed_input_search(ed, ED_INPUT_SEARCH_CLEAR);
+		/* FALLTHROUGH */
+	default:
+		ed->mode = mode;
+	}
 }
 
 void

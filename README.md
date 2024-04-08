@@ -55,6 +55,8 @@ Normal mode keys:
 - `Ctrl+s` - save.
 - `Ctrl+q` - quit. If you changed the file, you will need to either save it or press this key several times.
 - `Ctrl+x` - save to spare directory. Useful if no privilege to write to opened file.
+- `Enter` - Search forward if a query was previously entered in the search mode..
+- `Tab` - Search backward if a query was previously entered in the search mode..
 
 You can also repeat a key by pressing `<number><key>`. For example, `5n` will create 5 lines below the cursor.
 
@@ -67,10 +69,9 @@ Inserting mode keys:
 
 Searching mode keys:
 
-- `Esc` - switch to normal mode.
+- `Esc` - Cancel searching and switch to normal mode.
 - `Backspace` - delete last character in search query.
-- `Enter` - search forward.
-- `Tab` - search backward.
+- `Enter` - End query input, switch to normal mode and search forward once.
 - Otherwise, if character is printable, the character is inserted to search query.
 
 # Build and install
@@ -132,30 +133,30 @@ You can set up convenient key bindings and convenient colors in `src/cfg.h`.
 	<tbody><tr>
 		<th>C</th>
 		<th>12</th>
-		<th>2530</th>
-		<th>349</th>
-		<th>460</th>
-		<th>1721</th>
-		<th>283</th>
-		<th>61202</th>
+		<th>2546</th>
+		<th>351</th>
+		<th>457</th>
+		<th>1738</th>
+		<th>282</th>
+		<th>61293</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>14</th>
-		<th>489</th>
+		<th>491</th>
 		<th>127</th>
 		<th>159</th>
-		<th>203</th>
+		<th>205</th>
 		<th>0</th>
-		<th>12136</th>
+		<th>12254</th>
 	</tr><tr>
 		<th>Markdown</th>
 		<th>2</th>
-		<th>237</th>
+		<th>239</th>
 		<th>66</th>
 		<th>0</th>
-		<th>171</th>
+		<th>173</th>
 		<th>0</th>
-		<th>4818</th>
+		<th>5228</th>
 	</tr><tr>
 		<th>Makefile</th>
 		<th>2</th>
@@ -196,12 +197,12 @@ You can set up convenient key bindings and convenient colors in `src/cfg.h`.
 	<tfoot><tr>
 		<th>Total</th>
 		<th>33</th>
-		<th>3393</th>
-		<th>565</th>
-		<th>638</th>
-		<th>2190</th>
-		<th>283</th>
-    	<th>80871</th>
+		<th>3413</th>
+		<th>567</th>
+		<th>635</th>
+		<th>2211</th>
+		<th>282</th>
+    	<th>81490</th>
 	</tr></tfoot>
 	</table>
 
@@ -213,14 +214,13 @@ You can set up convenient key bindings and convenient colors in `src/cfg.h`.
 |**src/main.c**|**1**|**v0.2: Optimize and review searching code.**|
 |**src/main.c**|**2**|**v0.2: Normalize searching with tabs.**|
 |**src/main.c**|**3**|**v0.2: Test where we do not need win_scroll.**|
-|**src/main.c**|**4**|**v0.2: Just input search query in search mode. After Enter key save search query (do not show it on the status). Move forward using Enter and move backward using Tab.**|
-|**src/main.c**|**5**|**v0.2: Handle mouse wheel scrolling**|
-|**src/main.c**|**6**|**v0.2: Test on other distros/OS and other terminals**|
-|**src/main.c**|**7**|**v0.3: Create Cell struct to handle all symbols including UTF-8. Create structs Win->Renders->Render->Cells->Cell. Rerender lines on window side**|
-|**src/main.c**|**8**|**v0.3: Use linked list for lines array and line's content parts.**|
-|**src/main.c**|**9**|**v0.3: Undo operations. Also rename "del" to "remove" where needed.**|
-|**src/main.c**|**10**|**v0.4: Add local clipboard. Use it in functions.**|
-|**src/main.c**|**11**|**v0.4: Xclip patch to use with local clipboard.**|
-|**src/main.c**|**12**|**v0.5: Add more clear docs and comments.**|
-|**src/main.c**|**13**|**v0.5: Support huge files.**|
-|**src/main.c**|**14**|**v0.6: API with status codes instead of err.h. Add tests**|
+|**src/main.c**|**4**|**v0.2: Handle mouse wheel scrolling**|
+|**src/main.c**|**5**|**v0.2: Test on other distros/OS and other terminals**|
+|**src/main.c**|**6**|**v0.3: Create Cell struct to handle all symbols including UTF-8. Create structs Win->Renders->Render->Cells->Cell. Rerender lines on window side**|
+|**src/main.c**|**7**|**v0.3: Use linked list for lines array and line's content parts.**|
+|**src/main.c**|**8**|**v0.3: Undo operations. Also rename "del" to "remove" where needed.**|
+|**src/main.c**|**9**|**v0.4: Add local clipboard. Use it in functions.**|
+|**src/main.c**|**10**|**v0.4: Xclip patch to use with local clipboard.**|
+|**src/main.c**|**11**|**v0.5: Add more clear docs and comments.**|
+|**src/main.c**|**12**|**v0.5: Support huge files.**|
+|**src/main.c**|**13**|**v0.6: API with status codes instead of err.h. Add tests**|
