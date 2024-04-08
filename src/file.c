@@ -350,7 +350,7 @@ file_search_bwd(
 
 	for (;; (*idx)--, *pos = 0) {
 		if (
-			/* Skip empty lines */
+			/* Not an empty line */
 			file->lines.arr[*idx].len > 0
 			/* There is results in current line */
 			&& NULL != (res = strrstr_slow(file->lines.arr[*idx].cont, query))
@@ -387,9 +387,9 @@ file_search_fwd(
 	for (; *idx < file->lines.cnt; (*idx)++, *pos = 0) {
 		/* Try to search forward on the current line */
 		if (
-			/* Skip empty lines */
+			/* Not an empty line */
 			file->lines.arr[*idx].len > 0
-			/* There is no results in current line */
+			/* Result exists in the current line */
 			&& NULL != (res = strstr(&file->lines.arr[*idx].cont[*pos], query))
 		) {
 			/* It is ok to write ptrdiff_t to size_t because substract greater than 0 */
