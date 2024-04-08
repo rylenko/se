@@ -74,6 +74,12 @@ Searching mode keys:
 - `Enter` - End query input, switch to normal mode and search forward once.
 - Otherwise, if character is printable, the character is inserted to search query.
 
+
+# Configuration
+
+You can set up convenient key bindings and convenient colors in `src/cfg.h`.
+
+
 # Build and install
 
 Build binary:
@@ -82,7 +88,7 @@ Build binary:
 $ make
 ```
 
-Install:
+Install. Most likely you will need `sudo`, `doas` or something like that before the command:
 
 ```
 $ make install
@@ -111,8 +117,4 @@ Regenerate README.md:
 ```
 $ make gen-readme
 ```
-
-# Configuration
-
-You can set up convenient key bindings and convenient colors in `src/cfg.h`.
 
