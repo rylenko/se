@@ -56,8 +56,8 @@ esc_get_arrow_key(
 		3 == len
 		&& '\x1b' == seq[0]
 		&& '[' == seq[1]
-		&& 'A' <= seq[2]
-		&& seq[2] <= 'D'
+		&& ARROW_KEY_UP <= seq[2]
+		&& seq[2] <= ARROW_KEY_LEFT
 	) {
 		*key = seq[2];
 		return 0;
