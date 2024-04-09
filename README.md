@@ -135,12 +135,12 @@ $ make gen-readme
 	<tbody><tr>
 		<th>C</th>
 		<th>12</th>
-		<th>2544</th>
+		<th>2541</th>
 		<th>351</th>
-		<th>455</th>
-		<th>1738</th>
+		<th>453</th>
+		<th>1737</th>
 		<th>282</th>
-		<th>61208</th>
+		<th>61197</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>14</th>
@@ -149,7 +149,7 @@ $ make gen-readme
 		<th>158</th>
 		<th>205</th>
 		<th>0</th>
-		<th>12180</th>
+		<th>12145</th>
 	</tr><tr>
 		<th>Markdown</th>
 		<th>2</th>
@@ -199,12 +199,12 @@ $ make gen-readme
 	<tfoot><tr>
 		<th>Total</th>
 		<th>33</th>
-		<th>3414</th>
+		<th>3411</th>
 		<th>571</th>
-		<th>632</th>
-		<th>2211</th>
+		<th>630</th>
+		<th>2210</th>
 		<th>282</th>
-    	<th>81503</th>
+    	<th>81457</th>
 	</tr></tfoot>
 	</table>
 
@@ -212,7 +212,6 @@ $ make gen-readme
 
 |Path|Line|Description|
 |-|-|-|
-|**src/str.c**|**15**|**v0.3: make it faster.**|
 |**src/main.c**|**1**|**v0.2: Optimize and review searching code.**|
 |**src/main.c**|**2**|**v0.2: Handle mouse wheel scrolling**|
 |**src/main.c**|**3**|**v0.2: Test on other distros/OS and other terminals**|

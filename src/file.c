@@ -353,7 +353,7 @@ file_search_bwd(
 			/* Not an empty line */
 			file->lines.arr[*idx].len > 0
 			/* There is results in current line */
-			&& NULL != (res = strrstr_slow(file->lines.arr[*idx].cont, query))
+			&& NULL != (res = strrstr(file->lines.arr[*idx].cont, query))
 		) {
 			/* It is ok to write ptrdiff_t to size_t because substract greater than 0 */
 			*pos = res - file->lines.arr[*idx].cont;
