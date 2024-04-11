@@ -4,6 +4,7 @@
 #include <stddef.h>
 #include <sys/ioctl.h>
 #include "buf.h"
+#include "file.h"
 
 /* Alias for opaque struct with window parameters. */
 typedef struct Win Win;
@@ -90,11 +91,8 @@ Win *win_open(const char *, int, int);
 /* Searches backward with passed query. */
 void win_search_bwd(Win *, const char *);
 
-/* Searches backward with passed query. */
-void win_search_bwd(Win *, const char *);
-
-/* Searches forward with passed query. */
-void win_search_fwd(Win *, const char *);
+/* Searches with passed query in passed direction. */
+void win_search(Win *, const char *, enum Dir);
 
 /* Saves opened file. Returns saved bytes count. */
 size_t win_save_file(Win *);

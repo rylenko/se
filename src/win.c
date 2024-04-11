@@ -567,42 +567,31 @@ win_save_file_to_spare_dir(struct Win *const win, char *const path, size_t len)
 }
 
 void
-win_search_bwd(struct Win *const win, const char *const query)
-{
-	/* Prepare indexes */
-	size_t idx = win_curr_line_idx(win);
-	size_t pos = win_curr_line_cont_idx(win);
-
-	/* Search with accepted query */
-	if (file_search(win->file, &idx, &pos, query, DIR_BWD)) {
-		/* Move to result */
-		win_mv_to_begin_of_line(win);
-		win_mv_up(win, win_curr_line_idx(win) - idx);
-		win_mv_right(win, pos);
-	}
-}
-
-void
-win_search_fwd(struct Win *const win, const char *const query)
+win_search(struct Win *const win, const char *const query, const enum Dir dir)
 {
 	size_t idx;
 	size_t pos;
 
-	/* Move forward to not collide with previous result */
-	win_mv_right(win, 1);
+	if (DIR_FWD == dir) {
+		/* Move forward to not collide with previous result */
+		win_mv_right(win, 1);
+	}
 
 	/* Prepare indexes */
 	idx = win_curr_line_idx(win);
 	pos = win_curr_line_cont_idx(win);
 
 	/* Search with accepted query */
-	if (file_search(win->file, &idx, &pos, query, DIR_FWD)) {
+	if (file_search(win->file, &idx, &pos, query, dir)) {
 		/* Move to result */
 		win_mv_to_begin_of_line(win);
-		win_mv_down(win, idx - win_curr_line_idx(win));
+		if (DIR_BWD == dir)
+			win_mv_up(win, win_curr_line_idx(win) - idx);
+		else if (DIR_FWD == dir)
+			win_mv_down(win, idx - win_curr_line_idx(win));
 		win_mv_right(win, pos);
-	} else {
-		/* Move back to start position */
+	} else if (DIR_FWD == dir) {
+		/* Move back to start position if no results */
 		win_mv_left(win, 1);
 	}
 }

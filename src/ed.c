@@ -12,6 +12,7 @@
 #include "cfg.h"
 #include "ed.h"
 #include "esc.h"
+#include "file.h"
 #include "math.h"
 #include "mode.h"
 #include "path.h"
@@ -137,11 +138,8 @@ static void ed_save_file(struct Ed *);
 /* Saves opened file to spare dir. Useful if no privileges. */
 static void ed_save_file_to_spare_dir(struct Ed *);
 
-/* Searches backward with inputed search query. */
-static void ed_search_bwd(struct Ed *const ed);
-
-/* Searches forward with inputed search query. */
-static void ed_search_fwd(struct Ed *const ed);
+/* Searches with inputed search query in specified direction. */
+static void ed_search(struct Ed *const ed, enum Dir);
 
 /* Sets formatted message to the user. */
 static void ed_set_msg(struct Ed *, const char *, ...);
@@ -568,10 +566,10 @@ ed_proc_norm_key(struct Ed *const ed, const char key)
 		ed_mv_to_prev_word(ed);
 		break;
 	case CFG_KEY_SEARCH_BWD:
-		ed_search_bwd(ed);
+		ed_search(ed, DIR_BWD);
 		break;
 	case CFG_KEY_SEARCH_FWD:
-		ed_search_fwd(ed);
+		ed_search(ed, DIR_FWD);
 		break;
 	}
 
@@ -587,7 +585,7 @@ ed_proc_search_key(struct Ed *const ed, const char key)
 {
 	switch (key) {
 	case CFG_KEY_MODE_SEARCH_TO_NORM:
-		ed_search_fwd(ed);
+		ed_search(ed, DIR_FWD);
 		/* FALLTHROUGH */
 	case CFG_KEY_MODE_SEARCH_TO_NORM_CANCEL:
 		ed_switch_mode(ed, MODE_NORM);
@@ -656,15 +654,9 @@ ed_save_file_to_spare_dir(struct Ed *const ed)
 }
 
 static void
-ed_search_bwd(struct Ed *const ed)
+ed_search(struct Ed *const ed, const enum Dir dir)
 {
-	win_search_bwd(ed->win, ed->search_input);
-}
-
-static void
-ed_search_fwd(struct Ed *const ed)
-{
-	win_search_fwd(ed->win, ed->search_input);
+	win_search(ed->win, ed->search_input, dir);
 }
 
 static void
