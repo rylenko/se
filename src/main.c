@@ -1,4 +1,3 @@
-/* TODO: v0.2: Optimize and review searching code. */
 /* TODO: v0.2: Handle mouse wheel scrolling */
 /* TODO: v0.2: Test on other distros/OS and other terminals */
 /* TODO: v0.3: Create Cell struct to handle all symbols including UTF-8. Create structs Win->Renders->Render->Cells->Cell. Rerender lines on window side */

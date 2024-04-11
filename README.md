@@ -135,21 +135,21 @@ $ make gen-readme
 	<tbody><tr>
 		<th>C</th>
 		<th>12</th>
-		<th>2541</th>
-		<th>351</th>
-		<th>453</th>
-		<th>1737</th>
-		<th>282</th>
-		<th>61197</th>
+		<th>2566</th>
+		<th>354</th>
+		<th>463</th>
+		<th>1749</th>
+		<th>276</th>
+		<th>61432</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>14</th>
-		<th>490</th>
+		<th>488</th>
 		<th>127</th>
-		<th>158</th>
-		<th>205</th>
+		<th>153</th>
+		<th>208</th>
 		<th>0</th>
-		<th>12145</th>
+		<th>12071</th>
 	</tr><tr>
 		<th>Markdown</th>
 		<th>2</th>
@@ -199,12 +199,12 @@ $ make gen-readme
 	<tfoot><tr>
 		<th>Total</th>
 		<th>33</th>
-		<th>3411</th>
-		<th>571</th>
-		<th>630</th>
-		<th>2210</th>
-		<th>282</th>
-    	<th>81457</th>
+		<th>3434</th>
+		<th>574</th>
+		<th>635</th>
+		<th>2225</th>
+		<th>276</th>
+    	<th>81618</th>
 	</tr></tfoot>
 	</table>
 
@@ -212,14 +212,13 @@ $ make gen-readme
 
 |Path|Line|Description|
 |-|-|-|
-|**src/main.c**|**1**|**v0.2: Optimize and review searching code.**|
-|**src/main.c**|**2**|**v0.2: Handle mouse wheel scrolling**|
-|**src/main.c**|**3**|**v0.2: Test on other distros/OS and other terminals**|
-|**src/main.c**|**4**|**v0.3: Create Cell struct to handle all symbols including UTF-8. Create structs Win->Renders->Render->Cells->Cell. Rerender lines on window side**|
-|**src/main.c**|**5**|**v0.3: Use linked list for lines array and line's content parts.**|
-|**src/main.c**|**6**|**v0.3: Undo operations. Also rename "del" to "remove" where needed.**|
-|**src/main.c**|**7**|**v0.4: Add local clipboard. Use it in functions.**|
-|**src/main.c**|**8**|**v0.4: Xclip patch to use with local clipboard.**|
-|**src/main.c**|**9**|**v0.5: Add more clear docs and comments.**|
-|**src/main.c**|**10**|**v0.5: Support huge files.**|
-|**src/main.c**|**11**|**v0.6: API with status codes instead of err.h. Add tests**|
+|**src/main.c**|**1**|**v0.2: Handle mouse wheel scrolling**|
+|**src/main.c**|**2**|**v0.2: Test on other distros/OS and other terminals**|
+|**src/main.c**|**3**|**v0.3: Create Cell struct to handle all symbols including UTF-8. Create structs Win->Renders->Render->Cells->Cell. Rerender lines on window side**|
+|**src/main.c**|**4**|**v0.3: Use linked list for lines array and line's content parts.**|
+|**src/main.c**|**5**|**v0.3: Undo operations. Also rename "del" to "remove" where needed.**|
+|**src/main.c**|**6**|**v0.4: Add local clipboard. Use it in functions.**|
+|**src/main.c**|**7**|**v0.4: Xclip patch to use with local clipboard.**|
+|**src/main.c**|**8**|**v0.5: Add more clear docs and comments.**|
+|**src/main.c**|**9**|**v0.5: Support huge files.**|
+|**src/main.c**|**10**|**v0.6: API with status codes instead of err.h. Add tests**|

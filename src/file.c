@@ -87,6 +87,15 @@ Renders line's content how it should look in the window and frees old content.
 static void line_render(struct Line *);
 
 /*
+Searches substring in the line.
+
+Temporarily changes the string if there is backward searching.
+
+Returns 1 if result found and modifies index pointer. Otherwise returns 0.
+*/
+static char line_search(struct Line *, size_t *, const char *, enum Dir);
+
+/*
 Shrinks line's capacity.
 
 If flag is `1`, then function reallocates line with capacity equal to actual
@@ -128,6 +137,22 @@ static void lines_read(struct Lines *, FILE *);
 
 /* Reallocates lines container's capacity. */
 static void lines_realloc(struct Lines *, size_t);
+
+/*
+Searches query in the lines.
+
+Temporarily changes the lines if there is backward searching.
+
+Returns 1 if result found and modifies index and position pointers. Otherwise
+returns 0.
+*/
+static char lines_search(
+	struct Lines *,
+	size_t *,
+	size_t *,
+	const char *,
+	const enum Dir
+);
 
 /*
 Writes lines to the file.
@@ -294,7 +319,7 @@ file_save(struct File *const file, const char *const path)
 	/* Flush and close the file */
 	if (fflush(inner) == EOF)
 		err(EXIT_FAILURE, "Failed to flush saved file");
-	else if (fclose(inner) == EOF)
+	if (fclose(inner) == EOF)
 		err(EXIT_FAILURE, "Failed to close saved file");
 
 	/* Remove dirty flag because file was saved */
@@ -314,10 +339,10 @@ file_save_to_spare_dir(struct File *const file, char *const path, size_t len)
 	if ((time_t) - 1 == (utc = time(NULL)))
 		err(EXIT_FAILURE, "Failed to get timestamp to save to spare dir");
 	/* Get local time from timestamp */
-	else if (NULL == (local = localtime(&utc)))
+	if (NULL == (local = localtime(&utc)))
 		err(EXIT_FAILURE, "Failed to get local time to save to spare dir");
 	/* Format local time to string */
-	else if (strftime(date, sizeof(date), "%m-%d_%H-%M-%S", local) == 0)
+	if (strftime(date, sizeof(date), "%m-%d_%H-%M-%S", local) == 0)
 		errx(EXIT_FAILURE, "Failed to convert time to string to save to spare dir.");
 
 	/* Build full spare path */
@@ -329,75 +354,14 @@ file_save_to_spare_dir(struct File *const file, char *const path, size_t len)
 }
 
 char
-file_search_bwd(
+file_search(
 	struct File *const file,
 	size_t *const idx,
 	size_t *const pos,
-	const char *const query
+	const char *const query,
+	const enum Dir dir
 ) {
-	char init_end;
-	const size_t init_pos = *pos;
-	const size_t init_idx = *idx;
-	const char *res;
-
-	/* Check query is empty */
-	if (0 == *query)
-		return 0;
-
-	/* Set end of initial line to do not detect results on the right */
-	init_end = file->lines.arr[init_idx].cont[init_pos];
-	file->lines.arr[init_idx].cont[init_pos] = 0;
-
-	for (;; (*idx)--, *pos = 0) {
-		if (
-			/* Not an empty line */
-			file->lines.arr[*idx].len > 0
-			/* There is results in current line */
-			&& NULL != (res = strrstr(file->lines.arr[*idx].cont, query))
-		) {
-			/* It is ok to write ptrdiff_t to size_t because substract greater than 0 */
-			*pos = res - file->lines.arr[*idx].cont;
-			/* Restore end of initial line */
-			file->lines.arr[init_idx].cont[init_pos] = init_end;
-			return 1;
-		}
-		/* End of file */
-		if (0 == *idx)
-			break;
-	}
-
-	/* Restore end of initial line */
-	file->lines.arr[init_idx].cont[init_pos] = init_end;
-	return 0;
-}
-
-char
-file_search_fwd(
-	const struct File *const file,
-	size_t *const idx,
-	size_t *const pos,
-	const char *const query
-) {
-	const char *res;
-
-	/* Check query is empty */
-	if (0 == *query)
-		return 0;
-
-	for (; *idx < file->lines.cnt; (*idx)++, *pos = 0) {
-		/* Try to search forward on the current line */
-		if (
-			/* Not an empty line */
-			file->lines.arr[*idx].len > 0
-			/* Result exists in the current line */
-			&& NULL != (res = strstr(&file->lines.arr[*idx].cont[*pos], query))
-		) {
-			/* It is ok to write ptrdiff_t to size_t because substract greater than 0 */
-			*pos = res - file->lines.arr[*idx].cont;
-			return 1;
-		}
-	}
-	return 0;
+	return lines_search(&file->lines, idx, pos, query, dir);
 }
 
 static void
@@ -560,6 +524,45 @@ line_render(struct Line *const line)
 	line->render[line->render_len] = 0;
 }
 
+static char
+line_search(
+	struct Line *const line,
+	size_t *const idx,
+	const char *const query,
+	const enum Dir dir
+) {
+	const char *res = NULL;
+	char tmp;
+
+	/* Check line is empty */
+	if (0 == line->len)
+		return 0;
+
+	switch (dir) {
+	case DIR_BWD:
+		/* Set end of initial line to do not detect results on the right */
+		tmp = line->cont[*idx];
+		line->cont[*idx] = 0;
+
+		/* Search from the right */
+		res = strrstr(line->cont, query);
+
+		/* Reset end character of search area */
+		line->cont[*idx] = tmp;
+		break;
+	case DIR_FWD:
+		res = strstr(&line->cont[*idx], query);
+		break;
+	}
+
+	/* Check if no results */
+	if (NULL == res)
+		return 0;
+	/* Set result index and return success code */
+	*idx = res - line->cont;
+	return 1;
+}
+
 static void
 line_shrink(struct Line *const line, const char hard)
 {
@@ -582,7 +585,7 @@ line_write(struct Line *const line, FILE *const f)
 	const size_t len = fwrite(line->cont, sizeof(char), line->len, f);
 	if (len != line->len)
 		err(EXIT_FAILURE, "Failed to write a line with length %zu", line->len);
-	else if (fputc('\n', f) == EOF)
+	if (fputc('\n', f) == EOF)
 		err(EXIT_FAILURE, "Failed to write \n after line with len %zu", line->len);
 
 	/* Return written length. Do not forget about \n */
@@ -680,14 +683,6 @@ lines_init(struct Lines *const lines)
 }
 
 static void
-lines_realloc(struct Lines *const lines, const size_t new_cap)
-{
-	/* Reallocate and update capacity */
-	lines->arr = realloc_err(lines->arr, sizeof(*lines->arr) * new_cap);
-	lines->cap = new_cap;
-}
-
-static void
 lines_ins_line(
 	struct Lines *const lines,
 	const size_t idx,
@@ -720,6 +715,37 @@ lines_read(struct Lines *const lines, FILE *const f)
 	while (line_read(&line, f) != NULL)
 		/* Insert readed line */
 		lines_ins_line(lines, lines->cnt, line);
+}
+
+static void
+lines_realloc(struct Lines *const lines, const size_t new_cap)
+{
+	/* Reallocate and update capacity */
+	lines->arr = realloc_err(lines->arr, sizeof(*lines->arr) * new_cap);
+	lines->cap = new_cap;
+}
+
+static char
+lines_search(
+	struct Lines *const lines,
+	size_t *const idx,
+	size_t *const pos,
+	const char *const query,
+	const enum Dir dir
+) {
+	while (*idx < lines->cnt) {
+		/* Try to search on interated line */
+		if (line_search(&lines->arr[*idx], pos, query, dir))
+			return 1;
+
+		/* Searching backward and start of file reached */
+		if (DIR_BWD == dir && 0 == *idx)
+			break;
+		/* Move to the beginning of another line */
+		*idx += DIR_FWD == dir ? 1 : -1;
+		*pos = DIR_FWD == dir ? 0 : lines->arr[*idx].len;
+	}
+	return 0;
 }
 
 static size_t

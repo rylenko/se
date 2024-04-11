@@ -3,6 +3,12 @@
 
 #include <stddef.h>
 
+/* File traversal direction. Used, for example, in search. */
+enum Dir {
+	DIR_BWD,
+	DIR_FWD,
+};
+
 /* Alias for opaque struct of opened file. */
 typedef struct File File;
 
@@ -75,21 +81,13 @@ Returns written bytes count.
 size_t file_save_to_spare_dir(File *, char *, size_t);
 
 /*
-Searches backward from passed line index and passes line position. Modifies
-index and position.
+Searches in passed direction from passed line index and passes line position.
+Modifies index and position.
 
-Temporarily changes file, but then restores it.
-
-Returns 1 if result found, otherwise 0.
-*/
-char file_search_bwd(File *, size_t *, size_t *, const char *);
-
-/*
-Searches forward from passed line index and passes line position. Modifies
-index and position.
+Temporarily changes file if direction is backward, but then restores it.
 
 Returns 1 if result found, otherwise 0.
 */
-char file_search_fwd(const File *, size_t *, size_t *, const char *);
+char file_search(File *, size_t *, size_t *, const char *, enum Dir);
 
 #endif /* _FILE_H */

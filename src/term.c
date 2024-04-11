@@ -50,7 +50,7 @@ term_init(int ifd, int ofd)
 	if (tcgetattr(ifd, &term.orig_termios) == -1)
 		err(EXIT_FAILURE, "Failed to get original termios");
 	/* Set terminal deiniter on exit */
-	else if (atexit(term_deinit) != 0)
+	if (atexit(term_deinit) != 0)
 		errx(EXIT_FAILURE, "Failed to set terminal deinitializer on exit.");
 
 	/* Set raw mode parameters to termios */
