@@ -1,16 +1,3 @@
-/*
-Working with a window is divided into two cases: working with internal and
-rendered (or expanded) content.
-
-For example, when we consider a tab as one character, then most likely we are
-working with internal content, and when we consider a tab as several
-characters that the user can see, then we are working with rendered content.
-
-In structure, the offset and cursor are for internal content. The file contains
-a method for getting the index of a expanded column from an internal column, a
-method for clamping the internal column in the rendered window, and others.
-*/
-
 #include <err.h>
 #include <stdlib.h>
 #include <string.h>
@@ -41,11 +28,15 @@ struct Offset {
 	size_t cols;
 };
 
-/* struct Window parameters. */
+/*
+Window parameters.
+
+Position parameters may differ from real ones due to tabs expansion.
+*/
 struct Win {
 	File *file; /* Opened file */
-	struct Offset offset; /* Offset of current view. Counts tabs as 1 character */
-	struct Cur cur; /* Pointer to window's content. Counts tabs as 1 character */
+	struct Offset offset; /* Offset of view/file. Tab's width is 1 */
+	struct Cur cur; /* Pointer to the viewed content. Tab's width is 1 */
 	struct winsize size; /* struct Window size */
 };
 
