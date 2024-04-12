@@ -19,13 +19,15 @@ VALGRIND_OUT_PATH = valgrind-out
 all: $(OBJ)
 	$(CC) $(CFLAGS) -o $(NAME) $(OBJ)
 
-# Build object file from source file
-src/%.o: src/%.c
-ifdef DEBUG
-	$(CC) -c -g $(CFLAGS) -o $@ $<
-else
-	$(CC) -c $(CFLAGS) -o $@ $<
-endif
+# Build object file from source file.
+#
+# Target equals to GNU `src/%.o: src/%.c`
+.c.o:
+	if [ -z "${DEBUG}" ]; then \
+		$(CC) -c $(CFLAGS) -o $@ $<; \
+	else \
+		$(CC) -c -g $(CFLAGS) -o $@ $<; \
+	fi \
 
 # Clean all after build
 clean:

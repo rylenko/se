@@ -384,10 +384,12 @@ line_extend(struct Line *const dest, const struct Line *const src)
 		/* Line capacity if needed to store source content */
 		line_grow_if_needed(dest, dest->len + src->len);
 
-		/* Copy source content to destinationh */
-		strcpy(&dest->cont[dest->len], src->cont);
+		/* Copy source content to destination */
+		strncpy(&dest->cont[dest->len], src->cont, src->len);
 		/* Update length of extended line */
 		dest->len += src->len;
+		/* Set null byte */
+		dest->cont[dest->len] = 0;
 	}
 }
 
@@ -622,7 +624,9 @@ lines_break_line(struct Lines *const lines, const size_t idx, const size_t pos)
 		/* Try to allocate space for new line's content */
 		new_line.cont = malloc_err(new_line.cap);
 		/* Copy content to new line */
-		strcpy(new_line.cont, &line->cont[pos]);
+		strncpy(new_line.cont, &line->cont[pos], new_line.len);
+		/* Set null byte */
+		new_line.cont[new_line.len] = 0;
 	}
 
 	/* Update line if it makes sense. Otherwise it will be freed when shrinking */

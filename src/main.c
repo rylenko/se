@@ -1,5 +1,5 @@
 /* TODO: v0.2: Handle mouse wheel scrolling */
-/* TODO: v0.2: Test on other distros/OS and other terminals */
+/* TODO: Add github action with `make gen-readme` */
 /* TODO: v0.3: Create Cell struct to handle all symbols including UTF-8. Create structs Win->Renders->Render->Cells->Cell. Rerender lines on window side */
 /* TODO: v0.3: Use linked list for lines array and line's content parts. */
 /* TODO: v0.3: Undo operations. Also rename "del" to "remove" where needed. */

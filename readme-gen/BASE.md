@@ -79,8 +79,9 @@ Searching mode keys:
 
 You can set up convenient key bindings and convenient colors in `src/cfg.h`.
 
-
 # Build and install
+
+You can set up convenient building flags in `cfg.mk`. For example, if you want to bild editor for OpenBSD, you need to uncomment some lines in `cfg.mk`.
 
 Build binary:
 
