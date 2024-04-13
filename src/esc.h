@@ -11,6 +11,12 @@ enum ArrowKey {
 	ARROW_KEY_LEFT = 'D',
 };
 
+/* Disables alternate screen. Need to restore screen before editor opening. */
+void esc_alt_scr_off(void);
+
+/* Enables alternate screen. Need to save screen before editor opening. */
+void esc_alt_scr_on(void);
+
 /* Clears all window. */
 void esc_clr_win(Buf *);
 

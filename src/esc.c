@@ -1,6 +1,19 @@
 #include "buf.h"
 #include "color.h"
 #include "esc.h"
+#include "term.h"
+
+void
+esc_alt_scr_on(void)
+{
+	term_write("\x1b[?1049h", 8);
+}
+
+void
+esc_alt_scr_off(void)
+{
+	term_write("\x1b[?1049l", 8);
+}
 
 void
 esc_clr_win(Buf *const buf)

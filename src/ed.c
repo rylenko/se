@@ -466,6 +466,9 @@ ed_open(const char *const path, const int ifd, const int ofd)
 	ed->quit_presses_rem = 1;
 	/* Set signal default values */
 	ed->sigwinch = 0;
+
+	/* Enable alternate screen */
+	esc_alt_scr_on();
 	return ed;
 }
 
@@ -611,6 +614,8 @@ ed_proc_seq_key(struct Ed *const ed, const char *const seq, const size_t len)
 void
 ed_quit(struct Ed *const ed)
 {
+	/* Disable alternate screen */
+	esc_alt_scr_off();
 	/* Free content buffer */
 	buf_free(ed->buf);
 	/* Close the window */
