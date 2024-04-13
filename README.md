@@ -77,7 +77,7 @@ Searching mode keys:
 
 # Configuration
 
-You can set up convenient key bindings and convenient colors in `src/cfg.h`.
+You can set up convenient key bindings and convenient colors in `src/cfg.h`. Note that after changes you need to build and install again.
 
 # Build and install
 
@@ -153,7 +153,7 @@ $ make gen-readme
 		<th>0</th>
 		<th>167</th>
 		<th>0</th>
-		<th>5736</th>
+		<th>5858</th>
 	</tr><tr>
 		<th>Makefile</th>
 		<th>2</th>
@@ -199,7 +199,7 @@ $ make gen-readme
 		<th>630</th>
 		<th>2206</th>
 		<th>284</th>
-    	<th>81218</th>
+    	<th>81340</th>
 	</tr></tfoot>
 	</table>
 

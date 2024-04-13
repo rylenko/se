@@ -77,7 +77,7 @@ Searching mode keys:
 
 # Configuration
 
-You can set up convenient key bindings and convenient colors in `src/cfg.h`.
+You can set up convenient key bindings and convenient colors in `src/cfg.h`. Note that after changes you need to build and install again.
 
 # Build and install
 
