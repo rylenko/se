@@ -203,7 +203,7 @@ ed_draw(struct Ed *const ed)
 	}
 
 	/* Flush the buffer to terminal */
-	term_flush(ed->buf);
+	buf_flush(ed->buf);
 }
 
 static void

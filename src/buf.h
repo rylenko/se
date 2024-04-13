@@ -10,11 +10,11 @@ typedef struct Buf Buf;
 Buf *buf_alloc(void);
 
 /*
-Flushes the buffer to file by its descritor using single `write` call.
+Flushes the buffer to terminal using single system call.
 
 After flush frees and zeroizes the buffer to continue usage from scratch.
 */
-void buf_flush(Buf *, int);
+void buf_flush(Buf *);
 
 /* Frees the buffer. */
 void buf_free(Buf *);

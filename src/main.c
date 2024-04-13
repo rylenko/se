@@ -1,8 +1,10 @@
+/* TODO: v0.2: Fix end of line with many tabs. */
 /* TODO: v0.2: Handle mouse wheel scrolling */
-/* TODO: Add github action with `make gen-readme` */
+/* TODO: v0.2: Add github action with `make gen-readme` */
 /* TODO: v0.3: Create Cell struct to handle all symbols including UTF-8. Create structs Win->Renders->Render->Cells->Cell. Rerender lines on window side */
 /* TODO: v0.3: Use linked list for lines array and line's content parts. */
 /* TODO: v0.3: Undo operations. Also rename "del" to "remove" where needed. */
+/* TODO: v0.4: Add key settings for escape sequences. For example, CFG_KEY_MV_UP_2 = "\x1b[A" */
 /* TODO: v0.4: Add local clipboard. Use it in functions. */
 /* TODO: v0.4: Xclip patch to use with local clipboard. */
 /* TODO: v0.5: Add more clear docs and comments. */

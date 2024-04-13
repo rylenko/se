@@ -7,6 +7,7 @@
 #include "alloc.h"
 #include "buf.h"
 #include "math.h"
+#include "term.h"
 
 enum {
 	BUF_REALLOC_STEP = 4096, /* Realloc step if there is no space for new data */
@@ -14,11 +15,12 @@ enum {
 };
 
 /*
-During redrawing content may flicker because `printf` buffers the output but
-flushes it to the terminal after receiving '\n'.
+If write frequently, the following problems may occur:
+1. Content may flicker because everything reaches the terminal in pieces.
+2. Lots of write system calls used.
 
-This buffer is needed to write strings into one large buffer and print them on
-the window in one call.
+Data can be written to this buffer. Then data can be written to the terminal
+in one piece in one system call.
 */
 struct Buf {
 	char *data; /* Dynamic array with buffer data */
@@ -36,11 +38,10 @@ buf_alloc(void)
 }
 
 void
-buf_flush(struct Buf *const buf, const int fd)
+buf_flush(struct Buf *const buf)
 {
-	/* Write buffer's data to file by its descriptor */
-	if (write(fd, buf->data, buf->len) == -1)
-		err(EXIT_FAILURE, "Failed to flush the buffer with length %zu", buf->len);
+	/* Write buffer's data to terminal */
+	term_write(buf->data, buf->len);
 	/* Refresh length to continue from scratch */
 	buf->len = 0;
 }

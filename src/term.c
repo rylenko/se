@@ -3,7 +3,6 @@
 #include <stdlib.h>
 #include <termios.h>
 #include <unistd.h>
-#include "buf.h"
 #include "term.h"
 
 /* Structure for controlling input and output */
@@ -22,12 +21,6 @@ term_deinit(void)
 	/* Restore original termios parameters to disable raw mode */
 	if (tcsetattr(term.ifd, TCSANOW, &term.orig_termios) == -1)
 		err(EXIT_FAILURE, "Failed to restore original termios parameters");
-}
-
-void
-term_flush(Buf *const buf)
-{
-	buf_flush(buf, term.ofd);
 }
 
 void
@@ -88,4 +81,12 @@ term_wait_key(char *const seq, const size_t len)
 		err(EXIT_FAILURE, "Failed to read key sequence");
 	/* It is ok to return signed number because of errors check before */
 	return readed;
+}
+
+void
+term_write(const char *const buf, const size_t len)
+{
+	/* Write buffer with accepted length */
+	if (write(term.ofd, buf, len) == -1)
+		err(EXIT_FAILURE, "Failed to write %zu bytes to terminal", len);
 }
