@@ -16,7 +16,7 @@ ROOT_DIR = $(dir $(realpath $(lastword $(MAKEFILE_LIST))))
 VALGRIND_OUT_PATH = valgrind-out
 
 # Build executable
-all: $(OBJ)
+all: gen-readme $(OBJ)
 	$(CC) $(CFLAGS) -o $(NAME) $(OBJ)
 
 # Build object file from source file.
