@@ -84,20 +84,23 @@ static void ed_ins_empty_line_on_top(struct Ed *);
 /* Use it when user presses quit key. Interacts with the remaining counter. */
 static void ed_on_quit_press(struct Ed *);
 
-/* Processes arrow key. Key must be between 'A' and 'D'. */
+/* Processes arrow key. */
 static void ed_proc_arrow_key(struct Ed *, enum ArrowKey);
 
 /* Process key in insertion mode. */
 static void ed_proc_ins_key(struct Ed *, char);
+
+/* Processes mouse wheel key. */
+static void ed_proc_mouse_wheel_key(struct Ed *, enum MouseWheelKey);
+
+/* Process key in normal mode. */
+static void ed_proc_norm_key(struct Ed *, char);
 
 /* Process key in search mode. */
 static void ed_proc_search_key(struct Ed *, char);
 
 /* Processes key sequence. Useful if single key press is several characters */
 static void ed_proc_seq_key(struct Ed *, const char *, size_t);
-
-/* Process key in normal mode. */
-static void ed_proc_norm_key(struct Ed *, char);
 
 /* Moves editor down. */
 static void ed_mv_down(struct Ed *);
@@ -469,6 +472,9 @@ ed_open(const char *const path, const int ifd, const int ofd)
 
 	/* Enable alternate screen */
 	esc_alt_scr_on();
+	/* Enable mouse wheel tracking */
+	esc_mouse_wheel_track_on();
+
 	return ed;
 }
 
@@ -506,6 +512,19 @@ ed_proc_ins_key(struct Ed *const ed, const char key)
 		break;
 	default:
 		ed_ins_char(ed, key);
+		break;
+	}
+}
+
+static void
+ed_proc_mouse_wheel_key(struct Ed *const ed, const enum MouseWheelKey key)
+{
+	switch (key) {
+	case MOUSE_WHEEL_KEY_UP:
+		ed_mv_up(ed);
+		break;
+	case MOUSE_WHEEL_KEY_DOWN:
+		ed_mv_down(ed);
 		break;
 	}
 }
@@ -606,9 +625,12 @@ static void
 ed_proc_seq_key(struct Ed *const ed, const char *const seq, const size_t len)
 {
 	enum ArrowKey arrow_key;
+	enum MouseWheelKey mouse_wheel_key;
 	/* Arrows */
-	if (esc_get_arrow_key(seq, len, &arrow_key) != -1)
+	if (esc_extr_arrow_key(seq, len, &arrow_key) != -1)
 		ed_proc_arrow_key(ed, arrow_key);
+	else if (esc_extr_mouse_wheel_key(seq, len, &mouse_wheel_key) != -1)
+		ed_proc_mouse_wheel_key(ed, mouse_wheel_key);
 }
 
 void
@@ -616,10 +638,14 @@ ed_quit(struct Ed *const ed)
 {
 	/* Disable alternate screen */
 	esc_alt_scr_off();
+	/* Disable mouse wheel tracking */
+	esc_mouse_wheel_track_on();
+
 	/* Free content buffer */
 	buf_free(ed->buf);
 	/* Close the window */
 	win_close(ed->win);
+
 	/* Free opaque struct */
 	free(ed);
 }
@@ -689,7 +715,7 @@ ed_switch_mode(struct Ed *const ed, const enum Mode mode)
 void
 ed_wait_and_proc_key(struct Ed *const ed)
 {
-	char seq[3];
+	char seq[4];
 	/* Wait key press */
 	size_t seq_len = term_wait_key(seq, sizeof(seq));
 

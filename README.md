@@ -40,8 +40,8 @@ Normal mode keys:
 - `e` - go to begin of next word.
 - `h` or `Left arrow` - go left.
 - `i` - switch to inserting mode.
-- `j` or `Down arrow` - go down.
-- `k` or `Up arrow` - go up.
+- `j`, `Down arrow` or by moving the mouse wheel down - go down.
+- `k` or `Up arrow` or by moving the mouse wheel up - go up.
 - `l` or `Right arrow` - go right.
 - `n` - create a line below the current line and move to it.
 - `q` - go to begin of previous word.
@@ -130,21 +130,21 @@ $ make gen-readme
 	<tbody><tr>
 		<th>C</th>
 		<th>12</th>
-		<th>2564</th>
-		<th>352</th>
-		<th>459</th>
-		<th>1753</th>
-		<th>284</th>
-		<th>61142</th>
+		<th>2620</th>
+		<th>360</th>
+		<th>462</th>
+		<th>1798</th>
+		<th>292</th>
+		<th>62162</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>14</th>
-		<th>491</th>
-		<th>128</th>
-		<th>154</th>
-		<th>209</th>
+		<th>510</th>
+		<th>132</th>
+		<th>162</th>
+		<th>216</th>
 		<th>0</th>
-		<th>12234</th>
+		<th>12674</th>
 	</tr><tr>
 		<th>Markdown</th>
 		<th>2</th>
@@ -153,7 +153,7 @@ $ make gen-readme
 		<th>0</th>
 		<th>167</th>
 		<th>0</th>
-		<th>5858</th>
+		<th>5986</th>
 	</tr><tr>
 		<th>Makefile</th>
 		<th>2</th>
@@ -194,12 +194,12 @@ $ make gen-readme
 	<tfoot><tr>
 		<th>Total</th>
 		<th>33</th>
-		<th>3428</th>
-		<th>570</th>
-		<th>638</th>
-		<th>2220</th>
-		<th>284</th>
-    	<th>82028</th>
+		<th>3503</th>
+		<th>582</th>
+		<th>649</th>
+		<th>2272</th>
+		<th>292</th>
+    	<th>83616</th>
 	</tr></tfoot>
 	</table>
 
@@ -208,12 +208,12 @@ $ make gen-readme
 |Path|Line|Description|
 |-|-|-|
 |**src/main.c**|**1**|**v0.2: Fix end of line with many tabs.**|
-|**src/main.c**|**2**|**v0.2: Handle mouse wheel scrolling**|
-|**src/main.c**|**3**|**v0.2: Add github action with `make gen-readme`**|
-|**src/main.c**|**4**|**v0.3: Create Cell struct to handle all symbols including UTF-8. Create structs Win->Renders->Render->Cells->Cell. Rerender lines on window side**|
-|**src/main.c**|**5**|**v0.3: Use linked list for lines array and line's content parts.**|
-|**src/main.c**|**6**|**v0.3: Undo operations. Also rename "del" to "remove" where needed.**|
-|**src/main.c**|**7**|**v0.4: Add key settings for escape sequences. For example, CFG_KEY_MV_UP_2 = "\x1b[A"**|
+|**src/main.c**|**2**|**v0.2: Add github action with `make gen-readme`**|
+|**src/main.c**|**3**|**v0.3: Create Cell struct to handle all symbols including UTF-8. Create structs Win->Renders->Render->Cells->Cell. Rerender lines on window side**|
+|**src/main.c**|**4**|**v0.3: Use linked list for lines array and line's content parts.**|
+|**src/main.c**|**5**|**v0.3: Undo operations. Also rename "del" to "remove" where needed.**|
+|**src/main.c**|**6**|**v0.3: Remember last position per line.**|
+|**src/main.c**|**7**|**v0.4: Add key settings for escape sequences. For example, CFG_KEY_MV_UP_2 = "..."**|
 |**src/main.c**|**8**|**v0.4: Add local clipboard. Use it in functions.**|
 |**src/main.c**|**9**|**v0.4: Xclip patch to use with local clipboard.**|
 |**src/main.c**|**10**|**v0.5: Add more clear docs and comments.**|

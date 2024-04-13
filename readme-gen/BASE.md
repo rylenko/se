@@ -40,8 +40,8 @@ Normal mode keys:
 - `e` - go to begin of next word.
 - `h` or `Left arrow` - go left.
 - `i` - switch to inserting mode.
-- `j` or `Down arrow` - go down.
-- `k` or `Up arrow` - go up.
+- `j`, `Down arrow` or by moving the mouse wheel down - go down.
+- `k` or `Up arrow` or by moving the mouse wheel up - go up.
 - `l` or `Right arrow` - go right.
 - `n` - create a line below the current line and move to it.
 - `q` - go to begin of previous word.

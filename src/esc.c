@@ -1,3 +1,4 @@
+#include <string.h>
 #include "buf.h"
 #include "color.h"
 #include "esc.h"
@@ -60,15 +61,14 @@ esc_cur_show(Buf *const buf)
 }
 
 int
-esc_get_arrow_key(
+esc_extr_arrow_key(
 	const char *const seq,
 	const size_t len,
 	enum ArrowKey *const key
 ) {
 	if (
 		3 == len
-		&& '\x1b' == seq[0]
-		&& '[' == seq[1]
+		&& strncmp("\x1b[", seq, 2) == 0
 		&& ARROW_KEY_UP <= seq[2]
 		&& seq[2] <= ARROW_KEY_LEFT
 	) {
@@ -78,8 +78,38 @@ esc_get_arrow_key(
 	return -1;
 }
 
+int
+esc_extr_mouse_wheel_key(
+	const char *const seq,
+	const size_t len,
+	enum MouseWheelKey *const key
+) {
+	if (
+		4 == len
+		&& strncmp("\x1b[M", seq, 3) == 0
+		&& MOUSE_WHEEL_KEY_UP <= seq[3]
+		&& seq[3] <= MOUSE_WHEEL_KEY_DOWN
+	) {
+		*key = seq[3];
+		return 0;
+	}
+	return -1;
+}
+
 void
 esc_go_home(Buf *const buf)
 {
 	buf_write(buf, "\x1b[H", 3);
+}
+
+void
+esc_mouse_wheel_track_off(void)
+{
+	term_write("\x1b[?1000l", 8);
+}
+
+void
+esc_mouse_wheel_track_on(void)
+{
+	term_write("\x1b[?1000h", 8);
 }
