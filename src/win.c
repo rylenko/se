@@ -433,13 +433,14 @@ win_mv_to_end_of_file(struct Win *const win)
 void
 win_mv_to_end_of_line(struct Win *const win)
 {
-	const size_t line_len = file_line_len(win->file, win_curr_line_idx(win));
+	const size_t render_len = \
+		file_line_render_len(win->file, win_curr_line_idx(win));
 
 	/* Check that end of line in the current window */
-	if (line_len < win->offset.cols + win->size.ws_col) {
-		win->cur.col = line_len - win->offset.cols;
+	if (render_len < win->offset.cols + win->size.ws_col) {
+		win->cur.col = render_len - win->offset.cols;
 	} else {
-		win->offset.cols = line_len - win->size.ws_col + 1;
+		win->offset.cols = render_len - win->size.ws_col + 1;
 		win->cur.col = win->size.ws_col - 1;
 	}
 }
