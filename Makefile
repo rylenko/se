@@ -23,11 +23,7 @@ all: $(OBJ)
 #
 # Target equals to GNU `src/%.o: src/%.c`
 .c.o:
-	if [ -z "${DEBUG}" ]; then \
-		$(CC) -c $(CFLAGS) -o $@ $<; \
-	else \
-		$(CC) -c -g $(CFLAGS) -o $@ $<; \
-	fi \
+	$(CC) -c $(CFLAGS) -o $@ $<
 
 # Clean all after build
 clean:

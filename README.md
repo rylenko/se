@@ -79,8 +79,9 @@ Searching mode keys:
 
 You can set up convenient key bindings and convenient colors in `src/cfg.h`.
 
-
 # Build and install
+
+You can set up convenient building flags in `cfg.mk`. For example, if you want to debug, you need to add `-g` to flags. Or, if you want to build editor for OpenBSD, you need to uncomment some lines in `cfg.mk`.
 
 Build binary:
 
@@ -92,12 +93,6 @@ Install. Most likely you will need `sudo`, `doas` or something like that before 
 
 ```
 $ make install
-```
-
-Build with debug:
-
-```
-$ DEBUG=1 make
 ```
 
 Build and use valgrind:
@@ -135,12 +130,12 @@ $ make gen-readme
 	<tbody><tr>
 		<th>C</th>
 		<th>12</th>
-		<th>2538</th>
+		<th>2542</th>
 		<th>349</th>
-		<th>451</th>
-		<th>1738</th>
+		<th>453</th>
+		<th>1740</th>
 		<th>284</th>
-		<th>60544</th>
+		<th>60667</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>14</th>
@@ -153,21 +148,21 @@ $ make gen-readme
 	</tr><tr>
 		<th>Markdown</th>
 		<th>2</th>
-		<th>243</th>
-		<th>70</th>
+		<th>233</th>
+		<th>66</th>
 		<th>0</th>
-		<th>173</th>
+		<th>167</th>
 		<th>0</th>
-		<th>5400</th>
+		<th>5736</th>
 	</tr><tr>
 		<th>Makefile</th>
 		<th>2</th>
-		<th>69</th>
-		<th>14</th>
-		<th>13</th>
-		<th>42</th>
+		<th>72</th>
+		<th>15</th>
+		<th>19</th>
+		<th>38</th>
 		<th>0</th>
-		<th>1476</th>
+		<th>1555</th>
 	</tr><tr>
 		<th>Shell</th>
 		<th>1</th>
@@ -199,12 +194,12 @@ $ make gen-readme
 	<tfoot><tr>
 		<th>Total</th>
 		<th>33</th>
-		<th>3404</th>
-		<th>568</th>
-		<th>622</th>
-		<th>2214</th>
+		<th>3401</th>
+		<th>565</th>
+		<th>630</th>
+		<th>2206</th>
 		<th>284</th>
-    	<th>80680</th>
+    	<th>81218</th>
 	</tr></tfoot>
 	</table>
 
@@ -213,7 +208,7 @@ $ make gen-readme
 |Path|Line|Description|
 |-|-|-|
 |**src/main.c**|**1**|**v0.2: Handle mouse wheel scrolling**|
-|**src/main.c**|**2**|**v0.2: Test on other distros/OS and other terminals**|
+|**src/main.c**|**2**|**Add github action with `make gen-readme`**|
 |**src/main.c**|**3**|**v0.3: Create Cell struct to handle all symbols including UTF-8. Create structs Win->Renders->Render->Cells->Cell. Rerender lines on window side**|
 |**src/main.c**|**4**|**v0.3: Use linked list for lines array and line's content parts.**|
 |**src/main.c**|**5**|**v0.3: Undo operations. Also rename "del" to "remove" where needed.**|

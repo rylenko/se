@@ -81,7 +81,7 @@ You can set up convenient key bindings and convenient colors in `src/cfg.h`.
 
 # Build and install
 
-You can set up convenient building flags in `cfg.mk`. For example, if you want to bild editor for OpenBSD, you need to uncomment some lines in `cfg.mk`.
+You can set up convenient building flags in `cfg.mk`. For example, if you want to debug, you need to add `-g` to flags. Or, if you want to build editor for OpenBSD, you need to uncomment some lines in `cfg.mk`.
 
 Build binary:
 
@@ -93,12 +93,6 @@ Install. Most likely you will need `sudo`, `doas` or something like that before 
 
 ```
 $ make install
-```
-
-Build with debug:
-
-```
-$ DEBUG=1 make
 ```
 
 Build and use valgrind:
