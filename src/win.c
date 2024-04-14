@@ -37,7 +37,7 @@ struct Win {
 	File *file; /* Opened file */
 	struct Offset offset; /* Offset of view/file. Tab's width is 1 */
 	struct Cur cur; /* Pointer to the viewed content. Tab's width is 1 */
-	struct winsize size; /* struct Window size */
+	struct winsize size; /* Terminal window size */
 };
 
 /*
