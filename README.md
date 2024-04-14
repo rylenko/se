@@ -13,7 +13,6 @@
 - Line numbers on the left.
 - Automatic saving.
 - Syntax highlighting.
-- UTF-8 support.
 - Key macros.
 - Regular expressions.
 - Configuring using `~/.config/se/se.conf` or something like that.
@@ -148,12 +147,12 @@ $ make gen-readme
 	</tr><tr>
 		<th>Markdown</th>
 		<th>2</th>
-		<th>233</th>
+		<th>231</th>
 		<th>66</th>
 		<th>0</th>
-		<th>167</th>
+		<th>165</th>
 		<th>0</th>
-		<th>5986</th>
+		<th>5952</th>
 	</tr><tr>
 		<th>Makefile</th>
 		<th>2</th>
@@ -194,12 +193,12 @@ $ make gen-readme
 	<tfoot><tr>
 		<th>Total</th>
 		<th>33</th>
-		<th>3398</th>
+		<th>3396</th>
 		<th>558</th>
 		<th>636</th>
-		<th>2204</th>
+		<th>2202</th>
 		<th>290</th>
-    	<th>81880</th>
+    	<th>81846</th>
 	</tr></tfoot>
 	</table>
 

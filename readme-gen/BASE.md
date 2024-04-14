@@ -13,7 +13,6 @@
 - Line numbers on the left.
 - Automatic saving.
 - Syntax highlighting.
-- UTF-8 support.
 - Key macros.
 - Regular expressions.
 - Configuring using `~/.config/se/se.conf` or something like that.
