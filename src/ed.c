@@ -190,20 +190,16 @@ ed_draw(struct Ed *const ed)
 		ed->sigwinch = 0;
 	}
 
-	if (!ed_need_to_quit(ed)) {
-		/* Hide cursor to not flicker */
-		esc_cur_hide(ed->buf);
-
-		/* Draw lines of file */
-		win_draw_lines(ed->win, ed->buf);
-		/* Draw status */
-		ed_draw_stat(ed, ed->buf);
-		/* Draw expanded cursor */
-		win_draw_cur(ed->win, ed->buf);
-
-		/* Show hidden cursor */
-		esc_cur_show(ed->buf);
-	}
+	/* Hide cursor to not flicker */
+	esc_cur_hide(ed->buf);
+	/* Draw lines of file */
+	win_draw_lines(ed->win, ed->buf);
+	/* Draw status */
+	ed_draw_stat(ed, ed->buf);
+	/* Draw expanded cursor */
+	win_draw_cur(ed->win, ed->buf);
+	/* Show hidden cursor */
+	esc_cur_show(ed->buf);
 
 	/* Flush the buffer to terminal */
 	buf_flush(ed->buf);

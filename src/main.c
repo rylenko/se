@@ -61,12 +61,9 @@ main(const int argc, const char *const *const argv)
 	ed = ed_open(argv[1], STDIN_FILENO, STDOUT_FILENO);
 	setup_signal_handler();
 
-	while (1) {
+	while (!ed_need_to_quit(ed)) {
 		/* Draws editor's content on the screen */
 		ed_draw(ed);
-		/* Check that we need to quit. Need here to clear screen before quit */
-		if (ed_need_to_quit(ed))
-			break;
 		/* Wait and process key presses */
 		ed_wait_and_proc_key(ed);
 	}
