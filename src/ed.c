@@ -255,7 +255,7 @@ ed_draw_stat_right(
 		buf_write(buf, " ", 1);
 
 	/* Write right part */
-	buf_writef(buf, right, right_len);
+	buf_write(buf, right, MIN(right_len, winsize.ws_col - left_len));
 }
 
 void
@@ -616,21 +616,19 @@ ed_wait_and_proc_key(struct Ed *const ed)
 	/* Wait key press */
 	size_t seq_len = term_wait_key(seq, sizeof(seq));
 
-	/* Process key if key is more than one character */
 	if (seq_len > 1) {
+		/* Process key sequence if more than one characters readed */
 		ed_proc_seq_key(ed, seq, seq_len);
 	} else {
+		/* Process single character keys in different input modes */
 		switch (ed->mode) {
 		case MODE_NORM:
-			/* Process key in normal mode */
 			ed_proc_norm_key(ed, seq[0]);
 			break;
 		case MODE_INS:
-			/* Process key in insertion mode */
 			ed_proc_ins_key(ed, seq[0]);
 			break;
 		case MODE_SEARCH:
-			/* Process key in search mode */
 			ed_proc_search_key(ed, seq[0]);
 			break;
 		}
