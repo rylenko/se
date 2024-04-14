@@ -536,6 +536,8 @@ line_search(
 	const char *res = NULL;
 	char tmp;
 
+	/* Validate accepted index */
+	assert(*idx <= line->len);
 	/* Check line is empty */
 	if (0 == line->len)
 		return 0;

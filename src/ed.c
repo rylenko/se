@@ -639,7 +639,7 @@ ed_quit(struct Ed *const ed)
 	/* Disable alternate screen */
 	esc_alt_scr_off();
 	/* Disable mouse wheel tracking */
-	esc_mouse_wheel_track_on();
+	esc_mouse_wheel_track_off();
 
 	/* Free content buffer */
 	buf_free(ed->buf);
