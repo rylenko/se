@@ -102,36 +102,6 @@ static void ed_proc_search_key(struct Ed *, char);
 /* Processes key sequence. Useful if single key press is several characters */
 static void ed_proc_seq_key(struct Ed *, const char *, size_t);
 
-/* Moves editor down. */
-static void ed_mv_down(struct Ed *);
-
-/* Moves editor left. */
-static void ed_mv_left(struct Ed *);
-
-/* Moves editor right. */
-static void ed_mv_right(struct Ed *);
-
-/* Moves editor up. */
-static void ed_mv_up(struct Ed *);
-
-/* Moves editor to begin of file. */
-static void ed_mv_to_begin_of_file(struct Ed *);
-
-/* Moves editor to begin of line. */
-static void ed_mv_to_begin_of_line(struct Ed *);
-
-/* Moves editor to end of line. */
-static void ed_mv_to_end_of_file(struct Ed *);
-
-/* Moves editor to end of line. */
-static void ed_mv_to_end_of_line(struct Ed *);
-
-/* Moves editor to next word. */
-static void ed_mv_to_next_word(struct Ed *);
-
-/* Moves editor to previous word. */
-static void ed_mv_to_prev_word(struct Ed *);
-
 /* Determines how many times the next action needs to be repeated. */
 static size_t ed_repeat_times(const struct Ed *);
 
@@ -140,9 +110,6 @@ static void ed_save_file(struct Ed *);
 
 /* Saves opened file to spare dir. Useful if no privileges. */
 static void ed_save_file_to_spare_dir(struct Ed *);
-
-/* Searches with inputed search query in specified direction. */
-static void ed_search(struct Ed *const ed, enum Dir);
 
 /* Sets formatted message to the user. */
 static void ed_set_msg(struct Ed *, const char *, ...);
@@ -365,66 +332,6 @@ ed_ins_empty_line_on_top(struct Ed *const ed)
 	ed->mode = MODE_INS;
 }
 
-static void
-ed_mv_down(struct Ed *const ed)
-{
-	win_mv_down(ed->win, ed_repeat_times(ed));
-}
-
-static void
-ed_mv_left(struct Ed *const ed)
-{
-	win_mv_left(ed->win, ed_repeat_times(ed));
-}
-
-static void
-ed_mv_right(struct Ed *const ed)
-{
-	win_mv_right(ed->win, ed_repeat_times(ed));
-}
-
-static void
-ed_mv_up(struct Ed *const ed)
-{
-	win_mv_up(ed->win, ed_repeat_times(ed));
-}
-
-static void
-ed_mv_to_begin_of_file(struct Ed *const ed)
-{
-	win_mv_to_begin_of_file(ed->win);
-}
-
-static void
-ed_mv_to_begin_of_line(struct Ed *const ed)
-{
-	win_mv_to_begin_of_line(ed->win);
-}
-
-static void
-ed_mv_to_end_of_file(struct Ed *const ed)
-{
-	win_mv_to_end_of_file(ed->win);
-}
-
-static void
-ed_mv_to_end_of_line(struct Ed *const ed)
-{
-	win_mv_to_end_of_line(ed->win);
-}
-
-static void
-ed_mv_to_next_word(struct Ed *const ed)
-{
-	win_mv_to_next_word(ed->win, ed_repeat_times(ed));
-}
-
-static void
-ed_mv_to_prev_word(struct Ed *const ed)
-{
-	win_mv_to_prev_word(ed->win, ed_repeat_times(ed));
-}
-
 char
 ed_need_to_quit(const struct Ed *const ed)
 {
@@ -479,16 +386,16 @@ ed_proc_arrow_key(struct Ed *const ed, const enum ArrowKey key)
 {
 	switch (key) {
 	case ARROW_KEY_UP:
-		ed_mv_up(ed);
+		win_mv_up(ed->win, ed_repeat_times(ed));
 		break;
 	case ARROW_KEY_DOWN:
-		ed_mv_down(ed);
+		win_mv_down(ed->win, ed_repeat_times(ed));
 		break;
 	case ARROW_KEY_RIGHT:
-		ed_mv_right(ed);
+		win_mv_right(ed->win, ed_repeat_times(ed));
 		break;
 	case ARROW_KEY_LEFT:
-		ed_mv_left(ed);
+		win_mv_left(ed->win, ed_repeat_times(ed));
 		break;
 	}
 }
@@ -517,10 +424,10 @@ ed_proc_mouse_wheel_key(struct Ed *const ed, const enum MouseWheelKey key)
 {
 	switch (key) {
 	case MOUSE_WHEEL_KEY_UP:
-		ed_mv_up(ed);
+		win_mv_up(ed->win, ed_repeat_times(ed));
 		break;
 	case MOUSE_WHEEL_KEY_DOWN:
-		ed_mv_down(ed);
+		win_mv_down(ed->win, ed_repeat_times(ed));
 		break;
 	}
 }
@@ -554,40 +461,40 @@ ed_proc_norm_key(struct Ed *const ed, const char key)
 		ed_save_file_to_spare_dir(ed);
 		break;
 	case CFG_KEY_MV_DOWN:
-		ed_mv_down(ed);
+		win_mv_down(ed->win, ed_repeat_times(ed));
 		break;
 	case CFG_KEY_MV_LEFT:
-		ed_mv_left(ed);
+		win_mv_left(ed->win, ed_repeat_times(ed));
 		break;
 	case CFG_KEY_MV_RIGHT:
-		ed_mv_right(ed);
+		win_mv_right(ed->win, ed_repeat_times(ed));
 		break;
 	case CFG_KEY_MV_UP:
-		ed_mv_up(ed);
+		win_mv_up(ed->win, ed_repeat_times(ed));
 		break;
 	case CFG_KEY_MV_TO_BEGIN_OF_FILE:
-		ed_mv_to_begin_of_file(ed);
+		win_mv_to_begin_of_file(ed->win);
 		break;
 	case CFG_KEY_MV_TO_BEGIN_OF_LINE:
-		ed_mv_to_begin_of_line(ed);
+		win_mv_to_begin_of_line(ed->win);
 		break;
 	case CFG_KEY_MV_TO_END_OF_FILE:
-		ed_mv_to_end_of_file(ed);
+		win_mv_to_end_of_file(ed->win);
 		break;
 	case CFG_KEY_MV_TO_END_OF_LINE:
-		ed_mv_to_end_of_line(ed);
+		win_mv_to_end_of_line(ed->win);
 		break;
 	case CFG_KEY_MV_TO_NEXT_WORD:
-		ed_mv_to_next_word(ed);
+		win_mv_to_next_word(ed->win, ed_repeat_times(ed));
 		break;
 	case CFG_KEY_MV_TO_PREV_WORD:
-		ed_mv_to_prev_word(ed);
+		win_mv_to_prev_word(ed->win, ed_repeat_times(ed));
 		break;
 	case CFG_KEY_SEARCH_BWD:
-		ed_search(ed, DIR_BWD);
+		win_search(ed->win, ed->search_input, DIR_BWD);
 		break;
 	case CFG_KEY_SEARCH_FWD:
-		ed_search(ed, DIR_FWD);
+		win_search(ed->win, ed->search_input, DIR_FWD);
 		break;
 	}
 
@@ -603,7 +510,7 @@ ed_proc_search_key(struct Ed *const ed, const char key)
 {
 	switch (key) {
 	case CFG_KEY_MODE_SEARCH_TO_NORM:
-		ed_search(ed, DIR_FWD);
+		win_search(ed->win, ed->search_input, DIR_FWD);
 		/* FALLTHROUGH */
 	case CFG_KEY_MODE_SEARCH_TO_NORM_CANCEL:
 		ed_switch_mode(ed, MODE_NORM);
@@ -678,12 +585,6 @@ ed_save_file_to_spare_dir(struct Ed *const ed)
 	ed_set_msg(ed, "%zu bytes saved to %s", len, path);
 	/* Update quit presses */
 	ed->quit_presses_rem = 1;
-}
-
-static void
-ed_search(struct Ed *const ed, const enum Dir dir)
-{
-	win_search(ed->win, ed->search_input, dir);
 }
 
 static void
