@@ -156,12 +156,12 @@ $ make gen-readme
 	</tr><tr>
 		<th>Makefile</th>
 		<th>2</th>
-		<th>72</th>
-		<th>15</th>
-		<th>19</th>
-		<th>38</th>
+		<th>68</th>
+		<th>14</th>
+		<th>18</th>
+		<th>36</th>
 		<th>0</th>
-		<th>1566</th>
+		<th>1456</th>
 	</tr><tr>
 		<th>Shell</th>
 		<th>1</th>
@@ -193,12 +193,12 @@ $ make gen-readme
 	<tfoot><tr>
 		<th>Total</th>
 		<th>33</th>
-		<th>3394</th>
-		<th>558</th>
-		<th>634</th>
-		<th>2202</th>
+		<th>3390</th>
+		<th>557</th>
+		<th>633</th>
+		<th>2200</th>
 		<th>290</th>
-    	<th>81840</th>
+    	<th>81730</th>
 	</tr></tfoot>
 	</table>
 

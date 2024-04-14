@@ -8,12 +8,8 @@ SRC = src/alloc.c src/buf.c src/ed.c src/esc.c src/file.c src/main.c \
 OBJ = $(SRC:.c=.o)
 
 # Paths
-GEN_README_PATH = $(ROOT_DIR)readme-gen/run
-README_PATH = $(ROOT_DIR)README.md
-ROOT_DIR = $(dir $(realpath $(lastword $(MAKEFILE_LIST))))
-
-# Valgrind
-VALGRIND_OUT_PATH = valgrind-out
+GEN_README_PATH = ./readme-gen/run
+VALGRIND_LOG_PATH = /tmp/se-valgrind.log
 
 # Build executable
 all: gen-readme $(OBJ)
@@ -51,11 +47,11 @@ valgrind: $(NAME)
 		--show-leak-kinds=all \
 		--track-origins=yes \
 		--verbose \
-		--log-file=$(VALGRIND_OUT_PATH) \
-		./$(NAME) $(README_PATH)
+		--log-file=$(VALGRIND_LOG_PATH) \
+		./$(NAME) ./README.md
 
 	# Show valgrind output and remove temp and out files
-	less $(VALGRIND_OUT_PATH)
-	rm -f $(VALGRIND_OUT_PATH)
+	less $(VALGRIND_LOG_PATH)
+	rm -f $(VALGRIND_LOG_PATH)
 
 .PHONY: all clean gen-readme install uninstall valgrind
