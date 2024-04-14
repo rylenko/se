@@ -2,8 +2,8 @@
 #include "path.h"
 
 const char*
-path_get_filename(const char *const path)
+path_get_fname(const char *const path)
 {
-	const char *const filename_with_slash = strrchr(path, '/');
-	return NULL == filename_with_slash ? path : filename_with_slash + 1;
+	const char *const last_sep = strrchr(path, '/');
+	return NULL == last_sep ? path : &last_sep[1];
 }

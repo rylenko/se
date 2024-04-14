@@ -331,7 +331,7 @@ size_t
 file_save_to_spare_dir(struct File *const file, char *const path, size_t len)
 {
 	char date[15];
-	const char *const filename = basename(file->path);
+	const char *const fname = basename(file->path);
 	const struct tm *local;
 	time_t utc;
 
@@ -346,7 +346,7 @@ file_save_to_spare_dir(struct File *const file, char *const path, size_t len)
 		errx(EXIT_FAILURE, "Failed to convert time to string to save to spare dir.");
 
 	/* Build full spare path */
-	len = snprintf(path, len, "%s/%s_%s", cfg_spare_save_dir, filename, date);
+	len = snprintf(path, len, "%s/%s_%s", cfg_spare_save_dir, fname, date);
 	path[len] = 0;
 
 	/* Save file using built path */

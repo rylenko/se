@@ -192,11 +192,11 @@ static size_t
 ed_draw_stat_left(struct Ed *const ed, Buf *const buf)
 {
 	/* Get filename of opened file */
-	const char *const filename = path_get_filename(win_file_path(ed->win));
+	const char *const fname = path_get_fname(win_file_path(ed->win));
 	size_t len = 0;
 
 	/* Write mode and opened file's name */
-	len += buf_writef(buf, " %s > %s", mode_str(ed->mode), filename);
+	len += buf_writef(buf, " %s > %s", mode_str(ed->mode), fname);
 
 	/* Add mark if file is dirty */
 	if (win_file_is_dirty(ed->win))
