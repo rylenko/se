@@ -73,7 +73,6 @@ Searching mode keys:
 - `Enter` - End query input, switch to normal mode and search forward once.
 - Otherwise, if character is printable, the character is inserted to search query.
 
-
 # Configuration
 
 You can set up convenient key bindings and convenient colors in `src/cfg.h`. Note that after changes you need to build and install again.
@@ -106,7 +105,7 @@ Clean all build files:
 $ make clean
 ```
 
-Regenerate README.md:
+Regenerate README.md. Requires [scc](https://github.com/boyter/scc) and awk:
 
 ```
 $ make gen-readme

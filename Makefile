@@ -11,8 +11,8 @@ OBJ = $(SRC:.c=.o)
 GEN_README_PATH = ./readme-gen/run
 VALGRIND_LOG_PATH = /tmp/se-valgrind.log
 
-# Build executable and generate README.md
-all: gen-readme $(OBJ)
+# Build executable
+all: $(OBJ)
 	$(CC) $(CFLAGS) -o $(NAME) $(OBJ)
 
 # Build object file from source file.
@@ -25,18 +25,14 @@ all: gen-readme $(OBJ)
 clean:
 	rm -f $(NAME) $(OBJ)
 
-# Generate README.md
 gen-readme:
-	command -v shellcheck > /dev/null && shellcheck $(GEN_README_PATH)
 	$(GEN_README_PATH)
 
-# Install after build
 install: $(NAME)
 	mkdir -p $(PREFIX)/bin
 	cp $(NAME) $(PREFIX)/bin/$(NAME)
 	chmod 755 $(PREFIX)/bin/$(NAME)
 
-# Uninstall
 uninstall:
 	rm $(PREFIX)/bin/$(NAME)
 

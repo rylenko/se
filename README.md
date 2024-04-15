@@ -73,7 +73,6 @@ Searching mode keys:
 - `Enter` - End query input, switch to normal mode and search forward once.
 - Otherwise, if character is printable, the character is inserted to search query.
 
-
 # Configuration
 
 You can set up convenient key bindings and convenient colors in `src/cfg.h`. Note that after changes you need to build and install again.
@@ -106,7 +105,7 @@ Clean all build files:
 $ make clean
 ```
 
-Regenerate README.md:
+Regenerate README.md. Requires [scc](https://github.com/boyter/scc) and awk:
 
 ```
 $ make gen-readme
@@ -147,21 +146,21 @@ $ make gen-readme
 	</tr><tr>
 		<th>Markdown</th>
 		<th>2</th>
-		<th>231</th>
-		<th>66</th>
+		<th>229</th>
+		<th>64</th>
 		<th>0</th>
 		<th>165</th>
 		<th>0</th>
-		<th>5952</th>
+		<th>6060</th>
 	</tr><tr>
 		<th>Makefile</th>
 		<th>2</th>
-		<th>68</th>
+		<th>64</th>
 		<th>14</th>
-		<th>18</th>
-		<th>36</th>
-		<th>1</th>
-		<th>1547</th>
+		<th>15</th>
+		<th>35</th>
+		<th>0</th>
+		<th>1390</th>
 	</tr><tr>
 		<th>Shell</th>
 		<th>1</th>
@@ -181,6 +180,15 @@ $ make gen-readme
 		<th>0</th>
 		<th>220</th>
 	</tr><tr>
+		<th>YAML</th>
+		<th>1</th>
+		<th>13</th>
+		<th>2</th>
+		<th>0</th>
+		<th>11</th>
+		<th>0</th>
+		<th>261</th>
+	</tr><tr>
 		<th>gitignore</th>
 		<th>1</th>
 		<th>2</th>
@@ -192,13 +200,13 @@ $ make gen-readme
 	</tr></tbody>
 	<tfoot><tr>
 		<th>Total</th>
-		<th>33</th>
-		<th>3390</th>
+		<th>34</th>
+		<th>3397</th>
 		<th>557</th>
-		<th>633</th>
-		<th>2200</th>
-		<th>291</th>
-    	<th>81821</th>
+		<th>630</th>
+		<th>2210</th>
+		<th>290</th>
+    	<th>82033</th>
 	</tr></tfoot>
 	</table>
 
