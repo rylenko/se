@@ -160,8 +160,8 @@ $ make gen-readme
 		<th>14</th>
 		<th>18</th>
 		<th>36</th>
-		<th>0</th>
-		<th>1456</th>
+		<th>1</th>
+		<th>1547</th>
 	</tr><tr>
 		<th>Shell</th>
 		<th>1</th>
@@ -197,8 +197,8 @@ $ make gen-readme
 		<th>557</th>
 		<th>633</th>
 		<th>2200</th>
-		<th>290</th>
-    	<th>81730</th>
+		<th>291</th>
+    	<th>81821</th>
 	</tr></tfoot>
 	</table>
 

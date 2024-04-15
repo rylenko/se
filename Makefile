@@ -11,7 +11,7 @@ OBJ = $(SRC:.c=.o)
 GEN_README_PATH = ./readme-gen/run
 VALGRIND_LOG_PATH = /tmp/se-valgrind.log
 
-# Build executable
+# Build executable and generate README.md
 all: gen-readme $(OBJ)
 	$(CC) $(CFLAGS) -o $(NAME) $(OBJ)
 
@@ -25,9 +25,9 @@ all: gen-readme $(OBJ)
 clean:
 	rm -f $(NAME) $(OBJ)
 
-# Generate README.md file
+# Generate README.md
 gen-readme:
-	shellcheck $(GEN_README_PATH)
+	command -v shellcheck > /dev/null && shellcheck $(GEN_README_PATH)
 	$(GEN_README_PATH)
 
 # Install after build
@@ -40,7 +40,7 @@ install: $(NAME)
 uninstall:
 	rm $(PREFIX)/bin/$(NAME)
 
-# Valgrind
+# Check errors and memory leaks using valgrind
 valgrind: $(NAME)
 	# Use valgrind to check memory leaks
 	valgrind --leak-check=full \
