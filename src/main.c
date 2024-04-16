@@ -3,6 +3,7 @@
 /* TODO: v0.3: Use linked list for lines array and line's content parts. */
 /* TODO: v0.3: Undo operations. Also rename "del" to "remove" where needed. */
 /* TODO: v0.3: Remember last position per line. */
+/* TODO: v0.4: Try to make functions smaller up to 25-30 lines. */
 /* TODO: v0.4: Add key settings for escape sequences. For example, CFG_KEY_MV_UP_2 = "..." */
 /* TODO: v0.4: Add local clipboard. Use it in functions. */
 /* TODO: v0.4: Xclip patch to use with local clipboard. */

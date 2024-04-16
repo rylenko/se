@@ -10,12 +10,11 @@
 #include "file.h"
 #include "math.h"
 #include "str.h"
+#include "vec.h"
 
 enum {
 	/* Realloc step, when no capacity or there is too much unused capacity */
 	LINE_REALLOC_STEP = 128,
-	/* Realloc step, when no capacity or there is too much unused capacity */
-	LINES_REALLOC_STEP = 32,
 };
 
 /* Line of the opened file. */
@@ -27,26 +26,29 @@ struct Line {
 	size_t render_len; /* Length of rendered content */
 };
 
-/* Lines of the file. */
-struct Lines {
-	struct Line *arr; /* Dynamic array with lines */
-	size_t cnt; /* Count of lines */
-	size_t cap; /* Reserved capacity for dynamic array */
-};
-
 /* Internal information about the open file. */
 struct File {
 	char *path; /* Path of readed file. This is where the default save occurs */
 	char is_dirty; /* The file has been modified and not saved */
-	struct Lines lines; /* Lines of file. There is always at least one line */
+	Vec *lines; /* Lines of file. There is always at least one line */
 };
+
+/* Reads lines from the file. */
+static void file_read(struct File *, FILE *);
+
+/*
+Writes lines to the file.
+
+Returns written bytes count.
+*/
+static size_t file_write(const struct File *, FILE *);
 
 /*
 Deletes character from the line.
 
 Does not update the render so you can do it yourself after several operations.
 */
-static void line_del_char(struct Line *, size_t);
+static void line_del_char(struct File *, size_t);
 
 /*
 Extends line with another line's content.
@@ -110,80 +112,84 @@ Returns written bytes count.
 */
 static size_t line_write(struct Line *, FILE *);
 
-/*
-Extends specified line with next line, then frees next line.
-
-Does not update the render so you can do it yourself after several operations.
-*/
-static void lines_absorb_next_line(struct Lines *, size_t);
-
-/* Finds the line by index and breaks it at specified position. */
-static void lines_break_line(struct Lines *, size_t, size_t);
-
-/* Deletes line by index. */
-static void lines_del_line(struct Lines *, size_t);
-
-/* Frees the lines container. */
-static void lines_free(struct Lines *);
-
-/* Initializes lines container. Do not forget to free it. */
-static void lines_init(struct Lines *);
-
-/* Inserts new line at index. */
-static void lines_ins_line(struct Lines *, size_t, struct Line);
-
-/* Reads lines from the file. */
-static void lines_read(struct Lines *, FILE *);
-
-/* Reallocates lines container's capacity. */
-static void lines_realloc(struct Lines *, size_t);
-
-/*
-Searches query in the lines.
-
-Temporarily changes the lines if there is backward searching.
-
-Returns 1 if result found and modifies index and position pointers. Otherwise
-returns 0.
-*/
-static char lines_search(
-	struct Lines *,
-	size_t *,
-	size_t *,
-	const char *,
-	const enum Dir
-);
-
-/*
-Writes lines to the file.
-
-Returns written bytes count.
-*/
-static size_t lines_write(const struct Lines *, FILE *);
-
 void
 file_absorb_next_line(struct File *const file, const size_t idx)
 {
-	/* Absorb next line and update current line's render */
-	lines_absorb_next_line(&file->lines, idx);
-	line_render(&file->lines.arr[idx]);
-	/* Mark file as dirty */
-	file->is_dirty = 1;
+	struct Line *line;
+
+	/* Validate index */
+	assert(idx < vec_len(file->lines));
+
+	/* Check that next line exists */
+	if (idx + 1 < vec_len(file->lines)) {
+		line = vec_get(file->lines, idx);
+
+		/* Extend specified line with next line */
+		line_extend(line, vec_get(file->lines, idx + 1));
+		line_render(line);
+
+		/* Delete absorbed line */
+		vec_del(file->lines, idx + 1);
+
+		/* Mark file as dirty */
+		file->is_dirty = 1;
+	}
 }
 
 void
 file_break_line(struct File *const file, const size_t idx, const size_t pos)
 {
-	/* Break line and mark file as dirty */
-	lines_break_line(&file->lines, idx, pos);
+	struct Line new_line;
+	struct Line *const line = vec_get(file->lines, idx);
+
+	/* Update new line and set its length */
+	line_init(&new_line);
+	new_line.len = line->len - pos;
+
+	/* Copy content to new line if it is not empty */
+	if (new_line.len > 0) {
+		/* Set minimum capacity */
+		new_line.cap = new_line.len + 1;
+		/* Try to allocate space for new line's content */
+		new_line.cont = malloc_err(new_line.cap);
+		/* Copy content to new line */
+		strncpy(new_line.cont, &line->cont[pos], new_line.len);
+		/* Set null byte */
+		new_line.cont[new_line.len] = 0;
+	}
+
+	/* Update line if it makes sense. Otherwise it will be freed when shrinking */
+	if (line->len > 0) {
+		/* Update line's length */
+		line->len = pos;
+		/* Terminate broken line's content with null byte at break point */
+		line->cont[pos] = 0;
+	}
+
+	/* Render line with new length or just free old render */
+	line_render(line);
+	/* Shrink broken line's capacity */
+	line_shrink(line, 0);
+
+	/* Render new line */
+	line_render(&new_line);
+	/* Insert new line */
+	vec_ins(file->lines, idx + 1, &new_line, 1);
+
+	/* Mark file as dirty because of new line */
 	file->is_dirty = 1;
 }
 
 void
 file_close(struct File *const file)
 {
-	/* Free readed lines */
-	lines_free(&file->lines);
+	size_t len = vec_len(file->lines);
+
+	/* Free lines. Remember that there is at least one line */
+	while (len-- > 0)
+		line_free(vec_get(file->lines, len));
+	vec_free(file->lines);
+
 	/* Freeing the path since we cloned it earlier */
 	free(file->path);
 	/* Free allocated opaque struct */
@@ -203,8 +209,13 @@ file_del_char(struct File *const file, const size_t idx, const size_t pos)
 void
 file_del_line(struct File *const file, const size_t idx)
 {
-	/* Delete the line and mark file as dirty */
-	lines_del_line(&file->lines, idx);
+	/* Validate index */
+	assert(idx < lines->cnt);
+
+	/* Free and delete the line */
+	line_free(vec_get(file->lines, idx));
+	vec_del(file->lines, idx);
+	/* Mark file as dirty because of deleted line */
 	file->is_dirty = 1;
 }
 
@@ -230,7 +241,7 @@ file_ins_empty_line(struct File *const file, const size_t idx)
 	line_init(&empty_line);
 
 	/* Insert empty line */
-	lines_ins_line(&file->lines, idx, empty_line);
+	vec_ins(file->lines, idx, &empty_line, 1);
 	/* Mark file as dirty */
 	file->is_dirty = 1;
 }
@@ -282,19 +293,19 @@ file_open(const char *const path)
 	/* Initialize file */
 	file->path = str_copy(path, strlen(path));
 	file->is_dirty = 0;
-	lines_init(&file->lines);
+	file->lines = vec_alloc(sizeof(struct Line), 32);
 
 	/* Open file, read lines and close the file */
 	if (NULL == (inner_file = fopen(path, "r")))
 		err(EXIT_FAILURE, "Failed to open file %s", path);
-	lines_read(&file->lines, inner_file);
+	file_read(file, inner_file);
 	if (fclose(inner_file) == EOF)
 		err(EXIT_FAILURE, "Failed to close readed file");
 
 	/* Add empty line if there is no lines */
 	if (0 == file->lines.cnt) {
 		line_init(&empty_line);
-		lines_ins_line(&file->lines, 0, empty_line);
+		vec_append(file->lines, &empty_line, 1);
 	}
 	return file;
 }
@@ -303,6 +314,16 @@ const char*
 file_path(const struct File *const file)
 {
 	return file->path;
+}
+
+static void
+file_read(struct File *const file, FILE *const inner)
+{
+	struct Line line;
+	/* Read lines until EOF */
+	while (line_read(&line, inner) != NULL)
+		/* Append readed line */
+		vec_append(file->lines, &line, 1);
 }
 
 size_t
@@ -315,7 +336,7 @@ file_save(struct File *const file, const char *const path)
 	if (NULL == (inner = fopen(path == NULL ? file->path : path, "w")))
 		return 0;
 	/* Write lines to opened file */
-	len = lines_write(&file->lines, inner);
+	len = file_write(file, inner);
 	/* Flush and close the file */
 	if (fflush(inner) == EOF)
 		err(EXIT_FAILURE, "Failed to flush saved file");
@@ -361,7 +382,34 @@ file_search(
 	const char *const query,
 	const enum Dir dir
 ) {
-	return lines_search(&file->lines, idx, pos, query, dir);
+	const struct Line *line;
+
+	while (*idx < vec_len(file->lines)) {
+		line = vec_get(file->lines, *idx);
+
+		/* Try to search on interated line */
+		if (line_search(line, pos, query, dir))
+			return 1;
+
+		/* Searching backward and start of file reached */
+		if (DIR_BWD == dir && 0 == *idx)
+			break;
+		/* Move to the beginning of another line */
+		*idx += DIR_FWD == dir ? 1 : -1;
+		*pos = DIR_FWD == dir ? 0 : line->len;
+	}
+	return 0;
+}
+
+static size_t
+file_write(const struct File *const file, FILE *const f)
+{
+	size_t line_i;
+	size_t len = 0;
+	/* Write lines and collect written length */
+	for (line_i = 0; line_i < lines->cnt; line_i++)
+		len += line_write(&lines->arr[line_i], f);
+	return len;
 }
 
 static void
@@ -594,173 +642,4 @@ line_write(struct Line *const line, FILE *const f)
 
 	/* Return written length. Do not forget about \n */
 	return len + 1;
-}
-
-static void
-lines_absorb_next_line(struct Lines *const lines, const size_t idx)
-{
-	/* Check that next line exists */
-	if (idx + 1 < lines->cnt) {
-		/* Extend specified line with next line */
-		line_extend(&lines->arr[idx], &lines->arr[idx + 1]);
-
-		/* Delete absorbed line */
-		lines_del_line(lines, idx + 1);
-	}
-}
-
-static void
-lines_break_line(struct Lines *const lines, const size_t idx, const size_t pos)
-{
-	struct Line new_line;
-	struct Line *const line = &lines->arr[idx];
-
-	/* Update new line and set its length */
-	line_init(&new_line);
-	new_line.len = line->len - pos;
-
-	/* Copy content to new line if it is not empty */
-	if (new_line.len > 0) {
-		/* Set minimum capacity */
-		new_line.cap = new_line.len + 1;
-		/* Try to allocate space for new line's content */
-		new_line.cont = malloc_err(new_line.cap);
-		/* Copy content to new line */
-		strncpy(new_line.cont, &line->cont[pos], new_line.len);
-		/* Set null byte */
-		new_line.cont[new_line.len] = 0;
-	}
-
-	/* Update line if it makes sense. Otherwise it will be freed when shrinking */
-	if (line->len > 0) {
-		/* Update line's length */
-		line->len = pos;
-		/* Terminate broken line's content with null byte at break point */
-		line->cont[pos] = 0;
-	}
-
-	/* Render line with new length or just free old render */
-	line_render(line);
-	/* Shrink broken line's capacity */
-	line_shrink(line, 0);
-
-	/* Render new line */
-	line_render(&new_line);
-	/* Insert new line */
-	lines_ins_line(lines, idx + 1, new_line);
-}
-
-static void
-lines_del_line(struct Lines *const lines, const size_t idx)
-{
-	/* Validate index */
-	assert(idx < lines->cnt);
-
-	/* Free deleted line */
-	line_free(&lines->arr[idx]);
-
-	/* Move other lines if the deleted line is not the last one */
-	if (idx < lines->cnt - 1)
-		memmove(
-			&lines->arr[idx],
-			&lines->arr[idx + 1],
-			sizeof(*lines->arr) * (lines->cnt - idx - 1)
-		);
-
-	/* Decrease lines count and shrink capacity if benefit */
-	if (--lines->cnt + LINES_REALLOC_STEP <= lines->cap)
-		lines_realloc(lines, lines->cnt);
-}
-
-static void
-lines_free(struct Lines *const lines)
-{
-	/* Free lines */
-	while (lines->cnt-- > 0)
-		line_free(&lines->arr[lines->cnt]);
-	/* Free dynamic array */
-	free(lines->arr);
-}
-
-static void
-lines_init(struct Lines *const lines)
-{
-	memset(lines, 0, sizeof(*lines));
-}
-
-static void
-lines_ins_line(
-	struct Lines *const lines,
-	const size_t idx,
-	const struct Line line
-) {
-	/* Validate index */
-	assert(idx <= lines->cnt);
-
-	/* Check that we need to gline capacity */
-	if (lines->cnt == lines->cap)
-		lines_realloc(lines, lines->cap + LINES_REALLOC_STEP);
-	/* Move other lines to free space for new line */
-	if (idx != lines->cnt)
-		memmove(
-			&lines->arr[idx + 1],
-			&lines->arr[idx],
-			sizeof(*lines->arr) * (lines->cnt - idx)
-		);
-
-	/* Insert new line */
-	lines->arr[idx] = line;
-	lines->cnt++;
-}
-
-static void
-lines_read(struct Lines *const lines, FILE *const f)
-{
-	struct Line line;
-	/* Read lines until EOF */
-	while (line_read(&line, f) != NULL)
-		/* Insert readed line */
-		lines_ins_line(lines, lines->cnt, line);
-}
-
-static void
-lines_realloc(struct Lines *const lines, const size_t new_cap)
-{
-	/* Reallocate and update capacity */
-	lines->arr = realloc_err(lines->arr, sizeof(*lines->arr) * new_cap);
-	lines->cap = new_cap;
-}
-
-static char
-lines_search(
-	struct Lines *const lines,
-	size_t *const idx,
-	size_t *const pos,
-	const char *const query,
-	const enum Dir dir
-) {
-	while (*idx < lines->cnt) {
-		/* Try to search on interated line */
-		if (line_search(&lines->arr[*idx], pos, query, dir))
-			return 1;
-
-		/* Searching backward and start of file reached */
-		if (DIR_BWD == dir && 0 == *idx)
-			break;
-		/* Move to the beginning of another line */
-		*idx += DIR_FWD == dir ? 1 : -1;
-		*pos = DIR_FWD == dir ? 0 : lines->arr[*idx].len;
-	}
-	return 0;
-}
-
-static size_t
-lines_write(const struct Lines *const lines, FILE *const f)
-{
-	size_t line_i;
-	size_t len = 0;
-	/* Write lines and collect written length */
-	for (line_i = 0; line_i < lines->cnt; line_i++)
-		len += line_write(&lines->arr[line_i], f);
-	return len;
 }

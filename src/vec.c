@@ -57,6 +57,12 @@ vec_del(struct Vec *const vec, const size_t idx)
 	vec_shrink(vec, 1);
 }
 
+void*
+vec_get(struct Vec *const vec, const size_t idx)
+{
+	return &vec->items[idx * vec->item_size];
+}
+
 static void
 vec_grow_if_needed(struct Vec *const vec, const size_t new_len)
 {

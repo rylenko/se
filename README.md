@@ -128,12 +128,12 @@ $ make gen-readme
 	<tbody><tr>
 		<th>C</th>
 		<th>12</th>
-		<th>2540</th>
-		<th>336</th>
-		<th>442</th>
-		<th>1762</th>
-		<th>297</th>
-		<th>61196</th>
+		<th>2426</th>
+		<th>325</th>
+		<th>413</th>
+		<th>1688</th>
+		<th>291</th>
+		<th>58348</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>14</th>
@@ -201,12 +201,12 @@ $ make gen-readme
 	<tfoot><tr>
 		<th>Total</th>
 		<th>34</th>
-		<th>3435</th>
-		<th>561</th>
-		<th>628</th>
-		<th>2246</th>
-		<th>297</th>
-    	<th>83067</th>
+		<th>3321</th>
+		<th>550</th>
+		<th>599</th>
+		<th>2172</th>
+		<th>291</th>
+    	<th>80219</th>
 	</tr></tfoot>
 	</table>
 
@@ -219,9 +219,10 @@ $ make gen-readme
 |**src/main.c**|**3**|**v0.3: Use linked list for lines array and line's content parts.**|
 |**src/main.c**|**4**|**v0.3: Undo operations. Also rename "del" to "remove" where needed.**|
 |**src/main.c**|**5**|**v0.3: Remember last position per line.**|
-|**src/main.c**|**6**|**v0.4: Add key settings for escape sequences. For example, CFG_KEY_MV_UP_2 = "..."**|
-|**src/main.c**|**7**|**v0.4: Add local clipboard. Use it in functions.**|
-|**src/main.c**|**8**|**v0.4: Xclip patch to use with local clipboard.**|
-|**src/main.c**|**9**|**v0.5: Add more clear docs and comments.**|
-|**src/main.c**|**10**|**v0.5: Support huge files.**|
-|**src/main.c**|**11**|**v0.6: API with status codes instead of err.h. Add tests**|
+|**src/main.c**|**6**|**v0.4: Try to make functions smaller up to 25-30 lines.**|
+|**src/main.c**|**7**|**v0.4: Add key settings for escape sequences. For example, CFG_KEY_MV_UP_2 = "..."**|
+|**src/main.c**|**8**|**v0.4: Add local clipboard. Use it in functions.**|
+|**src/main.c**|**9**|**v0.4: Xclip patch to use with local clipboard.**|
+|**src/main.c**|**10**|**v0.5: Add more clear docs and comments.**|
+|**src/main.c**|**11**|**v0.5: Support huge files.**|
+|**src/main.c**|**12**|**v0.6: API with status codes instead of err.h. Add tests**|
