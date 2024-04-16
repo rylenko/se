@@ -1,63 +1,74 @@
+#include <stdio.h>
 #include <string.h>
-#include "buf.h"
 #include "color.h"
 #include "esc.h"
-#include "term.h"
+#include "vec.h"
 
 void
-esc_alt_scr_on(void)
+esc_alt_scr_on(Vec *const buf)
 {
-	term_write("\x1b[?1049h", 8);
+	vec_append(buf, "\x1b[?1049h", 8);
 }
 
 void
-esc_alt_scr_off(void)
+esc_alt_scr_off(Vec *const buf)
 {
-	term_write("\x1b[?1049l", 8);
+	vec_append(buf, "\x1b[?1049l", 8);
 }
 
 void
-esc_clr_win(Buf *const buf)
+esc_clr_win(Vec *const buf)
 {
-	buf_write(buf, "\x1b[2J", 4);
+	vec_append(buf, "\x1b[2J", 4);
 }
 
 void
 esc_color_begin(
-	Buf *const buf,
+	Vec *const buf,
 	const struct Color *const fg,
 	const struct Color *const bg
 ) {
+	char s[20];
+	size_t len;
+
 	/* Write foreground if set */
-	if (fg != NULL)
-		buf_writef(buf, "\x1b[38;2;%hhu;%hhu;%hhum", fg->r, fg->g, fg->b);
+	if (fg != NULL) {
+		len = \
+			snprintf(s, sizeof(s), "\x1b[38;2;%hhu;%hhu;%hhum", fg->r, fg->g, fg->b);
+		vec_append(buf, s, len);
+	}
 	/* Write background if set */
-	if (bg != NULL)
-		buf_writef(buf, "\x1b[48;2;%hhu;%hhu;%hhum", bg->r, bg->g, bg->b);
+	if (bg != NULL) {
+		len = \
+			snprintf(s, sizeof(s), "\x1b[48;2;%hhu;%hhu;%hhum", bg->r, bg->g, bg->b);
+		vec_append(buf, s, len);
+	}
 }
 
 void
-esc_color_end(Buf *const buf)
+esc_color_end(Vec *const buf)
 {
-	buf_write(buf, "\x1b[0m", 4);
+	vec_append(buf, "\x1b[0m", 4);
 }
 
 void
-esc_cur_hide(Buf *const buf)
+esc_cur_hide(Vec *const buf)
 {
-	buf_write(buf, "\x1b[?25l", 6);
+	vec_append(buf, "\x1b[?25l", 6);
 }
 
 void
-esc_cur_set(Buf *const buf, const unsigned short row, const unsigned short col)
+esc_cur_set(Vec *const buf, const unsigned short row, const unsigned short col)
 {
-	buf_writef(buf, "\x1b[%hu;%huH", row + 1, col + 1);
+	char seq[15];
+	size_t len = snprintf(seq, sizeof(seq), "\x1b[%hu;%huH", row + 1, col + 1);
+	vec_append(buf, seq, len);
 }
 
 void
-esc_cur_show(Buf *const buf)
+esc_cur_show(Vec *const buf)
 {
-	buf_write(buf, "\x1b[?25h", 6);
+	vec_append(buf, "\x1b[?25h", 6);
 }
 
 int
@@ -97,19 +108,19 @@ esc_extr_mouse_wheel_key(
 }
 
 void
-esc_go_home(Buf *const buf)
+esc_go_home(Vec *const buf)
 {
-	buf_write(buf, "\x1b[H", 3);
+	vec_append(buf, "\x1b[H", 3);
 }
 
 void
-esc_mouse_wheel_track_off(void)
+esc_mouse_wheel_track_off(Vec *const buf)
 {
-	term_write("\x1b[?1000l", 8);
+	vec_append(buf, "\x1b[?1000l", 8);
 }
 
 void
-esc_mouse_wheel_track_on(void)
+esc_mouse_wheel_track_on(Vec *const buf)
 {
-	term_write("\x1b[?1000h", 8);
+	vec_append(buf, "\x1b[?1000h", 8);
 }

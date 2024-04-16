@@ -3,12 +3,12 @@
 #include <string.h>
 #include <sys/ioctl.h>
 #include "alloc.h"
-#include "buf.h"
 #include "cfg.h"
 #include "esc.h"
 #include "file.h"
 #include "math.h"
 #include "term.h"
+#include "vec.h"
 #include "win.h"
 #include "word.h"
 
@@ -136,7 +136,7 @@ win_del_line(struct Win *const win, size_t times)
 }
 
 void
-win_draw_cur(const struct Win *const win, Buf *const buf)
+win_draw_cur(const struct Win *const win, Vec *const vec)
 {
 	/* Get current line */
 	const char *const cont = file_line_cont(win->file, win_curr_line_idx(win));
@@ -147,11 +147,11 @@ win_draw_cur(const struct Win *const win, Buf *const buf)
 	size_t exp_file_col = win_exp_col(cont, len, win->offset.cols + win->cur.col);
 
 	/* Substract expanded columns to get real column in the window */
-	esc_cur_set(buf, win->cur.row, exp_file_col - exp_offset_col);
+	esc_cur_set(vec, win->cur.row, exp_file_col - exp_offset_col);
 }
 
 void
-win_draw_lines(const struct Win *const win, Buf *const buf)
+win_draw_lines(const struct Win *const win, Vec *const buf)
 {
 	const char *cont;
 	size_t exp_offset_col;
@@ -168,7 +168,7 @@ win_draw_lines(const struct Win *const win, Buf *const buf)
 	for (row = 0; row + STAT_ROWS_CNT < win->size.ws_row; row++) {
 		/* Checking if there is a line to draw at this row */
 		if (win->offset.rows + row >= lines_cnt) {
-			buf_write(buf, "~", 1);
+			vec_append(buf, "~", 1);
 		} else {
 			/* Get current line details */
 			cont = file_line_cont(win->file, win->offset.rows + row);
@@ -183,12 +183,12 @@ win_draw_lines(const struct Win *const win, Buf *const buf)
 			if (render_len > exp_offset_col) {
 				/* Calculate length to draw using expanded length and draw */
 				len_to_draw = MIN(win->size.ws_col, render_len - exp_offset_col);
-				buf_write(buf, &render[exp_offset_col], len_to_draw);
+				vec_append(buf, &render[exp_offset_col], len_to_draw);
 			}
 		}
 
 		/* Move to the beginning of the next row */
-		buf_write(buf, "\r\n", 2);
+		vec_append(buf, "\r\n", 2);
 	}
 
 	/* End colored output */

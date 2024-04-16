@@ -3,8 +3,8 @@
 
 #include <stddef.h>
 #include <sys/ioctl.h>
-#include "buf.h"
 #include "file.h"
+#include "vec.h"
 
 /* Alias for opaque struct with window parameters. */
 typedef struct Win Win;
@@ -32,10 +32,10 @@ Returns 0 on success and -1 if there is only one line which cannot be deleted.
 int win_del_line(Win *, size_t);
 
 /* Draws cursor. */
-void win_draw_cur(const Win *, Buf *);
+void win_draw_cur(const Win *, Vec *);
 
 /* Draws window rows. */
-void win_draw_lines(const Win *, Buf *);
+void win_draw_lines(const Win *, Vec *);
 
 /* Checks that opened file is dirty. */
 char win_file_is_dirty(const Win *);

@@ -128,21 +128,21 @@ $ make gen-readme
 	<tbody><tr>
 		<th>C</th>
 		<th>12</th>
-		<th>2513</th>
+		<th>2540</th>
 		<th>336</th>
-		<th>447</th>
-		<th>1730</th>
-		<th>290</th>
-		<th>60412</th>
+		<th>442</th>
+		<th>1762</th>
+		<th>297</th>
+		<th>61196</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>14</th>
-		<th>510</th>
-		<th>132</th>
-		<th>162</th>
-		<th>216</th>
+		<th>521</th>
+		<th>136</th>
+		<th>165</th>
+		<th>220</th>
 		<th>0</th>
-		<th>12671</th>
+		<th>12921</th>
 	</tr><tr>
 		<th>Markdown</th>
 		<th>2</th>
@@ -201,12 +201,12 @@ $ make gen-readme
 	<tfoot><tr>
 		<th>Total</th>
 		<th>34</th>
-		<th>3397</th>
-		<th>557</th>
-		<th>630</th>
-		<th>2210</th>
-		<th>290</th>
-    	<th>82033</th>
+		<th>3435</th>
+		<th>561</th>
+		<th>628</th>
+		<th>2246</th>
+		<th>297</th>
+    	<th>83067</th>
 	</tr></tfoot>
 	</table>
 
@@ -214,13 +214,14 @@ $ make gen-readme
 
 |Path|Line|Description|
 |-|-|-|
-|**src/main.c**|**1**|**v0.3: Create Cell struct to handle all symbols including UTF-8. Create structs Win->Renders->Render->Cells->Cell. Rerender lines on window side**|
-|**src/main.c**|**2**|**v0.3: Use linked list for lines array and line's content parts.**|
-|**src/main.c**|**3**|**v0.3: Undo operations. Also rename "del" to "remove" where needed.**|
-|**src/main.c**|**4**|**v0.3: Remember last position per line.**|
-|**src/main.c**|**5**|**v0.4: Add key settings for escape sequences. For example, CFG_KEY_MV_UP_2 = "..."**|
-|**src/main.c**|**6**|**v0.4: Add local clipboard. Use it in functions.**|
-|**src/main.c**|**7**|**v0.4: Xclip patch to use with local clipboard.**|
-|**src/main.c**|**8**|**v0.5: Add more clear docs and comments.**|
-|**src/main.c**|**9**|**v0.5: Support huge files.**|
-|**src/main.c**|**10**|**v0.6: API with status codes instead of err.h. Add tests**|
+|**src/main.c**|**1**|**v0.2.2: Write alt screen and mouse wheel tracking sequences to vector to flush in ed_open and ed_quit.**|
+|**src/main.c**|**2**|**v0.3: Create Cell struct to handle all symbols including UTF-8. Create structs Win->Renders->Render->Cells->Cell. Rerender lines on window side**|
+|**src/main.c**|**3**|**v0.3: Use linked list for lines array and line's content parts.**|
+|**src/main.c**|**4**|**v0.3: Undo operations. Also rename "del" to "remove" where needed.**|
+|**src/main.c**|**5**|**v0.3: Remember last position per line.**|
+|**src/main.c**|**6**|**v0.4: Add key settings for escape sequences. For example, CFG_KEY_MV_UP_2 = "..."**|
+|**src/main.c**|**7**|**v0.4: Add local clipboard. Use it in functions.**|
+|**src/main.c**|**8**|**v0.4: Xclip patch to use with local clipboard.**|
+|**src/main.c**|**9**|**v0.5: Add more clear docs and comments.**|
+|**src/main.c**|**10**|**v0.5: Support huge files.**|
+|**src/main.c**|**11**|**v0.6: API with status codes instead of err.h. Add tests**|

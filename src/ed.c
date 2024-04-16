@@ -8,7 +8,6 @@
 #include <string.h>
 #include <sys/ioctl.h>
 #include "alloc.h"
-#include "buf.h"
 #include "cfg.h"
 #include "ed.h"
 #include "esc.h"
@@ -17,27 +16,23 @@
 #include "mode.h"
 #include "path.h"
 #include "term.h"
+#include "vec.h"
 #include "win.h"
 
 enum {
-	/* Search */
-	ED_SEARCH_INPUT_ARR_LEN = 64, /* Capacity of search query buffer */
 	ED_INPUT_SEARCH_CLEAR = -2, /* Flag to clear search input */
 	ED_INPUT_SEARCH_DEL_CHAR = -1, /* Flag to delete last character in search */
-	/* Other */
 	ED_INPUT_NUM_RESET = -1, /* Flag to reset number input */
-	ED_MSG_ARR_LEN = 64, /* Capacity of message buffer */
-	ED_STAT_RIGHT_ARR_LEN = 128, /* Capacity of right part of the status */
 };
 
 /* Editor options. */
 struct Ed {
-	Buf *buf; /* Buffer for all drawn content. */
+	Vec *buf; /* Buffer for all drawn content. */
 	Win *win; /* Info about terminal's view. This is what the user sees */
 	enum Mode mode; /* Input mode */
-	char msg[ED_MSG_ARR_LEN]; /* Message for the user */
+	char msg[64]; /* Message for the user */
 	size_t num_input; /* Number input. 0 if not set */
-	char search_input[ED_SEARCH_INPUT_ARR_LEN]; /* Search input */
+	char search_input[64]; /* Search input */
 	size_t search_input_len; /* Search query input length */
 	unsigned char quit_presses_rem; /* Greater than 1 if file is dirty */
 	volatile sig_atomic_t sigwinch; /* Resize flag. See signal-safety(7) */
@@ -53,13 +48,10 @@ static void ed_del_char(struct Ed *);
 static void ed_del_line(struct Ed *);
 
 /* Draws status on last row. */
-static void ed_draw_stat(struct Ed *, Buf *);
+static void ed_draw_stat(struct Ed *);
 
-/* Drows left part of status. */
-static size_t ed_draw_stat_left(struct Ed *, Buf *);
-
-/* Draws right part of status. */
-static void ed_draw_stat_right(const struct Ed *, Buf *, size_t);
+/* Flush editor's drawing buffer. */
+static void ed_flush_buf(struct Ed *);
 
 /* Writes digit to the number input. Resets if argument is reset flag. */
 static void ed_input_num(struct Ed *, char);
@@ -162,100 +154,75 @@ ed_draw(struct Ed *const ed)
 	/* Draw lines of file */
 	win_draw_lines(ed->win, ed->buf);
 	/* Draw status */
-	ed_draw_stat(ed, ed->buf);
+	ed_draw_stat(ed);
 	/* Draw expanded cursor */
 	win_draw_cur(ed->win, ed->buf);
 	/* Show hidden cursor */
 	esc_cur_show(ed->buf);
 
 	/* Flush the buffer to terminal */
-	buf_flush(ed->buf);
+	ed_flush_buf(ed);
 }
 
 static void
-ed_draw_stat(struct Ed *const ed, Buf *const buf)
+ed_draw_stat(struct Ed *const ed)
 {
+	size_t i;
+	char s[128];
+	size_t len;
 	size_t left_len = 0;
-
-	/* Begin colored output */
-	esc_color_begin(buf, &cfg_color_stat_fg, &cfg_color_stat_bg);
-
-	/* Draw left and right parts of status */
-	left_len += ed_draw_stat_left(ed, buf);
-	ed_draw_stat_right(ed, buf, left_len);
-
-	/* End colored output */
-	esc_color_end(buf);
-}
-
-static size_t
-ed_draw_stat_left(struct Ed *const ed, Buf *const buf)
-{
+	struct winsize winsize = win_size(ed->win);
 	/* Get filename of opened file */
 	const char *const fname = path_get_fname(win_file_path(ed->win));
-	size_t len = 0;
+	/* Get coordinates */
+	const size_t y = win_curr_line_idx(ed->win);
+	const size_t x = win_curr_line_cont_idx(ed->win);
 
-	/* Write mode and opened file's name */
-	len += buf_writef(buf, " %s > %s", mode_str(ed->mode), fname);
+	/* Begin colored output */
+	esc_color_begin(ed->buf, &cfg_color_stat_fg, &cfg_color_stat_bg);
+
+	/* Draw mode and filename */
+	len = snprintf(s, sizeof(s), " %s > %s", mode_str(ed->mode), fname);
+	left_len += len;
+	vec_append(ed->buf, s, len);
 
 	/* Add mark if file is dirty */
-	if (win_file_is_dirty(ed->win))
-		len += buf_write(buf, " [+]", 4);
+	if (win_file_is_dirty(ed->win)) {
+		len = snprintf(s, sizeof(s), " [+]");
+		left_len += len;
+		vec_append(ed->buf, s, len);
+	}
 
-	/* Write message if exists */
+	/* Draw message if set */
 	if (ed->msg[0] != 0) {
-		len += buf_writef(buf, ": %s", ed->msg);
+		len = snprintf(s, sizeof(s), ": %s", ed->msg);
+		left_len += len;
+		vec_append(ed->buf, s, len);
+
+		/* Reset message to do not draw on the next draw */
 		ed->msg[0] = 0;
 	}
-	return len;
-}
 
-static void
-ed_draw_stat_right(
-	const struct Ed *const ed,
-	Buf *const buf,
-	const size_t left_len
-) {
-	size_t col;
-	const size_t cont_idx = win_curr_line_cont_idx(ed->win);
-	const size_t idx = win_curr_line_idx(ed->win);
-	char right[ED_STAT_RIGHT_ARR_LEN];
-	size_t right_len = 0;
-	const struct winsize winsize = win_size(ed->win);
-
-	/* Write right part of the status */
+	/* Prepare length and formatted string for the right part */
 	switch (ed->mode) {
 	case MODE_NORM:
-		right_len += snprintf(
-			right,
-			sizeof(right),
-			"%zu < %zu, %zu ",
-			ed->num_input,
-			idx,
-			cont_idx
-		);
+		len = snprintf(s, sizeof(s), "%zu < %zu, %zu ", ed->num_input, y, x);
 		break;
 	case MODE_SEARCH:
-		right_len += snprintf(
-			right,
-			sizeof(right),
-			"%s < %zu, %zu ",
-			ed->search_input,
-			idx,
-			cont_idx
-		);
+		len = snprintf(s, sizeof(s), "%s < %zu, %zu ", ed->search_input, y, x);
 		break;
 	default:
-		right_len += snprintf(right, sizeof(right), "%zu, %zu ", idx, cont_idx);
+		len = snprintf(s, sizeof(s), "%zu, %zu ", y, x);
 		break;
 	}
+	/* Draw colored empty space */
+	for (i = left_len + len; i < winsize.ws_col; i++)
+		vec_append(ed->buf, " ", 1);
+	/* Draw the right part */
+	vec_append(ed->buf, s, MIN(len, winsize.ws_col - left_len));
 
-	/* Write empty space */
-	for (col = left_len + right_len; col < winsize.ws_col; col++)
-		buf_write(buf, " ", 1);
-
-	/* Write right part */
-	buf_write(buf, right, MIN(right_len, winsize.ws_col - left_len));
+	/* End colored output */
+	esc_color_end(ed->buf);
 }
 
 void
@@ -267,6 +234,13 @@ ed_handle_signal(struct Ed *const ed, const int signal)
 	*/
 	if (SIGWINCH == signal)
 		ed->sigwinch = 1;
+}
+
+static void
+ed_flush_buf(struct Ed *const ed)
+{
+	term_write(vec_items(ed->buf), vec_len(ed->buf));
+	vec_clr(ed->buf);
 }
 
 static void
@@ -347,7 +321,7 @@ ed_on_quit_press(struct Ed *const ed)
 
 		/* Set message with remaining count if no need to quit */
 		if (!ed_need_to_quit(ed))
-			ed_set_msg(ed, "File is dirty. Presses remain: %hhu", ed->quit_presses_rem);
+			ed_set_msg(ed, "File is dirty. Presses remain: %hhu.", ed->quit_presses_rem);
 	}
 }
 
@@ -357,7 +331,7 @@ ed_open(const char *const path, const int ifd, const int ofd)
 	/* Allocate opaque struct */
 	struct Ed *const ed = malloc_err(sizeof(*ed));
 	/* Allocate buffer for all drawn content */
-	ed->buf = buf_alloc();
+	ed->buf = vec_alloc(sizeof(char), 4096);
 	/* Open window with accepted file and descriptors */
 	ed->win = win_open(path, ifd, ofd);
 	/* Set default editting mode */
@@ -373,11 +347,10 @@ ed_open(const char *const path, const int ifd, const int ofd)
 	/* Set signal default values */
 	ed->sigwinch = 0;
 
-	/* Enable alternate screen */
-	esc_alt_scr_on();
-	/* Enable mouse wheel tracking */
-	esc_mouse_wheel_track_on();
-
+	/* Enable alternate screen. It will be set during first drawing */
+	esc_alt_scr_on(ed->buf);
+	/* Enable mouse wheel tracking. It will be set during first drawing */
+	esc_mouse_wheel_track_on(ed->buf);
 	return ed;
 }
 
@@ -540,12 +513,14 @@ void
 ed_quit(struct Ed *const ed)
 {
 	/* Disable alternate screen */
-	esc_alt_scr_off();
+	esc_alt_scr_off(ed->buf);
 	/* Disable mouse wheel tracking */
-	esc_mouse_wheel_track_off();
+	esc_mouse_wheel_track_off(ed->buf);
+	/* Flush settings disabling */
+	ed_flush_buf(ed);
 
 	/* Free content buffer */
-	buf_free(ed->buf);
+	vec_free(ed->buf);
 	/* Close the window */
 	win_close(ed->win);
 
@@ -567,9 +542,9 @@ ed_save_file(struct Ed *const ed)
 
 	/* Check save failed */
 	if (0 == len) {
-		ed_set_msg(ed, "Failed to save: %s", strerror(errno));
+		ed_set_msg(ed, "Failed to save: %s.", strerror(errno));
 	} else {
-		ed_set_msg(ed, "%zu bytes saved", len);
+		ed_set_msg(ed, "%zu bytes saved.", len);
 		/* Update quit presses */
 		ed->quit_presses_rem = 1;
 	}
@@ -582,7 +557,7 @@ ed_save_file_to_spare_dir(struct Ed *const ed)
 	/* Save file to the spare dir */
 	size_t len = win_save_file_to_spare_dir(ed->win, path, sizeof(path));
 	/* Set message */
-	ed_set_msg(ed, "%zu bytes saved to %s", len, path);
+	ed_set_msg(ed, "%zu bytes saved to %s.", len, path);
 	/* Update quit presses */
 	ed->quit_presses_rem = 1;
 }
