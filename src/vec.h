@@ -12,6 +12,9 @@ Vec *vec_alloc(size_t, size_t);
 /* Copies items to the end of vector. */
 void vec_append(Vec *, const void *, size_t);
 
+/* Gets vector's item by index. */
+void *vec_get(const Vec *, size_t);
+
 /* Returns pointer to vector's items. */
 void *vec_items(const Vec *);
 
@@ -21,7 +24,10 @@ void vec_del(Vec *, size_t);
 /* Frees allocated vector. */
 void vec_free(Vec *);
 
-/* Sets length to zero. Leaves capacity unchanged. */
+/*
+Sets length to zero. Leaves capacity unchanged. You need to free items before
+clear.
+*/
 void vec_clr(Vec *);
 
 /* Copies items to vector by passed index. */

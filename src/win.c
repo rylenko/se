@@ -443,6 +443,8 @@ win_mv_to_end_of_line(struct Win *const win)
 		win->offset.cols = render_len - win->size.ws_col + 1;
 		win->cur.col = win->size.ws_col - 1;
 	}
+
+	win_scroll(win);
 }
 
 void

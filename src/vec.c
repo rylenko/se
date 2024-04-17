@@ -54,12 +54,13 @@ vec_del(struct Vec *const vec, const size_t idx)
 		(--vec->len - idx) * vec->item_size
 	);
 	/* Shrink vector if there is too much free space */
-	vec_shrink(vec, 1);
+	vec_shrink(vec, 0);
 }
 
 void*
-vec_get(struct Vec *const vec, const size_t idx)
+vec_get(const struct Vec *const vec, const size_t idx)
 {
+	assert(idx < vec->len);
 	return &vec->items[idx * vec->item_size];
 }
 
@@ -121,7 +122,7 @@ vec_realloc(struct Vec *const vec, const size_t new_cap)
 }
 
 void
-vec_shrink(struct Vec *const vec, const char if_needed)
+vec_shrink(struct Vec *const vec, const char to_fit)
 {
 	if (0 == vec->len && vec->cap > 0) {
 		/* Free allocated items if vector is empty */
@@ -130,7 +131,7 @@ vec_shrink(struct Vec *const vec, const char if_needed)
 		vec->cap = 0;
 	} else if (
 		/* Reallocate items to equate capacity to length */
-		(if_needed && vec->len < vec->cap)
+		(to_fit && vec->len < vec->cap)
 		/* Reallocate if there is too much unused capacity */
 		|| vec->len + vec->cap_step <= vec->cap
 	) {

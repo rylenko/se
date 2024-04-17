@@ -48,7 +48,7 @@ Deletes character from the line.
 
 Does not update the render so you can do it yourself after several operations.
 */
-static void line_del_char(struct File *, size_t);
+static void line_del_char(struct Line *, size_t);
 
 /*
 Extends line with another line's content.
@@ -115,25 +115,20 @@ static size_t line_write(struct Line *, FILE *);
 void
 file_absorb_next_line(struct File *const file, const size_t idx)
 {
-	struct Line *line;
+	struct Line *const dest = vec_get(file->lines, idx);
+	struct Line *const src = vec_get(file->lines, idx + 1);
 
-	/* Validate index */
-	assert(idx < vec_len(file->lines));
-
-	/* Check that next line exists */
-	if (idx + 1 < vec_len(file->lines)) {
-		line = vec_get(file->lines, idx);
-
-		/* Extend specified line with next line */
-		line_extend(line, vec_get(file->lines, idx + 1));
-		line_render(line);
-
-		/* Delete absorbed line */
-		vec_del(file->lines, idx + 1);
-
-		/* Mark file as dirty */
-		file->is_dirty = 1;
+	/* Extending with empty line is useless */
+	if (src->len > 0) {
+		/* Extend specified line with next line and render new source content */
+		line_extend(dest, src);
+		line_render(dest);
 	}
+	/* Delete absorbed line */
+	vec_del(file->lines, idx + 1);
+
+	/* Mark file as dirty */
+	file->is_dirty = 1;
 }
 
 void
@@ -200,8 +195,10 @@ void
 file_del_char(struct File *const file, const size_t idx, const size_t pos)
 {
 	/* Delete character and update render */
-	line_del_char(&file->lines.arr[idx], pos);
-	line_render(&file->lines.arr[idx]);
+	struct Line *const line = vec_get(file->lines, idx);
+	line_del_char(line, pos);
+	line_render(line);
+
 	/* Mark file as dirty */
 	file->is_dirty = 1;
 }
@@ -209,9 +206,6 @@ file_del_char(struct File *const file, const size_t idx, const size_t pos)
 void
 file_del_line(struct File *const file, const size_t idx)
 {
-	/* Validate index */
-	assert(idx < lines->cnt);
-
 	/* Free and delete the line */
 	line_free(vec_get(file->lines, idx));
 	vec_del(file->lines, idx);
@@ -222,13 +216,15 @@ file_del_line(struct File *const file, const size_t idx)
 void
 file_ins_char(
 	struct File *const file,
-	const size_t i,
+	const size_t idx,
 	const size_t pos,
 	const char ch
 ) {
 	/* Insert character to file and update line's render */
-	line_ins(&file->lines.arr[i], pos, ch);
-	line_render(&file->lines.arr[i]);
+	struct Line *const line = vec_get(file->lines, idx);
+	line_ins(line, pos, ch);
+	line_render(line);
+
 	/* Mark file as dirty */
 	file->is_dirty = 1;
 }
@@ -255,31 +251,35 @@ file_is_dirty(const struct File *const file)
 const char*
 file_line_cont(const struct File *const file, const size_t idx)
 {
-	return file->lines.arr[idx].cont;
+	const struct Line *const line = vec_get(file->lines, idx);
+	return line->cont;
 }
 
 size_t
 file_line_len(const struct File *const file, const size_t idx)
 {
-	return file->lines.arr[idx].len;
+	const struct Line *const line = vec_get(file->lines, idx);
+	return line->len;
 }
 
 const char*
 file_line_render(const struct File *const file, const size_t idx)
 {
-	return file->lines.arr[idx].render;
+	const struct Line *const line = vec_get(file->lines, idx);
+	return line->render;
 }
 
 size_t
 file_line_render_len(const struct File *const file, const size_t idx)
 {
-	return file->lines.arr[idx].render_len;
+	const struct Line *const line = vec_get(file->lines, idx);
+	return line->render_len;
 }
 
 size_t
 file_lines_cnt(const struct File *const file)
 {
-	return file->lines.cnt;
+	return vec_len(file->lines);
 }
 
 struct File*
@@ -303,7 +303,7 @@ file_open(const char *const path)
 		err(EXIT_FAILURE, "Failed to close readed file");
 
 	/* Add empty line if there is no lines */
-	if (0 == file->lines.cnt) {
+	if (vec_len(file->lines) == 0) {
 		line_init(&empty_line);
 		vec_append(file->lines, &empty_line, 1);
 	}
@@ -382,7 +382,7 @@ file_search(
 	const char *const query,
 	const enum Dir dir
 ) {
-	const struct Line *line;
+	struct Line *line;
 
 	while (*idx < vec_len(file->lines)) {
 		line = vec_get(file->lines, *idx);
@@ -407,8 +407,8 @@ file_write(const struct File *const file, FILE *const f)
 	size_t line_i;
 	size_t len = 0;
 	/* Write lines and collect written length */
-	for (line_i = 0; line_i < lines->cnt; line_i++)
-		len += line_write(&lines->arr[line_i], f);
+	for (line_i = 0; line_i < vec_len(file->lines); line_i++)
+		len += line_write(vec_get(file->lines, line_i), f);
 	return len;
 }
 
