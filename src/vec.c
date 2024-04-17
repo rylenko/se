@@ -35,6 +35,12 @@ vec_append(struct Vec *const vec, const void *const items, const size_t len)
 	vec_ins(vec, vec->len, items, len);
 }
 
+size_t
+vec_cap(const struct Vec *const vec)
+{
+	return vec->cap;
+}
+
 void
 vec_clr(struct Vec *const vec)
 {
@@ -94,17 +100,17 @@ vec_ins(
 	memcpy(&vec->items[idx * vec->item_size], items, len * vec->item_size);
 }
 
-void*
-vec_items(const struct Vec *const vec)
-{
-	return vec->items;
-}
-
 void
 vec_free(struct Vec *const vec)
 {
 	free(vec->items);
 	free(vec);
+}
+
+void*
+vec_items(const struct Vec *const vec)
+{
+	return vec->items;
 }
 
 size_t
@@ -124,6 +130,8 @@ vec_realloc(struct Vec *const vec, const size_t new_cap)
 void
 vec_set_len(struct Vec *const vec, const size_t len)
 {
+	/* Validate and set new length */
+	assert(len <= vec->cap);
 	vec->len = len;
 }
 

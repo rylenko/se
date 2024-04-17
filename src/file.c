@@ -110,10 +110,10 @@ file_break_line(struct File *const file, const size_t idx, const size_t pos)
 	/* Insert new line */
 	vec_ins(file->lines, idx + 1, &new_line, 1);
 
-	/* Update line pointer after insertion because of possible reallocation */
-	line = vec_get(file->lines, idx);
-
+	/* Update broken line's length and render if new line is not empty */
 	if (new_len > 0) {
+		/* Update line pointer after insertion because of possible reallocation */
+		line = vec_get(file->lines, idx);
 		/* Update broken line's length */
 		vec_set_len(line->cont, pos);
 		/* Render line with new length */
@@ -202,25 +202,29 @@ file_is_dirty(const struct File *const file)
 const char*
 file_line_cont(const struct File *const file, const size_t idx)
 {
-	return vec_items(((struct Line *)vec_get(file->lines, idx))->cont);
+	const struct Line *const line = vec_get(file->lines, idx);
+	return vec_items(line->cont);
 }
 
 size_t
 file_line_len(const struct File *const file, const size_t idx)
 {
-	return vec_len(((struct Line *)vec_get(file->lines, idx))->cont);
+	const struct Line *const line = vec_get(file->lines, idx);
+	return vec_len(line->cont);
 }
 
 const char*
 file_line_render(const struct File *const file, const size_t idx)
 {
-	return ((struct Line *)vec_get(file->lines, idx))->render;
+	const struct Line *const line = vec_get(file->lines, idx);
+	return line->render;
 }
 
 size_t
 file_line_render_len(const struct File *const file, const size_t idx)
 {
-	return ((struct Line *)vec_get(file->lines, idx))->render_len;
+	const struct Line *const line = vec_get(file->lines, idx);
+	return line->render_len;
 }
 
 size_t
@@ -337,7 +341,6 @@ file_search(
 		/* Try to search on interated line */
 		if (line_search(line, pos, query, dir))
 			return 1;
-
 		/* Searching backward and start of file reached */
 		if (DIR_BWD == dir && 0 == *idx)
 			break;
@@ -421,7 +424,9 @@ static void
 line_render(struct Line *const line)
 {
 	size_t i;
-	size_t tabs_cnt = 0;
+	size_t tabs = 0;
+	const char *const cont = vec_items(line->cont);
+	const size_t len = vec_len(line->cont);
 
 	/* Free old render */
 	free(line->render);
@@ -429,22 +434,20 @@ line_render(struct Line *const line)
 	line->render_len = 0;
 
 	/* No content to render */
-	if (vec_len(line->cont) == 0)
+	if (0 == len)
 		return;
 
 	/* Calculate tabs count */
 	for (i = 0; i < vec_len(line->cont); i++) {
-		if (*(char *)vec_get(line->cont, i) == '\t')
-			tabs_cnt++;
+		if ('\t' == cont[i])
+			tabs++;
 	}
-
 	/* Allocate render buffer */
-	line->render = \
-		malloc_err(vec_len(line->cont) + (CFG_TAB_SIZE - 1) * tabs_cnt + 1);
+	line->render = malloc_err(len + (CFG_TAB_SIZE - 1) * tabs + 1);
 
 	/* Render content */
 	for (i = 0; i < vec_len(line->cont); i++) {
-		if (*(char *)vec_get(line->cont, i) == '\t') {
+		if ('\t' == cont[i]) {
 			/* Expand tab with spaces */
 			line->render[line->render_len++] = ' ';
 			while (line->render_len % CFG_TAB_SIZE != 0)
