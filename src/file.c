@@ -341,11 +341,11 @@ file_search(
 		/* Try to search on interated line */
 		if (line_search(line, pos, query, dir))
 			return 1;
-		/* Searching backward and start of file reached */
+		/* Break if searching backward and start of file reached */
 		if (DIR_BWD == dir && 0 == *idx)
 			break;
 
-		/* Move to the beginning of another line */
+		/* Move to another line */
 		*idx += DIR_FWD == dir ? 1 : -1;
 		line = vec_get(file->lines, *idx);
 		*pos = DIR_FWD == dir ? 0 : vec_len(line->cont);
