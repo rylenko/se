@@ -36,8 +36,11 @@ void vec_ins(Vec *, size_t, const void *, size_t);
 /* Returns length of the vector. */
 size_t vec_len(const Vec *);
 
+/* Sets new length. Must be less or equal to capacity. */
+void vec_set_len(Vec *, size_t);
+
 /*
-Shrinks vector's capacity. If the flag is set, then determines whether the
+Shrinks vector's capacity. If the flag is not set, then determines whether the
 shrink is beneficial.
 */
 void vec_shrink(Vec *, char);

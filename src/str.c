@@ -13,9 +13,9 @@ str_copy(const char *const str, const size_t len)
 }
 
 char*
-strrstr(const char *haystack, const char *const needle)
+strrstr(const char *haystack, const char *const needle, const size_t len)
 {
-	const char *ptr = haystack + strlen(haystack);
+	const char *ptr = haystack + len;
 	const size_t needle_len = strlen(needle);
 
 	/* Check needle is empty */

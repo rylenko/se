@@ -54,8 +54,8 @@ Normal mode keys:
 - `Ctrl+s` - save.
 - `Ctrl+q` - quit. If you changed the file, you will need to either save it or press this key several times.
 - `Ctrl+x` - save to spare directory. Useful if no privilege to write to opened file.
-- `Enter` - Search forward if a query was previously entered in the search mode..
-- `Tab` - Search backward if a query was previously entered in the search mode..
+- `Enter` - Search forward if a query was previously entered in the search mode.
+- `Tab` - Search backward if a query was previously entered in the search mode.
 
 You can also repeat a key by pressing `<number><key>`. For example, `5n` will create 5 lines below the cursor.
 
@@ -128,21 +128,21 @@ $ make gen-readme
 	<tbody><tr>
 		<th>C</th>
 		<th>12</th>
-		<th>2426</th>
-		<th>325</th>
-		<th>413</th>
-		<th>1688</th>
-		<th>291</th>
-		<th>58348</th>
+		<th>2296</th>
+		<th>304</th>
+		<th>358</th>
+		<th>1634</th>
+		<th>277</th>
+		<th>55060</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>14</th>
-		<th>521</th>
-		<th>136</th>
-		<th>165</th>
-		<th>220</th>
+		<th>530</th>
+		<th>138</th>
+		<th>170</th>
+		<th>222</th>
 		<th>0</th>
-		<th>12921</th>
+		<th>13134</th>
 	</tr><tr>
 		<th>Markdown</th>
 		<th>2</th>
@@ -151,7 +151,7 @@ $ make gen-readme
 		<th>0</th>
 		<th>165</th>
 		<th>0</th>
-		<th>6060</th>
+		<th>6056</th>
 	</tr><tr>
 		<th>Makefile</th>
 		<th>2</th>
@@ -160,7 +160,7 @@ $ make gen-readme
 		<th>15</th>
 		<th>35</th>
 		<th>0</th>
-		<th>1390</th>
+		<th>1393</th>
 	</tr><tr>
 		<th>Shell</th>
 		<th>1</th>
@@ -201,12 +201,12 @@ $ make gen-readme
 	<tfoot><tr>
 		<th>Total</th>
 		<th>34</th>
-		<th>3321</th>
-		<th>550</th>
-		<th>599</th>
-		<th>2172</th>
-		<th>291</th>
-    	<th>80219</th>
+		<th>3200</th>
+		<th>531</th>
+		<th>549</th>
+		<th>2120</th>
+		<th>277</th>
+    	<th>77143</th>
 	</tr></tfoot>
 	</table>
 
@@ -214,15 +214,17 @@ $ make gen-readme
 
 |Path|Line|Description|
 |-|-|-|
-|**src/main.c**|**1**|**v0.2.2: Write alt screen and mouse wheel tracking sequences to vector to flush in ed_open and ed_quit.**|
-|**src/main.c**|**2**|**v0.3: Create Cell struct to handle all symbols including UTF-8. Create structs Win->Renders->Render->Cells->Cell. Rerender lines on window side**|
-|**src/main.c**|**3**|**v0.3: Use linked list for lines array and line's content parts.**|
-|**src/main.c**|**4**|**v0.3: Undo operations. Also rename "del" to "remove" where needed.**|
-|**src/main.c**|**5**|**v0.3: Remember last position per line.**|
-|**src/main.c**|**6**|**v0.4: Try to make functions smaller up to 25-30 lines.**|
-|**src/main.c**|**7**|**v0.4: Add key settings for escape sequences. For example, CFG_KEY_MV_UP_2 = "..."**|
-|**src/main.c**|**8**|**v0.4: Add local clipboard. Use it in functions.**|
-|**src/main.c**|**9**|**v0.4: Xclip patch to use with local clipboard.**|
-|**src/main.c**|**10**|**v0.5: Add more clear docs and comments.**|
-|**src/main.c**|**11**|**v0.5: Support huge files.**|
-|**src/main.c**|**12**|**v0.6: API with status codes instead of err.h. Add tests**|
+|**src/main.c**|**1**|**v0.3: Try to make functions smaller up to 25-30 lines.**|
+|**src/main.c**|**2**|**v0.3: Make functions self-sufficient: do one thing and do it right. Be prepared for all argument values. Validate using assert rather than continuing with incorrect data.**|
+|**src/main.c**|**3**|**v0.3: Add more good docs and comment. Also doc arguments: values, asserts, etc.**|
+|**src/main.c**|**4**|**v0.3: Create API: replace assert and err.h with ints and NULLs.**|
+|**src/main.c**|**5**|**v0.4: Create Cell struct to handle all symbols including UTF-8. Create structs Win->Renders->Render->Cells->Cell. Rerender lines on window side**|
+|**src/main.c**|**6**|**v0.4: Use linked list for lines array and line's content parts.**|
+|**src/main.c**|**7**|**v0.4: Remember last position per line.**|
+|**src/main.c**|**8**|**v0.4: Rewrite moving functions with more unambiguous behavior and minimal scrolling.**|
+|**src/main.c**|**9**|**v0.5: Undo operations. Also rename "del" to "remove" where needed.**|
+|**src/main.c**|**10**|**v0.5: Add key settings for escape sequences. For example, CFG_KEY_MV_UP_2 = "..."**|
+|**src/main.c**|**11**|**v0.5: Add local clipboard. Use it in functions.**|
+|**src/main.c**|**12**|**v0.5: Xclip patch to use with local clipboard.**|
+|**src/main.c**|**13**|**v0.6: Support huge files.**|
+|**src/main.c**|**14**|**v0.6: Add tests.**|

@@ -122,6 +122,12 @@ vec_realloc(struct Vec *const vec, const size_t new_cap)
 }
 
 void
+vec_set_len(struct Vec *const vec, const size_t len)
+{
+	vec->len = len;
+}
+
+void
 vec_shrink(struct Vec *const vec, const char to_fit)
 {
 	if (0 == vec->len && vec->cap > 0) {

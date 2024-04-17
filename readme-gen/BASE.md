@@ -54,8 +54,8 @@ Normal mode keys:
 - `Ctrl+s` - save.
 - `Ctrl+q` - quit. If you changed the file, you will need to either save it or press this key several times.
 - `Ctrl+x` - save to spare directory. Useful if no privilege to write to opened file.
-- `Enter` - Search forward if a query was previously entered in the search mode..
-- `Tab` - Search backward if a query was previously entered in the search mode..
+- `Enter` - Search forward if a query was previously entered in the search mode.
+- `Tab` - Search backward if a query was previously entered in the search mode.
 
 You can also repeat a key by pressing `<number><key>`. For example, `5n` will create 5 lines below the cursor.
 

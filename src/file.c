@@ -19,10 +19,8 @@ enum {
 
 /* Line of the opened file. */
 struct Line {
-	char *cont; /* Raw content of the line */
-	size_t len; /* Length of content */
-	size_t cap; /* Capacity of content's buffer */
-	char *render; /* Rendered with tabs expansios content */
+	Vec *cont; /* Raw content of the line. Does not contain '\n' or '\0' */
+	char *render; /* Rendered version of the content */
 	size_t render_len; /* Length of rendered content */
 };
 
@@ -43,45 +41,16 @@ Returns written bytes count.
 */
 static size_t file_write(const struct File *, FILE *);
 
-/*
-Deletes character from the line.
-
-Does not update the render so you can do it yourself after several operations.
-*/
-static void line_del_char(struct Line *, size_t);
-
-/*
-Extends line with another line's content.
-
-Does not update the render so you can do it yourself after several operations.
-*/
-static void line_extend(struct Line *, const struct Line *);
-
 /* Frees allocated line's buffer. */
 static void line_free(struct Line *);
-
-/*
-Grows line's capacity if there is no space for new characters of passed length.
-*/
-static void line_grow_if_needed(struct Line *, size_t);
 
 /* Initializes line with zeros. Do not forget to free it. */
 static void line_init(struct Line *);
 
 /*
-Inserts character to line at index.
-
-Does not update the render so you can do it yourself after several operations.
-*/
-static void line_ins(struct Line *, size_t, char);
-
-/*
 Reads a line from a file without `'\n'`. Returns `NULL` if `EOF` is reached.
 */
 static struct Line *line_read(struct Line *, FILE *);
-
-/* Reallocates line with new capacity. */
-static void line_realloc(struct Line *, size_t);
 
 /*
 Renders line's content how it should look in the window and frees old content.
@@ -98,19 +67,11 @@ Returns 1 if result found and modifies index pointer. Otherwise returns 0.
 static char line_search(struct Line *, size_t *, const char *, enum Dir);
 
 /*
-Shrinks line's capacity.
-
-If flag is `1`, then function reallocates line with capacity equal to actual
-size. Otherwise it will reallocate memory if a lot of capacity is not used.
-*/
-static void line_shrink(struct Line *, char);
-
-/*
 Writes a line to the file with `'\n'` at the end.
 
 Returns written bytes count.
 */
-static size_t line_write(struct Line *, FILE *);
+static size_t line_write(const struct Line *, FILE *);
 
 void
 file_absorb_next_line(struct File *const file, const size_t idx)
@@ -119,9 +80,9 @@ file_absorb_next_line(struct File *const file, const size_t idx)
 	struct Line *const src = vec_get(file->lines, idx + 1);
 
 	/* Extending with empty line is useless */
-	if (src->len > 0) {
-		/* Extend specified line with next line and render new source content */
-		line_extend(dest, src);
+	if (vec_len(src->cont) > 0) {
+		/* Extend specified line with next line and render new content */
+		vec_append(dest->cont, vec_items(src->cont), vec_len(src->cont));
 		line_render(dest);
 	}
 	/* Delete absorbed line */
@@ -134,42 +95,32 @@ file_absorb_next_line(struct File *const file, const size_t idx)
 void
 file_break_line(struct File *const file, const size_t idx, const size_t pos)
 {
+	struct Line *line = vec_get(file->lines, idx);
+	const size_t new_len = vec_len(line->cont) - pos;
 	struct Line new_line;
-	struct Line *const line = vec_get(file->lines, idx);
-
-	/* Update new line and set its length */
 	line_init(&new_line);
-	new_line.len = line->len - pos;
 
-	/* Copy content to new line if it is not empty */
-	if (new_line.len > 0) {
-		/* Set minimum capacity */
-		new_line.cap = new_line.len + 1;
-		/* Try to allocate space for new line's content */
-		new_line.cont = malloc_err(new_line.cap);
+	if (new_len > 0) {
 		/* Copy content to new line */
-		strncpy(new_line.cont, &line->cont[pos], new_line.len);
-		/* Set null byte */
-		new_line.cont[new_line.len] = 0;
+		vec_append(new_line.cont, vec_get(line->cont, pos), new_len);
+		/* Render new line */
+		line_render(&new_line);
 	}
 
-	/* Update line if it makes sense. Otherwise it will be freed when shrinking */
-	if (line->len > 0) {
-		/* Update line's length */
-		line->len = pos;
-		/* Terminate broken line's content with null byte at break point */
-		line->cont[pos] = 0;
-	}
-
-	/* Render line with new length or just free old render */
-	line_render(line);
-	/* Shrink broken line's capacity */
-	line_shrink(line, 0);
-
-	/* Render new line */
-	line_render(&new_line);
 	/* Insert new line */
 	vec_ins(file->lines, idx + 1, &new_line, 1);
+
+	/* Update line pointer after insertion because of possible reallocation */
+	line = vec_get(file->lines, idx);
+
+	if (new_len > 0) {
+		/* Update broken line's length */
+		vec_set_len(line->cont, pos);
+		/* Render line with new length */
+		line_render(line);
+		/* Shrink broken line's capacity if needed */
+		vec_shrink(line->cont, 0);
+	}
 
 	/* Mark file as dirty because of new line */
 	file->is_dirty = 1;
@@ -196,7 +147,7 @@ file_del_char(struct File *const file, const size_t idx, const size_t pos)
 {
 	/* Delete character and update render */
 	struct Line *const line = vec_get(file->lines, idx);
-	line_del_char(line, pos);
+	vec_del(line->cont, pos);
 	line_render(line);
 
 	/* Mark file as dirty */
@@ -222,7 +173,7 @@ file_ins_char(
 ) {
 	/* Insert character to file and update line's render */
 	struct Line *const line = vec_get(file->lines, idx);
-	line_ins(line, pos, ch);
+	vec_ins(line->cont, pos, &ch, 1);
 	line_render(line);
 
 	/* Mark file as dirty */
@@ -251,29 +202,25 @@ file_is_dirty(const struct File *const file)
 const char*
 file_line_cont(const struct File *const file, const size_t idx)
 {
-	const struct Line *const line = vec_get(file->lines, idx);
-	return line->cont;
+	return vec_items(((struct Line *)vec_get(file->lines, idx))->cont);
 }
 
 size_t
 file_line_len(const struct File *const file, const size_t idx)
 {
-	const struct Line *const line = vec_get(file->lines, idx);
-	return line->len;
+	return vec_len(((struct Line *)vec_get(file->lines, idx))->cont);
 }
 
 const char*
 file_line_render(const struct File *const file, const size_t idx)
 {
-	const struct Line *const line = vec_get(file->lines, idx);
-	return line->render;
+	return ((struct Line *)vec_get(file->lines, idx))->render;
 }
 
 size_t
 file_line_render_len(const struct File *const file, const size_t idx)
 {
-	const struct Line *const line = vec_get(file->lines, idx);
-	return line->render_len;
+	return ((struct Line *)vec_get(file->lines, idx))->render_len;
 }
 
 size_t
@@ -394,9 +341,11 @@ file_search(
 		/* Searching backward and start of file reached */
 		if (DIR_BWD == dir && 0 == *idx)
 			break;
+
 		/* Move to the beginning of another line */
 		*idx += DIR_FWD == dir ? 1 : -1;
-		*pos = DIR_FWD == dir ? 0 : line->len;
+		line = vec_get(file->lines, *idx);
+		*pos = DIR_FWD == dir ? 0 : vec_len(line->cont);
 	}
 	return 0;
 }
@@ -404,95 +353,36 @@ file_search(
 static size_t
 file_write(const struct File *const file, FILE *const f)
 {
-	size_t line_i;
+	size_t i;
 	size_t len = 0;
 	/* Write lines and collect written length */
-	for (line_i = 0; line_i < vec_len(file->lines); line_i++)
-		len += line_write(vec_get(file->lines, line_i), f);
+	for (i = 0; i < vec_len(file->lines); i++)
+		len += line_write(vec_get(file->lines, i), f);
 	return len;
-}
-
-static void
-line_del_char(struct Line *const line, const size_t idx)
-{
-	/* Validate index */
-	assert(idx < line->len);
-
-	/* Move other content left. Do not forget about null byte */
-	memmove(&line->cont[idx], &line->cont[idx + 1], line->len - idx);
-	/* Decrease length a shrink capacity if there is too much unused space */
-	line->len--;
-	line_shrink(line, 0);
-}
-
-static void
-line_extend(struct Line *const dest, const struct Line *const src)
-{
-	if (src->len > 0) {
-		/* Line capacity if needed to store source content */
-		line_grow_if_needed(dest, dest->len + src->len);
-
-		/* Copy source content to destination */
-		strncpy(&dest->cont[dest->len], src->cont, src->len);
-		/* Update length of extended line */
-		dest->len += src->len;
-		/* Set null byte */
-		dest->cont[dest->len] = 0;
-	}
 }
 
 void
 line_free(struct Line *const line)
 {
 	/* Free raw content and render */
-	free(line->cont);
+	vec_free(line->cont);
 	free(line->render);
-
-	/*
-	In the code we will want to free the line if it becomes empty. Thanks to
-	initialization, we will nullify the pointers and avoid the segmentation fault
-	during double free.
-	*/
-	line_init(line);
-}
-
-static void
-line_grow_if_needed(struct Line *const line, size_t new_len)
-{
-	/* Grow line in there is no capacity to insert characters */
-	if (new_len + 1 > line->cap)
-		/* Add specified step or use huge length as new capacity */
-		line_realloc(line, MAX(line->cap + LINE_REALLOC_STEP, new_len + 1));
 }
 
 static void
 line_init(struct Line *const line)
 {
-	memset(line, 0, sizeof(*line));
-}
-
-static void
-line_ins(struct Line *const line, const size_t idx, const char ch)
-{
-	/* Validate index */
-	assert(idx <= line->len);
-
-	/* Grow line's capacity if there is no space */
-	line_grow_if_needed(line, line->len + 1);
-	/* Move content to free new character's space. Do not forget null byte */
-	memmove(&line->cont[idx + 1], &line->cont[idx], line->len - idx + 1);
-
-	/* Write new character to string */
-	line->cont[idx] = ch;
-	/* Increase the length if it is not a zero byte appended to the end */
-	if (!(0 == ch && idx == line->len))
-		line->len++;
+	/* Initialize line */
+	line->cont = vec_alloc(sizeof(char), 128);
+	line->render = NULL;
+	line->render_len = 0;
 }
 
 static struct Line*
 line_read(struct Line *const line, FILE *const f)
 {
 	int ch;
+	/* Initialize empty line to in which to read */
 	line_init(line);
 
 	/* Read characters */
@@ -502,37 +392,29 @@ line_read(struct Line *const line, FILE *const f)
 		if (ferror(f) != 0)
 			err(EXIT_FAILURE, "Failed to read line's character");
 
-		if (0 == line->len) {
-			/* Return early without memory alloc if line is empty or EOF reached */
-			if (EOF == ch)
+		if (vec_len(line->cont) == 0) {
+			/* First character is EOF. So there is no more lines */
+			if (EOF == ch) {
+				line_free(line);
 				return NULL;
-			else if ('\n' == ch)
+			}
+			/* End of line. Return readed line */
+			if ('\n' == ch)
 				return line;
-
-			/* Insert null byte first to set end of line */
-			line_ins(line, line->len, 0);
 		}
 
 		/* Check end of line reached */
 		if ('\n' == ch || EOF == ch)
 			break;
-		/* Insert readed character */
-		line_ins(line, line->len, ch);
+		/* Append readed character */
+		vec_append(line->cont, &ch, 1);
 	}
 
 	/* Shrink line's content to fit */
-	line_shrink(line, 1);
+	vec_shrink(line->cont, 1);
 	/* Render readed line */
 	line_render(line);
 	return line;
-}
-
-static void
-line_realloc(struct Line *const line, size_t new_cap)
-{
-	/* Reallocate and update capacity */
-	line->cont = realloc_err(line->cont, new_cap);
-	line->cap = new_cap;
 }
 
 static void
@@ -547,31 +429,31 @@ line_render(struct Line *const line)
 	line->render_len = 0;
 
 	/* No content to render */
-	if (0 == line->len)
+	if (vec_len(line->cont) == 0)
 		return;
 
 	/* Calculate tabs count */
-	for (i = 0; i < line->len; i++)
-		if ('\t' == line->cont[i])
+	for (i = 0; i < vec_len(line->cont); i++) {
+		if (*(char *)vec_get(line->cont, i) == '\t')
 			tabs_cnt++;
+	}
 
 	/* Allocate render buffer */
-	line->render = malloc_err(line->len + (CFG_TAB_SIZE - 1) * tabs_cnt + 1);
+	line->render = \
+		malloc_err(vec_len(line->cont) + (CFG_TAB_SIZE - 1) * tabs_cnt + 1);
 
 	/* Render content */
-	for (i = 0; i < line->len; i++) {
-		if ('\t' == line->cont[i]) {
+	for (i = 0; i < vec_len(line->cont); i++) {
+		if (*(char *)vec_get(line->cont, i) == '\t') {
 			/* Expand tab with spaces */
 			line->render[line->render_len++] = ' ';
 			while (line->render_len % CFG_TAB_SIZE != 0)
 				line->render[line->render_len++] = ' ';
 		} else {
 			/* Render simple character */
-			line->render[line->render_len++] = line->cont[i];
+			line->render[line->render_len++] = *(char *)vec_get(line->cont, i);
 		}
 	}
-	/* Do not forget to append null byte */
-	line->render[line->render_len] = 0;
 }
 
 static char
@@ -582,28 +464,19 @@ line_search(
 	const enum Dir dir
 ) {
 	const char *res = NULL;
-	char tmp;
 
 	/* Validate accepted index */
-	assert(*idx <= line->len);
+	assert(*idx <= vec_len(line->cont));
 	/* Check line is empty */
-	if (0 == line->len)
+	if (vec_len(line->cont) == 0)
 		return 0;
 
 	switch (dir) {
 	case DIR_BWD:
-		/* Set end of initial line to do not detect results on the right */
-		tmp = line->cont[*idx];
-		line->cont[*idx] = 0;
-
-		/* Search from the right */
-		res = strrstr(line->cont, query);
-
-		/* Reset end character of search area */
-		line->cont[*idx] = tmp;
+		res = strrstr(vec_items(line->cont), query, *idx);
 		break;
 	case DIR_FWD:
-		res = strstr(&line->cont[*idx], query);
+		res = strstr(vec_get(line->cont, *idx), query);
 		break;
 	}
 
@@ -611,35 +484,21 @@ line_search(
 	if (NULL == res)
 		return 0;
 	/* Set result index and return success code */
-	*idx = res - line->cont;
+	*idx = res - (char *)vec_items(line->cont);
 	return 1;
 }
 
-static void
-line_shrink(struct Line *const line, const char hard)
-{
-	if (0 == line->len && line->cap > 0)
-		/* Free allocated memory if line becomes empty */
-		line_free(line);
-	else if (
-		/* Reallocate line's content to equate capacity to length */
-		(hard && line->len + 1 < line->cap)
-		/* Reallocate if there is too much unused capacity */
-		|| line->len + LINE_REALLOC_STEP <= line->cap
-	)
-		line_realloc(line, line->len + 1);
-}
-
 static size_t
-line_write(struct Line *const line, FILE *const f)
+line_write(const struct Line *const line, FILE *const f)
 {
 	/* Write line's content and check returned value */
-	const size_t len = fwrite(line->cont, sizeof(char), line->len, f);
-	if (len != line->len)
-		err(EXIT_FAILURE, "Failed to write a line with length %zu", line->len);
+	const size_t len = vec_len(line->cont);
+	const size_t wrote = fwrite(vec_items(line->cont), sizeof(char), len, f);
+	/* Check errors */
+	if (wrote != len)
+		err(EXIT_FAILURE, "Failed to write line with %zu bytes", len);
 	if (fputc('\n', f) == EOF)
-		err(EXIT_FAILURE, "Failed to write \n after line with len %zu", line->len);
-
+		err(EXIT_FAILURE, "Failed to write \n after %zu bytes", len);
 	/* Return written length. Do not forget about \n */
-	return len + 1;
+	return wrote + 1;
 }

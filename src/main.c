@@ -1,16 +1,17 @@
 /* TODO: v0.3: Try to make functions smaller up to 25-30 lines. */
 /* TODO: v0.3: Make functions self-sufficient: do one thing and do it right. Be prepared for all argument values. Validate using assert rather than continuing with incorrect data.  */
 /* TODO: v0.3: Add more good docs and comment. Also doc arguments: values, asserts, etc. */
-/* TODO: v0.3: Create Cell struct to handle all symbols including UTF-8. Create structs Win->Renders->Render->Cells->Cell. Rerender lines on window side */
-/* TODO: v0.3: Use linked list for lines array and line's content parts. */
-/* TODO: v0.3: Remember last position per line. */
-/* TODO: v0.4: Undo operations. Also rename "del" to "remove" where needed. */
-/* TODO: v0.4: Add key settings for escape sequences. For example, CFG_KEY_MV_UP_2 = "..." */
-/* TODO: v0.4: Add local clipboard. Use it in functions. */
-/* TODO: v0.4: Xclip patch to use with local clipboard. */
-/* TODO: v0.5: Support huge files. */
-/* TODO: v0.5: Create API: replace assert and err.h with ints and NULLs. */
-/* TODO: v0.5: Add tests. */
+/* TODO: v0.3: Create API: replace assert and err.h with ints and NULLs. */
+/* TODO: v0.4: Create Cell struct to handle all symbols including UTF-8. Create structs Win->Renders->Render->Cells->Cell. Rerender lines on window side */
+/* TODO: v0.4: Use linked list for lines array and line's content parts. */
+/* TODO: v0.4: Remember last position per line. */
+/* TODO: v0.4: Rewrite moving functions with more unambiguous behavior and minimal scrolling. */
+/* TODO: v0.5: Undo operations. Also rename "del" to "remove" where needed. */
+/* TODO: v0.5: Add key settings for escape sequences. For example, CFG_KEY_MV_UP_2 = "..." */
+/* TODO: v0.5: Add local clipboard. Use it in functions. */
+/* TODO: v0.5: Xclip patch to use with local clipboard. */
+/* TODO: v0.6: Support huge files. */
+/* TODO: v0.6: Add tests. */
 
 #include <err.h>
 #include <signal.h>

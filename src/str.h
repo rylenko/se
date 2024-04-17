@@ -7,6 +7,6 @@
 char *str_copy(const char *, size_t);
 
 /* Like `strstr`, but starts from right. */
-char *strrstr(const char *, const char *);
+char *strrstr(const char *, const char *, size_t);
 
 #endif /* _STR_H */
