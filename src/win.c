@@ -108,11 +108,13 @@ win_del_char(struct Win *const win)
 int
 win_del_line(struct Win *const win, size_t times)
 {
+	/* Remember that file must contain at least one line */
 	size_t lines_cnt = file_lines_cnt(win->file);
-
-	if (1 >= lines_cnt) {
+	if (lines_cnt <= 1) {
 		return -1;
-	} else if (times > 0) {
+	}
+
+	if (times > 0) {
 		/* Get real repeat times */
 		times = MIN(times, lines_cnt - win->offset.rows - win->cur.row);
 
@@ -318,50 +320,46 @@ win_mv_down(struct Win *const win, size_t times)
 {
 	size_t lines_cnt = file_lines_cnt(win->file);
 
-	if (times > 0) {
-		while (times-- > 0) {
-			/* Break if there is no more space to move down */
-			if (win->offset.rows + win->cur.row + 1 >= lines_cnt)
-				break;
+	while (times-- > 0) {
+		/* Break if there is no more space to move down */
+		if (win->offset.rows + win->cur.row + 1 >= lines_cnt)
+			break;
 
-			/* Check that there is no space in current window */
-			if (win->cur.row + STAT_ROWS_CNT + 1 == win->size.ws_row)
-				win->offset.rows++;
-			else
-				win->cur.row++;
-		}
-
-		/* Clamp cursor to line after move down several times */
-		win_scroll(win);
+		/* Check that there is no space in current window */
+		if (win->cur.row + STAT_ROWS_CNT + 1 == win->size.ws_row)
+			win->offset.rows++;
+		else
+			win->cur.row++;
 	}
+
+	/* Clamp cursor to line after move down several times */
+	win_scroll(win);
 }
 
 void
 win_mv_left(struct Win *const win, size_t times)
 {
-	if (times > 0) {
-		while (times-- > 0) {
-			/* Move to the beginning of next line if there is not space to move right */
-			if (win->offset.cols + win->cur.col == 0) {
-				/* Check there is no next line */
-				if (win->offset.rows + win->cur.row == 0)
-					break;
+	while (times-- > 0) {
+		/* Move to the beginning of next line if there is not space to move right */
+		if (win->offset.cols + win->cur.col == 0) {
+			/* Check there is no next line */
+			if (win->offset.rows + win->cur.row == 0)
+				break;
 
-				/* Move to the end of previous line */
-				win_mv_up(win, 1);
-				win_mv_to_end_of_line(win);
-			} else if (win->cur.col == 0) {
-				/* We are at the right of window */
-				win->offset.cols--;
-			} else {
-				/* We are have enough space to move right in the current window */
-				win->cur.col--;
-			}
+			/* Move to the end of previous line */
+			win_mv_up(win, 1);
+			win_mv_to_end_of_line(win);
+		} else if (win->cur.col == 0) {
+			/* We are at the right of window */
+			win->offset.cols--;
+		} else {
+			/* We are have enough space to move right in the current window */
+			win->cur.col--;
 		}
-
-		/* Fix expanded cursor column during left movement */
-		win_scroll(win);
 	}
+
+	/* Fix expanded cursor column during left movement */
+	win_scroll(win);
 }
 
 void
@@ -370,30 +368,28 @@ win_mv_right(struct Win *const win, size_t times)
 	size_t lines_cnt = file_lines_cnt(win->file);
 	size_t line_len = file_line_len(win->file, win_curr_line_idx(win));
 
-	if (times > 0) {
-		while (times-- > 0) {
-			/* Move to the beginning of next line if there is not space to move right */
-			if (win->offset.cols + win->cur.col == line_len) {
-				/* Check there is no next line */
-				if (win->offset.rows + win->cur.row + 1 == lines_cnt)
-					break;
+	while (times-- > 0) {
+		/* Move to the beginning of next line if there is not space to move right */
+		if (win->offset.cols + win->cur.col == line_len) {
+			/* Check there is no next line */
+			if (win->offset.rows + win->cur.row + 1 == lines_cnt)
+				break;
 
-				/* Move to the beginning of next line */
-				win_mv_to_begin_of_line(win);
-				win_mv_down(win, 1);
-				line_len = file_line_len(win->file, win_curr_line_idx(win));
-			} else if (win->cur.col + 1 == win->size.ws_col) {
-				/* We are at the right of window */
-				win->offset.cols++;
-			} else {
-				/* We are have enough space to move right in the current window */
-				win->cur.col++;
-			}
+			/* Move to the beginning of next line */
+			win_mv_to_begin_of_line(win);
+			win_mv_down(win, 1);
+			line_len = file_line_len(win->file, win_curr_line_idx(win));
+		} else if (win->cur.col + 1 == win->size.ws_col) {
+			/* We are at the right of window */
+			win->offset.cols++;
+		} else {
+			/* We are have enough space to move right in the current window */
+			win->cur.col++;
 		}
-
-		/* Fix expanded cursor column during right movement */
-		win_scroll(win);
 	}
+
+	/* Fix expanded cursor column during right movement */
+	win_scroll(win);
 }
 
 void
@@ -455,28 +451,26 @@ win_mv_to_next_word(struct Win *const win, size_t times)
 	const char *const cont = file_line_cont(win->file, win_curr_line_idx(win));
 	const size_t len = file_line_len(win->file, win_curr_line_idx(win));
 
-	if (times > 0) {
-		while (times-- > 0) {
-			/* Find next word from current position until end of line */
-			cont_i = win_curr_line_cont_idx(win);
-			word_i = word_next(&cont[cont_i], len - cont_i);
+	while (times-- > 0) {
+		/* Find next word from current position until end of line */
+		cont_i = win_curr_line_cont_idx(win);
+		word_i = word_next(&cont[cont_i], len - cont_i);
 
-			/* Check that word in the current window */
-			if (win->cur.col + word_i < win->size.ws_col) {
-				win->cur.col += word_i;
-			} else {
-				win->offset.cols = cont_i + word_i - win->size.ws_col + 1;
-				win->cur.col = win->size.ws_col - 1;
-			}
-
-			/* Check that we at end of line */
-			if (cont_i + word_i == len)
-				break;
+		/* Check that word in the current window */
+		if (win->cur.col + word_i < win->size.ws_col) {
+			win->cur.col += word_i;
+		} else {
+			win->offset.cols = cont_i + word_i - win->size.ws_col + 1;
+			win->cur.col = win->size.ws_col - 1;
 		}
 
-		/* Fix expanded cursor column during right movement */
-		win_scroll(win);
+		/* Check that we at end of line */
+		if (cont_i + word_i == len)
+			break;
 	}
+
+	/* Fix expanded cursor column during right movement */
+	win_scroll(win);
 }
 
 void
@@ -485,48 +479,44 @@ win_mv_to_prev_word(struct Win *const win, size_t times)
 	size_t word_i;
 	const char *const cont = file_line_cont(win->file, win_curr_line_idx(win));
 
-	if (times > 0) {
-		while (times-- > 0) {
-			/* Find next word from current position until start of line */
-			word_i = word_rnext(cont, win_curr_line_cont_idx(win));
+	while (times-- > 0) {
+		/* Find next word from current position until start of line */
+		word_i = word_rnext(cont, win_curr_line_cont_idx(win));
 
-			/* Check that word in the current window */
-			if (word_i >= win->offset.cols) {
-				win->cur.col = word_i - win->offset.cols;
-			} else {
-				win->offset.cols = word_i - 1;
-				win->cur.col = 1;
-			}
-
-			/* Check that we at start of line */
-			if (word_i == 0)
-				break;
+		/* Check that word in the current window */
+		if (word_i >= win->offset.cols) {
+			win->cur.col = word_i - win->offset.cols;
+		} else {
+			win->offset.cols = word_i - 1;
+			win->cur.col = 1;
 		}
 
-		/* Fix expanded cursor column during left movement */
-		win_scroll(win);
+		/* Check that we at start of line */
+		if (word_i == 0)
+			break;
 	}
+
+	/* Fix expanded cursor column during left movement */
+	win_scroll(win);
 }
 
 void
 win_mv_up(struct Win *const win, size_t times)
 {
-	if (times > 0) {
-		while (times-- > 0) {
-			/* Break if there is no more space to move down */
-			if (win->offset.rows + win->cur.row == 0)
-				break;
+	while (times-- > 0) {
+		/* Break if there is no more space to move down */
+		if (win->offset.rows + win->cur.row == 0)
+			break;
 
-			/* Check that there is no space in current window */
-			if (0 == win->cur.row)
-				win->offset.rows--;
-			else
-				win->cur.row--;
-		}
-
-		/* Clamp cursor to line after move down several times */
-		win_scroll(win);
+		/* Check that there is no space in current window */
+		if (0 == win->cur.row)
+			win->offset.rows--;
+		else
+			win->cur.row--;
 	}
+
+	/* Clamp cursor to line after move down several times */
+	win_scroll(win);
 }
 
 struct Win*
