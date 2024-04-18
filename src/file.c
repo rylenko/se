@@ -13,8 +13,10 @@
 #include "vec.h"
 
 enum {
-	/* Realloc step, when no capacity or there is too much unused capacity */
-	LINE_REALLOC_STEP = 128,
+	/* Line's chars capacity reallocation step */
+	LINE_CHARS_CAP_STEP = 128,
+	/* File's lines capacity reallocation step */
+	FILE_LINES_CAP_STEP = 32,
 };
 
 /* Line of the opened file. */
@@ -125,7 +127,7 @@ file_close(struct File *const file)
 {
 	size_t len = vec_len(file->lines);
 
-	/* Free lines. Remember that there is at least one line */
+	/* Free lines  */
 	while (len-- > 0)
 		line_free(vec_get(file->lines, len));
 	vec_free(file->lines);
@@ -154,6 +156,7 @@ file_del_line(struct File *const file, const size_t idx)
 	/* Free and delete the line */
 	line_free(vec_get(file->lines, idx));
 	vec_del(file->lines, idx);
+
 	/* Mark file as dirty because of deleted line */
 	file->is_dirty = 1;
 }
@@ -180,9 +183,9 @@ file_ins_empty_line(struct File *const file, const size_t idx)
 	/* Initialize empty line */
 	struct Line empty_line;
 	line_init(&empty_line);
-
 	/* Insert empty line */
 	vec_ins(file->lines, idx, &empty_line, 1);
+
 	/* Mark file as dirty */
 	file->is_dirty = 1;
 }
@@ -233,12 +236,11 @@ file_open(const char *const path)
 	struct Line empty_line;
 	FILE *inner_file;
 
-	/* Allocate struct */
+	/* Allocate opaque struct and initialize it */
 	struct File *file = malloc_err(sizeof(*file));
-	/* Initialize file */
 	file->path = str_copy(path, strlen(path));
 	file->is_dirty = 0;
-	file->lines = vec_alloc(sizeof(struct Line), 32);
+	file->lines = vec_alloc(sizeof(struct Line), FILE_LINES_CAP_STEP);
 
 	/* Open file, read lines and close the file */
 	if (NULL == (inner_file = fopen(path, "r")))
@@ -313,8 +315,6 @@ file_save_to_spare_dir(struct File *const file, char *const path, size_t len)
 
 	/* Build full spare path */
 	len = snprintf(path, len, "%s/%s_%s", cfg_spare_save_dir, fname, date);
-	path[len] = 0;
-
 	/* Save file using built path */
 	return file_save(file, path);
 }
@@ -370,7 +370,7 @@ static void
 line_init(struct Line *const line)
 {
 	/* Initialize line */
-	line->chars = vec_alloc(sizeof(char), 128);
+	line->chars = vec_alloc(sizeof(char), LINE_CHARS_CAP_STEP);
 	line->render = NULL;
 	line->render_len = 0;
 }
@@ -389,19 +389,15 @@ line_read(struct Line *const line, FILE *const f)
 		if (ferror(f) != 0)
 			err(EXIT_FAILURE, "Failed to read line's character");
 
-		if (vec_len(line->chars) == 0) {
-			/* First character is EOF. So there is no more lines */
-			if (EOF == ch) {
-				line_free(line);
-				return NULL;
-			}
-			/* End of line. Return readed line */
-			if ('\n' == ch)
-				return line;
+		/* First character is EOF. So there is no more lines */
+		if (vec_len(line->chars) == 0 && EOF == ch) {
+			/* Free unused line */
+			line_free(line);
+			return NULL;
 		}
 
 		/* Check end of line reached */
-		if ('\n' == ch || EOF == ch)
+		if ('\n' == ch)
 			break;
 		/* Append readed character */
 		vec_append(line->chars, &ch, 1);

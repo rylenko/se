@@ -73,12 +73,10 @@ win_curr_line_char_idx(const struct Win *const win)
 void
 win_break_line(struct Win *const win)
 {
+	const size_t idx = win_curr_line_idx(win);
+	const size_t pos = win_curr_line_char_idx(win);
 	/* Break current line at current cursor's position */
-	file_break_line(
-		win->file,
-		win_curr_line_idx(win),
-		win_curr_line_char_idx(win)
-	);
+	file_break_line(win->file, idx, pos);
 	/* Move to the beginning of the next line */
 	win_mv_to_begin_of_line(win);
 	win_mv_down(win, 1);
@@ -117,7 +115,6 @@ win_del_line(struct Win *const win, size_t times)
 	if (times > 0) {
 		/* Get real repeat times */
 		times = MIN(times, lines_cnt - win->offset.rows - win->cur.row);
-
 		/* The file must contain at least one line */
 		if (times == lines_cnt)
 			times--;
@@ -125,9 +122,8 @@ win_del_line(struct Win *const win, size_t times)
 		/* Remove column offsets */
 		win_mv_to_begin_of_line(win);
 
-		/* Times is never zero here */
+		/* Delete lines */
 		while (times-- > 0)
-			/* Delete lines */
 			file_del_line(win->file, win->offset.rows + win->cur.row);
 
 		/* Move up if we deleted the last line and stayed there */
@@ -145,10 +141,10 @@ win_draw_cur(const struct Win *const win, Vec *const vec)
 	const size_t len = file_line_len(win->file, win_curr_line_idx(win));
 	/* Expand offset and file columns */
 	size_t exp_offset_col = win_exp_col(chars, len, win->offset.cols);
-	size_t exp_file_col = win_exp_col(chars, len, win->offset.cols + win->cur.col);
+	size_t exp_f_col = win_exp_col(chars, len, win->offset.cols + win->cur.col);
 
 	/* Substract expanded columns to get real column in the window */
-	esc_cur_set(vec, win->cur.row, exp_file_col - exp_offset_col);
+	esc_cur_set(vec, win->cur.row, exp_f_col - exp_offset_col);
 }
 
 void
