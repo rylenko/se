@@ -42,12 +42,6 @@ vec_cap(const struct Vec *const vec)
 }
 
 void
-vec_clr(struct Vec *const vec)
-{
-	vec->len = 0;
-}
-
-void
 vec_del(struct Vec *const vec, const size_t idx)
 {
 	/* Validate index */

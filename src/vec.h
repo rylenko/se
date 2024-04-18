@@ -27,19 +27,15 @@ void vec_del(Vec *, size_t);
 /* Frees allocated vector. */
 void vec_free(Vec *);
 
-/*
-Sets length to zero. Leaves capacity unchanged. You need to free items before
-clear.
-*/
-void vec_clr(Vec *);
-
 /* Copies items to vector by passed index. */
 void vec_ins(Vec *, size_t, const void *, size_t);
 
 /* Returns length of the vector. */
 size_t vec_len(const Vec *);
 
-/* Sets new length. Must not be greater than capacity. */
+/*
+Sets new length. Must not be greater than capacity. Capacity remains the same.
+*/
 void vec_set_len(Vec *, size_t);
 
 /*

@@ -239,8 +239,10 @@ ed_handle_signal(struct Ed *const ed, const int signal)
 static void
 ed_flush_buf(struct Ed *const ed)
 {
+	/* Write buffer to terminal */
 	term_write(vec_items(ed->buf), vec_len(ed->buf));
-	vec_clr(ed->buf);
+	/* Set the length to zero to continue appending characters to the beginning */
+	vec_set_len(ed->buf, 0);
 }
 
 static void
@@ -321,7 +323,7 @@ ed_on_quit_press(struct Ed *const ed)
 
 		/* Set message with remaining count if no need to quit */
 		if (!ed_need_to_quit(ed))
-			ed_set_msg(ed, "File is dirty. Presses remain: %hhu.", ed->quit_presses_rem);
+			ed_set_msg(ed, "Changes not saved. Presses: %hhu.", ed->quit_presses_rem);
 	}
 }
 
