@@ -128,12 +128,12 @@ $ make gen-readme
 	<tbody><tr>
 		<th>C</th>
 		<th>12</th>
-		<th>2288</th>
+		<th>2284</th>
 		<th>300</th>
-		<th>361</th>
-		<th>1627</th>
-		<th>268</th>
-		<th>55209</th>
+		<th>360</th>
+		<th>1624</th>
+		<th>267</th>
+		<th>55064</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>14</th>
@@ -201,12 +201,12 @@ $ make gen-readme
 	<tfoot><tr>
 		<th>Total</th>
 		<th>34</th>
-		<th>3191</th>
+		<th>3187</th>
 		<th>527</th>
-		<th>551</th>
-		<th>2113</th>
-		<th>268</th>
-    	<th>77261</th>
+		<th>550</th>
+		<th>2110</th>
+		<th>267</th>
+    	<th>77116</th>
 	</tr></tfoot>
 	</table>
 

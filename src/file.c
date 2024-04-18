@@ -98,20 +98,13 @@ file_break_line(struct File *const file, const size_t idx, const size_t pos)
 	struct Line new_line;
 	line_init(&new_line);
 
+	/* Update characters and renders if new line is not empty */
 	if (new_len > 0) {
 		/* Copy chars to new line */
 		vec_append(new_line.chars, vec_get(line->chars, pos), new_len);
 		/* Render new line */
 		line_render(&new_line);
-	}
 
-	/* Insert new line */
-	vec_ins(file->lines, idx + 1, &new_line, 1);
-
-	/* Update broken line's length and render if new line is not empty */
-	if (new_len > 0) {
-		/* Update line pointer after insertion because of possible reallocation */
-		line = vec_get(file->lines, idx);
 		/* Update broken line's length */
 		vec_set_len(line->chars, pos);
 		/* Render line with new length */
@@ -119,6 +112,9 @@ file_break_line(struct File *const file, const size_t idx, const size_t pos)
 		/* Shrink broken line's capacity if needed */
 		vec_shrink(line->chars, 0);
 	}
+
+	/* Insert new line */
+	vec_ins(file->lines, idx + 1, &new_line, 1);
 
 	/* Mark file as dirty because of new line */
 	file->is_dirty = 1;
