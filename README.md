@@ -128,12 +128,12 @@ $ make gen-readme
 	<tbody><tr>
 		<th>C</th>
 		<th>12</th>
-		<th>2276</th>
+		<th>2274</th>
 		<th>299</th>
-		<th>359</th>
+		<th>357</th>
 		<th>1618</th>
 		<th>263</th>
-		<th>55011</th>
+		<th>54772</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>14</th>
@@ -201,12 +201,12 @@ $ make gen-readme
 	<tfoot><tr>
 		<th>Total</th>
 		<th>34</th>
-		<th>3179</th>
+		<th>3177</th>
 		<th>526</th>
-		<th>549</th>
+		<th>547</th>
 		<th>2104</th>
 		<th>263</th>
-    	<th>77063</th>
+    	<th>76824</th>
 	</tr></tfoot>
 	</table>
 
@@ -214,17 +214,15 @@ $ make gen-readme
 
 |Path|Line|Description|
 |-|-|-|
-|**src/main.c**|**1**|**v0.3: Try to make functions smaller up to 25-30 lines.**|
-|**src/main.c**|**2**|**v0.3: Make functions self-sufficient: do one thing and do it right. Be prepared for all argument values. Validate using assert rather than continuing with incorrect data.**|
-|**src/main.c**|**3**|**v0.3: Add more good docs and comment. Also doc arguments: values, asserts, etc.**|
-|**src/main.c**|**4**|**v0.3: Create API: replace assert and err.h with ints and NULLs.**|
-|**src/main.c**|**5**|**v0.4: Create Cell struct to handle all symbols including UTF-8. Create structs Win->Renders->Render->Cells->Cell. Rerender lines on window side**|
-|**src/main.c**|**6**|**v0.4: Use linked list for lines array and line's content parts.**|
-|**src/main.c**|**7**|**v0.4: Remember last position per line.**|
-|**src/main.c**|**8**|**v0.4: Rewrite moving functions with more unambiguous behavior and minimal scrolling.**|
-|**src/main.c**|**9**|**v0.5: Undo operations. Also rename "del" to "remove" where needed.**|
-|**src/main.c**|**10**|**v0.5: Add key settings for escape sequences. For example, CFG_KEY_MV_UP_2 = "..."**|
-|**src/main.c**|**11**|**v0.5: Add local clipboard. Use it in functions.**|
-|**src/main.c**|**12**|**v0.5: Xclip patch to use with local clipboard.**|
-|**src/main.c**|**13**|**v0.6: Support huge files.**|
-|**src/main.c**|**14**|**v0.6: Add tests.**|
+|**src/main.c**|**1**|**v0.3: Add more good docs and comment. Also doc arguments: values, asserts, etc.**|
+|**src/main.c**|**2**|**v0.3: Create API: replace assert and err.h with ints and NULLs?**|
+|**src/main.c**|**3**|**v0.4: Create Cell struct to handle all symbols including UTF-8. Create structs Win->Renders->Render->Cells->Cell. Rerender lines on window side**|
+|**src/main.c**|**4**|**v0.4: Use linked list for lines array and line's content parts.**|
+|**src/main.c**|**5**|**v0.4: Remember last position per line.**|
+|**src/main.c**|**6**|**v0.4: Rewrite moving functions with more unambiguous behavior and minimal scrolling.**|
+|**src/main.c**|**7**|**v0.5: Undo operations. Also rename "del" to "remove" where needed.**|
+|**src/main.c**|**8**|**v0.5: Add key settings for escape sequences. For example, CFG_KEY_MV_UP_2 = "..."**|
+|**src/main.c**|**9**|**v0.5: Add local clipboard. Use it in functions.**|
+|**src/main.c**|**10**|**v0.5: Xclip patch to use with local clipboard.**|
+|**src/main.c**|**11**|**v0.6: Support huge files.**|
+|**src/main.c**|**12**|**v0.6: Add tests.**|

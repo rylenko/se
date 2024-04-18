@@ -360,7 +360,7 @@ win_mv_left(struct Win *const win, size_t times)
 void
 win_mv_right(struct Win *const win, size_t times)
 {
-	size_t lines_cnt = file_lines_cnt(win->file);
+	const size_t lines_cnt = file_lines_cnt(win->file);
 	size_t line_len = file_line_len(win->file, win_curr_line_idx(win));
 
 	while (times-- > 0) {
@@ -407,7 +407,7 @@ win_mv_to_begin_of_line(struct Win *const win)
 void
 win_mv_to_end_of_file(struct Win *const win)
 {
-	size_t lines_cnt = file_lines_cnt(win->file);
+	const size_t lines_cnt = file_lines_cnt(win->file);
 	/* Move to begin of last line */
 	win_mv_to_begin_of_line(win);
 

@@ -1,7 +1,5 @@
-/* TODO: v0.3: Try to make functions smaller up to 25-30 lines. */
-/* TODO: v0.3: Make functions self-sufficient: do one thing and do it right. Be prepared for all argument values. Validate using assert rather than continuing with incorrect data.  */
 /* TODO: v0.3: Add more good docs and comment. Also doc arguments: values, asserts, etc. */
-/* TODO: v0.3: Create API: replace assert and err.h with ints and NULLs. */
+/* TODO: v0.3: Create API: replace assert and err.h with ints and NULLs? */
 /* TODO: v0.4: Create Cell struct to handle all symbols including UTF-8. Create structs Win->Renders->Render->Cells->Cell. Rerender lines on window side */
 /* TODO: v0.4: Use linked list for lines array and line's content parts. */
 /* TODO: v0.4: Remember last position per line. */
