@@ -15,8 +15,8 @@ void win_close(Win *);
 /* Gets current line's index. */
 size_t win_curr_line_idx(const Win *);
 
-/* Gets current line content's index. */
-size_t win_curr_line_cont_idx(const Win *);
+/* Gets current line char's index. */
+size_t win_curr_line_char_idx(const Win *);
 
 /* Breaks current line at cursor position. */
 void win_break_line(Win *);

@@ -36,8 +36,8 @@ char file_is_dirty(const File *);
 /* Deletes line by its index. */
 void file_del_line(File *, size_t idx);
 
-/* Finds line by passed index and returns its raw content. */
-const char *file_line_cont(const File *, size_t);
+/* Finds line by passed index and returns its raw chars. */
+const char *file_line_chars(const File *, size_t);
 
 /* Finds line by passed index and returns its length. */
 size_t file_line_len(const File *, size_t);

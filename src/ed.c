@@ -176,7 +176,7 @@ ed_draw_stat(struct Ed *const ed)
 	const char *const fname = path_get_fname(win_file_path(ed->win));
 	/* Get coordinates */
 	const size_t y = win_curr_line_idx(ed->win);
-	const size_t x = win_curr_line_cont_idx(ed->win);
+	const size_t x = win_curr_line_char_idx(ed->win);
 
 	/* Begin colored output */
 	esc_color_begin(ed->buf, &cfg_color_stat_fg, &cfg_color_stat_bg);

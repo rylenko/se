@@ -19,15 +19,15 @@ enum {
 
 /* Line of the opened file. */
 struct Line {
-	Vec *cont; /* Raw content of the line. Does not contain '\n' or '\0' */
+	Vec *chars; /* Raw content of the line. Does not contain '\n' or '\0' */
 	char *render; /* Rendered version of the content */
 	size_t render_len; /* Length of rendered content */
 };
 
-/* Internal information about the open file. */
+/* Information about the open file. */
 struct File {
 	char *path; /* Path of readed file. This is where the default save occurs */
-	char is_dirty; /* The file has been modified and not saved */
+	char is_dirty; /* If set, then the file has unsaved changes */
 	Vec *lines; /* Lines of file. There is always at least one line */
 };
 
@@ -52,9 +52,7 @@ Reads a line from a file without `'\n'`. Returns `NULL` if `EOF` is reached.
 */
 static struct Line *line_read(struct Line *, FILE *);
 
-/*
-Renders line's content how it should look in the window and frees old content.
-*/
+/* Renders line chars how it look in the window. */
 static void line_render(struct Line *);
 
 /*
@@ -80,9 +78,9 @@ file_absorb_next_line(struct File *const file, const size_t idx)
 	struct Line *const src = vec_get(file->lines, idx + 1);
 
 	/* Extending with empty line is useless */
-	if (vec_len(src->cont) > 0) {
-		/* Extend specified line with next line and render new content */
-		vec_append(dest->cont, vec_items(src->cont), vec_len(src->cont));
+	if (vec_len(src->chars) > 0) {
+		/* Extend current line with next line and rerender extended line */
+		vec_append(dest->chars, vec_items(src->chars), vec_len(src->chars));
 		line_render(dest);
 	}
 	/* Delete absorbed line */
@@ -96,13 +94,13 @@ void
 file_break_line(struct File *const file, const size_t idx, const size_t pos)
 {
 	struct Line *line = vec_get(file->lines, idx);
-	const size_t new_len = vec_len(line->cont) - pos;
+	const size_t new_len = vec_len(line->chars) - pos;
 	struct Line new_line;
 	line_init(&new_line);
 
 	if (new_len > 0) {
-		/* Copy content to new line */
-		vec_append(new_line.cont, vec_get(line->cont, pos), new_len);
+		/* Copy chars to new line */
+		vec_append(new_line.chars, vec_get(line->chars, pos), new_len);
 		/* Render new line */
 		line_render(&new_line);
 	}
@@ -115,11 +113,11 @@ file_break_line(struct File *const file, const size_t idx, const size_t pos)
 		/* Update line pointer after insertion because of possible reallocation */
 		line = vec_get(file->lines, idx);
 		/* Update broken line's length */
-		vec_set_len(line->cont, pos);
+		vec_set_len(line->chars, pos);
 		/* Render line with new length */
 		line_render(line);
 		/* Shrink broken line's capacity if needed */
-		vec_shrink(line->cont, 0);
+		vec_shrink(line->chars, 0);
 	}
 
 	/* Mark file as dirty because of new line */
@@ -147,7 +145,7 @@ file_del_char(struct File *const file, const size_t idx, const size_t pos)
 {
 	/* Delete character and update render */
 	struct Line *const line = vec_get(file->lines, idx);
-	vec_del(line->cont, pos);
+	vec_del(line->chars, pos);
 	line_render(line);
 
 	/* Mark file as dirty */
@@ -173,7 +171,7 @@ file_ins_char(
 ) {
 	/* Insert character to file and update line's render */
 	struct Line *const line = vec_get(file->lines, idx);
-	vec_ins(line->cont, pos, &ch, 1);
+	vec_ins(line->chars, pos, &ch, 1);
 	line_render(line);
 
 	/* Mark file as dirty */
@@ -200,17 +198,17 @@ file_is_dirty(const struct File *const file)
 }
 
 const char*
-file_line_cont(const struct File *const file, const size_t idx)
+file_line_chars(const struct File *const file, const size_t idx)
 {
 	const struct Line *const line = vec_get(file->lines, idx);
-	return vec_items(line->cont);
+	return vec_items(line->chars);
 }
 
 size_t
 file_line_len(const struct File *const file, const size_t idx)
 {
 	const struct Line *const line = vec_get(file->lines, idx);
-	return vec_len(line->cont);
+	return vec_len(line->chars);
 }
 
 const char*
@@ -348,7 +346,7 @@ file_search(
 		/* Move to another line */
 		*idx += DIR_FWD == dir ? 1 : -1;
 		line = vec_get(file->lines, *idx);
-		*pos = DIR_FWD == dir ? 0 : vec_len(line->cont);
+		*pos = DIR_FWD == dir ? 0 : vec_len(line->chars);
 	}
 	return 0;
 }
@@ -367,8 +365,8 @@ file_write(const struct File *const file, FILE *const f)
 void
 line_free(struct Line *const line)
 {
-	/* Free raw content and render */
-	vec_free(line->cont);
+	/* Free raw chars and render */
+	vec_free(line->chars);
 	free(line->render);
 }
 
@@ -376,7 +374,7 @@ static void
 line_init(struct Line *const line)
 {
 	/* Initialize line */
-	line->cont = vec_alloc(sizeof(char), 128);
+	line->chars = vec_alloc(sizeof(char), 128);
 	line->render = NULL;
 	line->render_len = 0;
 }
@@ -395,7 +393,7 @@ line_read(struct Line *const line, FILE *const f)
 		if (ferror(f) != 0)
 			err(EXIT_FAILURE, "Failed to read line's character");
 
-		if (vec_len(line->cont) == 0) {
+		if (vec_len(line->chars) == 0) {
 			/* First character is EOF. So there is no more lines */
 			if (EOF == ch) {
 				line_free(line);
@@ -410,11 +408,11 @@ line_read(struct Line *const line, FILE *const f)
 		if ('\n' == ch || EOF == ch)
 			break;
 		/* Append readed character */
-		vec_append(line->cont, &ch, 1);
+		vec_append(line->chars, &ch, 1);
 	}
 
-	/* Shrink line's content to fit */
-	vec_shrink(line->cont, 1);
+	/* Shrink chars capacity to fit */
+	vec_shrink(line->chars, 1);
 	/* Render readed line */
 	line_render(line);
 	return line;
@@ -425,36 +423,36 @@ line_render(struct Line *const line)
 {
 	size_t i;
 	size_t tabs = 0;
-	const char *const cont = vec_items(line->cont);
-	const size_t len = vec_len(line->cont);
+	const char *const chars = vec_items(line->chars);
+	const size_t len = vec_len(line->chars);
 
 	/* Free old render */
 	free(line->render);
 	line->render = NULL;
 	line->render_len = 0;
 
-	/* No content to render */
+	/* No chars to render */
 	if (0 == len)
 		return;
 
 	/* Calculate tabs count */
-	for (i = 0; i < vec_len(line->cont); i++) {
-		if ('\t' == cont[i])
+	for (i = 0; i < vec_len(line->chars); i++) {
+		if ('\t' == chars[i])
 			tabs++;
 	}
 	/* Allocate render buffer */
 	line->render = malloc_err(len + (CFG_TAB_SIZE - 1) * tabs + 1);
 
-	/* Render content */
-	for (i = 0; i < vec_len(line->cont); i++) {
-		if ('\t' == cont[i]) {
+	/* Render chars */
+	for (i = 0; i < vec_len(line->chars); i++) {
+		if ('\t' == chars[i]) {
 			/* Expand tab with spaces */
 			line->render[line->render_len++] = ' ';
 			while (line->render_len % CFG_TAB_SIZE != 0)
 				line->render[line->render_len++] = ' ';
 		} else {
 			/* Render simple character */
-			line->render[line->render_len++] = *(char *)vec_get(line->cont, i);
+			line->render[line->render_len++] = *(char *)vec_get(line->chars, i);
 		}
 	}
 }
@@ -469,17 +467,17 @@ line_search(
 	const char *res = NULL;
 
 	/* Validate accepted index */
-	assert(*idx <= vec_len(line->cont));
+	assert(*idx <= vec_len(line->chars));
 	/* Check line is empty */
-	if (vec_len(line->cont) == 0)
+	if (vec_len(line->chars) == 0)
 		return 0;
 
 	switch (dir) {
 	case DIR_BWD:
-		res = strrstr(vec_items(line->cont), query, *idx);
+		res = strrstr(vec_items(line->chars), query, *idx);
 		break;
 	case DIR_FWD:
-		res = strstr(vec_get(line->cont, *idx), query);
+		res = strstr(vec_get(line->chars, *idx), query);
 		break;
 	}
 
@@ -487,16 +485,16 @@ line_search(
 	if (NULL == res)
 		return 0;
 	/* Set result index and return success code */
-	*idx = res - (char *)vec_items(line->cont);
+	*idx = res - (char *)vec_items(line->chars);
 	return 1;
 }
 
 static size_t
 line_write(const struct Line *const line, FILE *const f)
 {
-	/* Write line's content and check returned value */
-	const size_t len = vec_len(line->cont);
-	const size_t wrote = fwrite(vec_items(line->cont), sizeof(char), len, f);
+	/* Write line's chars and check returned value */
+	const size_t len = vec_len(line->chars);
+	const size_t wrote = fwrite(vec_items(line->chars), sizeof(char), len, f);
 	/* Check errors */
 	if (wrote != len)
 		err(EXIT_FAILURE, "Failed to write line with %zu bytes", len);

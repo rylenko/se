@@ -31,7 +31,7 @@ term_get_win_size(struct winsize *const win_size)
 }
 
 void
-term_init(int ifd, int ofd)
+term_init(const int ifd, const int ofd)
 {
 	struct termios raw_termios;
 
