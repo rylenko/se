@@ -1,8 +1,7 @@
-#include <assert.h>
+#include <errno.h>
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
-#include "alloc.h"
 #include "math.h"
 #include "vec.h"
 
@@ -15,24 +14,30 @@ struct Vec {
 };
 
 /* Grows vector's capacity for new length if needed. */
-static void vec_grow_if_needed(struct Vec *, size_t);
+static int vec_grow_if_needed(struct Vec *, size_t);
 
-/* Reallocates vector with new capacity. */
-static void vec_realloc(struct Vec *, size_t);
+/*
+Reallocates vector with new capacity.
+
+Returns 0 on success and -1 on error.
+*/
+static int vec_realloc(struct Vec *, size_t);
 
 struct Vec*
 vec_alloc(const size_t item_size, const size_t cap_step)
 {
-	struct Vec *const vec = calloc_err(1, sizeof(*vec));
+	struct Vec *const vec = calloc(1, sizeof(*vec));
+	if (NULL == vec)
+		return NULL;
 	vec->item_size = item_size;
 	vec->cap_step = cap_step;
 	return vec;
 }
 
-void
+int
 vec_append(struct Vec *const vec, const void *const items, const size_t len)
 {
-	vec_ins(vec, vec->len, items, len);
+	return vec_ins(vec, vec->len, items, len);
 }
 
 size_t
@@ -41,11 +46,14 @@ vec_cap(const struct Vec *const vec)
 	return vec->cap;
 }
 
-void
+int
 vec_del(struct Vec *const vec, const size_t idx)
 {
 	/* Validate index */
-	assert(idx < vec->len);
+	if (idx >= vec->len) {
+		errno = EINVAL;
+		return -1;
+	}
 
 	/* Move items left to overlap bytes */
 	memmove(
@@ -54,24 +62,29 @@ vec_del(struct Vec *const vec, const size_t idx)
 		(--vec->len - idx) * vec->item_size
 	);
 	/* Shrink vector if there is too much free space */
-	vec_shrink(vec, 0);
+	return vec_shrink(vec, 0);
 }
 
 void*
 vec_get(const struct Vec *const vec, const size_t idx)
 {
-	assert(idx < vec->len);
+	if (idx >= vec->len) {
+		errno = EINVAL;
+		return NULL;
+	}
 	return &vec->items[idx * vec->item_size];
 }
 
-static void
+static int
 vec_grow_if_needed(struct Vec *const vec, const size_t new_len)
 {
-	if (new_len > vec->cap)
-		vec_realloc(vec, MAX(vec->cap + vec->cap_step, new_len));
+	/* Get new capacity */
+	const size_t new_cap = MAX(vec->cap + vec->cap_step, new_len);
+	/* Grow using new capacity if new length greater than current capacity */
+	return new_len <= vec->cap ? 0 : vec_realloc(vec, new_cap);
 }
 
-void
+int
 vec_ins(
 	struct Vec *const vec,
 	const size_t idx,
@@ -79,10 +92,14 @@ vec_ins(
 	const size_t len
 ) {
 	/* Validate index */
-	assert(idx <= vec->len);
+	if (idx > vec->len) {
+		errno = EINVAL;
+		return -1;
+	}
 
 	/* Grow if there is no space for new items */
-	vec_grow_if_needed(vec, vec->len + len);
+	if (vec_grow_if_needed(vec, vec->len + len) == -1)
+		return -1;
 	/* Reserve space for new items */
 	memmove(
 		&vec->items[(idx + len) * vec->item_size],
@@ -92,6 +109,7 @@ vec_ins(
 	vec->len += len;
 	/* Copy new item */
 	memcpy(&vec->items[idx * vec->item_size], items, len * vec->item_size);
+	return 0;
 }
 
 void
@@ -117,19 +135,24 @@ static void
 vec_realloc(struct Vec *const vec, const size_t new_cap)
 {
 	/* Reallocates items and updates the capacity */
-	vec->items = realloc_err(vec->items, new_cap * vec->item_size);
+	if (NULL == (vec->items = realloc(vec->items, new_cap * vec->item_size)))
+		return -1;
 	vec->cap = new_cap;
+	return 0;
 }
 
 void
 vec_set_len(struct Vec *const vec, const size_t len)
 {
 	/* Validate and set new length */
-	assert(len <= vec->cap);
+	if (len > vec->cap) {
+		errno = EINVAL;
+		return -1;
+	}
 	vec->len = len;
 }
 
-void
+int
 vec_shrink(struct Vec *const vec, const char to_fit)
 {
 	if (0 == vec->len && vec->cap > 0) {
@@ -137,12 +160,15 @@ vec_shrink(struct Vec *const vec, const char to_fit)
 		free(vec->items);
 		vec->items = NULL;
 		vec->cap = 0;
-	} else if (
+		return 0;
+	}
+	if (
 		/* Reallocate items to equate capacity to length */
 		(to_fit && vec->len < vec->cap)
 		/* Reallocate if there is too much unused capacity */
 		|| vec->len + vec->cap_step <= vec->cap
 	) {
-		vec_realloc(vec, vec->len);
+		return vec_realloc(vec, vec->len);
 	}
+	return 0;
 }

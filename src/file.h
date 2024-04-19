@@ -27,8 +27,12 @@ void file_del_char(File *, size_t, size_t);
 /* Inserts character to the file's line at passed position. */
 void file_ins_char(File *, size_t, size_t, char);
 
-/* Inserts empty line at index. */
-void file_ins_empty_line(File *, size_t);
+/*
+Inserts empty line at index.
+
+Returns 0 on success and -1 on error.
+*/
+int file_ins_empty_line(File *, size_t);
 
 /* Checks that file is dirty. */
 char file_is_dirty(const File *);
@@ -52,11 +56,9 @@ size_t file_line_render_len(const File *, size_t);
 size_t file_lines_cnt(const File *);
 
 /*
-Reads the contents of file.
+Reads the contents of file. Adds an empty line if there are no lines in the file. Do not forget to close file.
 
-Adds an empty line if there are no lines in the file.
-
-Do not forget to close file.
+Returns pointer to opaque struct on success or `NULL` on error.
 */
 File *file_open(const char *);
 

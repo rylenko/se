@@ -3,7 +3,10 @@
 
 #include <stddef.h>
 
-/* Copies passed string to new allocated memory. Do not forget to free it. */
+/*
+Returns allocated copy of passed string on success and `NULL` on error. Do not
+forget to free it.
+*/
 char *str_copy(const char *, size_t);
 
 /* Like `strstr`, but starts from right. */

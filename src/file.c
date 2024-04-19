@@ -1,11 +1,9 @@
 #include <assert.h>
-#include <err.h>
 #include <libgen.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-#include "alloc.h"
 #include "cfg.h"
 #include "file.h"
 #include "math.h"
@@ -33,26 +31,45 @@ struct File {
 	Vec *lines; /* Lines of file. There is always at least one line */
 };
 
-/* Reads lines from the file. */
-static void file_read(struct File *, FILE *);
+/*
+Allocates empty file container. Do not forget to free it.
+
+Returns pointer to opaque struct on succcess and `NULL` on error.
+*/
+static File *file_alloc(const char *);
+
+/*
+Reads lines from the file.
+
+Returns 0 on success and -1 on error. Note that you need to free readed lines
+on error.
+*/
+static int file_read(struct File *, FILE *);
 
 /*
 Writes lines to the file.
 
-Returns written bytes count.
+Returns written bytes count on success and 0 on error.
 */
 static size_t file_write(const struct File *, FILE *);
 
 /* Frees allocated line's buffer. */
 static void line_free(struct Line *);
 
-/* Initializes line with zeros. Do not forget to free it. */
-static void line_init(struct Line *);
+/*
+Initializes line with zeros. Do not forget to free it.
+
+Returns 0 on success and -1 on error.
+*/
+static int line_init(struct Line *);
 
 /*
 Reads a line from a file without `'\n'`. Returns `NULL` if `EOF` is reached.
+
+Returns 1 if line readed, 0 if EOF reached and there is no line to read and -1
+if error.
 */
-static struct Line *line_read(struct Line *, FILE *);
+static int line_read(struct Line *, FILE *);
 
 /* Renders line chars how it look in the window. */
 static void line_render(struct Line *);
@@ -69,7 +86,7 @@ static char line_search(struct Line *, size_t *, const char *, enum Dir);
 /*
 Writes a line to the file with `'\n'` at the end.
 
-Returns written bytes count.
+Returns written bytes count on success and 0 on error.
 */
 static size_t line_write(const struct Line *, FILE *);
 
@@ -90,6 +107,33 @@ file_absorb_next_line(struct File *const file, const size_t idx)
 
 	/* Mark file as dirty */
 	file->is_dirty = 1;
+}
+
+static File*
+file_alloc(const char *const path)
+{
+	/* Allocate opaque struct */
+	struct File *file = malloc(sizeof(*file));
+	if (NULL == file)
+		return NULL;
+
+	/* Copy opened path */
+	if (NULL == (file->path = str_copy(path, strlen(path))))
+		goto err_free_opaque;
+
+	/* Allocate lines container */
+	file->lines = vec_alloc(sizeof(struct Line), FILE_LINES_CAP_STEP);
+	if (NULL == file->lines)
+		goto err_free_opaque_and_path;
+
+	/* Initialize other fields */
+	file->is_dirty = 0;
+	return file;
+err_free_opaque_and_path:
+	free(file->path);
+err_free_opaque:
+	free(file);
+	return NULL;
 }
 
 void
@@ -125,17 +169,7 @@ file_break_line(struct File *const file, const size_t idx, const size_t pos)
 void
 file_close(struct File *const file)
 {
-	size_t len = vec_len(file->lines);
-
-	/* Free lines  */
-	while (len-- > 0)
-		line_free(vec_get(file->lines, len));
-	vec_free(file->lines);
-
-	/* Freeing the path since we cloned it earlier */
-	free(file->path);
-	/* Free allocated opaque struct */
-	free(file);
+	file_free(file);
 }
 
 void
@@ -161,6 +195,23 @@ file_del_line(struct File *const file, const size_t idx)
 	file->is_dirty = 1;
 }
 
+static void
+file_free(struct File *const file)
+{
+	struct Line *lines = vec_items(file->lines);
+	size_t len = vec_len(file->lines);
+
+	/* Free lines  */
+	while (len-- > 0)
+		line_free(&lines[len]);
+	vec_free(file->lines);
+
+	/* Freeing the path since we cloned it earlier */
+	free(file->path);
+	/* Free allocated opaque struct */
+	free(file);
+}
+
 void
 file_ins_char(
 	struct File *const file,
@@ -177,17 +228,22 @@ file_ins_char(
 	file->is_dirty = 1;
 }
 
-void
+int
 file_ins_empty_line(struct File *const file, const size_t idx)
 {
 	/* Initialize empty line */
 	struct Line empty_line;
-	line_init(&empty_line);
+	if (line_init(&empty_line) == -1)
+		return -1;
 	/* Insert empty line */
-	vec_ins(file->lines, idx, &empty_line, 1);
+	if (vec_ins(file->lines, idx, &empty_line, 1) == -1) {
+		line_free(&empty_line);
+		return -1;
+	}
 
 	/* Mark file as dirty */
 	file->is_dirty = 1;
+	return 0;
 }
 
 char
@@ -235,26 +291,34 @@ file_open(const char *const path)
 {
 	struct Line empty_line;
 	FILE *inner_file;
+	/* Allocate opaque struct */
+	struct File *const file = file_alloc(path);
+	if (NULL == file)
+		return NULL;
 
-	/* Allocate opaque struct and initialize it */
-	struct File *file = malloc_err(sizeof(*file));
-	file->path = str_copy(path, strlen(path));
-	file->is_dirty = 0;
-	file->lines = vec_alloc(sizeof(struct Line), FILE_LINES_CAP_STEP);
-
-	/* Open file, read lines and close the file */
+	/* Open file using path */
 	if (NULL == (inner_file = fopen(path, "r")))
-		err(EXIT_FAILURE, "Failed to open file %s", path);
-	file_read(file, inner_file);
+		goto err_free_opaque;
+	/* Read lines */
+	if (file_read(file, inner_file) == -1)
+		goto err_free_opaque_and_close_file;
+	/* Close opened file */
 	if (fclose(inner_file) == EOF)
-		err(EXIT_FAILURE, "Failed to close readed file");
+		goto err_free_opaque;
 
 	/* Add empty line if there is no lines */
 	if (vec_len(file->lines) == 0) {
-		line_init(&empty_line);
-		vec_append(file->lines, &empty_line, 1);
+		/* Insert empty line and reset dirty flag */
+		if (file_ins_empty_line(file, 0) == -1)
+			goto err_free_opaque;
+		file->is_dirty = 0;
 	}
 	return file;
+err_free_opaque_and_close_file:
+	fclose(inner_file);
+err_free_opaque:
+	file_free(file);
+	return NULL;
 }
 
 const char*
@@ -263,27 +327,39 @@ file_path(const struct File *const file)
 	return file->path;
 }
 
-static void
+static int
 file_read(struct File *const file, FILE *const inner)
 {
+	int ret;
 	struct Line line;
 	/* Read lines until EOF */
-	while (line_read(&line, inner) != NULL)
-		/* Append readed line */
-		vec_append(file->lines, &line, 1);
+	while (1) {
+		if (1 == (ret = line_read(&line, inner)) {
+			/* Append readed line */
+			if (vec_append(file->lines, &line, 1) == -1) {
+				/* Free line which we can't append */
+				line_free(&line);
+				return -1;
+			}
+		} else {
+			/* Return 0 on EOF and -1 if error during line reading */
+			return ret;
+		}
+	}
 }
 
 size_t
-file_save(struct File *const file, const char *const path)
+file_save(struct File *const file, const char *const custom_path)
 {
 	FILE *inner;
 	size_t len;
+	const char *const path = NULL == custom_path ? file->path : custom_path;
 
 	/* Try to open file */
-	if (NULL == (inner = fopen(path == NULL ? file->path : path, "w")))
-		return 0;
+	if (NULL == (inner = fopen(path, "w")))
+		return -1;
 	/* Write lines to opened file */
-	len = file_write(file, inner);
+	if (len = file_write(file, inner);
 	/* Flush and close the file */
 	if (fflush(inner) == EOF)
 		err(EXIT_FAILURE, "Failed to flush saved file");
@@ -351,10 +427,15 @@ static size_t
 file_write(const struct File *const file, FILE *const f)
 {
 	size_t i;
+	size_t ret;
 	size_t len = 0;
+	const struct Line *const lines = vec_items(file->lines);
 	/* Write lines and collect written length */
-	for (i = 0; i < vec_len(file->lines); i++)
-		len += line_write(vec_get(file->lines, i), f);
+	for (i = 0; i < vec_len(file->lines); i++) {
+		if (0 == (ret = line_write(&lines[i], f))
+			return 0;
+		len += ret;
+	}
 	return len;
 }
 
@@ -366,48 +447,57 @@ line_free(struct Line *const line)
 	free(line->render);
 }
 
-static void
+static int
 line_init(struct Line *const line)
 {
 	/* Initialize line */
-	line->chars = vec_alloc(sizeof(char), LINE_CHARS_CAP_STEP);
+	if (NULL == (line->chars = vec_alloc(sizeof(char), LINE_CHARS_CAP_STEP)))
+		return -1;
 	line->render = NULL;
 	line->render_len = 0;
+	return 0;
 }
 
-static struct Line*
+static int
 line_read(struct Line *const line, FILE *const f)
 {
 	int ch;
 	/* Initialize empty line to in which to read */
-	line_init(line);
+	if (line_init(line) == -1)
+		return -1;
 
 	/* Read characters */
 	while (1) {
 		/* Try to read character */
 		ch = fgetc(f);
 		if (ferror(f) != 0)
-			err(EXIT_FAILURE, "Failed to read line's character");
+			goto err;
 
 		/* First character is EOF. So there is no more lines */
 		if (vec_len(line->chars) == 0 && EOF == ch) {
 			/* Free unused line */
 			line_free(line);
-			return NULL;
+			return 0;
 		}
 
 		/* Check end of line reached */
 		if ('\n' == ch)
 			break;
 		/* Append readed character */
-		vec_append(line->chars, &ch, 1);
+		if (vec_append(line->chars, &ch, 1) == -1)
+			goto err;
 	}
 
 	/* Shrink chars capacity to fit */
-	vec_shrink(line->chars, 1);
+	if (vec_shrink(line->chars, 1) == -1)
+		goto err;
 	/* Render readed line */
-	line_render(line);
-	return line;
+	if (line_render(line) == -1)
+		goto err;
+	return 1;
+err:
+	line_free(line);
+	return -1;
 }
 
 static void
@@ -487,11 +577,9 @@ line_write(const struct Line *const line, FILE *const f)
 	/* Write line's chars and check returned value */
 	const size_t len = vec_len(line->chars);
 	const size_t wrote = fwrite(vec_items(line->chars), sizeof(char), len, f);
-	/* Check errors */
-	if (wrote != len)
-		err(EXIT_FAILURE, "Failed to write line with %zu bytes", len);
-	if (fputc('\n', f) == EOF)
-		err(EXIT_FAILURE, "Failed to write \n after %zu bytes", len);
-	/* Return written length. Do not forget about \n */
+	/* Check errors and append newline to the end */
+	if (wrote != len || fputc('\n', f) == EOF)
+		return 0;
+	/* Return written length. Do not forget about newline character */
 	return wrote + 1;
 }

@@ -127,22 +127,22 @@ $ make gen-readme
 	</tr></thead>
 	<tbody><tr>
 		<th>C</th>
-		<th>12</th>
-		<th>2274</th>
+		<th>11</th>
+		<th>2351</th>
 		<th>299</th>
-		<th>357</th>
-		<th>1618</th>
-		<th>263</th>
-		<th>54772</th>
+		<th>388</th>
+		<th>1664</th>
+		<th>297</th>
+		<th>55942</th>
 	</tr><tr>
 		<th>C Header</th>
-		<th>14</th>
-		<th>529</th>
-		<th>138</th>
-		<th>169</th>
-		<th>222</th>
+		<th>13</th>
+		<th>555</th>
+		<th>133</th>
+		<th>207</th>
+		<th>215</th>
 		<th>0</th>
-		<th>13103</th>
+		<th>13338</th>
 	</tr><tr>
 		<th>Markdown</th>
 		<th>2</th>
@@ -160,7 +160,7 @@ $ make gen-readme
 		<th>15</th>
 		<th>35</th>
 		<th>0</th>
-		<th>1393</th>
+		<th>1381</th>
 	</tr><tr>
 		<th>Shell</th>
 		<th>1</th>
@@ -200,13 +200,13 @@ $ make gen-readme
 	</tr></tbody>
 	<tfoot><tr>
 		<th>Total</th>
-		<th>34</th>
-		<th>3177</th>
-		<th>526</th>
-		<th>547</th>
-		<th>2104</th>
-		<th>263</th>
-    	<th>76824</th>
+		<th>32</th>
+		<th>3280</th>
+		<th>521</th>
+		<th>616</th>
+		<th>2143</th>
+		<th>297</th>
+    	<th>78217</th>
 	</tr></tfoot>
 	</table>
 
@@ -214,8 +214,8 @@ $ make gen-readme
 
 |Path|Line|Description|
 |-|-|-|
-|**src/main.c**|**1**|**v0.3: Add more good docs and comment. Also doc arguments: values, asserts, etc.**|
-|**src/main.c**|**2**|**v0.3: Create API: replace assert and err.h with ints and NULLs?**|
+|**src/main.c**|**1**|**v0.3: Check using valgrind and eyes that all memory is freed on errors.**|
+|**src/main.c**|**2**|**v0.3: Add more good docs and comment. Also doc arguments: values, etc.**|
 |**src/main.c**|**3**|**v0.4: Create Cell struct to handle all symbols including UTF-8. Create structs Win->Renders->Render->Cells->Cell. Rerender lines on window side**|
 |**src/main.c**|**4**|**v0.4: Use linked list for lines array and line's content parts.**|
 |**src/main.c**|**5**|**v0.4: Remember last position per line.**|

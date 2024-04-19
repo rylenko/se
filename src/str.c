@@ -1,15 +1,18 @@
 #include <string.h>
-#include "alloc.h"
+#include <stdlib.h>
 #include "str.h"
 
 char*
 str_copy(const char *const str, const size_t len)
 {
-	/* Allocate and copy memory. Do not forget about null byte */
-	char *const copy = malloc_err(len + 1);
-	memcpy(copy, str, len);
+	/* Allocate memory. Do not forget about null byte */
+	char *const copy = malloc(len + 1);
+	if (NULL == copy)
+		return NULL;
+
+	/* Copy memory. Do not forget about null byte */
 	copy[len] = 0;
-	return copy;
+	return memcpy(copy, str, len);
 }
 
 char*
