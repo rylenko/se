@@ -315,6 +315,7 @@ file_open(const char *const path)
 	}
 	return file;
 err_free_opaque_and_close_file:
+	/* Errors checking is useless here */
 	fclose(inner_file);
 err_free_opaque:
 	file_free(file);
