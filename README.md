@@ -17,13 +17,6 @@
 - Regular expressions.
 - Configuring using `~/.config/se/se.conf` or something like that.
 
-**Must be avoided**:
-
-- Multiple windows support.
-- File browser.
-- Support for plugins written in another language.
-- LSP.
-
 # Usage
 
 Open a file:
@@ -128,12 +121,12 @@ $ make gen-readme
 	<tbody><tr>
 		<th>C</th>
 		<th>11</th>
-		<th>2352</th>
+		<th>2353</th>
 		<th>299</th>
-		<th>389</th>
+		<th>390</th>
 		<th>1664</th>
 		<th>297</th>
-		<th>55981</th>
+		<th>56026</th>
 	</tr><tr>
 		<th>C Header</th>
 		<th>13</th>
@@ -146,12 +139,12 @@ $ make gen-readme
 	</tr><tr>
 		<th>Markdown</th>
 		<th>2</th>
-		<th>229</th>
-		<th>64</th>
+		<th>215</th>
+		<th>60</th>
 		<th>0</th>
-		<th>165</th>
+		<th>155</th>
 		<th>0</th>
-		<th>6056</th>
+		<th>5806</th>
 	</tr><tr>
 		<th>Makefile</th>
 		<th>2</th>
@@ -201,12 +194,12 @@ $ make gen-readme
 	<tfoot><tr>
 		<th>Total</th>
 		<th>32</th>
-		<th>3281</th>
-		<th>521</th>
-		<th>617</th>
-		<th>2143</th>
+		<th>3268</th>
+		<th>517</th>
+		<th>618</th>
+		<th>2133</th>
 		<th>297</th>
-    	<th>78256</th>
+    	<th>78051</th>
 	</tr></tfoot>
 	</table>
 
@@ -226,3 +219,4 @@ $ make gen-readme
 |**src/main.c**|**10**|**v0.5: Xclip patch to use with local clipboard.**|
 |**src/main.c**|**11**|**v0.6: Support huge files.**|
 |**src/main.c**|**12**|**v0.6: Add tests.**|
+|**src/main.c**|**13**|**v0.7: Make code patching easier.**|

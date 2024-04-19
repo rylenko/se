@@ -17,13 +17,6 @@
 - Regular expressions.
 - Configuring using `~/.config/se/se.conf` or something like that.
 
-**Must be avoided**:
-
-- Multiple windows support.
-- File browser.
-- Support for plugins written in another language.
-- LSP.
-
 # Usage
 
 Open a file:

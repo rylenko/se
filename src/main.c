@@ -10,6 +10,7 @@
 /* TODO: v0.5: Xclip patch to use with local clipboard. */
 /* TODO: v0.6: Support huge files. */
 /* TODO: v0.6: Add tests. */
+/* TODO: v0.7: Make code patching easier. */
 
 #include <err.h>
 #include <signal.h>
