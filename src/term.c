@@ -31,18 +31,21 @@ term_get_win_size(struct winsize *const win_size)
 int
 term_init(const int ifd, const int ofd)
 {
+	int ret;
 	struct termios raw_termios;
 
 	/* Set file descriptors */
 	term.ifd = ifd;
 	term.ofd = ofd;
 
-	if (
-		/* Save the original termios parameters */
-		tcgetattr(ifd, &term.orig_termios) == -1
-		/* Set terminal deinitializer on exit */
-		|| atexit((void (*)(void))term_deinit) != 0
-	)
+	/* Save the original termios parameters */
+	ret = tcgetattr(ifd, &term.orig_termios);
+	if (-1 == ret)
+		return -1;
+
+	/* Set terminal deinitializer on exit */
+	ret = atexit((void (*)(void))term_deinit);
+	if (0 != ret)
 		return -1;
 
 	/* Set raw mode parameters to termios */
@@ -73,7 +76,9 @@ term_wait_key(char *const seq, const size_t len)
 	We ignore the system call interruption that can occur when the window size is
 	changed, for example, in xterm.
 	*/
-	return readed == -1 && errno != EINTR ? -1 : readed;
+	if (-1 == readed && errno != EINTR)
+		return -1;
+	return readed;
 }
 
 int

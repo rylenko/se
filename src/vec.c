@@ -26,9 +26,12 @@ static int vec_realloc(struct Vec *, size_t);
 struct Vec*
 vec_alloc(const size_t item_size, const size_t cap_step)
 {
+	/* Allocate opaque struct */
 	struct Vec *const vec = calloc(1, sizeof(*vec));
 	if (NULL == vec)
 		return NULL;
+
+	/* Initialize some fields */
 	vec->item_size = item_size;
 	vec->cap_step = cap_step;
 	return vec;
@@ -46,28 +49,10 @@ vec_cap(const struct Vec *const vec)
 	return vec->cap;
 }
 
-int
-vec_del(struct Vec *const vec, const size_t idx)
-{
-	/* Validate index */
-	if (idx >= vec->len) {
-		errno = EINVAL;
-		return -1;
-	}
-
-	/* Move items left to overlap bytes */
-	memmove(
-		&vec->items[idx * vec->item_size],
-		&vec->items[(idx + 1) * vec->item_size],
-		(--vec->len - idx) * vec->item_size
-	);
-	/* Shrink vector if there is too much free space */
-	return vec_shrink(vec, 0);
-}
-
 void*
 vec_get(const struct Vec *const vec, const size_t idx)
 {
+	/* Validate index */
 	if (idx >= vec->len) {
 		errno = EINVAL;
 		return NULL;
@@ -78,10 +63,13 @@ vec_get(const struct Vec *const vec, const size_t idx)
 static int
 vec_grow_if_needed(struct Vec *const vec, const size_t new_len)
 {
-	/* Get new capacity */
-	const size_t new_cap = MAX(vec->cap + vec->cap_step, new_len);
+	const size_t new_cap;
 	/* Grow using new capacity if new length greater than current capacity */
-	return new_len <= vec->cap ? 0 : vec_realloc(vec, new_cap);
+	if (new_len > vec->cap) {
+		new_cap = MAX(vec->cap + vec->cap_step, new_len)
+		return vec_realloc(vec, new_cap);
+	}
+	return 0;
 }
 
 int
@@ -91,6 +79,7 @@ vec_ins(
 	const void *const items,
 	const size_t len
 ) {
+	int ret;
 	/* Validate index */
 	if (idx > vec->len) {
 		errno = EINVAL;
@@ -98,8 +87,10 @@ vec_ins(
 	}
 
 	/* Grow if there is no space for new items */
-	if (vec_grow_if_needed(vec, vec->len + len) == -1)
+	ret = vec_grow_if_needed(vec, vec->len + len);
+	if (-1 == ret)
 		return -1;
+
 	/* Reserve space for new items */
 	memmove(
 		&vec->items[(idx + len) * vec->item_size],
@@ -107,9 +98,9 @@ vec_ins(
 		(vec->len - idx) * vec->item_size
 	);
 	vec->len += len;
-	/* Copy new item */
+	/* Copy new item to memory */
 	memcpy(&vec->items[idx * vec->item_size], items, len * vec->item_size);
-	return 0;
+	return ret;
 }
 
 void
@@ -134,11 +125,33 @@ vec_len(const struct Vec *const vec)
 static void
 vec_realloc(struct Vec *const vec, const size_t new_cap)
 {
-	/* Reallocates items and updates the capacity */
-	if (NULL == (vec->items = realloc(vec->items, new_cap * vec->item_size)))
-		return -1;
+	/* Reallocate items and update the capacity */
 	vec->cap = new_cap;
-	return 0;
+	vec->items = realloc(vec->items, new_cap * vec->item_size);
+	return NULL == vec->items ? -1 : 0
+}
+
+int
+vec_remove(struct Vec *const vec, const size_t idx, void *const item)
+{
+	/* Validate index */
+	if (idx >= vec->len) {
+		errno = EINVAL;
+		return -1;
+	}
+
+	/* Write removed item to accepted pointer */
+	if (NULL != item)
+		memcpy(item, &vec->items[idx * vec->item_size], vec->item_size);
+
+	/* Move items left to overlap bytes */
+	memmove(
+		&vec->items[idx * vec->item_size],
+		&vec->items[(idx + 1) * vec->item_size],
+		(--vec->len - idx) * vec->item_size
+	);
+	/* Shrink vector if there is too much free space */
+	return vec_shrink(vec, 0);
 }
 
 void

@@ -33,13 +33,6 @@ void *vec_get(const Vec *, size_t);
 /* Returns pointer to vector's items. */
 void *vec_items(const Vec *);
 
-/*
-Finds and deletes item by its index.
-
-Returns 0 on success and -1 on error.
-*/
-int vec_del(Vec *, size_t);
-
 /* Frees allocated vector. */
 void vec_free(Vec *);
 
@@ -52,6 +45,16 @@ int vec_ins(Vec *, size_t, const void *, size_t);
 
 /* Returns length of the vector. */
 size_t vec_len(const Vec *);
+
+/*
+Finds and removes item by its index.
+
+If `errno` is not equal to `EINVAL`, then the item was removed and written to
+the passed pointer if it's not `NULL`.
+
+Returns 0 on success and -1 on error.
+*/
+int vec_remove(Vec *, size_t, void *);
 
 /*
 Sets new length. Must not be greater than capacity. Capacity remains the same.

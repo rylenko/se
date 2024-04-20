@@ -4,7 +4,7 @@
 
 - Ease of configuring, building and use.
 - Fast movement and editing.
-- The middle ground between readable code and a small code base of up to 3000 lines of code.
+- The middle ground between readable code and a small code base.
 - No dependencies.
 - Extensibility.
 
@@ -103,4 +103,3 @@ Regenerate README.md. Requires [scc](https://github.com/boyter/scc) and awk:
 ```
 $ make gen-readme
 ```
-
