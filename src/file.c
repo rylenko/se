@@ -125,16 +125,15 @@ file_absorb_next_line(struct File *const file, const size_t idx)
 	/* Append current line with next line's chars */
 	if (vec_len(next.chars) > 0) {
 		ret = line_append(curr, vec_items(next.chars), vec_len(next.chars));
-		if (-1 == ret) {
-			/* Free removed line which we can't to append */
-			line_free(&next);
-			return -1;
-		}
+		if (-1 == ret)
+			goto ret_free;
 	}
 
 	/* Mark file as dirty */
 	file->is_dirty = 1;
-	return 0;
+ret_free:
+	line_free(&next);
+	return ret;
 }
 
 static File*
@@ -248,17 +247,17 @@ file_del_line(struct File *const file, const size_t idx)
 	int ret;
 	struct Line line;
 
-	/* Free and delete the line */
+	/* Remove line using index */
 	ret = vec_remove(file->lines, idx, &line);
-	if (0 == ret) {
-		/* Mark file as dirty because of deleted line */
-		file->is_dirty = 1;
-		return 0;
-	}
 	/* See removing function docs. Line removed if argument is valid */
 	if (errno != EINVAL)
 		line_free(line);
-	return -1;
+	if (-1 == ret)
+		return -1;
+
+	/* Mark file as dirty because of deleted line */
+	file->is_dirty = 1;
+	return 0;
 }
 
 static void
