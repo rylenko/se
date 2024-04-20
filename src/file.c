@@ -125,16 +125,16 @@ file_absorb_next_line(struct File *const file, const size_t idx)
 	/* Append current line with next line's chars */
 	if (vec_len(next.chars) > 0) {
 		ret = line_append(curr, vec_items(next.chars), vec_len(next.chars));
-		if (-1 == ret)
-			goto err_free;
+		if (-1 == ret) {
+			/* Free removed line which we can't to append */
+			line_free(&next);
+			return -1;
+		}
 	}
 
 	/* Mark file as dirty */
 	file->is_dirty = 1;
-err_free:
-	/* Free absorbed line */
-	line_free(&next);
-	return -1;
+	return 0;
 }
 
 static File*
