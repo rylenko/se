@@ -181,6 +181,7 @@ file_break_line(struct File *const file, const size_t idx, const size_t pos)
 	if (-1 == ret)
 		return -1;
 
+	/* Copy characters from broken line to new line if its length is not zero */
 	new_len = vec_len(line->chars) - pos;
 	if (new_len > 0) {
 		/* Get start of part which we need to move to new line */
