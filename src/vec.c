@@ -13,13 +13,21 @@ struct Vec {
 	size_t cap_step; /* Step of growing and shrinking of dynamic array */
 };
 
-/* Grows vector's capacity for new length if needed. */
+/*
+Grows vector's capacity for new length if needed.
+
+Returns 0 on success and -1 on error.
+
+Sets `ENOMEM` if no memory to reallocate during the grow.
+*/
 static int vec_grow_if_needed(struct Vec *, size_t);
 
 /*
 Reallocates vector with new capacity.
 
 Returns 0 on success and -1 on error.
+
+Sets `ENOMEM` if no memory to reallocate during the shrink.
 */
 static int vec_realloc(struct Vec *, size_t);
 

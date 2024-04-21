@@ -35,6 +35,8 @@ struct File {
 Allocates empty file container. Do not forget to free it.
 
 Returns pointer to opaque struct on succcess and `NULL` on error.
+
+Sets `ENOMEM` if no memory to store file struct.
 */
 static File *file_alloc(const char *);
 
@@ -42,7 +44,8 @@ static File *file_alloc(const char *);
 Reads lines from the file.
 
 Returns 0 on success and -1 on error. Note that you need to free readed lines
-on error.
+
+Sets `ENOMEM` if no memory to store readed file.
 */
 static int file_read(struct File *, FILE *);
 
@@ -74,6 +77,8 @@ static void line_free(struct Line *);
 Initializes line with zeros. Do not forget to free it.
 
 Returns 0 on success and -1 on error.
+
+Sets `ENOMEM` if no memory to allocate vector for characters.
 */
 static int line_init(struct Line *);
 
@@ -82,6 +87,8 @@ Reads a line from a file without `'\n'`. Returns `NULL` if `EOF` is reached.
 
 Returns 1 if line readed, 0 if EOF reached and there is no line to read and -1
 if error.
+
+Sets `ENOMEM` if no memory to store readed line.
 */
 static int line_read(struct Line *, FILE *);
 
@@ -89,6 +96,8 @@ static int line_read(struct Line *, FILE *);
 Renders line chars how it look in the window.
 
 Returns 0 on success and -1 on error.
+
+Sets `ENOMEM` if no memory to allocate render string.
 */
 static int line_render(struct Line *);
 
@@ -254,6 +263,12 @@ file_del_line(struct File *const file, const size_t idx)
 {
 	int ret;
 	struct Line line;
+
+	/* Remember that file must contain at least one line */
+	if (vec_len(file->lines) <= 1) {
+		errno = ENOSYS;
+		return -1;
+	}
 
 	/* Remove line using index */
 	ret = vec_remove(file->lines, idx, &line);
@@ -709,7 +724,7 @@ line_render(struct Line *const line)
 
 	/* No chars to render */
 	if (vec_len(line->chars) == 0)
-		return;
+		return 0;
 
 	/* Calculate tabs count */
 	for (i = 0; i < vec_len(line->chars); i++) {

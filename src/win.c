@@ -45,7 +45,7 @@ Draws row on the window if exists or ~.
 
 Returns 0 on success and -1 on error.
 */
-int win_draw_line(const struct Win *, Vec *, unsigned short);
+static int win_draw_line(const struct Win *, Vec *, unsigned short);
 
 /*
 Gets the count of characters by which the part of line is expanded using tabs.
@@ -150,39 +150,28 @@ int
 win_del_line(struct Win *const win, size_t times)
 {
 	int ret;
-	size_t lines_cnt = file_lines_cnt(win->file);
 
 	if (0 == times)
 		return 0;
 
-	/* Remember that file must contain at least one line */
-	if (lines_cnt <= 1) {
-		errno = EINVAL;
-		return -1;
-	}
-
 	/* Get real repeat times */
-	times = MIN(times, lines_cnt - win->offset.rows - win->cur.row);
-	/* The file must contain at least one line */
-	if (times == lines_cnt)
-		times--;
+	times = MIN(times, file_lines_cnt(win->file) - win_curr_line_idx(win));
 
 	/* Remove column offsets */
 	win_mv_to_begin_of_line(win);
 
-	/* Delete lines */
 	while (times-- > 0) {
-		ret = file_del_line(win->file, win->offset.rows + win->cur.row);
+		/* Delete line */
+		ret = file_del_line(win->file, win_curr_line_idx(win));
 		if (-1 == ret)
 			return -1;
-		lines_cnt--;
-	}
 
-	/* Move up if we deleted the last line and stayed there */
-	if (win->offset.rows + win->cur.row == lines_cnt) {
-		ret = win_mv_up(win, 1);
-		if (-1 == ret)
-			return -1;
+		/* Move up if we deleted the last line and cursor stayed there */
+		if (win_curr_line_idx(win) == file_lines_cnt(win->file)) {
+			ret = win_mv_up(win, 1);
+			if (-1 == ret)
+				return -1;
+		}
 	}
 	return 0;
 }
@@ -215,7 +204,7 @@ win_draw_cur(const struct Win *const win, Vec *const vec)
 	esc_cur_set(vec, win->cur.row, exp_col - exp_offset_col);
 }
 
-int
+static int
 win_draw_line(
 	const struct Win *const win,
 	Vec *const buf,
@@ -258,7 +247,7 @@ win_draw_line(
 	return 0;
 }
 
-void
+int
 win_draw_lines(const struct Win *const win, Vec *const buf)
 {
 	int ret;
@@ -314,70 +303,6 @@ const char*
 win_file_path(const struct Win *const win)
 {
 	return file_path(win->file);
-}
-
-static int
-win_scroll(struct Win *const win)
-{
-	int ret;
-	const char *chars;
-	size_t line_len;
-	size_t line_idx;
-	size_t exp_offset_col;
-	size_t exp_col;
-
-	/* Scroll to overflowed cursor position. Useful after window resizing */
-	if (win->cur.row + STAT_ROWS_CNT >= win->size.ws_row) {
-		win->offset.rows += win->cur.row + STAT_ROWS_CNT + 1 - win->size.ws_row;
-		win->cur.row = win->size.ws_row - STAT_ROWS_CNT - 1;
-	}
-	if (win->cur.col >= win->size.ws_col) {
-		win->offset.cols += win->cur.col + 1 - win->size.ws_col;
-		win->cur.col = win->size.ws_col - 1;
-	}
-
-	/* Get current line index */
-	line_idx = win_curr_line_idx(win);
-
-	/* Get current line length */
-	ret = file_line_len(win->file, line_idx, &line_len);
-	if (-1 == ret)
-		return -1;
-	/* Get current line's chars */
-	chars = file_line_chars(win->file, line_idx);
-	if (NULL == chars)
-		return -1;
-
-	/* Check that cursor out of the line. Useful after move down and up */
-	if (win->offset.cols + win->cur.col > line_len) {
-		/* Check that line not in the window */
-		if (line_len <= win->offset.cols) {
-			win->offset.cols = 0 == line_len ? 0 : line_len - 1;
-			win->cur.col = 0 == line_len ? 0 : 1;
-		} else {
-			win->cur.col = line_len - win->offset.cols;
-		}
-	}
-
-	/*
-	Shift column offset until we see expanded cursor. Useful after moving between
-	lines with tabs
-	*/
-	while (1) {
-		/* Get expanded hidden column and expanded viewed column */
-		exp_col = win_exp_col(chars, line_len, win->offset.cols + win->cur.col)
-		exp_offset_col = win_exp_col(chars, line_len, win->offset.cols);
-
-		/* Check that diff between expansion is not greater than window's width */
-		if (exp_col - exp_offset_col < win->size.ws_col)
-			break;
-
-		/* TODO: can we shift here only by offset? */
-		/* Shift to view pointed content */
-		win->offset.cols++;
-		win->cur.col--;
-	}
-	return 0;
 }
 
 int
@@ -772,6 +697,70 @@ win_save_file_to_spare_dir(struct Win *const win, char *const path, size_t len)
 {
 	const size_t len = file_save_to_spare_dir(win->file, path, len);
 	return len;
+}
+
+static int
+win_scroll(struct Win *const win)
+{
+	int ret;
+	const char *chars;
+	size_t line_len;
+	size_t line_idx;
+	size_t exp_offset_col;
+	size_t exp_col;
+
+	/* Scroll to overflowed cursor position. Useful after window resizing */
+	if (win->cur.row + STAT_ROWS_CNT >= win->size.ws_row) {
+		win->offset.rows += win->cur.row + STAT_ROWS_CNT + 1 - win->size.ws_row;
+		win->cur.row = win->size.ws_row - STAT_ROWS_CNT - 1;
+	}
+	if (win->cur.col >= win->size.ws_col) {
+		win->offset.cols += win->cur.col + 1 - win->size.ws_col;
+		win->cur.col = win->size.ws_col - 1;
+	}
+
+	/* Get current line index */
+	line_idx = win_curr_line_idx(win);
+
+	/* Get current line length */
+	ret = file_line_len(win->file, line_idx, &line_len);
+	if (-1 == ret)
+		return -1;
+	/* Get current line's chars */
+	chars = file_line_chars(win->file, line_idx);
+	if (NULL == chars)
+		return -1;
+
+	/* Check that cursor out of the line. Useful after move down and up */
+	if (win->offset.cols + win->cur.col > line_len) {
+		/* Check that line not in the window */
+		if (line_len <= win->offset.cols) {
+			win->offset.cols = 0 == line_len ? 0 : line_len - 1;
+			win->cur.col = 0 == line_len ? 0 : 1;
+		} else {
+			win->cur.col = line_len - win->offset.cols;
+		}
+	}
+
+	/*
+	Shift column offset until we see expanded cursor. Useful after moving between
+	lines with tabs
+	*/
+	while (1) {
+		/* Get expanded hidden column and expanded viewed column */
+		exp_col = win_exp_col(chars, line_len, win->offset.cols + win->cur.col)
+		exp_offset_col = win_exp_col(chars, line_len, win->offset.cols);
+
+		/* Check that diff between expansion is not greater than window's width */
+		if (exp_col - exp_offset_col < win->size.ws_col)
+			break;
+
+		/* TODO: can we shift here only by offset? */
+		/* Shift to view pointed content */
+		win->offset.cols++;
+		win->cur.col--;
+	}
+	return 0;
 }
 
 int

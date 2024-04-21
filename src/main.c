@@ -1,3 +1,4 @@
+/* TODO: v0.3: errno comments and properly errno handling everywhere. */
 /* TODO: v0.3: Rename ed_proc_*_key to ed_try_proc_*_key? */
 /* TODO: v0.3: Check using valgrind and eyes that all memory is freed on errors. */
 /* TODO: v0.3: Try to read file chunks or try to use mmap. */

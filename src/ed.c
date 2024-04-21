@@ -124,15 +124,24 @@ ed_del_char(struct Ed *const ed)
 	ed->quit_presses_rem = CFG_DIRTY_FILE_QUIT_PRESSES_CNT;
 }
 
-static void
+static int
 ed_del_line(struct Ed *const ed)
 {
+	int ret;
+
 	/* Try to delete lines or set error message */
-	if (win_del_line(ed->win, ed_repeat_times(ed)) == -1)
-		ed_set_msg(ed, "A single line in a file cannot be deleted.");
-	else
+	ret = win_del_line(ed->win, ed_repeat_times(ed));
+	if (0 == ret) {
 		/* Set quit presses count after file change */
 		ed->quit_presses_rem = CFG_DIRTY_FILE_QUIT_PRESSES_CNT;
+		return 0;
+	}
+	/* Check if tried to delete last line */
+	if (ENOSYS == errno) {
+		ed_set_msg(ed, "A single line in a file cannot be deleted.");
+		return 0;
+	}
+	return -1;
 }
 
 void

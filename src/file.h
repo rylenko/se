@@ -57,6 +57,8 @@ char file_is_dirty(const File *);
 Deletes line by its index.
 
 Returns 0 on success and -1 on error.
+
+Sets `ENOSYS` if there is one last line left that cannot be deleted.
 */
 int file_del_line(File *, size_t idx);
 
