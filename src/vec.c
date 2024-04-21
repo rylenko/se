@@ -141,7 +141,7 @@ vec_len(const struct Vec *const vec)
 	return vec->len;
 }
 
-static void
+static int
 vec_realloc(struct Vec *const vec, const size_t new_cap)
 {
 	/* Reallocate items and update the capacity */
