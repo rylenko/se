@@ -40,7 +40,8 @@ vec_alloc(const size_t item_size, const size_t cap_step)
 int
 vec_append(struct Vec *const vec, const void *const items, const size_t len)
 {
-	return vec_ins(vec, vec->len, items, len);
+	int ret = vec_ins(vec, vec->len, items, len);
+	return ret;
 }
 
 size_t
@@ -63,12 +64,20 @@ vec_get(const struct Vec *const vec, const size_t idx)
 static int
 vec_grow_if_needed(struct Vec *const vec, const size_t new_len)
 {
+	int ret;
 	const size_t new_cap;
-	/* Grow using new capacity if new length greater than current capacity */
-	if (new_len > vec->cap) {
-		new_cap = MAX(vec->cap + vec->cap_step, new_len)
-		return vec_realloc(vec, new_cap);
-	}
+
+	/* No need to grow */
+	if (new_len <= vec->cap)
+		return 0;
+
+	/* Get optimal new capacity */
+	new_cap = MAX(vec->cap + vec->cap_step, new_len)
+
+	/* Grow with new capacity */
+	ret = vec_realloc(vec, new_cap);
+	if (-1 == ret)
+		return -1;
 	return 0;
 }
 
@@ -80,6 +89,7 @@ vec_ins(
 	const size_t len
 ) {
 	int ret;
+
 	/* Validate index */
 	if (idx > vec->len) {
 		errno = EINVAL;
@@ -98,9 +108,10 @@ vec_ins(
 		(vec->len - idx) * vec->item_size
 	);
 	vec->len += len;
+
 	/* Copy new item to memory */
 	memcpy(&vec->items[idx * vec->item_size], items, len * vec->item_size);
-	return ret;
+	return 0;
 }
 
 void
@@ -134,6 +145,8 @@ vec_realloc(struct Vec *const vec, const size_t new_cap)
 int
 vec_remove(struct Vec *const vec, const size_t idx, void *const item)
 {
+	int ret;
+
 	/* Validate index */
 	if (idx >= vec->len) {
 		errno = EINVAL;
@@ -150,8 +163,12 @@ vec_remove(struct Vec *const vec, const size_t idx, void *const item)
 		&vec->items[(idx + 1) * vec->item_size],
 		(--vec->len - idx) * vec->item_size
 	);
+
 	/* Shrink vector if there is too much free space */
-	return vec_shrink(vec, 0);
+	ret = vec_shrink(vec, 0);
+	if (-1 == ret)
+		return -1;
+	return 0;
 }
 
 void
@@ -168,20 +185,21 @@ vec_set_len(struct Vec *const vec, const size_t len)
 int
 vec_shrink(struct Vec *const vec, const char to_fit)
 {
+	int ret;
+
+	/* Free allocated items if vector is empty */
 	if (0 == vec->len && vec->cap > 0) {
-		/* Free allocated items if vector is empty */
 		free(vec->items);
 		vec->items = NULL;
 		vec->cap = 0;
 		return 0;
 	}
-	if (
-		/* Reallocate items to equate capacity to length */
-		(to_fit && vec->len < vec->cap)
-		/* Reallocate if there is too much unused capacity */
-		|| vec->len + vec->cap_step <= vec->cap
-	) {
-		return vec_realloc(vec, vec->len);
+
+	/* Realloc to equate capacity to length or if there is much unused space */
+	if ((to_fit && vec->len < vec->cap) || vec->len + vec->cap_step <= vec->cap) {
+		ret = vec_realloc(vec, vec->len);
+		if (-1 == ret)
+			return -1;
 	}
 	return 0;
 }

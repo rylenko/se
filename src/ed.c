@@ -7,7 +7,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/ioctl.h>
-#include "alloc.h"
 #include "cfg.h"
 #include "ed.h"
 #include "esc.h"

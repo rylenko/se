@@ -92,7 +92,8 @@ int file_line_render_len(const File *, size_t, size_t *);
 size_t file_lines_cnt(const File *);
 
 /*
-Reads the contents of file. Adds an empty line if there are no lines in the file. Do not forget to close file.
+Reads the contents of file. Adds an empty line if there are no lines in the
+file. Do not forget to close file.
 
 Returns pointer to opaque struct on success or `NULL` on error.
 */
@@ -126,6 +127,6 @@ Temporarily changes file if direction is backward, but then restores it.
 
 Returns 1 if result found, 0 if no result and -1 on error.
 */
-char file_search(File *, size_t *, size_t *, const char *, enum Dir);
+int file_search(File *, size_t *, size_t *, const char *, enum Dir);
 
 #endif /* _FILE_H */

@@ -64,6 +64,7 @@ int
 win_close(struct Win *const win)
 {
 	int ret;
+
 	/* Deinitialize the terminal */
 	ret = term_deinit();
 	if (-1 == ret)
@@ -149,36 +150,39 @@ int
 win_del_line(struct Win *const win, size_t times)
 {
 	int ret;
-	/* Remember that file must contain at least one line */
 	size_t lines_cnt = file_lines_cnt(win->file);
+
+	if (0 == times)
+		return 0;
+
+	/* Remember that file must contain at least one line */
 	if (lines_cnt <= 1) {
+		errno = EINVAL;
 		return -1;
 	}
 
-	if (times > 0) {
-		/* Get real repeat times */
-		times = MIN(times, lines_cnt - win->offset.rows - win->cur.row);
-		/* The file must contain at least one line */
-		if (times == lines_cnt)
-			times--;
+	/* Get real repeat times */
+	times = MIN(times, lines_cnt - win->offset.rows - win->cur.row);
+	/* The file must contain at least one line */
+	if (times == lines_cnt)
+		times--;
 
-		/* Remove column offsets */
-		win_mv_to_begin_of_line(win);
+	/* Remove column offsets */
+	win_mv_to_begin_of_line(win);
 
-		/* Delete lines */
-		while (times-- > 0) {
-			ret = file_del_line(win->file, win->offset.rows + win->cur.row);
-			if (-1 == ret)
-				return -1;
-			lines_cnt--;
-		}
+	/* Delete lines */
+	while (times-- > 0) {
+		ret = file_del_line(win->file, win->offset.rows + win->cur.row);
+		if (-1 == ret)
+			return -1;
+		lines_cnt--;
+	}
 
-		/* Move up if we deleted the last line and stayed there */
-		if (win->offset.rows + win->cur.row == lines_cnt) {
-			ret = win_mv_up(win, 1);
-			if (-1 == ret)
-				return -1;
-		}
+	/* Move up if we deleted the last line and stayed there */
+	if (win->offset.rows + win->cur.row == lines_cnt) {
+		ret = win_mv_up(win, 1);
+		if (-1 == ret)
+			return -1;
 	}
 	return 0;
 }
@@ -332,8 +336,10 @@ win_scroll(struct Win *const win)
 		win->cur.col = win->size.ws_col - 1;
 	}
 
-	/* Get current line's length */
+	/* Get current line index */
 	line_idx = win_curr_line_idx(win);
+
+	/* Get current line length */
 	ret = file_line_len(win->file, line_idx, &line_len);
 	if (-1 == ret)
 		return -1;
@@ -371,6 +377,7 @@ win_scroll(struct Win *const win)
 		win->offset.cols++;
 		win->cur.col--;
 	}
+	return 0;
 }
 
 int
@@ -397,32 +404,47 @@ win_ins_char(struct Win *const win, const char ch)
 	return 0;
 }
 
-void
+int
 win_ins_empty_line_below(struct Win *const win, const size_t times)
 {
-	size_t times_i = times;
+	int ret;
 
-	if (times > 0) {
-		/* Remove column offsets */
-		win_mv_to_begin_of_line(win);
-		/* Insert empty lines */
-		while (times_i-- > 0)
-			file_ins_empty_line(win->file, win_curr_line_idx(win) + 1);
-		/* Move to last inserted line */
-		win_mv_down(win, times);
+	if (0 == times)
+		return 0;
+
+	/* Remove column offsets */
+	win_mv_to_begin_of_line(win);
+
+	/* Insert empty lines */
+	while (times-- > 0)
+		ret = file_ins_empty_line(win->file, win_curr_line_idx(win) + 1);
+		if (-1 == ret)
+			return -1;
 	}
+
+	/* Move to last inserted line */
+	win_mv_down(win, times);
+	return 0;
 }
 
 void
 win_ins_empty_line_on_top(struct Win *const win, size_t times)
 {
-	if (times > 0) {
-		/* Reove column offsets */
-		win_mv_to_begin_of_line(win);
-		/* Insert empty lines */
-		while (times-- > 0)
-			file_ins_empty_line(win->file, win_curr_line_idx(win));
+	int ret;
+
+	if (0 == times)
+		return 0;
+
+	/* Reove column offsets */
+	win_mv_to_begin_of_line(win);
+
+	/* Insert empty lines */
+	while (times-- > 0) {
+		ret = file_ins_empty_line(win->file, win_curr_line_idx(win));
+		if (-1 == ret)
+			return -1;
 	}
+	return 0;
 }
 
 int
@@ -431,10 +453,13 @@ win_mv_down(struct Win *const win, size_t times)
 	int ret;
 	size_t lines_cnt = file_lines_cnt(win->file);
 
+	if (0 == times)
+		return 0;
+
 	while (times-- > 0) {
-		/* Break if there is no more space to move down */
+		/* Return if there is no more space to move down */
 		if (win->offset.rows + win->cur.row + 1 >= lines_cnt)
-			break;
+			return 0;
 
 		/* Check that there is no space in current window */
 		if (win->cur.row + STAT_ROWS_CNT + 1 == win->size.ws_row)
@@ -454,6 +479,9 @@ void
 win_mv_left(struct Win *const win, size_t times)
 {
 	int ret;
+
+	if (0 == times)
+		return 0;
 
 	while (times-- > 0) {
 		/* Move to the beginning of next line if there is not space to move right */
@@ -483,24 +511,32 @@ win_mv_left(struct Win *const win, size_t times)
 	return 0;
 }
 
-!!!!!!!!!!!!!!!!!!!!!!!!
-void
+int
 win_mv_right(struct Win *const win, size_t times)
 {
 	const size_t lines_cnt = file_lines_cnt(win->file);
-	size_t line_len = file_line_len(win->file, win_curr_line_idx(win));
+	size_t line_len;
+
+	if (0 == times)
+		return 0;
 
 	while (times-- > 0) {
+		/* Get line length */
+		int ret = file_line_len(win->file, win_curr_line_idx(win), &line_len);
+		if (-1 == ret)
+			return -1;
+
 		/* Move to the beginning of next line if there is not space to move right */
-		if (win->offset.cols + win->cur.col == line_len) {
+		if (win_curr_line_char_idx() == line_len) {
 			/* Check there is no next line */
-			if (win->offset.rows + win->cur.row + 1 == lines_cnt)
+			if (win_curr_line_idx() + 1 == lines_cnt)
 				break;
 
 			/* Move to the beginning of next line */
 			win_mv_to_begin_of_line(win);
-			win_mv_down(win, 1);
-			line_len = file_line_len(win->file, win_curr_line_idx(win));
+			ret = win_mv_down(win, 1);
+			if (-1 == ret)
+				return -1;
 		} else if (win->cur.col + 1 == win->size.ws_col) {
 			/* We are at the right of window */
 			win->offset.cols++;
@@ -511,7 +547,10 @@ win_mv_right(struct Win *const win, size_t times)
 	}
 
 	/* Fix expanded cursor column during right movement */
-	win_scroll(win);
+	ret = win_scroll(win);
+	if (-1 == ret)
+		return -1;
+	return 0;
 }
 
 void
@@ -535,6 +574,7 @@ void
 win_mv_to_end_of_file(struct Win *const win)
 {
 	const size_t lines_cnt = file_lines_cnt(win->file);
+
 	/* Move to begin of last line */
 	win_mv_to_begin_of_line(win);
 
@@ -548,11 +588,16 @@ win_mv_to_end_of_file(struct Win *const win)
 	}
 }
 
-void
+int
 win_mv_to_end_of_line(struct Win *const win)
 {
-	const size_t render_len = \
-		file_line_render_len(win->file, win_curr_line_idx(win));
+	const size_t line_idx = win_curr_line_idx(win);
+	size_t render_len;
+	int ret = file_line_render_len(win->file, line_idx, &render_len);
+
+	/* Check line's render len getting error */
+	if (-1 == ret)
+		return -1;
 
 	/* Check that end of line in the current window */
 	if (render_len < win->offset.cols + win->size.ws_col) {
@@ -562,16 +607,29 @@ win_mv_to_end_of_line(struct Win *const win)
 		win->cur.col = win->size.ws_col - 1;
 	}
 
-	win_scroll(win);
+	/* Scroll after moving right */
+	ret = win_scroll(win);
+	if (-1 == ret)
+		return -1;
+	return 0;
 }
 
-void
+int
 win_mv_to_next_word(struct Win *const win, size_t times)
 {
 	size_t char_idx;
 	size_t word_idx;
 	const char *const chars = file_line_chars(win->file, win_curr_line_idx(win));
-	const size_t len = file_line_len(win->file, win_curr_line_idx(win));
+	size_t len;
+	int ret = file_line_len(win->file, win_curr_line_idx(win), &len);
+
+	/* Check current line's chars getting error */
+	if (NULL == chars)
+		return -1;
+
+	/* Check current line's length getting error */
+	if (-1 == ret)
+		return -1;
 
 	while (times-- > 0) {
 		/* Find next word from current position until end of line */
@@ -592,14 +650,25 @@ win_mv_to_next_word(struct Win *const win, size_t times)
 	}
 
 	/* Fix expanded cursor column during right movement */
-	win_scroll(win);
+	ret = win_scroll(win);
+	if (-1 == ret)
+		return -1;
+	return 0;
 }
 
 void
 win_mv_to_prev_word(struct Win *const win, size_t times)
 {
+	int ret;
 	size_t word_i;
 	const char *const chars = file_line_chars(win->file, win_curr_line_idx(win));
+
+	if (0 == times)
+		return 0;
+
+	/* Check current line's chars getting error */
+	if (NULL == chars)
+		return -1;
 
 	while (times-- > 0) {
 		/* Find next word from current position until start of line */
@@ -619,13 +688,20 @@ win_mv_to_prev_word(struct Win *const win, size_t times)
 	}
 
 	/* Fix expanded cursor column during left movement */
-	win_scroll(win);
+	ret = win_scroll(win);
+	if (-1 == ret)
+		return -1;
+	return 0;
 }
 
 int
 win_mv_up(struct Win *const win, size_t times)
 {
 	int ret;
+
+	if (0 == times)
+		return 0;
+
 	while (times-- > 0) {
 		/* Break if there is no more space to move down */
 		if (win->offset.rows + win->cur.row == 0)
@@ -648,43 +724,68 @@ win_mv_up(struct Win *const win, size_t times)
 struct Win*
 win_open(const char *const path, const int ifd, const int ofd)
 {
-	/* Allocate window */
-	struct Win *const win = malloc_err(sizeof(*win));
+	int ret;
+	struct Win *const win = malloc(sizeof(*win));
+
+	/* Check opaque struct allocation error */
+	if (NULL == win)
+		return NULL;
 
 	/* Open file */
 	win->file = file_open(path);
+	if (NULL == win->file)
+		goto err_free_opaque;
+
 	/* Initialize offset and cursor */
 	memset(&win->offset, 0, sizeof(win->offset));
 	memset(&win->cur, 0, sizeof(win->cur));
 
 	/* Initialize terminal with accepted descriptors */
-	term_init(ifd, ofd);
+	ret = term_init(ifd, ofd);
+	if (-1 == ret)
+		goto err_free_opaque_and_close;
+
 	/* Get window size */
-	term_get_win_size(&win->size);
+	ret = term_get_win_size(&win->size);
+	if (-1 == ret)
+		goto err_clean_all;
 	return win;
+err_clean_all:
+	/* Errors checking here is useless */
+	term_deinit();
+err_free_opaque_and_close:
+	file_close(win->file);
+err_free_opaque:
+	free(win);
+	return NULL;
 }
 
 size_t
 win_save_file(struct Win *const win)
 {
-	return file_save(win->file, NULL);
+	const size_t len = file_save(win->file, NULL);
+	return len;
 }
 
 size_t
 win_save_file_to_spare_dir(struct Win *const win, char *const path, size_t len)
 {
-	return file_save_to_spare_dir(win->file, path, len);
+	const size_t len = file_save_to_spare_dir(win->file, path, len);
+	return len;
 }
 
-void
+int
 win_search(struct Win *const win, const char *const query, const enum Dir dir)
 {
+	int ret;
 	size_t idx;
 	size_t pos;
 
 	if (DIR_FWD == dir) {
 		/* Move forward to not collide with previous result */
-		win_mv_right(win, 1);
+		ret = win_mv_right(win, 1);
+		if (-1 == ret)
+			return -1;
 	}
 
 	/* Prepare indexes */
@@ -693,17 +794,22 @@ win_search(struct Win *const win, const char *const query, const enum Dir dir)
 
 	/* Search with accepted query */
 	if (file_search(win->file, &idx, &pos, query, dir)) {
-		/* Move to result */
+		/* Move to begin of line to easily move right to result later */
 		win_mv_to_begin_of_line(win);
+
+		/* Move to result's line */
 		if (DIR_BWD == dir)
 			win_mv_up(win, win_curr_line_idx(win) - idx);
 		else if (DIR_FWD == dir)
 			win_mv_down(win, idx - win_curr_line_idx(win));
+
+		/* Move to result on current line */
 		win_mv_right(win, pos);
 	} else if (DIR_FWD == dir) {
-		/* Move back to start position if no results */
+		/* Move back to start position if no results during forward searching */
 		win_mv_left(win, 1);
 	}
+	return 0;
 }
 
 struct winsize
@@ -712,10 +818,19 @@ win_size(const struct Win *const win)
 	return win->size;
 }
 
-void
+int
 win_upd_size(struct Win *const win)
 {
-	/* Update size using terminal and fix cursor */
-	term_get_win_size(&win->size);
-	win_scroll(win);
+	int ret;
+
+	/* Update size using terminal */
+	ret = term_get_win_size(&win->size);
+	if (-1 == ret)
+		return -1;
+
+	/* Scroll after resize */
+	ret = win_scroll(win);
+	if (-1 == ret)
+		return -1;
+	return 0;
 }

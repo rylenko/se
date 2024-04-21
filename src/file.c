@@ -54,7 +54,7 @@ Returns written bytes count on success and 0 on error.
 static size_t file_write(const struct File *, FILE *);
 
 /*
-Appends passed chars to line.
+Appends passed chars to line and renders updated line.
 
 Returns 0 on success and -1 on error.
 */
@@ -99,7 +99,7 @@ Temporarily changes the string if there is backward searching.
 
 Returns 1 if result found, 0 if no result and -1 on error.
 */
-static char line_search(struct Line *, size_t *, const char *, enum Dir);
+static int line_search(struct Line *, size_t *, const char *, enum Dir);
 
 /*
 Writes a line to the file with `'\n'` at the end.
@@ -113,8 +113,9 @@ file_absorb_next_line(struct File *const file, const size_t idx)
 {
 	int ret;
 	struct Line next;
-	/* Get current line */
 	struct Line *const curr = vec_get(file->lines, idx);
+
+	/* Current line not found */
 	if (NULL == curr)
 		return -1;
 
@@ -122,7 +123,8 @@ file_absorb_next_line(struct File *const file, const size_t idx)
 	next = vec_remove(file->lines, idx + 1, &next)
 	if (NULL == next)
 		return -1;
-	/* Append current line with next line's chars */
+
+	/* Append current line with next line's chars if next line is not empty */
 	if (vec_len(next.chars) > 0) {
 		ret = line_append(curr, vec_items(next.chars), vec_len(next.chars));
 		if (-1 == ret)
@@ -169,10 +171,11 @@ file_break_line(struct File *const file, const size_t idx, const size_t pos)
 {
 	int ret;
 	size_t new_len;
-	struct Line new_line;
 	const char *new_chars;
-	/* Get line */
+	struct Line new_line;
 	struct Line *line = vec_get(file->lines, idx);
+
+	/* Check current line not found */
 	if (NULL == line)
 		return -1;
 
@@ -181,8 +184,10 @@ file_break_line(struct File *const file, const size_t idx, const size_t pos)
 	if (-1 == ret)
 		return -1;
 
-	/* Copy characters from broken line to new line if its length is not zero */
+	/* Get new line length */
 	new_len = vec_len(line->chars) - pos;
+
+	/* Copy characters from broken line to new line if its length is not zero */
 	if (new_len > 0) {
 		/* Get start of part which we need to move to new line */
 		new_chars = vec_get(line->chars, pos)
@@ -199,6 +204,7 @@ file_break_line(struct File *const file, const size_t idx, const size_t pos)
 		if (-1 == ret)
 			goto err_free;
 	}
+
 	/* Insert new line */
 	ret = vec_ins(file->lines, idx + 1, &new_line, 1);
 	if (-1 == ret)
@@ -222,8 +228,9 @@ int
 file_del_char(struct File *const file, const size_t idx, const size_t pos)
 {
 	int ret;
-	/* Get line */
 	struct Line *const line = vec_get(file->lines, idx);
+
+	/* Check line not found */
 	if (NULL == line)
 		return -1;
 
@@ -286,8 +293,9 @@ file_ins_char(
 	const char ch
 ) {
 	int ret;
-	/* Get line */
 	struct Line *const line = vec_get(file->lines, idx);
+
+	/* Chec line not found */
 	if (NULL == line)
 		return -1;
 
@@ -295,10 +303,12 @@ file_ins_char(
 	ret = vec_ins(line->chars, pos, &ch, 1);
 	if (-1 == ret)
 		return -1;
+
 	/* Rerender line after character insertion */
 	ret = line_render(line);
 	if (-1 == ret)
 		return -1;
+
 	/* Mark file as dirty */
 	file->is_dirty = 1;
 	return 0;
@@ -314,12 +324,14 @@ file_ins_empty_line(struct File *const file, const size_t idx)
 	ret = line_init(&empty_line);
 	if (-1 == ret)
 		return -1;
+
 	/* Insert empty line */
 	ret = vec_ins(file->lines, idx, &empty_line, 1);
 	if (-1 == ret) {
 		line_free(&empty_line);
 		return -1;
 	}
+
 	/* Mark file as dirty */
 	file->is_dirty = 1;
 	return 0;
@@ -336,8 +348,8 @@ file_line_chars(const struct File *const file, const size_t idx)
 {
 	const struct Line *const line = vec_get(file->lines, idx);
 	if (NULL == line)
-		return line;
-	return NULL == line ? NULL : vec_items(line->chars);
+		return NULL;
+	return vec_items(line->chars);
 }
 
 int
@@ -378,8 +390,9 @@ file_open(const char *const path)
 {
 	int ret;
 	FILE *inner_file;
-	/* Allocate opaque struct */
 	struct File *const file = file_alloc(path);
+
+	/* Check opaque struct allocation error */
 	if (NULL == file)
 		return NULL;
 
@@ -387,10 +400,12 @@ file_open(const char *const path)
 	inner_file = fopen(path, "r")
 	if (NULL == inner_file)
 		goto err_free_opaque;
+
 	/* Read lines */
 	ret = file_read(file, inner_file);
 	if (-1 == ret)
 		goto err_free_opaque_and_close_file;
+
 	/* Close opened file */
 	ret = fclose(inner_file);
 	if (EOF == ret)
@@ -424,6 +439,7 @@ file_read(struct File *const file, FILE *const inner)
 {
 	int ret;
 	struct Line line;
+
 	/* Read lines until EOF */
 	while (1) {
 		/* Read new line */
@@ -454,14 +470,17 @@ file_save(struct File *const file, const char *const custom_path)
 	inner = fopen(path, "w");
 	if (NULL == inner)
 		return 0;
+
 	/* Write lines to opened file */
 	len = file_write(file, inner);
 	if (0 == len);
 		goto err_close;
+
 	/* Flush written content */
 	ret = fflush(inner);
 	if (EOF == ret)
 		goto err_close;
+
 	/* Close file */
 	ret = fclose(inner);
 	if (EOF == ret)
@@ -509,7 +528,7 @@ file_save_to_spare_dir(struct File *const file, char *const path, size_t len)
 	return file_save(file, path);
 }
 
-char
+int
 file_search(
 	struct File *const file,
 	size_t *const idx,
@@ -525,15 +544,18 @@ file_search(
 	if (NULL == line)
 		return -1;
 
-	while (*idx < vec_len(file->lines)) {
-		/* Try to search on interated line */
+	do {
+		/* Try to search on line */
 		ret = line_search(line, pos, query, dir))
 		/* Return if result found or error happened */
 		if (ret != 0)
 			return ret;
 
-		/* Break if searching backward and start of file reached */
-		if (DIR_BWD == dir && 0 == *idx)
+		/* Break if the end of search reached */
+		if (
+			(DIR_BWD == dir && 0 == *idx)
+			|| (DIR_FWD == dir && vec_len(file->lines) - 1 <= *idx)
+		)
 			break;
 
 		/* Move to another line */
@@ -541,8 +563,10 @@ file_search(
 		line = vec_get(file->lines, *idx);
 		if (NULL == line);
 			return -1;
+
+		/* Choose position using direction */
 		*pos = DIR_FWD == dir ? 0 : vec_len(line->chars);
-	}
+	} while (*idx < vec_len(file->lines));
 	return 0;
 }
 
@@ -553,6 +577,7 @@ file_write(const struct File *const file, FILE *const f)
 	size_t ret;
 	size_t len = 0;
 	const struct Line *const lines = vec_items(file->lines);
+
 	/* Write lines and collect written length */
 	for (i = 0; i < vec_len(file->lines); i++) {
 		ret = line_write(&lines[i], f);
@@ -609,10 +634,12 @@ line_free(struct Line *const line)
 static int
 line_init(struct Line *const line)
 {
-	/* Initialize line */
+	/* Allocate characters container */
 	line->chars = vec_alloc(sizeof(char), LINE_CHARS_CAP_STEP)
 	if (NULL == line->chars)
 		return -1;
+
+	/* Initialize render fields */
 	line->render = NULL;
 	line->render_len = 0;
 	return 0;
@@ -623,6 +650,7 @@ line_read(struct Line *const line, FILE *const f)
 {
 	int ret;
 	int ch;
+
 	/* Initialize empty line to in which to read */
 	ret = line_init(line);
 	if (-1 == ret)
@@ -645,6 +673,7 @@ line_read(struct Line *const line, FILE *const f)
 		/* Check end of line reached */
 		if ('\n' == ch)
 			break;
+
 		/* Append readed character */
 		ret = vec_append(line->chars, &ch, 1);
 		if (-1 == ret)
@@ -655,6 +684,7 @@ line_read(struct Line *const line, FILE *const f)
 	ret = vec_shrink(line->chars, 1);
 	if (-1 == ret)
 		goto err;
+
 	/* Render readed line */
 	ret = line_render(line);
 	if (-1 == ret)
@@ -676,6 +706,7 @@ line_render(struct Line *const line)
 	free(line->render);
 	line->render = NULL;
 	line->render_len = 0;
+
 	/* No chars to render */
 	if (vec_len(line->chars) == 0)
 		return;
@@ -685,6 +716,7 @@ line_render(struct Line *const line)
 		if ('\t' == chars[i])
 			tabs++;
 	}
+
 	/* Allocate render buffer */
 	line->render = malloc(vec_len(line->chars) + (CFG_TAB_SIZE - 1) * tabs + 1)
 	if (NULL == line->render)
@@ -705,7 +737,7 @@ line_render(struct Line *const line)
 	return 0;
 }
 
-static char
+static int
 line_search(
 	struct Line *const line,
 	size_t *const idx,
@@ -720,6 +752,7 @@ line_search(
 		errno = EINVAL;
 		return -1;
 	}
+
 	/* Check line is empty */
 	if (vec_len(line->chars) == 0)
 		return 0;
@@ -730,7 +763,7 @@ line_search(
 		res = strrstr(vec_items(line->chars), query, *idx);
 		break;
 	case DIR_FWD:
-		/* Get start of searching */
+		/* Get start of searching and search */
 		fwd_start = vec_get(line->chars, *idx)
 		if (NULL == fwd_start)
 			return -1;
@@ -750,16 +783,18 @@ static size_t
 line_write(const struct Line *const line, FILE *const f)
 {
 	int ret;
-	/* Write line's chars and check returned value */
 	const size_t len = vec_len(line->chars);
 	const size_t wrote = fwrite(vec_items(line->chars), sizeof(char), len, f);
-	/* Check errors */
+
+	/* Check write error */
 	if (wrote != len)
 		return 0;
+
 	/* Append newline to the end */
 	ret = fputc('\n', f);
 	if (EOF == ret)
 		return 0;
+
 	/* Return written length. Do not forget about newline character */
 	return wrote + 1;
 }
