@@ -27,7 +27,7 @@ Reallocates vector with new capacity.
 
 Returns 0 on success and -1 on error.
 
-Sets `ENOMEM` if no memory to reallocate during the shrink.
+Sets `ENOMEM` if no memory to reallocate during the reallocation.
 */
 static int vec_realloc(struct Vec *, size_t);
 

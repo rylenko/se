@@ -617,16 +617,25 @@ ed_save_file(struct Ed *const ed)
 	}
 }
 
-static void
+static int
 ed_save_file_to_spare_dir(struct Ed *const ed)
 {
 	char path[CFG_SPARE_PATH_MAX_LEN + 1];
+
 	/* Save file to the spare dir */
 	size_t len = win_save_file_to_spare_dir(ed->win, path, sizeof(path));
+	if (0 == len) {
+		/* Assert that path buffer has enough size */
+		assert(ENOBUFS != errno);
+		return -1;
+	}
+
 	/* Set message */
 	ed_set_msg(ed, "%zu bytes saved to %s.", len, path);
+
 	/* Update quit presses */
 	ed->quit_presses_rem = 1;
+	return 0;
 }
 
 static void

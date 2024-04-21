@@ -538,6 +538,10 @@ file_save_to_spare_dir(struct File *const file, char *const path, size_t len)
 	ret = snprintf(path, len, "%s/%s_%s", cfg_spare_save_dir, fname, date);
 	if (ret < 0)
 		return 0;
+	if (ret >= len) {
+		errno = ENOBUFS;
+		return 0;
+	}
 
 	/* Save file using built path */
 	return file_save(file, path);
