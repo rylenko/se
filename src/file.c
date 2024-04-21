@@ -671,14 +671,13 @@ line_render(struct Line *const line)
 	size_t i;
 	size_t tabs = 0;
 	const char *const chars = vec_items(line->chars);
-	const size_t len = vec_len(line->chars);
 
 	/* Free old render */
 	free(line->render);
 	line->render = NULL;
 	line->render_len = 0;
 	/* No chars to render */
-	if (0 == len)
+	if (vec_len(line->chars) == 0)
 		return;
 
 	/* Calculate tabs count */
@@ -687,7 +686,7 @@ line_render(struct Line *const line)
 			tabs++;
 	}
 	/* Allocate render buffer */
-	line->render = malloc(len + (CFG_TAB_SIZE - 1) * tabs + 1)
+	line->render = malloc(vec_len(line->chars) + (CFG_TAB_SIZE - 1) * tabs + 1)
 	if (NULL == line->render)
 		return -1;
 
