@@ -98,7 +98,7 @@ Clean all build files:
 $ make clean
 ```
 
-Regenerate README.md. Requires [scc](https://github.com/boyter/scc) and awk:
+Regenerate README.md. Requires awk to collect todos:
 
 ```
 $ make gen-readme
