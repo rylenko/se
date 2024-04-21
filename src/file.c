@@ -175,7 +175,8 @@ file_break_line(struct File *const file, const size_t idx, const size_t pos)
 	struct Line *line = vec_get(file->lines, idx);
 	if (NULL == line)
 		return -1;
-	/* Initialize new line with broken chars */
+
+	/* Initialize new line */
 	ret = line_init(&new_line);
 	if (-1 == ret)
 		return -1;
@@ -334,6 +335,8 @@ const char*
 file_line_chars(const struct File *const file, const size_t idx)
 {
 	const struct Line *const line = vec_get(file->lines, idx);
+	if (NULL == line)
+		return line;
 	return NULL == line ? NULL : vec_items(line->chars);
 }
 
@@ -354,7 +357,7 @@ file_line_render(const struct File *const file, const size_t idx)
 	return NULL == line ? NULL : line->render;
 }
 
-size_t
+int
 file_line_render_len(const struct File *const file, const size_t idx)
 {
 	const struct Line *const line = vec_get(file->lines, idx);

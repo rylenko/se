@@ -77,13 +77,13 @@ static void ed_ins_empty_line_on_top(struct Ed *);
 static void ed_on_quit_press(struct Ed *);
 
 /* Processes arrow key. */
-static void ed_proc_arrow_key(struct Ed *, enum ArrowKey);
+static void ed_proc_arrow_key(struct Ed *, const char *, size_t);
 
 /* Process key in insertion mode. */
 static void ed_proc_ins_key(struct Ed *, char);
 
 /* Processes mouse wheel key. */
-static void ed_proc_mouse_wheel_key(struct Ed *, enum MouseWheelKey);
+static void ed_proc_mouse_wh_key(struct Ed *, const char *, size_t);
 
 /* Process key in normal mode. */
 static void ed_proc_norm_key(struct Ed *, char);
@@ -239,10 +239,17 @@ ed_handle_signal(struct Ed *const ed, const int signal)
 static void
 ed_flush_buf(struct Ed *const ed)
 {
+	int ret;
 	/* Write buffer to terminal */
-	term_write(vec_items(ed->buf), vec_len(ed->buf));
+	ssize_t len = term_write(vec_items(ed->buf), vec_len(ed->buf));
+	if (-1 == len)
+		return -1;
+
 	/* Set the length to zero to continue appending characters to the beginning */
-	vec_set_len(ed->buf, 0);
+	ret = vec_set_len(ed->buf, 0);
+	if (-1 == ret)
+		return -1;
+	return 0;
 }
 
 static void
@@ -352,27 +359,47 @@ ed_open(const char *const path, const int ifd, const int ofd)
 	/* Enable alternate screen. It will be set during first drawing */
 	esc_alt_scr_on(ed->buf);
 	/* Enable mouse wheel tracking. It will be set during first drawing */
-	esc_mouse_wheel_track_on(ed->buf);
+	esc_mouse_wh_track_on(ed->buf);
 	return ed;
 }
 
 static void
-ed_proc_arrow_key(struct Ed *const ed, const enum ArrowKey key)
+ed_proc_arrow_key(struct Ed *const ed, const char *const seq, const size_t len)
 {
+	int ret;
+	enum ArrowKey key;
+	const size_t repeat_times = ed_repeat_times(ed);
+	int (*proc)(Win *, size_t);
+
+	/* Try to extract arrow key */
+	ret = esc_extr_arrow_key(seq, len, &arrow_key);
+	if (-1 == ret) {
+		/* Skip invalid value error because we just tried */
+		if (EINVAL != errno)
+			return -1;
+		errno = 0;
+		return 0;
+	}
+	/* Get processor */
 	switch (key) {
 	case ARROW_KEY_UP:
-		win_mv_up(ed->win, ed_repeat_times(ed));
+		proc = win_mv_up;
 		break;
 	case ARROW_KEY_DOWN:
-		win_mv_down(ed->win, ed_repeat_times(ed));
+		proc = win_mv_down;
 		break;
 	case ARROW_KEY_RIGHT:
-		win_mv_right(ed->win, ed_repeat_times(ed));
+		proc = win_mv_right;
 		break;
 	case ARROW_KEY_LEFT:
-		win_mv_left(ed->win, ed_repeat_times(ed));
+		proc = win_mv_left;
 		break;
 	}
+	/* Process */
+	ret = proc(ed->win, repeat_times);
+	if (-1 == ret)
+		return -1;
+	return 0;
 }
 
 static void
@@ -395,16 +422,39 @@ ed_proc_ins_key(struct Ed *const ed, const char key)
 }
 
 static void
-ed_proc_mouse_wheel_key(struct Ed *const ed, const enum MouseWheelKey key)
-{
+ed_proc_mouse_wh_key(
+	struct Ed *const ed,
+	const char *const seq,
+	const size_t len
+) {
+	int ret;
+	enum MouseWhKey;
+	const size_t repeat_times = ed_repeat_times(ed);
+	int (*proc)(Win *, size_t);
+
+	/* Try to extract mouse wheel key */
+	ret = esc_extr_mouse_wh_key(seq, len, &mouse_wh_key);
+	if (-1 == ret) {
+		/* Skip invalid value error because we just tried */
+		if (EINVAL != errno)
+			return -1;
+		errno = 0;
+		return 0;
+	}
+	/* Get processor */
 	switch (key) {
-	case MOUSE_WHEEL_KEY_UP:
-		win_mv_up(ed->win, ed_repeat_times(ed));
+	case MOUSE_WH_KEY_UP:
+		proc = win_mv_up;
 		break;
-	case MOUSE_WHEEL_KEY_DOWN:
-		win_mv_down(ed->win, ed_repeat_times(ed));
+	case MOUSE_WH_KEY_DOWN:
+		proc = win_mv_down;
 		break;
 	}
+	/* Process */
+	ret = proc(ed->win, repeat_times);
+	if (-1 == ret)
+		return -1;
+	return 0;
 }
 
 static void
@@ -499,16 +549,23 @@ ed_proc_search_key(struct Ed *const ed, const char key)
 	}
 }
 
-static void
+static int
 ed_proc_seq_key(struct Ed *const ed, const char *const seq, const size_t len)
 {
+	int ret;
 	enum ArrowKey arrow_key;
-	enum MouseWheelKey mouse_wheel_key;
-	/* Arrows */
-	if (esc_extr_arrow_key(seq, len, &arrow_key) != -1)
-		ed_proc_arrow_key(ed, arrow_key);
-	else if (esc_extr_mouse_wheel_key(seq, len, &mouse_wheel_key) != -1)
-		ed_proc_mouse_wheel_key(ed, mouse_wheel_key);
+	enum MouseWhKey mouse_wh_key;
+
+	/* Try to process arrow key */
+	ret = ed_proc_arrow_key(ed, seq, len);
+	if (-1 == ret)
+		return -1;
+
+	/* Try to process mouse wheel key */
+	ret = ed_proc_mouse_wh_key(ed, seq, len);
+	if (-1 == ret)
+		return -1;
+	return 0;
 }
 
 void
@@ -517,7 +574,7 @@ ed_quit(struct Ed *const ed)
 	/* Disable alternate screen */
 	esc_alt_scr_off(ed->buf);
 	/* Disable mouse wheel tracking */
-	esc_mouse_wheel_track_off(ed->buf);
+	esc_mouse_wh_track_off(ed->buf);
 	/* Flush settings disabling */
 	ed_flush_buf(ed);
 

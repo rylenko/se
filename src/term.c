@@ -18,14 +18,18 @@ int
 term_deinit(void)
 {
 	/* Restore original termios parameters to disable raw mode */
-	return tcsetattr(term.ifd, TCSANOW, &term.orig_termios);
+	int ret = tcsetattr(term.ifd, TCSANOW, &term.orig_termios);
+	return ret;
 }
 
 int
 term_get_win_size(struct winsize *const win_size)
 {
 	/* Get window size using file descriptor. Ignore several success values */
-	return ioctl(term.ofd, TIOCGWINSZ, win_size) == -1 ? -1 : 0;
+	int ret = ioctl(term.ofd, TIOCGWINSZ, win_size);
+	if (-1 == ret)
+		return -1;
+	return 0;
 }
 
 int
@@ -51,8 +55,12 @@ term_init(const int ifd, const int ofd)
 	/* Set raw mode parameters to termios */
 	raw_termios = term.orig_termios;
 	term_set_raw_mode_params(&raw_termios);
+
 	/* Enable raw mode with new parameters */
-	return tcsetattr(term.ifd, TCSANOW, &raw_termios);
+	ret = tcsetattr(term.ifd, TCSANOW, &raw_termios);
+	if (-1 == ret)
+		return -1;
+	return 0;
 }
 
 static void
@@ -81,9 +89,10 @@ term_wait_key(char *const seq, const size_t len)
 	return readed;
 }
 
-int
+ssize_t
 term_write(const char *const buf, const size_t len)
 {
-	/* Write buffer with accepted length. Ignore written bytes count */
-	return write(term.ofd, buf, len) == -1 ? -1 : 0;
+	/* Write buffer with accepted length */
+	ssize_t len = write(term.ofd, buf, len);
+	return len;
 }

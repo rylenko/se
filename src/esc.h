@@ -11,53 +11,101 @@ enum ArrowKey {
 	ARROW_KEY_LEFT = 'D',
 };
 
-enum MouseWheelKey {
-	MOUSE_WHEEL_KEY_DOWN = 'a',
-	MOUSE_WHEEL_KEY_UP = '`',
+enum MouseWhKey {
+	MOUSE_WH_KEY_DOWN = 'a',
+	MOUSE_WH_KEY_UP = '`',
 };
 
-/* Disables alternate screen. Need to restore screen before editor opening. */
-void esc_alt_scr_off(Vec *);
+/*
+Disables alternate screen. Need to restore screen before editor opening.
+
+Returns 0 on success and -1 on error.
+*/
+int esc_alt_scr_off(Vec *);
 
 /*
 Enables alternate screen. Need to save screen before editor opening. Do not
 forget to disable it.
+
+Returns 0 on success and -1 on error.
 */
-void esc_alt_scr_on(Vec *);
+int esc_alt_scr_on(Vec *);
 
-/* Clears all window. */
-void esc_clr_win(Vec *);
+/*
+Clears all window.
 
-/* Sets colored foreground and background. `NULL` if no color. */
-void esc_color_begin(Vec *, const struct Color *, const struct Color *);
+Returns 0 on success and -1 on error.
+*/
+int esc_clr_win(Vec *);
 
-/* Ends colored output. */
-void esc_color_end(Vec *);
+/*
+Sets colored foreground and background. `NULL` if no color.
 
-/* Hides the cursor. Used to avoid blinking during redrawing. */
-void esc_cur_hide(Vec *);
+Returns 0 on success and -1 on error.
+*/
+int esc_color_begin(Vec *, const struct Color *, const struct Color *);
 
-/* Sets the cursor in the window. Values start from zero. */
-void esc_cur_set(Vec *, unsigned short, unsigned short);
+/*
+Ends colored output.
 
-/* Shows the cursor. */
-void esc_cur_show(Vec *);
+Returns 0 on success and -1 on error.
+*/
+int esc_color_end(Vec *);
 
-/* Extracts arrow key from sequence. Returns 0 on success, otherwise -1. */
+/*
+Hides the cursor. Used to avoid blinking during redrawing.
+
+Returns 0 on success and -1 on error.
+*/
+int esc_cur_hide(Vec *);
+
+/*
+Sets the cursor in the window. Values start from zero.
+
+Returns 0 on success and -1 on error.
+*/
+int esc_cur_set(Vec *, unsigned short, unsigned short);
+
+/*
+Shows the cursor.
+
+Returns 0 on success and -1 on error.
+*/
+int esc_cur_show(Vec *);
+
+/*
+Extracts arrow key from sequence.
+
+Returns 0 on success and -1 on error.
+*/
 int esc_extr_arrow_key(const char *, size_t, enum ArrowKey *);
 
 /*
-Extracts mouse wheel key from sequence. Returns 0 on success, otherwise -1.
-*/
-int esc_extr_mouse_wheel_key(const char *, size_t, enum MouseWheelKey *);
+Extracts mouse wheel key from sequence.
 
-/* Moves the current writing pointer to the beginning of the window. */
+Returns 0 on success and -1 on error.
+*/
+int esc_extr_mouse_wh_key(const char *, size_t, enum MouseWhKey *);
+
+/*
+Moves the current writing pointer to the beginning of the window.
+
+Returns 0 on success and -1 on error.
+*/
 void esc_go_home(Vec *);
 
-/* Disables mouse wheel tracking. */
-void esc_mouse_wheel_track_off(Vec *);
+/*
+Disables mouse wheel tracking.
 
-/* Enables mouse wheel tracking. Do not forget to disable it. */
-void esc_mouse_wheel_track_on(Vec *);
+Returns 0 on success and -1 on error.
+*/
+void esc_mouse_wh_track_off(Vec *);
+
+/*
+Enables mouse wheel tracking. Do not forget to disable it.
+
+Returns 0 on success and -1 on error.
+*/
+void esc_mouse_wh_track_on(Vec *);
 
 #endif /* _ESC_H */

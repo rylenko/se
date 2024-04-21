@@ -1,6 +1,6 @@
+/* TODO: v0.3: Rename ed_proc_*_key to ed_try_proc_*_key? */
 /* TODO: v0.3: Check using valgrind and eyes that all memory is freed on errors. */
 /* TODO: v0.3: Try to read file chunks or try to use mmap. */
-/* TODO: v0.3: Add more good docs and comment. Also doc arguments: values, etc. */
 /* TODO: v0.4: Create Cell struct to handle all symbols including UTF-8. Create structs Win->Renders->Render->Cells->Cell. Rerender lines on window side */
 /* TODO: v0.4: Use linked list for lines array and line's content parts. */
 /* TODO: v0.4: Remember last position per line. */
@@ -35,35 +35,44 @@ handle_signal(int signal, siginfo_t *info, void *ctx)
 	ed_handle_signal(ed, signal);
 }
 
-static void
+static int
 setup_signal_handler(void)
 {
+	int ret;
 	/* Initialize action */
 	struct sigaction action;
 	memset(&action, 0, sizeof(action));
 
 	/* Fill with all signals */
-	sigfillset(&action.sa_mask);
+	ret = sigfillset(&action.sa_mask);
+	if (-1 == ret)
+		return -1;
 
 	/* Set handler */
 	action.sa_flags = SA_SIGINFO;
 	action.sa_sigaction = handle_signal;
 
 	/* Register signals */
-	if (sigaction(SIGWINCH, &action, NULL) == -1)
-		err(EXIT_FAILURE, "Failed to register window size change signal");
+	ret = sigaction(SIGWINCH, &action, NULL);
+	if (-1 == ret)
+		return -1;
 }
 
 int
 main(const int argc, const char *const *const argv)
 {
+	int ret;
 	/* Check filename in arguments */
 	if (argc != 2)
 		errx(EXIT_FAILURE, usage);
 
-	/* Opens file in the editor and setup signal handler */
+	/* Setup signal handler */
+	ret = setup_signal_handler();
+	if (-1 == ret)
+		err(EXIT_FAILURE, "Failed to setup signal handler");
+
+	/* Opens file in the editor */
 	ed = ed_open(argv[1], STDIN_FILENO, STDOUT_FILENO);
-	setup_signal_handler();
 
 	while (!ed_need_to_quit(ed)) {
 		/* Draws editor's content on the screen */

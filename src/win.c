@@ -41,21 +41,39 @@ struct Win {
 };
 
 /*
+Draws row on the window if exists or ~.
+
+Returns 0 on success and -1 on error.
+*/
+int win_draw_line(const struct Win *, Vec *, unsigned short);
+
+/*
 Gets the count of characters by which the part of line is expanded using tabs.
 The part of the line from the beginning to the passed column is considered.
 */
 static size_t win_exp_col(const char *, size_t, size_t);
 
-/* Collection of methods to scroll and fix cursor. */
-static void win_scroll(struct Win *);
+/*
+Collection of methods to scroll and fix cursor.
 
-void
+Returns 0 on success and -1 on error.
+*/
+static int win_scroll(struct Win *);
+
+int
 win_close(struct Win *const win)
 {
-	/* Deinitialize terminal, close file and deallocate opaque struct */
-	term_deinit();
+	int ret;
+	/* Deinitialize the terminal */
+	ret = term_deinit();
+	if (-1 == ret)
+		return -1;
+
+	/* Close opened file */
 	file_close(win->file);
+	/* Free opaque struct */
 	free(win);
+	return 0;
 }
 
 size_t
@@ -70,42 +88,67 @@ win_curr_line_char_idx(const struct Win *const win)
 	return win->offset.cols + win->cur.col;
 }
 
-void
+int
 win_break_line(struct Win *const win)
 {
+	int ret;
 	const size_t idx = win_curr_line_idx(win);
 	const size_t pos = win_curr_line_char_idx(win);
+
 	/* Break current line at current cursor's position */
-	file_break_line(win->file, idx, pos);
+	ret = file_break_line(win->file, idx, pos);
+	if (-1 == ret)
+		return -1;
+
 	/* Move to the beginning of the next line */
 	win_mv_to_begin_of_line(win);
-	win_mv_down(win, 1);
+	ret = win_mv_down(win, 1);
+	if (-1 == ret)
+		return -1;
+	return 0;
 }
 
 void
 win_del_char(struct Win *const win)
 {
+	int ret;
+	const size_t line_idx = win_curr_line_idx(win);
 	const size_t char_idx = win_curr_line_char_idx(win);
 
 	/* Check that we are not at the beginning of the line */
 	if (char_idx > 0) {
 		/* Delete character */
-		file_del_char(win->file, win_curr_line_idx(win), char_idx - 1);
+		ret = file_del_char(win->file, line_idx, char_idx - 1);
+		if (-1 == ret)
+			return -1;
+
 		/* Move left after deleting */
-		win_mv_left(win, 1);
-	} else if (win_curr_line_idx(win) > 0) {
-		/* Absorb current line to next line if we are at the beginning of the line */
-		win_mv_left(win, 1);
-		file_absorb_next_line(win->file, win_curr_line_idx(win));
+		ret = win_mv_left(win, 1);
+		if (-1 == ret)
+			return -1;
+	} else if (line_idx > 0) {
+		/* We are at the beginning of not first line. Move to end of previous line */
+		ret = win_mv_left(win, 1);
+		if (-1 == ret)
+			return -1;
+
+		/* Absorb current line to previous line */
+		ret = file_absorb_next_line(win->file, line_idx);
+		if (-1 == ret)
+			return -1;
 	}
 
 	/* Fix expanded cursor column */
-	win_scroll(win);
+	ret = win_scroll(win);
+	if (-1 == ret)
+		return -1;
+	return 0;
 }
 
 int
 win_del_line(struct Win *const win, size_t times)
 {
+	int ret;
 	/* Remember that file must contain at least one line */
 	size_t lines_cnt = file_lines_cnt(win->file);
 	if (lines_cnt <= 1) {
@@ -123,73 +166,122 @@ win_del_line(struct Win *const win, size_t times)
 		win_mv_to_begin_of_line(win);
 
 		/* Delete lines */
-		while (times-- > 0)
-			file_del_line(win->file, win->offset.rows + win->cur.row);
+		while (times-- > 0) {
+			ret = file_del_line(win->file, win->offset.rows + win->cur.row);
+			if (-1 == ret)
+				return -1;
+			lines_cnt--;
+		}
 
 		/* Move up if we deleted the last line and stayed there */
-		if (win->offset.rows + win->cur.row == file_lines_cnt(win->file))
-			win_mv_up(win, 1);
+		if (win->offset.rows + win->cur.row == lines_cnt) {
+			ret = win_mv_up(win, 1);
+			if (-1 == ret)
+				return -1;
+		}
+	}
+	return 0;
+}
+
+int
+win_draw_cur(const struct Win *const win, Vec *const vec)
+{
+	int ret;
+	const size_t line_idx = win_curr_line_idx(win);
+	const char *chars;
+	size_t len;
+	size_t exp_offset_col;
+	size_t exp_col;
+
+	/* Get line characters */
+	chars = file_line_chars(win->file, line_idx);
+	if (NULL == chars)
+		return -1;
+
+	/* Get line length */
+	ret = file_line_len(win->file, line_idx, &len);
+	if (-1 == ret)
+		return -1;
+
+	/* Expand offset and file columns */
+	exp_offset_col = win_exp_col(chars, len, win->offset.cols);
+	exp_f_col = win_exp_col(chars, len, win->offset.cols + win->cur.col);
+
+	/* Sub expanded columns to get real column in the window and set cursor */
+	esc_cur_set(vec, win->cur.row, exp_col - exp_offset_col);
+}
+
+int
+win_draw_line(
+	const struct Win *const win,
+	Vec *const buf,
+	const unsigned short row
+) {
+	int ret;
+	const char *chars;
+	size_t len;
+	const char *render;
+	size_t render_len;
+	size_t exp_offset_col;
+	size_t len_to_draw;
+	const size_t lines_cnt = file_lines_cnt(win->file);
+
+	/* Checking if there is a line to draw at this row */
+	if (win->offset.rows + row >= lines_cnt) {
+		ret = vec_append(buf, "~", 1);
+		if (-1 == ret)
+			return -1;
+	} else {
+		/* Get current line details */
+		chars = file_line_chars(win->file, win->offset.rows + row);
+		len = file_line_len(win->file, win->offset.rows + row);
+		render = file_line_render(win->file, win->offset.rows + row);
+		render_len = file_line_render_len(win->file, win->offset.rows + row);
+
+		/* Get expanded with tabs offset's column */
+		exp_offset_col = win_exp_col(chars, len, win->offset.cols);
+		/* Do nothing if line hidden behind offset or empty */
+		if (render_len <= exp_offset_col) {
+			return 0;
+		}
+
+		/* Calculate length to draw using expanded length and draw */
+		len_to_draw = MIN(win->size.ws_col, render_len - exp_offset_col);
+		ret = vec_append(buf, &render[exp_offset_col], len_to_draw);
+		if (-1 == ret)
+			return -1;
 	}
 	return 0;
 }
 
 void
-win_draw_cur(const struct Win *const win, Vec *const vec)
-{
-	/* Get current line */
-	const char *const chars = file_line_chars(win->file, win_curr_line_idx(win));
-	const size_t len = file_line_len(win->file, win_curr_line_idx(win));
-	/* Expand offset and file columns */
-	size_t exp_offset_col = win_exp_col(chars, len, win->offset.cols);
-	size_t exp_f_col = win_exp_col(chars, len, win->offset.cols + win->cur.col);
-
-	/* Substract expanded columns to get real column in the window */
-	esc_cur_set(vec, win->cur.row, exp_f_col - exp_offset_col);
-}
-
-void
 win_draw_lines(const struct Win *const win, Vec *const buf)
 {
-	const char *chars;
-	size_t exp_offset_col;
-	size_t row;
-	size_t len;
-	size_t len_to_draw;
-	size_t lines_cnt = file_lines_cnt(win->file);
-	size_t render_len;
-	const char *render;
+	int ret;
+	unsigned short row;
 
 	/* Set colors */
-	esc_color_begin(buf, &cfg_color_lines_fg, NULL);
+	ret = esc_color_begin(buf, &cfg_color_lines_fg, NULL);
+	if (-1 == ret)
+		return -1;
 
 	for (row = 0; row + STAT_ROWS_CNT < win->size.ws_row; row++) {
-		/* Checking if there is a line to draw at this row */
-		if (win->offset.rows + row >= lines_cnt) {
-			vec_append(buf, "~", 1);
-		} else {
-			/* Get current line details */
-			chars = file_line_chars(win->file, win->offset.rows + row);
-			len = file_line_len(win->file, win->offset.rows + row);
-			render = file_line_render(win->file, win->offset.rows + row);
-			render_len = file_line_render_len(win->file, win->offset.rows + row);
-
-			/* Get expanded with tabs offset's column */
-			exp_offset_col = win_exp_col(chars, len, win->offset.cols);
-
-			/* Draw line if not empty and not hidden behind offset */
-			if (render_len > exp_offset_col) {
-				/* Calculate length to draw using expanded length and draw */
-				len_to_draw = MIN(win->size.ws_col, render_len - exp_offset_col);
-				vec_append(buf, &render[exp_offset_col], len_to_draw);
-			}
-		}
+		/* Draw line */
+		ret = win_draw_line(win, buf, row);
+		if (-1 == ret)
+			return -1;
 
 		/* Move to the beginning of the next row */
-		vec_append(buf, "\r\n", 2);
+		ret = vec_append(buf, "\r\n", 2);
+		if (-1 == ret)
+			return -1;
 	}
 
 	/* End colored output */
-	esc_color_end(buf);
+	ret = esc_color_end(buf);
+	if (-1 == ret)
+		return -1;
+	return 0;
 }
 
 static size_t
@@ -220,11 +312,15 @@ win_file_path(const struct Win *const win)
 	return file_path(win->file);
 }
 
-static void
+static int
 win_scroll(struct Win *const win)
 {
+	int ret;
 	const char *chars;
 	size_t line_len;
+	size_t line_idx;
+	size_t exp_offset_col;
+	size_t exp_col;
 
 	/* Scroll to overflowed cursor position. Useful after window resizing */
 	if (win->cur.row + STAT_ROWS_CNT >= win->size.ws_row) {
@@ -237,7 +333,14 @@ win_scroll(struct Win *const win)
 	}
 
 	/* Get current line's length */
-	line_len = file_line_len(win->file, win_curr_line_idx(win));
+	line_idx = win_curr_line_idx(win);
+	ret = file_line_len(win->file, line_idx, &line_len);
+	if (-1 == ret)
+		return -1;
+	/* Get current line's chars */
+	chars = file_line_chars(win->file, line_idx);
+	if (NULL == chars)
+		return -1;
 
 	/* Check that cursor out of the line. Useful after move down and up */
 	if (win->offset.cols + win->cur.col > line_len) {
@@ -250,36 +353,48 @@ win_scroll(struct Win *const win)
 		}
 	}
 
-	/* Get current line's chars */
-	chars = file_line_chars(win->file, win_curr_line_idx(win));
-
 	/*
 	Shift column offset until we see expanded cursor. Useful after moving between
 	lines with tabs
 	*/
-	while (
-		win_exp_col(chars, line_len, win->offset.cols + win->cur.col)
-			- win_exp_col(chars, line_len, win->offset.cols)
-				>= win->size.ws_col
-	) {
+	while (1) {
+		/* Get expanded hidden column and expanded viewed column */
+		exp_col = win_exp_col(chars, line_len, win->offset.cols + win->cur.col)
+		exp_offset_col = win_exp_col(chars, line_len, win->offset.cols);
+
+		/* Check that diff between expansion is not greater than window's width */
+		if (exp_col - exp_offset_col < win->size.ws_col)
+			break;
+
+		/* TODO: can we shift here only by offset? */
+		/* Shift to view pointed content */
 		win->offset.cols++;
 		win->cur.col--;
 	}
 }
 
-void
+int
 win_ins_char(struct Win *const win, const char ch)
 {
-	/* Insert character and mark file as dirty */
-	const size_t idx = win_curr_line_idx(win);
-	const size_t pos = win_curr_line_char_idx(win);
-	file_ins_char(win->file, idx, pos, ch);
+	int ret;
+	const size_t line_idx = win_curr_line_idx(win);
+	const size_t char_idx = win_curr_line_char_idx(win);
+
+	/* Insert character */
+	ret = file_ins_char(win->file, line_idx, char_idx, ch);
+	if (-1 == ret)
+		return -1;
 
 	/* Move right after insertion */
-	win_mv_right(win, 1);
+	ret = win_mv_right(win, 1);
+	if (-1 == ret)
+		return -1;
 
 	/* Fix expanded cursor column */
-	win_scroll(win);
+	ret = win_scroll(win);
+	if (-1 == ret)
+		return -1;
+	return 0;
 }
 
 void
@@ -310,9 +425,10 @@ win_ins_empty_line_on_top(struct Win *const win, size_t times)
 	}
 }
 
-void
+int
 win_mv_down(struct Win *const win, size_t times)
 {
+	int ret;
 	size_t lines_cnt = file_lines_cnt(win->file);
 
 	while (times-- > 0) {
@@ -328,12 +444,17 @@ win_mv_down(struct Win *const win, size_t times)
 	}
 
 	/* Clamp cursor to line after move down several times */
-	win_scroll(win);
+	ret = win_scroll(win);
+	if (-1 == ret)
+		return -1;
+	return 0;
 }
 
 void
 win_mv_left(struct Win *const win, size_t times)
 {
+	int ret;
+
 	while (times-- > 0) {
 		/* Move to the beginning of next line if there is not space to move right */
 		if (win->offset.cols + win->cur.col == 0) {
@@ -342,7 +463,9 @@ win_mv_left(struct Win *const win, size_t times)
 				break;
 
 			/* Move to the end of previous line */
-			win_mv_up(win, 1);
+			ret = win_mv_up(win, 1);
+			if (-1 == ret)
+				return -1;
 			win_mv_to_end_of_line(win);
 		} else if (win->cur.col == 0) {
 			/* We are at the right of window */
@@ -354,9 +477,13 @@ win_mv_left(struct Win *const win, size_t times)
 	}
 
 	/* Fix expanded cursor column during left movement */
-	win_scroll(win);
+	ret = win_scroll(win);
+	if (-1 == ret)
+		return -1;
+	return 0;
 }
 
+!!!!!!!!!!!!!!!!!!!!!!!!
 void
 win_mv_right(struct Win *const win, size_t times)
 {
@@ -495,9 +622,10 @@ win_mv_to_prev_word(struct Win *const win, size_t times)
 	win_scroll(win);
 }
 
-void
+int
 win_mv_up(struct Win *const win, size_t times)
 {
+	int ret;
 	while (times-- > 0) {
 		/* Break if there is no more space to move down */
 		if (win->offset.rows + win->cur.row == 0)
@@ -511,7 +639,10 @@ win_mv_up(struct Win *const win, size_t times)
 	}
 
 	/* Clamp cursor to line after move down several times */
-	win_scroll(win);
+	ret = win_scroll(win);
+	if (-1 == ret)
+		return -1;
+	return 0;
 }
 
 struct Win*

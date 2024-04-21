@@ -108,9 +108,10 @@ $ make gen-readme
 
 |Path|Line|Description|
 |-|-|-|
-|**src/main.c**|**1**|**v0.3: Check using valgrind and eyes that all memory is freed on errors.**|
-|**src/main.c**|**2**|**v0.3: Try to read file chunks or try to use mmap.**|
-|**src/main.c**|**3**|**v0.3: Add more good docs and comment. Also doc arguments: values, etc.**|
+|**src/win.c**|**369**|**can we shift here only by offset?**|
+|**src/main.c**|**1**|**v0.3: Rename ed_proc_*_key to ed_try_proc_*_key?**|
+|**src/main.c**|**2**|**v0.3: Check using valgrind and eyes that all memory is freed on errors.**|
+|**src/main.c**|**3**|**v0.3: Try to read file chunks or try to use mmap.**|
 |**src/main.c**|**4**|**v0.4: Create Cell struct to handle all symbols including UTF-8. Create structs Win->Renders->Render->Cells->Cell. Rerender lines on window side**|
 |**src/main.c**|**5**|**v0.4: Use linked list for lines array and line's content parts.**|
 |**src/main.c**|**6**|**v0.4: Remember last position per line.**|

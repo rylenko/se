@@ -9,8 +9,12 @@
 /* Alias for opaque struct with window parameters. */
 typedef struct Win Win;
 
-/* Closes the window. */
-void win_close(Win *);
+/*
+Closes the window.
+
+Returns 0 on success and -1 on error.
+*/
+int win_close(Win *);
 
 /* Gets current line's index. */
 size_t win_curr_line_idx(const Win *);
