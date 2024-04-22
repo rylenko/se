@@ -371,7 +371,7 @@ ed_open(const char *const path, const int ifd, const int ofd)
 	return ed;
 }
 
-static void
+static int
 ed_proc_arrow_key(struct Ed *const ed, const char *const seq, const size_t len)
 {
 	int ret;
@@ -380,12 +380,8 @@ ed_proc_arrow_key(struct Ed *const ed, const char *const seq, const size_t len)
 	int (*proc)(Win *, size_t);
 
 	/* Try to extract arrow key */
-	ret = esc_extr_arrow_key(seq, len, &arrow_key);
+	ret = esc_extr_arrow_key(seq, len, &key);
 	if (-1 == ret) {
-		/* Skip invalid value error because we just tried */
-		if (EINVAL != errno)
-			return -1;
-		errno = 0;
 		return 0;
 	}
 	/* Get processor */
@@ -429,24 +425,20 @@ ed_proc_ins_key(struct Ed *const ed, const char key)
 	}
 }
 
-static void
+static int
 ed_proc_mouse_wh_key(
 	struct Ed *const ed,
 	const char *const seq,
 	const size_t len
 ) {
 	int ret;
-	enum MouseWhKey;
+	enum MouseWhKey key;
 	const size_t repeat_times = ed_repeat_times(ed);
 	int (*proc)(Win *, size_t);
 
 	/* Try to extract mouse wheel key */
-	ret = esc_extr_mouse_wh_key(seq, len, &mouse_wh_key);
+	ret = esc_extr_mouse_wh_key(seq, len, &key);
 	if (-1 == ret) {
-		/* Skip invalid value error because we just tried */
-		if (EINVAL != errno)
-			return -1;
-		errno = 0;
 		return 0;
 	}
 	/* Get processor */

@@ -24,7 +24,7 @@ Finds line by its index and breaks it at passed position.
 
 Returns 0 on success and -1 on error.
 */
-void file_break_line(File *, size_t, size_t);
+int file_break_line(File *, size_t, size_t);
 
 /* Closes file and frees memory. */
 void file_close(File *);
@@ -34,14 +34,14 @@ Deletes character in file's line at passed position.
 
 Returns 0 on success and -1 on error.
 */
-void file_del_char(File *, size_t, size_t);
+int file_del_char(File *, size_t, size_t);
 
 /*
 Inserts character to the file's line at passed position.
 
 Returns 0 on success and -1 on error.
 */
-void file_ins_char(File *, size_t, size_t, char);
+int file_ins_char(File *, size_t, size_t, char);
 
 /*
 Inserts empty line at index.
@@ -119,8 +119,7 @@ capacity one greater than the length for a null byte.
 
 Returns written bytes count on success and 0 on error.
 
-Sets `ENOBUFS` if path buffer too small. `EOVERFLOW` if UTC is invalid. See
-another errors in original saving function.
+Sets `ENOBUFS` if path buffer too small.
 */
 size_t file_save_to_spare_dir(File *, char *, size_t);
 

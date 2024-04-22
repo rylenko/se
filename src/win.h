@@ -67,13 +67,13 @@ int win_mv_left(Win *, size_t);
 int win_mv_right(Win *, size_t);
 
 /* Moves to begin of first line. */
-int win_mv_to_begin_of_file(Win *);
+void win_mv_to_begin_of_file(Win *);
 
 /* Moves to begin of current line. */
-int win_mv_to_begin_of_line(Win *);
+void win_mv_to_begin_of_line(Win *);
 
 /* Moves to begin of last line. */
-int win_mv_to_end_of_file(Win *);
+void win_mv_to_end_of_file(Win *);
 
 /* Moves to begin of current line. */
 int win_mv_to_end_of_line(Win *);

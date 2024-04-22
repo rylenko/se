@@ -10,8 +10,6 @@ typedef struct Vec Vec;
 Allocates new vector. Do not forget to free it.
 
 Returns pointer to opaque vector on success and `NULL` on error.
-
-Sets `ENOMEM` if no memory to allocate vector.
 */
 Vec *vec_alloc(size_t, size_t);
 
@@ -19,8 +17,6 @@ Vec *vec_alloc(size_t, size_t);
 Copies items to the end of vector.
 
 Returns 0 on success and -1 on error.
-
-Sets `ENOMEM` if no memory to reallocate during the grow.
 */
 int vec_append(Vec *, const void *, size_t);
 
@@ -47,8 +43,7 @@ Copies items to vector by passed index.
 
 Returns 0 on success and -1 on error.
 
-Sets `EINVAL` if index is invalid. `ENOMEM` if no memory to reallocate during
-the grow.
+Sets `EINVAL` if index is invalid.
 */
 int vec_ins(Vec *, size_t, const void *, size_t);
 
@@ -60,8 +55,7 @@ Finds and removes item by its index.
 
 Returns 0 on success and -1 on error.
 
-Sets `EINVAL` if index is invalid. `ENOMEM` if no memory to reallocate during
-the shrink.
+Sets `EINVAL` if index is invalid.
 
 If `errno` is not equal to `EINVAL`, then the item was removed and written to
 the passed pointer if it's not `NULL`.
@@ -82,8 +76,6 @@ Shrinks vector's capacity. Determines whether the shrink is beneficial if flag
 was not set.
 
 Returns 0 on success and -1 on error.
-
-Sets `ENOMEM` if no memory to reallocate during the shrink.
 */
 int vec_shrink(Vec *, char);
 

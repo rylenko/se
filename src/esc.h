@@ -77,8 +77,6 @@ int esc_cur_show(Vec *);
 Extracts arrow key from sequence.
 
 Returns 0 on success and -1 on error.
-
-Sets `EINVAL` if passed sequence is not mouse wheel sequence.
 */
 int esc_extr_arrow_key(const char *, size_t, enum ArrowKey *);
 
@@ -86,8 +84,6 @@ int esc_extr_arrow_key(const char *, size_t, enum ArrowKey *);
 Extracts mouse wheel key from sequence.
 
 Returns 0 on success and -1 on error.
-
-Sets `EINVAL` if passed sequence is not mouse wheel sequence.
 */
 int esc_extr_mouse_wh_key(const char *, size_t, enum MouseWhKey *);
 

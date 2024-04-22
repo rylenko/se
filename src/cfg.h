@@ -3,7 +3,14 @@
 
 #include "color.h"
 
-/* If no privilege to save the file, you can save it to this directory */
+/* The string that is drawn if there is no line on the row */
+static const char cfg_no_line[] = "~";
+
+/*
+If no privilege to save the file, you can save it to this directory.
+
+Should not contain '/' at the end
+*/
 static const char cfg_spare_save_dir[] = "/tmp";
 
 /* Helpers for configuration. */

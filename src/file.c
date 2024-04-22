@@ -11,10 +11,8 @@
 #include "vec.h"
 
 enum {
-	/* Line's chars capacity reallocation step */
-	LINE_CHARS_CAP_STEP = 128,
-	/* File's lines capacity reallocation step */
-	FILE_LINES_CAP_STEP = 32,
+	LINE_CHARS_CAP_STEP = 128, /* Line's chars capacity reallocation step */
+	FILE_LINES_CAP_STEP = 32, /* File's lines capacity reallocation step */
 };
 
 /* Line of the opened file. */
@@ -35,8 +33,6 @@ struct File {
 Allocates empty file container. Do not forget to free it.
 
 Returns pointer to opaque struct on succcess and `NULL` on error.
-
-Sets `ENOMEM` if no memory to store file struct.
 */
 static File *file_alloc(const char *);
 
@@ -44,8 +40,6 @@ static File *file_alloc(const char *);
 Reads lines from the file.
 
 Returns 0 on success and -1 on error. Note that you need to free readed lines
-
-Sets `ENOMEM` if no memory to store readed file.
 */
 static int file_read(struct File *, FILE *);
 
@@ -77,8 +71,6 @@ static void line_free(struct Line *);
 Initializes line with zeros. Do not forget to free it.
 
 Returns 0 on success and -1 on error.
-
-Sets `ENOMEM` if no memory to allocate vector for characters.
 */
 static int line_init(struct Line *);
 
@@ -87,8 +79,6 @@ Reads a line from a file without `'\n'`. Returns `NULL` if `EOF` is reached.
 
 Returns 1 if line readed, 0 if EOF reached and there is no line to read and -1
 if error.
-
-Sets `ENOMEM` if no memory to store readed line.
 */
 static int line_read(struct Line *, FILE *);
 
@@ -96,8 +86,6 @@ static int line_read(struct Line *, FILE *);
 Renders line chars how it look in the window.
 
 Returns 0 on success and -1 on error.
-
-Sets `ENOMEM` if no memory to allocate render string.
 */
 static int line_render(struct Line *);
 

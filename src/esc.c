@@ -1,5 +1,4 @@
 #include <assert.h>
-#include <errno.h>
 #include <stdio.h>
 #include <string.h>
 #include "color.h"
@@ -134,7 +133,7 @@ esc_extr_arrow_key(
 
 	/* Check length */
 	if (3 != len)
-		goto err;
+		return -1;
 
 	cmp = strncmp("\x1b[", seq, 2);
 	/* Check prefix and arrow key */
@@ -142,8 +141,6 @@ esc_extr_arrow_key(
 		*key = seq[2];
 		return 0;
 	}
-err:
-	errno = EINVAL;
 	return -1;
 }
 
@@ -157,7 +154,7 @@ esc_extr_mouse_wh_key(
 
 	/* Check length */
 	if (4 != len)
-		goto err;
+		return -1;
 
 	cmp = strncmp("\x1b[M", seq, 3);
 	/* Check prefix and wheel key */
@@ -165,8 +162,6 @@ esc_extr_mouse_wh_key(
 		*key = seq[3];
 		return 0;
 	}
-err:
-	errno = EINVAL;
 	return -1;
 }
 

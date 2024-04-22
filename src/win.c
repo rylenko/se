@@ -41,7 +41,7 @@ struct Win {
 };
 
 /*
-Draws row on the window if exists or ~.
+Draws row on the window if exists or special config string.
 
 Returns 0 on success and -1 on error.
 */
@@ -109,7 +109,7 @@ win_break_line(struct Win *const win)
 	return 0;
 }
 
-void
+int
 win_del_char(struct Win *const win)
 {
 	int ret;
@@ -180,19 +180,18 @@ int
 win_draw_cur(const struct Win *const win, Vec *const vec)
 {
 	int ret;
-	const size_t line_idx = win_curr_line_idx(win);
 	const char *chars;
 	size_t len;
 	size_t exp_offset_col;
 	size_t exp_col;
 
 	/* Get line characters */
-	chars = file_line_chars(win->file, line_idx);
+	chars = file_line_chars(win->file, win_curr_line_idx(win));
 	if (NULL == chars)
 		return -1;
 
 	/* Get line length */
-	ret = file_line_len(win->file, line_idx, &len);
+	ret = file_line_len(win->file, win_curr_line_idx(win), &len);
 	if (-1 == ret)
 		return -1;
 
@@ -221,7 +220,7 @@ win_draw_line(
 
 	/* Checking if there is a line to draw at this row */
 	if (win->offset.rows + row >= lines_cnt) {
-		ret = vec_append(buf, "~", 1);
+		ret = vec_append(buf, cfg_no_line, sizeof(cfg_no_line));
 		if (-1 == ret)
 			return -1;
 	} else {
@@ -352,7 +351,7 @@ win_ins_empty_line_below(struct Win *const win, const size_t times)
 	return 0;
 }
 
-void
+int
 win_ins_empty_line_on_top(struct Win *const win, size_t times)
 {
 	int ret;
@@ -400,7 +399,7 @@ win_mv_down(struct Win *const win, size_t times)
 	return 0;
 }
 
-void
+int
 win_mv_left(struct Win *const win, size_t times)
 {
 	int ret;
@@ -581,7 +580,7 @@ win_mv_to_next_word(struct Win *const win, size_t times)
 	return 0;
 }
 
-void
+int
 win_mv_to_prev_word(struct Win *const win, size_t times)
 {
 	int ret;
@@ -782,21 +781,30 @@ win_search(struct Win *const win, const char *const query, const enum Dir dir)
 	pos = win_curr_line_char_idx(win);
 
 	/* Search with accepted query */
-	if (file_search(win->file, &idx, &pos, query, dir)) {
+	ret = file_search(win->file, &idx, &pos, query, dir)
+	if (-1 == ret)
+		return -1;
+	if (1 == ret) {
 		/* Move to begin of line to easily move right to result later */
 		win_mv_to_begin_of_line(win);
 
 		/* Move to result's line */
 		if (DIR_BWD == dir)
-			win_mv_up(win, win_curr_line_idx(win) - idx);
+			ret = win_mv_up(win, win_curr_line_idx(win) - idx);
 		else if (DIR_FWD == dir)
-			win_mv_down(win, idx - win_curr_line_idx(win));
+			ret = win_mv_down(win, idx - win_curr_line_idx(win));
+		if (-1 == ret)
+			return -1;
 
 		/* Move to result on current line */
-		win_mv_right(win, pos);
+		ret = win_mv_right(win, pos);
+		if (-1 == ret)
+			return -1;
 	} else if (DIR_FWD == dir) {
 		/* Move back to start position if no results during forward searching */
-		win_mv_left(win, 1);
+		ret = win_mv_left(win, 1);
+		if (-1 == ret)
+			return -1;
 	}
 	return 0;
 }
