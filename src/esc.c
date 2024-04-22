@@ -47,18 +47,18 @@ esc_one_color_begin(
 	const enum ColorType type
 ) {
 	int ret;
-	char buf[20];
+	char seq[20];
 	const char *const char fmt = "\x1b[%d;2;%hhu;%hhu;%hhum";
 
 	/* Format RGB foregruound color */
-	ret = snprintf(s, sizeof(s), fmt, type, fg->r, fg->g, fg->b);
+	ret = snprintf(seq, sizeof(seq), fmt, type, fg->r, fg->g, fg->b);
 	if (ret < 0)
 		return -1;
 	/* Validate that buffer has enough size */
-	assert(ret < sizeof(s));
+	assert(ret < sizeof(seq));
 
 	/* It is ok to pass integer because of previous checks */
-	ret = vec_append(buf, s, ret);
+	ret = vec_append(buf, seq, ret);
 	if (-1 == ret)
 		return -1;
 	return 0;

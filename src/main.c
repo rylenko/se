@@ -57,6 +57,7 @@ setup_signal_handler(void)
 	ret = sigaction(SIGWINCH, &action, NULL);
 	if (-1 == ret)
 		return -1;
+	return 0;
 }
 
 int
