@@ -74,15 +74,24 @@ main(const int argc, const char *const *const argv)
 
 	/* Opens file in the editor */
 	ed = ed_open(argv[1], STDIN_FILENO, STDOUT_FILENO);
+	if (NULL == ed)
+		err(EXIT_FAILURE, "Failed to open the editor");
 
 	while (!ed_need_to_quit(ed)) {
 		/* Draws editor's content on the screen */
-		ed_draw(ed);
+		ret = ed_draw(ed);
+		if (-1 == ret)
+			err(EXIT_FAILURE, "Failed to draw");
+
 		/* Wait and process key presses */
-		ed_wait_and_proc_key(ed);
+		ret = ed_wait_and_proc_key(ed);
+		if (-1 == ret)
+			err(EXIT_FAILURE, "Failed to wait and process key");
 	}
 
 	/* Quit the editor */
-	ed_quit(ed);
+	ret = ed_quit(ed);
+	if (-1 == ret)
+		err(EXIT_FAILURE, "Failed to quit the editor");
 	return EXIT_SUCCESS;
 }

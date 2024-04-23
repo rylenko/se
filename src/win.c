@@ -408,19 +408,18 @@ win_mv_left(struct Win *const win, size_t times)
 		return 0;
 
 	while (times-- > 0) {
-		/* Move to the beginning of next line if there is not space to move right */
 		if (win->offset.cols + win->cur.col == 0) {
 			/* Check there is no next line */
 			if (win->offset.rows + win->cur.row == 0)
 				break;
 
-			/* Move to the end of previous line */
+			/* Move to the beginning of next line if no space to move left */
 			ret = win_mv_up(win, 1);
 			if (-1 == ret)
 				return -1;
 			win_mv_to_end_of_line(win);
 		} else if (win->cur.col == 0) {
-			/* We are at the right of window */
+			/* We are at the right of window, but have non-zero offset */
 			win->offset.cols--;
 		} else {
 			/* We are have enough space to move right in the current window */
@@ -450,19 +449,18 @@ win_mv_right(struct Win *const win, size_t times)
 		if (-1 == ret)
 			return -1;
 
-		/* Move to the beginning of next line if there is not space to move right */
-		if (win_curr_line_char_idx() == line_len) {
+		if (win_curr_line_char_idx() >= line_len) {
 			/* Check there is no next line */
 			if (win_curr_line_idx() + 1 == lines_cnt)
 				break;
 
-			/* Move to the beginning of next line */
+			/* Move to the beginning of next line if no space to move right */
 			win_mv_to_begin_of_line(win);
 			ret = win_mv_down(win, 1);
 			if (-1 == ret)
 				return -1;
-		} else if (win->cur.col + 1 == win->size.ws_col) {
-			/* We are at the right of window */
+		} else if (win->cur.col + 1 >= win->size.ws_col) {
+			/* We are at the right of window but can shift offset */
 			win->offset.cols++;
 		} else {
 			/* We are have enough space to move right in the current window */
