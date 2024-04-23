@@ -220,7 +220,7 @@ win_draw_line(
 
 	/* Checking if there is a line to draw at this row */
 	if (win->offset.rows + row >= lines_cnt) {
-		ret = vec_append(buf, cfg_no_line, sizeof(cfg_no_line));
+		ret = vec_append(buf, &cfg_no_line, 1);
 		if (-1 == ret)
 			return -1;
 	} else {

@@ -3,8 +3,8 @@
 
 #include "color.h"
 
-/* The string that is drawn if there is no line on the row */
-static const char cfg_no_line[] = "~";
+/* The character that is drawn if there is no line on the row */
+static const char cfg_no_line = '~';
 
 /*
 If no privilege to save the file, you can save it to this directory.
