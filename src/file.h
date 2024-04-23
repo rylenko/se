@@ -16,6 +16,8 @@ typedef struct File File;
 Finds line by passed index and absorbs next line.
 
 Returns 0 on success and -1 on error.
+
+Sets `EINVAL` if current or next lines not found.
 */
 int file_absorb_next_line(File *, size_t);
 
@@ -23,6 +25,8 @@ int file_absorb_next_line(File *, size_t);
 Finds line by its index and breaks it at passed position.
 
 Returns 0 on success and -1 on error.
+
+Sets `EINVAL` if line not found.
 */
 int file_break_line(File *, size_t, size_t);
 
@@ -33,13 +37,27 @@ void file_close(File *);
 Deletes character in file's line at passed position.
 
 Returns 0 on success and -1 on error.
+
+Sets `EINVAL` if line or character not found.
 */
 int file_del_char(File *, size_t, size_t);
+
+/*
+Deletes line by its index.
+
+Returns 0 on success and -1 on error.
+
+Sets `EINVAL` if index is invalid or `ENOSYS` if there is one last line left
+that cannot be deleted.
+*/
+int file_del_line(File *, size_t idx);
 
 /*
 Inserts character to the file's line at passed position.
 
 Returns 0 on success and -1 on error.
+
+Sets `EINVAL` if line not found or insertion position is invalid.
 */
 int file_ins_char(File *, size_t, size_t, char);
 
@@ -47,6 +65,8 @@ int file_ins_char(File *, size_t, size_t, char);
 Inserts empty line at index.
 
 Returns 0 on success and -1 on error.
+
+Sets `EINVAL` if passed index is invalid.
 */
 int file_ins_empty_line(File *, size_t);
 
@@ -54,18 +74,11 @@ int file_ins_empty_line(File *, size_t);
 char file_is_dirty(const File *);
 
 /*
-Deletes line by its index.
-
-Returns 0 on success and -1 on error.
-
-Sets `ENOSYS` if there is one last line left that cannot be deleted.
-*/
-int file_del_line(File *, size_t idx);
-
-/*
 Finds line by passed index and returns its raw chars.
 
 Returns pointer to characters on success and `NULL` on error.
+
+Sets `EINVAL` if index is invalid.
 */
 const char *file_line_chars(const File *, size_t);
 
@@ -73,6 +86,8 @@ const char *file_line_chars(const File *, size_t);
 Finds line by passed index and writes its length to passed pointer.
 
 Returns 0 on success and -1 on error.
+
+Sets `EINVAL` if index is invalid.
 */
 int file_line_len(const File *, size_t, size_t *);
 
@@ -80,6 +95,8 @@ int file_line_len(const File *, size_t, size_t *);
 Finds line by passed index and returns its render.
 
 Returns pointer to characters on success and `NULL` on error.
+
+Sets `EINVAL` if index is invalid.
 */
 const char *file_line_render(const File *, size_t);
 
@@ -87,6 +104,8 @@ const char *file_line_render(const File *, size_t);
 Finds line by passed index and returns its render len.
 
 Returns 0 on success and -1 on error.
+
+Sets `EINVAL` if index is invalid.
 */
 int file_line_render_len(const File *, size_t, size_t *);
 
@@ -130,6 +149,8 @@ Modifies index and position.
 Temporarily changes file if direction is backward, but then restores it.
 
 Returns 1 if result found, 0 if no result and -1 on error.
+
+Sets `EINVAL` if index is invalid.
 */
 int file_search(File *, size_t *, size_t *, const char *, enum Dir);
 

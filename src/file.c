@@ -725,7 +725,7 @@ line_render(struct Line *const line)
 	}
 
 	/* Allocate render buffer */
-	line->render = malloc(vec_len(line->chars) + (CFG_TAB_SIZE - 1) * tabs + 1)
+	line->render = malloc(vec_len(line->chars) + (CFG_TAB_SIZE - 1) * tabs);
 	if (NULL == line->render)
 		return -1;
 
