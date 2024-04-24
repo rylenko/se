@@ -18,12 +18,6 @@
 #include "vec.h"
 #include "win.h"
 
-enum {
-	ED_INPUT_SEARCH_CLEAR = -2, /* Flag to clear search input */
-	ED_INPUT_SEARCH_DEL_CHAR = -1, /* Flag to delete last character in search */
-	ED_INPUT_NUM_RESET = -1, /* Flag to reset number input */
-};
-
 /* Editor options. */
 struct Ed {
 	Vec *buf; /* Buffer for all drawn content. */
@@ -72,23 +66,6 @@ Returns 0 on success and -1 on error.
 */
 static void ed_flush_buf(struct Ed *);
 
-/*
-Writes digit to the number input. Resets if argument is reset flag.
-
-Returns 0 on success and -1 on error.
-
-Sets `EINVAL` if argument is invalid.
-*/
-static void ed_input_num(struct Ed *, char);
-
-/*
-Writes character to the search input.
-
-Deletes last character if argument is delete flag and resets if argument is
-reset flag.
-*/
-static void ed_input_search(struct Ed *, char);
-
 /* Inserts character to editor. */
 static void ed_ins_char(struct Ed *, char);
 
@@ -97,6 +74,18 @@ static void ed_ins_empty_line_below(struct Ed *);
 
 /* Inserts on top several empty lines. */
 static void ed_ins_empty_line_on_top(struct Ed *);
+
+/*
+Writes digit to the number input. Clears if overflows.
+
+Returns 0 on success and -1 on error.
+
+Sets `EINVAL` if argument is invalid.
+*/
+static int ed_num_input(struct Ed *, char);
+
+/* Clears number input. */
+static void ed_num_input_clr(struct Ed *);
 
 /* Use it when user presses quit key. Interacts with the remaining counter. */
 static void ed_on_quit_press(struct Ed *);
@@ -127,6 +116,21 @@ static void ed_save_file(struct Ed *);
 
 /* Saves opened file to spare dir. Useful if no privileges. */
 static void ed_save_file_to_spare_dir(struct Ed *);
+
+/*
+Writes character to the search input.
+
+Returns 0 on success and -1 on error.
+
+Sets `EINVAL` if character is invalid.
+*/
+static void ed_search_input(struct Ed *, char);
+
+/* Clears search input. */
+static void ed_search_input_clr(struct Ed *);
+
+/* Deletes last character from the input if exists. */
+static void ed_search_input_del_ch(struct Ed *);
 
 /* Sets formatted message to the user. */
 static void ed_set_msg(struct Ed *, const char *, ...);
@@ -329,38 +333,26 @@ ed_flush_buf(struct Ed *const ed)
 }
 
 static int
-ed_input_num(struct Ed *const ed, const char digit)
+ed_num_input(struct Ed *const ed, const char digit)
 {
 	/* Validate digit */
-	if ((digit < 0 || digit > 9) && ED_INPUT_NUM_RESET != digit) {
+	if (digit < 0 || digit > 9) {
 		errno = EINVAL;
 		return -1;
 	}
 
 	/* Zeroize input if current digit overflows or need to reset */
-	if (ED_INPUT_NUM_RESET == digit || (SIZE_MAX - digit) / 10 < ed->num_input)
-		ed->num_input = 0;
+	if ((SIZE_MAX - digit) / 10 < ed->num_input)
+		ed_num_input_clr();
 	else
 		ed->num_input = (ed->num_input * 10) + digit;
 	return 0;
 }
 
 static void
-ed_input_search(struct Ed *const ed, const char ch)
+ed_num_input_clr(struct Ed *const ed)
 {
-	if (ED_INPUT_SEARCH_CLEAR == ch) {
-		/* Reset search input */
-		ed->search_input_len = 0;
-		ed->search_input[0] = 0;
-	} else if (ED_INPUT_SEARCH_DEL_CHAR == ch && ed->search_input_len > 0) {
-		/* Delete last character in the input */
-		ed->search_input[--ed->search_input_len] = 0;
-	} else if (ed->search_input_len + 1 < sizeof(ed->search_input) && isprint(ch))
-	{
-		/* Write new character if there is place for null byte */
-		ed->search_input[ed->search_input_len++] = ch;
-		ed->search_input[ed->search_input_len] = 0;
-	}
+	ed->num_input = 0;
 }
 
 static void
@@ -430,10 +422,9 @@ ed_open(const char *const path, const int ifd, const int ofd)
 	/* Set zero length to message */
 	ed->msg[0] = 0;
 	/* Make number input inactive */
-	ret = ed_input_num(ed, ED_INPUT_NUM_RESET);
-	assert(0 == ret);
+	ed_num_input_clr(ed);
 	/* Set zero length to search query */
-	ed_input_search(ed, ED_INPUT_SEARCH_CLEAR);
+	ed_search_input_clr(ed);
 	/* File is not dirty by default so we may quit using one key press */
 	ed->quit_presses_rem = 1;
 	/* Set signal default values */
@@ -531,6 +522,8 @@ ed_proc_mouse_wh_key(
 static void
 ed_proc_norm_key(struct Ed *const ed, const char key)
 {
+	int ret;
+
 	switch (key) {
 	case CFG_KEY_DEL_LINE:
 		ed_del_line(ed);
@@ -595,15 +588,19 @@ ed_proc_norm_key(struct Ed *const ed, const char key)
 	}
 
 	/* Process number input */
-	if ('0' <= key && key <= '9')
-		ed_input_num(ed, key - '0');
-	else
-		ed_input_num(ed, ED_INPUT_NUM_RESET);
+	ret = ed_num_input(ed, key - '0');
+	if (-1 == ret) {
+		/* Clear input if pressed key is not a digit */
+		errno = 0;
+		ed_num_input_clr();
+	}
 }
 
 static void
 ed_proc_search_key(struct Ed *const ed, const char key)
 {
+	int ret;
+
 	switch (key) {
 	case CFG_KEY_MODE_SEARCH_TO_NORM:
 		win_search(ed->win, ed->search_input, DIR_FWD);
@@ -612,10 +609,12 @@ ed_proc_search_key(struct Ed *const ed, const char key)
 		ed_switch_mode(ed, MODE_NORM);
 		break;
 	case CFG_KEY_SEARCH_DEL_CHAR:
-		ed_input_search(ed, ED_INPUT_SEARCH_DEL_CHAR);
+		ed_search_input_del_char(ed);
 		break;
 	default:
-		ed_input_search(ed, key);
+		ret = ed_search_input(ed, key);
+		if (-1 == ret)
+			errno = 0;
 		break;
 	}
 }
@@ -699,6 +698,39 @@ ed_save_file_to_spare_dir(struct Ed *const ed)
 	return 0;
 }
 
+static int
+ed_search_input(struct Ed *const ed, const char ch)
+{
+	/* Validate character */
+	if (!isprint(ch)) {
+		errno = EINVAL;
+		return -1;
+	}
+
+	/* Write new character if there is place for character and null byte */
+	if (ed->search_input_len + 1 < sizeof(ed->search_input)) {
+		ed->search_input[ed->search_input_len++] = ch;
+		ed->search_input[ed->search_input_len] = 0;
+	}
+	return 0;
+}
+
+static void
+ed_search_input_clr(struct Ed *const ed)
+{
+	/* Reset search input */
+	ed->search_input_len = 0;
+	ed->search_input[0] = 0;
+}
+
+static void
+ed_search_input_del_char(struct Ed *const ed)
+{
+	/* Delete last character in the input if exists */
+	if (ed->search_input_len > 0)
+		ed->search_input[--ed->search_input_len] = 0;
+}
+
 static void
 ed_set_msg(struct Ed *const ed, const char *const fmt, ...)
 {
@@ -714,7 +746,7 @@ ed_switch_mode(struct Ed *const ed, const enum Mode mode)
 {
 	switch (mode) {
 	case MODE_SEARCH:
-		ed_input_search(ed, ED_INPUT_SEARCH_CLEAR);
+		ed_search_input_clr(ed);
 		/* FALLTHROUGH */
 	default:
 		ed->mode = mode;
