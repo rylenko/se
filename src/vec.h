@@ -20,6 +20,15 @@ Returns 0 on success and -1 on error.
 */
 int vec_append(Vec *, const void *, size_t);
 
+/*
+Like default appending function, but with string formatting.
+
+Returns formatted length on success and -1 on error.
+
+Sets `ENOSUP` if vector does not stores characters.
+*/
+int vec_append_fmt(Vec *, const char *, ...);
+
 /* Returns capacity of the vector. */
 size_t vec_cap(const Vec *);
 
@@ -46,6 +55,15 @@ Returns 0 on success and -1 on error.
 Sets `EINVAL` if index is invalid.
 */
 int vec_ins(Vec *, size_t, const void *, size_t);
+
+/*
+Like default inserting function, but with string formatting.
+
+Returns formatted length on success and -1 on error.
+
+Sets `ENOSUP` if vector does not stores characters.
+*/
+int vec_ins_fmt(Vec *, size_t, const char *, ...);
 
 /* Returns length of the vector. */
 size_t vec_len(const Vec *);

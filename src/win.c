@@ -104,9 +104,7 @@ win_break_line(struct Win *const win)
 	/* Move to the beginning of the next line */
 	win_mv_to_begin_of_line(win);
 	ret = win_mv_down(win, 1);
-	if (-1 == ret)
-		return -1;
-	return 0;
+	return ret;
 }
 
 int
@@ -141,9 +139,7 @@ win_del_char(struct Win *const win)
 
 	/* Fix expanded cursor column */
 	ret = win_scroll(win);
-	if (-1 == ret)
-		return -1;
-	return 0;
+	return ret;
 }
 
 int
@@ -271,9 +267,7 @@ win_draw_lines(const struct Win *const win, Vec *const buf)
 
 	/* End colored output */
 	ret = esc_color_end(buf);
-	if (-1 == ret)
-		return -1;
-	return 0;
+	return ret;
 }
 
 static size_t
@@ -323,9 +317,7 @@ win_ins_char(struct Win *const win, const char ch)
 
 	/* Fix expanded cursor column */
 	ret = win_scroll(win);
-	if (-1 == ret)
-		return -1;
-	return 0;
+	return ret;
 }
 
 int
@@ -347,8 +339,8 @@ win_ins_empty_line_below(struct Win *const win, const size_t times)
 	}
 
 	/* Move to last inserted line */
-	win_mv_down(win, times);
-	return 0;
+	ret = win_mv_down(win, times);
+	return ret;
 }
 
 int
@@ -394,9 +386,7 @@ win_mv_down(struct Win *const win, size_t times)
 
 	/* Clamp cursor to line after move down several times */
 	ret = win_scroll(win);
-	if (-1 == ret)
-		return -1;
-	return 0;
+	return ret;
 }
 
 int
@@ -429,9 +419,7 @@ win_mv_left(struct Win *const win, size_t times)
 
 	/* Fix expanded cursor column during left movement */
 	ret = win_scroll(win);
-	if (-1 == ret)
-		return -1;
-	return 0;
+	return ret;
 }
 
 int
@@ -470,9 +458,7 @@ win_mv_right(struct Win *const win, size_t times)
 
 	/* Fix expanded cursor column during right movement */
 	ret = win_scroll(win);
-	if (-1 == ret)
-		return -1;
-	return 0;
+	return ret;
 }
 
 void
@@ -531,9 +517,7 @@ win_mv_to_end_of_line(struct Win *const win)
 
 	/* Scroll after moving right */
 	ret = win_scroll(win);
-	if (-1 == ret)
-		return -1;
-	return 0;
+	return ret;
 }
 
 int
@@ -573,9 +557,7 @@ win_mv_to_next_word(struct Win *const win, size_t times)
 
 	/* Fix expanded cursor column during right movement */
 	ret = win_scroll(win);
-	if (-1 == ret)
-		return -1;
-	return 0;
+	return ret;
 }
 
 int
@@ -611,9 +593,7 @@ win_mv_to_prev_word(struct Win *const win, size_t times)
 
 	/* Fix expanded cursor column during left movement */
 	ret = win_scroll(win);
-	if (-1 == ret)
-		return -1;
-	return 0;
+	return ret;
 }
 
 int
@@ -638,9 +618,7 @@ win_mv_up(struct Win *const win, size_t times)
 
 	/* Clamp cursor to line after move down several times */
 	ret = win_scroll(win);
-	if (-1 == ret)
-		return -1;
-	return 0;
+	return ret;
 }
 
 struct Win*
@@ -824,8 +802,6 @@ win_upd_size(struct Win *const win)
 		return -1;
 
 	/* Scroll after resize */
-	ret = win_scroll(win);
-	if (-1 == ret)
-		return -1;
-	return 0;
+	eet = win_scroll(win);
+	return ret;
 }

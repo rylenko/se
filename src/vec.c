@@ -1,4 +1,5 @@
 #include <errno.h>
+#include <stdarg.h>
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
@@ -27,6 +28,15 @@ Returns 0 on success and -1 on error.
 */
 static int vec_realloc(struct Vec *, size_t);
 
+/*
+Like default inserting function, but with formatting using variadic list.
+
+Returns 0 on success and -1 on error.
+
+Sets `ENOSUP` if vector does not stores characters.
+*/
+static int vec_ins_fmt_va(struct Vec *, size_t, const char *, va_list);
+
 struct Vec*
 vec_alloc(const size_t item_size, const size_t cap_step)
 {
@@ -45,6 +55,19 @@ int
 vec_append(struct Vec *const vec, const void *const items, const size_t len)
 {
 	int ret = vec_ins(vec, vec->len, items, len);
+	return ret;
+}
+
+int
+vec_append_fmt(struct Vec *const vec, const char *const fmt, ...)
+{
+	int ret;
+	va_list args;
+
+	/* Collect arguments and use inner function */
+	va_start(args, fmt);
+	ret = vec_ins_fmt_va(vec, vec->len, fmt, args);
+	va_end(args);
 	return ret;
 }
 
@@ -80,9 +103,7 @@ vec_grow_if_needed(struct Vec *const vec, const size_t new_len)
 
 	/* Grow with new capacity */
 	ret = vec_realloc(vec, new_cap);
-	if (-1 == ret)
-		return -1;
-	return 0;
+	return ret;
 }
 
 int
@@ -116,6 +137,51 @@ vec_ins(
 	/* Copy new item to memory */
 	memcpy(&vec->items[idx * vec->item_size], items, len * vec->item_size);
 	return 0;
+}
+
+int
+vec_ins_fmt(
+	struct Vec *const vec,
+	const size_t idx,
+	const char *const fmt,
+) {
+	int ret;
+	va_list args;
+
+	/* Collect arguments and use inner function */
+	va_start(args, fmt);
+	ret = vec_ins_fmt_va(vec, idx, fmt, args);
+	va_end(args);
+	return ret;
+}
+
+static int
+vec_ins_fmt_va
+	struct Vec *const vec,
+	const size_t idx,
+	const char *const fmt,
+	va_list args
+) {
+	int len;
+	int ret;
+	char buf[256];
+
+	/* Check that vector stores characters */
+	if (sizeof(char) != vec->item_size) {
+		errno = ENOTSUP;
+		return -1;
+	}
+
+	/* Format arguments */
+	len = vsnprintf(buf, sizeof(buf), fmt, args);
+	if (len < 0 || len >= sizeof(buf))
+		return -1;
+
+	/* Insert formatted data to vector */
+	ret = vec_ins(vec, idx, buf, ret);
+	if (-1 == ret)
+		return -1;
+	return len;
 }
 
 void
@@ -170,9 +236,7 @@ vec_remove(struct Vec *const vec, const size_t idx, void *const item)
 
 	/* Shrink vector if there is too much free space */
 	ret = vec_shrink(vec, 0);
-	if (-1 == ret)
-		return -1;
-	return 0;
+	return ret;
 }
 
 void

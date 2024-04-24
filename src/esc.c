@@ -1,22 +1,8 @@
-#include <assert.h>
 #include <stdio.h>
 #include <string.h>
 #include "color.h"
 #include "esc.h"
 #include "vec.h"
-
-/* Color type escape codes. */
-enum ColorType {
-	COLOR_TYPE_FG = 38,
-	COLOR_TYPE_BG = 48,
-};
-
-/*
-Writes color escape code using passed color and color's type.
-
-Returns 0 on success and -1 on error.
-*/
-int esc_one_color_begin(Vec *, struct Color *, enum ColorType);
 
 int
 esc_alt_scr_on(Vec *const buf)
@@ -40,45 +26,25 @@ esc_clr_win(Vec *const buf)
 }
 
 int
-esc_one_color_begin(
-	Vec *const buf,
-	const struct Color *const color,
-	const enum ColorType type
-) {
-	int ret;
-	char seq[20];
-	const char *const char fmt = "\x1b[%d;2;%hhu;%hhu;%hhum";
-
-	/* Format RGB foregruound color */
-	ret = snprintf(seq, sizeof(seq), fmt, type, fg->r, fg->g, fg->b);
-	if (ret < 0)
-		return -1;
-	/* Validate that buffer has enough size */
-	assert(ret < sizeof(seq));
-
-	/* It is ok to pass integer because of previous checks */
-	ret = vec_append(buf, seq, ret);
-	if (-1 == ret)
-		return -1;
-	return 0;
-}
-
-int
 esc_color_begin(
 	Vec *const buf,
 	const struct Color *const fg,
 	const struct Color *const bg
 ) {
 	int ret;
+
 	/* Write foreground if set */
 	if (fg != NULL) {
-		ret = esc_one_color_begin(buf, fg, COLOR_TYPE_FG);
+		ret = \
+			vec_append_fmt(buf, "\x1b[38;2;%hhu;%hhu;%hhum", type, fg->r, fg->g, fg->b);
 		if (-1 == ret)
 			return -1;
 	}
+
 	/* Write background if set */
 	if (bg != NULL) {
-		ret = esc_one_color_begin(buf, bg, COLOR_TYPE_BG);
+		ret = \
+			vec_append_fmt(buf, "\x1b[48;2;%hhu;%hhu;%hhum", type, fg->r, fg->g, fg->b);
 		if (-1 == ret)
 			return -1;
 	}
@@ -102,18 +68,8 @@ esc_cur_hide(Vec *const buf)
 int
 esc_cur_set(Vec *const buf, const unsigned short row, const unsigned short col)
 {
-	char s[15];
-	int ret = snprintf(s, sizeof(s), "\x1b[%hu;%huH", row + 1, col + 1);
-	if (-1 == ret)
-		return -1;
-	/* Validate that buffer has enough size */
-	assert(ret < sizeof(s));
-
-	/* Write formatted cursor to buffer */
-	ret = vec_append(buf, s, len);
-	if (-1 == ret)
-		return -1;
-	return 0;
+	int ret = vec_append_fmt(buf, "\x1b[%hu;%huH", row + 1, col + 1);
+	return ret;
 }
 
 int

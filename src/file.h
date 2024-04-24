@@ -137,8 +137,6 @@ Writes final path to passed buffer up to passed length. The buffer must have a
 capacity one greater than the length for a null byte.
 
 Returns written bytes count on success and 0 on error.
-
-Sets `ENOBUFS` if path buffer too small.
 */
 size_t file_save_to_spare_dir(File *, char *, size_t);
 

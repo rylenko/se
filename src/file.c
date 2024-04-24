@@ -524,12 +524,8 @@ file_save_to_spare_dir(struct File *const file, char *const path, size_t len)
 
 	/* Build full spare path */
 	ret = snprintf(path, len, "%s/%s_%s", cfg_spare_save_dir, fname, date);
-	if (ret < 0)
+	if (ret < 0 || ret >= len)
 		return 0;
-	if (ret >= len) {
-		errno = ENOBUFS;
-		return 0;
-	}
 
 	/* Save file using built path */
 	return file_save(file, path);
@@ -605,9 +601,7 @@ line_append(struct Line *const line, const char *const chars, const size_t len)
 
 	/* Render line with new chars */
 	ret = line_render(line);
-	if (-1 == ret)
-		return -1;
-	return 0;
+	return ret;
 }
 
 static int
@@ -625,9 +619,7 @@ line_cut(struct Line *const line, const size_t len)
 
 	/* Render line with new length */
 	ret = line_render(line);
-	if (-1 == ret)
-		return -1;
-	return 0;
+	return ret;
 }
 
 void

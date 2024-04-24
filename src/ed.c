@@ -37,22 +37,48 @@ struct Ed {
 	volatile sig_atomic_t sigwinch; /* Resize flag. See signal-safety(7) */
 };
 
-/* Breaks current line at the current cursor's position */
-static void ed_break_line(struct Ed *);
+/*
+Breaks current line at the current cursor's position.
 
-/* Deletes character before the cursor. */
-static void ed_del_char(struct Ed *);
+Returns 0 on success and -1 on error.
+*/
+static int ed_break_line(struct Ed *);
 
-/* Deletes the inputed number of lines from file. */
-static void ed_del_line(struct Ed *);
+/*
+Deletes character before the cursor.
 
-/* Draws status on last row. */
-static void ed_draw_stat(struct Ed *);
+Returns 0 on success and -1 on error.
+*/
+static int ed_del_char(struct Ed *);
 
-/* Flush editor's drawing buffer. */
+/*
+Deletes the inputed number of lines from file.
+
+Returns 0 on success and -1 on error.
+*/
+static int ed_del_line(struct Ed *);
+
+/*
+Draws status on last row.
+
+Returns 0 on success and -1 on error.
+*/
+static int ed_draw_stat(struct Ed *);
+
+/*
+Flush editor's drawing buffer.
+
+Returns 0 on success and -1 on error.
+*/
 static void ed_flush_buf(struct Ed *);
 
-/* Writes digit to the number input. Resets if argument is reset flag. */
+/*
+Writes digit to the number input. Resets if argument is reset flag.
+
+Returns 0 on success and -1 on error.
+
+Sets `EINVAL` if argument is invalid.
+*/
 static void ed_input_num(struct Ed *, char);
 
 /*
@@ -108,29 +134,37 @@ static void ed_set_msg(struct Ed *, const char *, ...);
 /* Switches editor to passed mode. */
 static void ed_switch_mode(struct Ed *, enum Mode);
 
-static void
+static int
 ed_break_line(struct Ed *const ed)
 {
-	win_break_line(ed->win);
+	/* Break line */
+	int ret = win_break_line(ed->win);
+	if (-1 == ret)
+		return -1;
+
 	/* Set quit presses count after file change */
 	ed->quit_presses_rem = CFG_DIRTY_FILE_QUIT_PRESSES_CNT;
+	return 0;
 }
 
-static void
+static int
 ed_del_char(struct Ed *const ed)
 {
-	win_del_char(ed->win);
+	/* Delete character */
+	int ret = win_del_char(ed->win);
+	if (-1 == ret)
+		return -1;
+
 	/* Set quit presses count after file change */
 	ed->quit_presses_rem = CFG_DIRTY_FILE_QUIT_PRESSES_CNT;
+	return 0;
 }
 
 static int
 ed_del_line(struct Ed *const ed)
 {
-	int ret;
-
 	/* Try to delete lines or set error message */
-	ret = win_del_line(ed->win, ed_repeat_times(ed));
+	int ret = win_del_line(ed->win, ed_repeat_times(ed));
 	if (0 == ret) {
 		/* Set quit presses count after file change */
 		ed->quit_presses_rem = CFG_DIRTY_FILE_QUIT_PRESSES_CNT;
@@ -144,68 +178,93 @@ ed_del_line(struct Ed *const ed)
 	return -1;
 }
 
-void
+int
 ed_draw(struct Ed *const ed)
 {
 	/* Go to start of window and clear the window */
-	esc_go_home(ed->buf);
-	esc_clr_win(ed->buf);
+	int ret = esc_go_home(ed->buf);
+	if (-1 == ret)
+		return -1;
+	ret = esc_clr_win(ed->buf);
+	if (-1 == ret)
+		return -1;
 
 	/* Check flag to update window size. See signal-safety(7) for more */
 	if (ed->sigwinch) {
-		win_upd_size(ed->win);
 		ed->sigwinch = 0;
+
+		/* Update window size */
+		ret = win_upd_size(ed->win);
+		if (-1 == ret)
+			return ret;
 	}
 
 	/* Hide cursor to not flicker */
-	esc_cur_hide(ed->buf);
+	ret = esc_cur_hide(ed->buf);
+	if (-1 == ret)
+		return -1;
 	/* Draw lines of file */
-	win_draw_lines(ed->win, ed->buf);
+	ret = win_draw_lines(ed->win, ed->buf);
+	if (-1 == ret)
+		return -1;
 	/* Draw status */
-	ed_draw_stat(ed);
+	ret = ed_draw_stat(ed);
+	if (-1 == ret)
+		return -1;
 	/* Draw expanded cursor */
-	win_draw_cur(ed->win, ed->buf);
+	ret = win_draw_cur(ed->win, ed->buf);
+	if (-1 == ret)
+		return -1;
 	/* Show hidden cursor */
-	esc_cur_show(ed->buf);
-
+	ret = esc_cur_show(ed->buf);
+	if (-1 == ret)
+		return -1;
 	/* Flush the buffer to terminal */
-	ed_flush_buf(ed);
+	ret = ed_flush_buf(ed);
+	if (-1 == ret)
+		return -1;
+	return 0;
 }
 
-static void
+/* TODO: split into smaller functions. */
+static int
 ed_draw_stat(struct Ed *const ed)
 {
+	int ret;
 	size_t i;
-	char s[128];
-	size_t len;
 	size_t left_len = 0;
 	struct winsize winsize = win_size(ed->win);
-	/* Get filename of opened file */
 	const char *const fname = path_get_fname(win_file_path(ed->win));
-	/* Get coordinates */
 	const size_t y = win_curr_line_idx(ed->win);
 	const size_t x = win_curr_line_char_idx(ed->win);
+	char r[128];
 
 	/* Begin colored output */
-	esc_color_begin(ed->buf, &cfg_color_stat_fg, &cfg_color_stat_bg);
+	ret = esc_color_begin(ed->buf, &cfg_color_stat_fg, &cfg_color_stat_bg);
+	if (-1 == ret)
+		return -1;
 
 	/* Draw mode and filename */
-	len = snprintf(s, sizeof(s), " %s > %s", mode_str(ed->mode), fname);
-	left_len += len;
-	vec_append(ed->buf, s, len);
+	ret = vec_append_fmt(ed->buf, " %s > %s", mode_str(ed->mode), fname);
+	if (-1 == ret)
+		return -1;
+	left_len += ret;
 
 	/* Add mark if file is dirty */
 	if (win_file_is_dirty(ed->win)) {
-		len = snprintf(s, sizeof(s), " [+]");
-		left_len += len;
-		vec_append(ed->buf, s, len);
+		ret = vec_append(ed->buf, " [+]", 4);
+		if (-1 == ret)
+			return -1;
+		left_len += 4;
 	}
 
 	/* Draw message if set */
 	if (ed->msg[0] != 0) {
-		len = snprintf(s, sizeof(s), ": %s", ed->msg);
-		left_len += len;
-		vec_append(ed->buf, s, len);
+		/* Draw message */
+		ret = vec_append(ed->buf, ": %s", ed->msg);
+		if (-1 == ret)
+			return -1;
+		left_len += ret;
 
 		/* Reset message to do not draw on the next draw */
 		ed->msg[0] = 0;
@@ -214,23 +273,33 @@ ed_draw_stat(struct Ed *const ed)
 	/* Prepare length and formatted string for the right part */
 	switch (ed->mode) {
 	case MODE_NORM:
-		len = snprintf(s, sizeof(s), "%zu < %zu, %zu ", ed->num_input, y, x);
+		r_len = snprintf(r, sizeof(r), "%zu < %zu, %zu ", ed->num_input, y, x);
 		break;
 	case MODE_SEARCH:
-		len = snprintf(s, sizeof(s), "%s < %zu, %zu ", ed->search_input, y, x);
+		r_len = snprintf(r, sizeof(r), "%s < %zu, %zu ", ed->search_input, y, x);
 		break;
 	default:
-		len = snprintf(s, sizeof(s), "%zu, %zu ", y, x);
+		r_len = snprintf(r, sizeof(r), "%zu, %zu ", y, x);
 		break;
 	}
+	if (r_len < 0 || r_len >= sizeof(r))
+		return -1;
+
 	/* Draw colored empty space */
-	for (i = left_len + len; i < winsize.ws_col; i++)
-		vec_append(ed->buf, " ", 1);
+	for (i = left_len + r_len; i < winsize.ws_col; i++) {
+		ret = vec_append(ed->buf, " ", 1);
+		if (-1 == ret)
+			return -1;
+	}
+
 	/* Draw the right part */
-	vec_append(ed->buf, s, MIN(len, winsize.ws_col - left_len));
+	ret = vec_append(ed->buf, r, MIN(r_len, winsize.ws_col - left_len));
+	if (-1 == ret)
+		return -1;
 
 	/* End colored output */
-	esc_color_end(ed->buf);
+	ret = esc_color_end(ed->buf);
+	return ret;
 }
 
 void
@@ -244,10 +313,11 @@ ed_handle_signal(struct Ed *const ed, const int signal)
 		ed->sigwinch = 1;
 }
 
-static void
+static int
 ed_flush_buf(struct Ed *const ed)
 {
 	int ret;
+
 	/* Write buffer to terminal */
 	ssize_t len = term_write(vec_items(ed->buf), vec_len(ed->buf));
 	if (-1 == len)
@@ -255,22 +325,24 @@ ed_flush_buf(struct Ed *const ed)
 
 	/* Set the length to zero to continue appending characters to the beginning */
 	ret = vec_set_len(ed->buf, 0);
-	if (-1 == ret)
-		return -1;
-	return 0;
+	return ret;
 }
 
-static void
+static int
 ed_input_num(struct Ed *const ed, const char digit)
 {
 	/* Validate digit */
-	assert((0 <= digit && digit <= 9) || ED_INPUT_NUM_RESET == digit);
+	if ((digit < 0 || digit > 9) && ED_INPUT_NUM_RESET != digit) {
+		errno = EINVAL;
+		return -1;
+	}
 
 	/* Zeroize input if current digit overflows or need to reset */
 	if (ED_INPUT_NUM_RESET == digit || (SIZE_MAX - digit) / 10 < ed->num_input)
 		ed->num_input = 0;
 	else
 		ed->num_input = (ed->num_input * 10) + digit;
+	return 0;
 }
 
 static void
@@ -345,6 +417,8 @@ ed_on_quit_press(struct Ed *const ed)
 struct Ed*
 ed_open(const char *const path, const int ifd, const int ofd)
 {
+	int ret;
+
 	/* Allocate opaque struct */
 	struct Ed *const ed = malloc_err(sizeof(*ed));
 	/* Allocate buffer for all drawn content */
@@ -356,7 +430,8 @@ ed_open(const char *const path, const int ifd, const int ofd)
 	/* Set zero length to message */
 	ed->msg[0] = 0;
 	/* Make number input inactive */
-	ed_input_num(ed, ED_INPUT_NUM_RESET);
+	ret = ed_input_num(ed, ED_INPUT_NUM_RESET);
+	assert(0 == ret);
 	/* Set zero length to search query */
 	ed_input_search(ed, ED_INPUT_SEARCH_CLEAR);
 	/* File is not dirty by default so we may quit using one key press */
@@ -401,9 +476,7 @@ ed_proc_arrow_key(struct Ed *const ed, const char *const seq, const size_t len)
 	}
 	/* Process */
 	ret = proc(ed->win, repeat_times);
-	if (-1 == ret)
-		return -1;
-	return 0;
+	return ret;
 }
 
 static void
@@ -452,9 +525,7 @@ ed_proc_mouse_wh_key(
 	}
 	/* Process */
 	ret = proc(ed->win, repeat_times);
-	if (-1 == ret)
-		return -1;
-	return 0;
+	return ret;
 }
 
 static void
@@ -563,9 +634,7 @@ ed_proc_seq_key(struct Ed *const ed, const char *const seq, const size_t len)
 
 	/* Try to process mouse wheel key */
 	ret = ed_proc_mouse_wh_key(ed, seq, len);
-	if (-1 == ret)
-		return -1;
-	return 0;
+	return ret;
 }
 
 void
