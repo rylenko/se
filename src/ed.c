@@ -388,7 +388,7 @@ ed_ins_char(struct Ed *const ed, const char ch)
 static int
 ed_ins_empty_line_below(struct Ed *const ed)
 {
-	int ret = win_ins_empty_line_below(ed->win, ed_repeat_times(ed));
+	const int ret = win_ins_empty_line_below(ed->win, ed_repeat_times(ed));
 	if (-1 == ret)
 		return -1;
 
@@ -402,7 +402,7 @@ ed_ins_empty_line_below(struct Ed *const ed)
 static int
 ed_ins_empty_line_on_top(struct Ed *const ed)
 {
-	int ret = win_ins_empty_line_on_top(ed->win, ed_repeat_times(ed));
+	const int ret = win_ins_empty_line_on_top(ed->win, ed_repeat_times(ed));
 	if (-1 == ret)
 		return -1;
 

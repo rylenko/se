@@ -27,6 +27,7 @@ term_get_win_size(struct winsize *const win_size)
 {
 	/* Get window size using file descriptor. Ignore several success values */
 	int ret = ioctl(term.ofd, TIOCGWINSZ, win_size);
+	/* Remember that `ioctl` can return non-zero on success */
 	if (-1 == ret)
 		return -1;
 	return 0;
@@ -58,9 +59,7 @@ term_init(const int ifd, const int ofd)
 
 	/* Enable raw mode with new parameters */
 	ret = tcsetattr(term.ifd, TCSANOW, &raw_termios);
-	if (-1 == ret)
-		return -1;
-	return 0;
+	return ret;
 }
 
 static void

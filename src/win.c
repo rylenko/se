@@ -229,9 +229,8 @@ win_draw_line(
 		/* Get expanded with tabs offset's column */
 		exp_offset_col = win_exp_col(chars, len, win->offset.cols);
 		/* Do nothing if line hidden behind offset or empty */
-		if (render_len <= exp_offset_col) {
+		if (render_len <= exp_offset_col)
 			return 0;
-		}
 
 		/* Calculate length to draw using expanded length and draw */
 		len_to_draw = MIN(win->size.ws_col, render_len - exp_offset_col);
