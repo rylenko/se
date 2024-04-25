@@ -108,7 +108,7 @@ $ make gen-readme
 
 |Path|Line|Description|
 |-|-|-|
-|**src/win.c**|**733**|**can we shift here only by offset?**|
+|**src/win.c**|**732**|**can we shift here only by offset?**|
 |**src/ed.c**|**245**|**split into smaller functions.**|
 |**src/main.c**|**1**|**v0.3: Rename ed_proc_*_key to ed_try_proc_*_key?**|
 |**src/main.c**|**2**|**v0.3: Check using valgrind and eyes that all memory is freed on errors.**|

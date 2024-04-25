@@ -298,11 +298,11 @@ file_ins_char(
 	int ret;
 	struct Line *const line = vec_get(file->lines, idx);
 
-	/* Chec line not found */
+	/* Check line not found */
 	if (NULL == line)
 		return -1;
 
-	/* Insert character to line and update line's render */
+	/* Insert character to line */
 	ret = vec_ins(line->chars, pos, &ch, 1);
 	if (-1 == ret)
 		return -1;
@@ -447,7 +447,6 @@ file_read(struct File *const file, FILE *const inner)
 	while (1) {
 		/* Read new line */
 		ret = line_read(&line, inner);
-		/* Return 0 on EOF and -1 if error during line reading */
 		if (1 != ret)
 			return ret;
 
