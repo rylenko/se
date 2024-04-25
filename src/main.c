@@ -1,6 +1,5 @@
 /* TODO: v0.3: Rename ed_proc_*_key to ed_try_proc_*_key? */
 /* TODO: v0.3: Check using valgrind and eyes that all memory is freed on errors. */
-/* TODO: v0.3: Try to read file chunks or try to use mmap. */
 /* TODO: v0.4: Create Cell struct to handle all symbols including UTF-8. Create structs Win->Renders->Render->Cells->Cell. Rerender lines on window side */
 /* TODO: v0.4: Use linked list for lines array and line's content parts. */
 /* TODO: v0.4: Remember last position per line. */
@@ -9,7 +8,7 @@
 /* TODO: v0.5: Add key settings for escape sequences. For example, CFG_KEY_MV_UP_2 = "..." */
 /* TODO: v0.5: Add local clipboard. Use it in functions. */
 /* TODO: v0.5: Xclip patch to use with local clipboard. */
-/* TODO: v0.6: Support huge files. */
+/* TODO: v0.6: Support huge files: read chunks or try mmap */
 /* TODO: v0.6: Add tests. */
 /* TODO: v0.7: Make code patching easier. */
 /* TODO: v0.7: Add more error codes in docs. */

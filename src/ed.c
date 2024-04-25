@@ -64,16 +64,28 @@ Flush editor's drawing buffer.
 
 Returns 0 on success and -1 on error.
 */
-static void ed_flush_buf(struct Ed *);
+static int ed_flush_buf(struct Ed *);
 
-/* Inserts character to editor. */
-static void ed_ins_char(struct Ed *, char);
+/*
+Inserts character to editor.
 
-/* Inserts below several empty lines. */
-static void ed_ins_empty_line_below(struct Ed *);
+Returns 0 on success and -1 on error.
+*/
+static int ed_ins_char(struct Ed *, char);
 
-/* Inserts on top several empty lines. */
-static void ed_ins_empty_line_on_top(struct Ed *);
+/*
+Inserts below several empty lines.
+
+Returns 0 on success and -1 on error.
+*/
+static int ed_ins_empty_line_below(struct Ed *);
+
+/*
+Inserts on top several empty lines.
+
+Returns 0 on success and -1 on error.
+*/
+static int ed_ins_empty_line_on_top(struct Ed *);
 
 /*
 Writes digit to the number input. Clears if overflows.
@@ -355,36 +367,50 @@ ed_num_input_clr(struct Ed *const ed)
 	ed->num_input = 0;
 }
 
-static void
+static int
 ed_ins_char(struct Ed *const ed, const char ch)
 {
-	if (isprint(ch) || '\t' == ch) {
-		win_ins_char(ed->win, ch);
-		/* Set quit presses count after file change */
-		ed->quit_presses_rem = CFG_DIRTY_FILE_QUIT_PRESSES_CNT;
-	}
+	int ret;
+
+	if (!isprint(ch) && '\t' != ch)
+		return 0;
+
+	/* Insert character to window */
+	ret = win_ins_char(ed->win, ch);
+	if (-1 == ret)
+		return -1;
+
+	/* Set quit presses count after file change */
+	ed->quit_presses_rem = CFG_DIRTY_FILE_QUIT_PRESSES_CNT;
+	return 0;
 }
 
-static void
+static int
 ed_ins_empty_line_below(struct Ed *const ed)
 {
-	win_ins_empty_line_below(ed->win, ed_repeat_times(ed));
+	int ret = win_ins_empty_line_below(ed->win, ed_repeat_times(ed));
+	if (-1 == ret)
+		return -1;
 
 	/* Set quit presses count after file change */
 	ed->quit_presses_rem = CFG_DIRTY_FILE_QUIT_PRESSES_CNT;
 	/* Switch mode for comfort */
 	ed->mode = MODE_INS;
+	return 0;
 }
 
-static void
+static int
 ed_ins_empty_line_on_top(struct Ed *const ed)
 {
-	win_ins_empty_line_on_top(ed->win, ed_repeat_times(ed));
+	int ret = win_ins_empty_line_on_top(ed->win, ed_repeat_times(ed));
+	if (-1 == ret)
+		return -1;
 
 	/* Set quit presses count after file change */
 	ed->quit_presses_rem = CFG_DIRTY_FILE_QUIT_PRESSES_CNT;
 	/* Switch mode for comfort */
 	ed->mode = MODE_INS;
+	return 0;
 }
 
 char
