@@ -3,16 +3,6 @@
 
 #include "color.h"
 
-/* The character that is drawn if there is no line on the row */
-static const char cfg_no_line = '~';
-
-/*
-If no privilege to save the file, you can save it to this directory.
-
-Should not contain '/' at the end
-*/
-static const char cfg_spare_save_dir[] = "/tmp";
-
 /* Helpers for configuration. */
 enum {
 	CTRL_OFFSET = 96,
@@ -63,6 +53,16 @@ enum {
 	CFG_KEY_SEARCH_FWD = 13, /* Enter */
 	CFG_KEY_SEARCH_DEL_CHAR = 127, /* Backspace */
 };
+
+/* The character that is drawn if there is no line on the row */
+static const char cfg_no_line = '~';
+
+/*
+If no privilege to save the file, you can save it to this directory.
+
+Should not contain '/' at the end
+*/
+static const char cfg_spare_save_dir[] = "/tmp";
 
 /* Colors of displayed content */
 static const struct Color cfg_color_lines_fg = COLOR_NEW(192, 233, 233);
