@@ -99,8 +99,12 @@ static int ed_num_input(struct Ed *, char);
 /* Clears number input. */
 static void ed_num_input_clr(struct Ed *);
 
-/* Use it when user presses quit key. Interacts with the remaining counter. */
-static void ed_on_quit_press(struct Ed *);
+/*
+Use it when user presses quit key. Interacts with the remaining counter.
+
+Returns 0 on success and -1 on error.
+*/
+static int ed_on_quit_press(struct Ed *);
 
 /* Processes arrow key. */
 static void ed_proc_arrow_key(struct Ed *, const char *, size_t);
@@ -144,8 +148,12 @@ static void ed_search_input_clr(struct Ed *);
 /* Deletes last character from the input if exists. */
 static void ed_search_input_del_ch(struct Ed *);
 
-/* Sets formatted message to the user. */
-static void ed_set_msg(struct Ed *, const char *, ...);
+/*
+Sets formatted message to the user.
+
+Returns 0 on success and -1 on error.
+*/
+static int ed_set_msg(struct Ed *, const char *, ...);
 
 /* Switches editor to passed mode. */
 static void ed_switch_mode(struct Ed *, enum Mode);
@@ -186,12 +194,14 @@ ed_del_line(struct Ed *const ed)
 		ed->quit_presses_rem = CFG_DIRTY_FILE_QUIT_PRESSES_CNT;
 		return 0;
 	}
+
 	/* Check if tried to delete last line */
-	if (ENOSYS == errno) {
-		ed_set_msg(ed, "A single line in a file cannot be deleted.");
-		return 0;
-	}
-	return -1;
+	if (ENOSYS != errno)
+		return -1;
+
+	/* Print message if tried to delete last line */
+	ret = ed_set_msg(ed, "A single line in a file cannot be deleted.");
+	return ret;
 }
 
 int
@@ -419,17 +429,21 @@ ed_need_to_quit(const struct Ed *const ed)
 	return 0 == ed->quit_presses_rem;
 }
 
-static void
+static int
 ed_on_quit_press(struct Ed *const ed)
 {
-	if (ed->quit_presses_rem > 0) {
-		/* Decrease remaining quit presses */
-		ed->quit_presses_rem--;
+	int ret;
 
-		/* Set message with remaining count if no need to quit */
-		if (!ed_need_to_quit(ed))
-			ed_set_msg(ed, "Changes not saved. Presses: %hhu.", ed->quit_presses_rem);
-	}
+	/* Already need to quit, so do nothing */
+	if (ed_need_to_quit(ed))
+		return;
+
+	/* Decrease remaining quit presses */
+	ed->quit_presses_rem--;
+
+	/* Set message with remaining count */
+	ret = ed_set_msg(ed, "Not saved. Presses: %hhu.", ed->quit_presses_rem);
+	return ret;
 }
 
 struct Ed*
@@ -439,17 +453,26 @@ ed_open(const char *const path, const int ifd, const int ofd)
 
 	/* Allocate opaque struct */
 	struct Ed *const ed = malloc_err(sizeof(*ed));
+	if (NULL == ed)
+		return NULL;
+
 	/* Allocate buffer for all drawn content */
 	ed->buf = vec_alloc(sizeof(char), 4096);
+	if (NULL == ed->buf)
+		goto err_free_opaque;
+
 	/* Open window with accepted file and descriptors */
 	ed->win = win_open(path, ifd, ofd);
+	if (NULL == ed->buf)
+		goto err_free_opaque_and_buf;
+
 	/* Set default editting mode */
 	ed_switch_mode(ed, MODE_NORM);
 	/* Set zero length to message */
 	ed->msg[0] = 0;
-	/* Make number input inactive */
+	/* Clear number input */
 	ed_num_input_clr(ed);
-	/* Set zero length to search query */
+	/* Clear search input */
 	ed_search_input_clr(ed);
 	/* File is not dirty by default so we may quit using one key press */
 	ed->quit_presses_rem = 1;
@@ -457,10 +480,23 @@ ed_open(const char *const path, const int ifd, const int ofd)
 	ed->sigwinch = 0;
 
 	/* Enable alternate screen. It will be set during first drawing */
-	esc_alt_scr_on(ed->buf);
+	ret = esc_alt_scr_on(ed->buf);
+	if (-1 == ret)
+		goto err_clean_all;
+
 	/* Enable mouse wheel tracking. It will be set during first drawing */
-	esc_mouse_wh_track_on(ed->buf);
+	ret = esc_mouse_wh_track_on(ed->buf);
+	if (-1 == ret)
+		goto err_clean_all;
 	return ed;
+err_clean_all:
+	/* Error checking here is useless */
+	win_close(ed->win);
+err_free_opaque_and_buf:
+	vec_free(ed->buf);
+err_free_opaque:
+	free(ed);
+	return NULL;
 }
 
 static int
@@ -757,14 +793,23 @@ ed_search_input_del_char(struct Ed *const ed)
 		ed->search_input[--ed->search_input_len] = 0;
 }
 
-static void
+static int
 ed_set_msg(struct Ed *const ed, const char *const fmt, ...)
 {
-	/* Collect arguments and print formatted message to field */
+	int ret;
+
+	/* Collect arguments */
 	va_list args;
 	va_start(args, fmt);
-	vsnprintf(ed->msg, sizeof(ed->msg), fmt, args);
+
+	/* Format message string */
+	ret = vsnprintf(ed->msg, sizeof(ed->msg), fmt, args);
+	if (ret < 0 || ret >= sizeof(ed->msg))
+		return -1;
+
+	/* Free collected arguments */
 	va_end(args);
+	return 0;
 }
 
 static void
