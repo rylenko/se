@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <sys/ioctl.h>
-#include "alloc.h"
 #include "cfg.h"
 #include "esc.h"
 #include "file.h"

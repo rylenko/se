@@ -85,7 +85,6 @@ term_wait_key(char *const seq, const size_t len)
 	*/
 	if (-1 == readed && errno != EINTR)
 		return 0;
-
 	/* It's ok to return signed because of error check before */
 	return readed;
 }
@@ -94,6 +93,6 @@ ssize_t
 term_write(const char *const buf, const size_t len)
 {
 	/* Write buffer with accepted length */
-	ssize_t len = write(term.ofd, buf, len);
-	return len;
+	ssize_t ret = write(term.ofd, buf, len);
+	return ret;
 }

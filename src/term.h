@@ -41,6 +41,6 @@ Writes passed data to the terminal in one system call.
 
 Returns 0 on success and -1 on error.
 */
-int term_write(const char *, size_t);
+ssize_t term_write(const char *, size_t);
 
 #endif /* _TERM_H */

@@ -36,6 +36,10 @@ Returns pointer to opaque struct on succcess and `NULL` on error.
 */
 static File *file_alloc(const char *);
 
+
+/* Frees file allocated file. */
+static void file_free(struct File *);
+
 /*
 Reads lines from the file.
 
@@ -117,8 +121,8 @@ file_absorb_next_line(struct File *const file, const size_t idx)
 		return -1;
 
 	/* Remove next line */
-	next = vec_remove(file->lines, idx + 1, &next)
-	if (NULL == next)
+	ret = vec_remove(file->lines, idx + 1, &next);
+	if (-1 == ret)
 		return -1;
 
 	/* Append current line with next line's chars if next line is not empty */
@@ -187,7 +191,7 @@ file_break_line(struct File *const file, const size_t idx, const size_t pos)
 	/* Copy characters from broken line to new line if its length is not zero */
 	if (new_len > 0) {
 		/* Get start of part which we need to move to new line */
-		new_chars = vec_get(line->chars, pos)
+		new_chars = vec_get(line->chars, pos);
 		if (NULL == new_chars)
 			goto err_free;
 
@@ -262,7 +266,7 @@ file_del_line(struct File *const file, const size_t idx)
 	ret = vec_remove(file->lines, idx, &line);
 	/* See removing function docs. Line removed if argument is valid */
 	if (errno != EINVAL)
-		line_free(line);
+		line_free(&line);
 	if (-1 == ret)
 		return -1;
 
@@ -358,7 +362,7 @@ file_line_chars(const struct File *const file, const size_t idx)
 int
 file_line_len(const struct File *const file, const size_t i, size_t *const len)
 {
-	const struct Line *const line = vec_get(file->lines, idx);
+	const struct Line *const line = vec_get(file->lines, i);
 	if (NULL == line)
 		return -1;
 	*len = vec_len(line->chars);
@@ -373,8 +377,11 @@ file_line_render(const struct File *const file, const size_t idx)
 }
 
 int
-file_line_render_len(const struct File *const file, const size_t idx)
-{
+file_line_render_len(
+	const struct File *const file,
+	const size_t idx,
+	size_t *const len
+) {
 	const struct Line *const line = vec_get(file->lines, idx);
 	if (NULL == line)
 		return -1;
@@ -400,7 +407,7 @@ file_open(const char *const path)
 		return NULL;
 
 	/* Open file using path */
-	inner_file = fopen(path, "r")
+	inner_file = fopen(path, "r");
 	if (NULL == inner_file)
 		goto err_free_opaque;
 
@@ -475,7 +482,7 @@ file_save(struct File *const file, const char *const custom_path)
 
 	/* Write lines to opened file */
 	len = file_write(file, inner);
-	if (0 == len);
+	if (0 == len)
 		goto err_close;
 
 	/* Flush written content */
@@ -523,7 +530,7 @@ file_save_to_spare_dir(struct File *const file, char *const path, size_t len)
 
 	/* Build full spare path */
 	ret = snprintf(path, len, "%s/%s_%s", cfg_spare_save_dir, fname, date);
-	if (ret < 0 || ret >= len)
+	if (ret < 0 || (size_t)ret >= len)
 		return 0;
 
 	/* Save file using built path */
@@ -548,7 +555,7 @@ file_search(
 
 	do {
 		/* Try to search on line */
-		ret = line_search(line, pos, query, dir))
+		ret = line_search(line, pos, query, dir);
 		/* Return if result found or error happened */
 		if (ret != 0)
 			return ret;
@@ -563,7 +570,7 @@ file_search(
 		/* Move to another line */
 		*idx += DIR_FWD == dir ? 1 : -1;
 		line = vec_get(file->lines, *idx);
-		if (NULL == line);
+		if (NULL == line)
 			return -1;
 
 		/* Choose position using direction */
@@ -594,7 +601,7 @@ static int
 line_append(struct Line *const line, const char *const chars, const size_t len)
 {
 	/* Copy chars to line */
-	ret = vec_append(line->chars, chars, len);
+	int ret = vec_append(line->chars, chars, len);
 	if (-1 == ret)
 		return -1;
 
@@ -607,12 +614,12 @@ static int
 line_cut(struct Line *const line, const size_t len)
 {
 	/* Update broken line's length */
-	ret = vec_set_len(line->chars, pos)
+	int ret = vec_set_len(line->chars, len);
 	if (-1 == ret)
 		return -1;
 
 	/* Shrink broken line's capacity if needed */
-	ret = vec_shrink(line->chars, 0)
+	ret = vec_shrink(line->chars, 0);
 	if (-1 == ret)
 		return -1;
 
@@ -633,7 +640,7 @@ static int
 line_init(struct Line *const line)
 {
 	/* Allocate characters container */
-	line->chars = vec_alloc(sizeof(char), LINE_CHARS_CAP_STEP)
+	line->chars = vec_alloc(sizeof(char), LINE_CHARS_CAP_STEP);
 	if (NULL == line->chars)
 		return -1;
 
@@ -743,7 +750,7 @@ line_search(
 	const enum Dir dir
 ) {
 	const char *fwd_start;
-	const char *res;
+	const char *res = NULL;
 
 	/* Validate accepted index */
 	if (*idx > vec_len(line->chars)) {
@@ -762,7 +769,7 @@ line_search(
 		break;
 	case DIR_FWD:
 		/* Get start of searching and search */
-		fwd_start = vec_get(line->chars, *idx)
+		fwd_start = vec_get(line->chars, *idx);
 		if (NULL == fwd_start)
 			return -1;
 		res = strstr(fwd_start, query);

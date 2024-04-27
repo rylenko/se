@@ -1,6 +1,7 @@
 #include <errno.h>
 #include <stdarg.h>
 #include <stddef.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "math.h"
@@ -92,14 +93,14 @@ static int
 vec_grow_if_needed(struct Vec *const vec, const size_t new_len)
 {
 	int ret;
-	const size_t new_cap;
+	size_t new_cap;
 
 	/* No need to grow */
 	if (new_len <= vec->cap)
 		return 0;
 
 	/* Get optimal new capacity */
-	new_cap = MAX(vec->cap + vec->cap_step, new_len)
+	new_cap = MAX(vec->cap + vec->cap_step, new_len);
 
 	/* Grow with new capacity */
 	ret = vec_realloc(vec, new_cap);
@@ -144,6 +145,7 @@ vec_ins_fmt(
 	struct Vec *const vec,
 	const size_t idx,
 	const char *const fmt,
+	...
 ) {
 	int ret;
 	va_list args;
@@ -156,7 +158,7 @@ vec_ins_fmt(
 }
 
 static int
-vec_ins_fmt_va
+vec_ins_fmt_va(
 	struct Vec *const vec,
 	const size_t idx,
 	const char *const fmt,
@@ -174,11 +176,11 @@ vec_ins_fmt_va
 
 	/* Format arguments */
 	len = vsnprintf(buf, sizeof(buf), fmt, args);
-	if (len < 0 || len >= sizeof(buf))
+	if (len < 0 || (size_t)len >= sizeof(buf))
 		return -1;
 
 	/* Insert formatted data to vector */
-	ret = vec_ins(vec, idx, buf, ret);
+	ret = vec_ins(vec, idx, buf, len);
 	if (-1 == ret)
 		return -1;
 	return len;
@@ -209,7 +211,7 @@ vec_realloc(struct Vec *const vec, const size_t new_cap)
 	/* Reallocate items and update the capacity */
 	vec->cap = new_cap;
 	vec->items = realloc(vec->items, new_cap * vec->item_size);
-	return NULL == vec->items ? -1 : 0
+	return NULL == vec->items ? -1 : 0;
 }
 
 int
@@ -239,7 +241,7 @@ vec_remove(struct Vec *const vec, const size_t idx, void *const item)
 	return ret;
 }
 
-void
+int
 vec_set_len(struct Vec *const vec, const size_t len)
 {
 	/* Validate and set new length */
@@ -248,6 +250,7 @@ vec_set_len(struct Vec *const vec, const size_t len)
 		return -1;
 	}
 	vec->len = len;
+	return 0;
 }
 
 int
