@@ -35,16 +35,14 @@ esc_color_begin(
 
 	/* Write foreground if set */
 	if (fg != NULL) {
-		ret = \
-			vec_append_fmt(buf, "\x1b[38;2;%hhu;%hhu;%hhum", type, fg->r, fg->g, fg->b);
+		ret = vec_append_fmt(buf, "\x1b[38;2;%hhu;%hhu;%hhum", fg->r, fg->g, fg->b);
 		if (-1 == ret)
 			return -1;
 	}
 
 	/* Write background if set */
 	if (bg != NULL) {
-		ret = \
-			vec_append_fmt(buf, "\x1b[48;2;%hhu;%hhu;%hhum", type, fg->r, fg->g, fg->b);
+		ret = vec_append_fmt(buf, "\x1b[48;2;%hhu;%hhu;%hhum", fg->r, fg->g, fg->b);
 		if (-1 == ret)
 			return -1;
 	}
@@ -135,7 +133,7 @@ esc_mouse_wh_track_off(Vec *const buf)
 	return ret;
 }
 
-void
+int
 esc_mouse_wh_track_on(Vec *const buf)
 {
 	const int ret = vec_append(buf, "\x1b[?1000h", 8);

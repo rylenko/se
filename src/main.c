@@ -14,6 +14,7 @@
 /* TODO: v0.6: Add tests. */
 /* TODO: v0.7: Make code patching easier. */
 /* TODO: v0.7: Add more error codes in docs. */
+/* TODO: v0.7: Save to spare dir on error. */
 
 #include <err.h>
 #include <signal.h>

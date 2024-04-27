@@ -106,31 +106,63 @@ Returns 0 on success and -1 on error.
 */
 static int ed_on_quit_press(struct Ed *);
 
-/* Processes arrow key. */
-static void ed_proc_arrow_key(struct Ed *, const char *, size_t);
+/*
+Processes arrow key.
 
-/* Process key in insertion mode. */
-static void ed_proc_ins_key(struct Ed *, char);
+Returns 0 on success or invalid key and -1 on error.
+*/
+static int ed_proc_arrow_key(struct Ed *, const char *, size_t);
 
-/* Processes mouse wheel key. */
-static void ed_proc_mouse_wh_key(struct Ed *, const char *, size_t);
+/*
+Process key in insertion mode.
 
-/* Process key in normal mode. */
-static void ed_proc_norm_key(struct Ed *, char);
+Returns 0 on success or invalid key and -1 on error.
+*/
+static int ed_proc_ins_key(struct Ed *, char);
 
-/* Process key in search mode. */
-static void ed_proc_search_key(struct Ed *, char);
+/*
+Processes mouse wheel key.
 
-/* Processes key sequence. Useful if single key press is several characters */
-static void ed_proc_seq_key(struct Ed *, const char *, size_t);
+Returns 0 on success or invalid key and -1 on error.
+*/
+static int ed_proc_mouse_wh_key(struct Ed *, const char *, size_t);
+
+/*
+Process key in normal mode.
+
+Returns 0 on success or invalid key and -1 on error.
+*/
+static int ed_proc_norm_key(struct Ed *, char);
+
+/*
+Process key in search mode.
+
+Returns 0 on success or invalid key and -1 on error.
+*/
+static int ed_proc_search_key(struct Ed *, char);
+
+/*
+Processes key sequence. Useful if single key press is several characters.
+
+Returns 0 on success or invalid key and -1 on error.
+*/
+static int ed_proc_seq_key(struct Ed *, const char *, size_t);
 
 /* Determines how many times the next action needs to be repeated. */
 static size_t ed_repeat_times(const struct Ed *);
 
-/* Saves opened file. */
+/*
+Saves opened file.
+
+Sets error message in the editor instead of exit with not saved content.
+*/
 static void ed_save_file(struct Ed *);
 
-/* Saves opened file to spare dir. Useful if no privileges. */
+/*
+Saves opened file to spare dir. Useful if no privileges.
+
+Sets error message in the editor instead of exit with not saved content.
+*/
 static void ed_save_file_to_spare_dir(struct Ed *);
 
 /*
@@ -140,13 +172,13 @@ Returns 0 on success and -1 on error.
 
 Sets `EINVAL` if character is invalid.
 */
-static void ed_search_input(struct Ed *, char);
+static int ed_search_input(struct Ed *, char);
 
 /* Clears search input. */
 static void ed_search_input_clr(struct Ed *);
 
 /* Deletes last character from the input if exists. */
-static void ed_search_input_del_ch(struct Ed *);
+static void ed_search_input_del_char(struct Ed *);
 
 /*
 Sets formatted message to the user.
@@ -258,7 +290,8 @@ ed_draw_stat(struct Ed *const ed)
 {
 	int ret;
 	size_t i;
-	size_t left_len = 0;
+	size_t l_len = 0;
+	size_t r_len;
 	struct winsize winsize = win_size(ed->win);
 	const char *const fname = path_get_fname(win_file_path(ed->win));
 	const size_t y = win_curr_line_idx(ed->win);
@@ -274,23 +307,23 @@ ed_draw_stat(struct Ed *const ed)
 	ret = vec_append_fmt(ed->buf, " %s > %s", mode_str(ed->mode), fname);
 	if (-1 == ret)
 		return -1;
-	left_len += ret;
+	l_len += ret;
 
 	/* Add mark if file is dirty */
 	if (win_file_is_dirty(ed->win)) {
 		ret = vec_append(ed->buf, " [+]", 4);
 		if (-1 == ret)
 			return -1;
-		left_len += 4;
+		l_len += 4;
 	}
 
 	/* Draw message if set */
 	if (ed->msg[0] != 0) {
 		/* Draw message */
-		ret = vec_append(ed->buf, ": %s", ed->msg);
+		ret = vec_append_fmt(ed->buf, ": %s", ed->msg);
 		if (-1 == ret)
 			return -1;
-		left_len += ret;
+		l_len += ret;
 
 		/* Reset message to do not draw on the next draw */
 		ed->msg[0] = 0;
@@ -299,27 +332,31 @@ ed_draw_stat(struct Ed *const ed)
 	/* Prepare length and formatted string for the right part */
 	switch (ed->mode) {
 	case MODE_NORM:
-		r_len = snprintf(r, sizeof(r), "%zu < %zu, %zu ", ed->num_input, y, x);
+		ret = snprintf(r, sizeof(r), "%zu < %zu, %zu ", ed->num_input, y, x);
 		break;
 	case MODE_SEARCH:
-		r_len = snprintf(r, sizeof(r), "%s < %zu, %zu ", ed->search_input, y, x);
+		ret = snprintf(r, sizeof(r), "%s < %zu, %zu ", ed->search_input, y, x);
 		break;
 	default:
-		r_len = snprintf(r, sizeof(r), "%zu, %zu ", y, x);
+		ret = snprintf(r, sizeof(r), "%zu, %zu ", y, x);
 		break;
 	}
-	if (r_len < 0 || r_len >= sizeof(r))
+
+	/* Check right part formatting error */
+	if (ret < 0 || (size_t)ret >= sizeof(r))
 		return -1;
+	r_len = (size_t)ret;
+
 
 	/* Draw colored empty space */
-	for (i = left_len + r_len; i < winsize.ws_col; i++) {
+	for (i = l_len + r_len; i < winsize.ws_col; i++) {
 		ret = vec_append(ed->buf, " ", 1);
 		if (-1 == ret)
 			return -1;
 	}
 
 	/* Draw the right part */
-	ret = vec_append(ed->buf, r, MIN(r_len, winsize.ws_col - left_len));
+	ret = vec_append(ed->buf, r, MIN(r_len, winsize.ws_col - l_len));
 	if (-1 == ret)
 		return -1;
 
@@ -365,7 +402,7 @@ ed_num_input(struct Ed *const ed, const char digit)
 
 	/* Zeroize input if current digit overflows or need to reset */
 	if ((SIZE_MAX - digit) / 10 < ed->num_input)
-		ed_num_input_clr();
+		ed_num_input_clr(ed);
 	else
 		ed->num_input = (ed->num_input * 10) + digit;
 	return 0;
@@ -405,7 +442,7 @@ ed_ins_empty_line_below(struct Ed *const ed)
 	/* Set quit presses count after file change */
 	ed->quit_presses_rem = CFG_DIRTY_FILE_QUIT_PRESSES_CNT;
 	/* Switch mode for comfort */
-	ed->mode = MODE_INS;
+	ed_switch_mode(ed, MODE_INS);
 	return 0;
 }
 
@@ -419,7 +456,7 @@ ed_ins_empty_line_on_top(struct Ed *const ed)
 	/* Set quit presses count after file change */
 	ed->quit_presses_rem = CFG_DIRTY_FILE_QUIT_PRESSES_CNT;
 	/* Switch mode for comfort */
-	ed->mode = MODE_INS;
+	ed_switch_mode(ed, MODE_INS);
 	return 0;
 }
 
@@ -436,7 +473,7 @@ ed_on_quit_press(struct Ed *const ed)
 
 	/* Already need to quit, so do nothing */
 	if (ed_need_to_quit(ed))
-		return;
+		return 0;
 
 	/* Decrease remaining quit presses */
 	ed->quit_presses_rem--;
@@ -452,7 +489,7 @@ ed_open(const char *const path, const int ifd, const int ofd)
 	int ret;
 
 	/* Allocate opaque struct */
-	struct Ed *const ed = malloc_err(sizeof(*ed));
+	struct Ed *const ed = malloc(sizeof(*ed));
 	if (NULL == ed)
 		return NULL;
 
@@ -504,51 +541,51 @@ ed_proc_arrow_key(struct Ed *const ed, const char *const seq, const size_t len)
 {
 	int ret;
 	enum ArrowKey key;
-	const size_t repeat_times = ed_repeat_times(ed);
-	int (*proc)(Win *, size_t);
 
 	/* Try to extract arrow key */
 	ret = esc_extr_arrow_key(seq, len, &key);
 	if (-1 == ret) {
 		return 0;
 	}
-	/* Get processor */
+
+	/* Process key */
 	switch (key) {
 	case ARROW_KEY_UP:
-		proc = win_mv_up;
+		ret = win_mv_up(ed->win, ed_repeat_times(ed));
 		break;
 	case ARROW_KEY_DOWN:
-		proc = win_mv_down;
+		ret = win_mv_down(ed->win, ed_repeat_times(ed));
 		break;
 	case ARROW_KEY_RIGHT:
-		proc = win_mv_right;
+		ret = win_mv_right(ed->win, ed_repeat_times(ed));
 		break;
 	case ARROW_KEY_LEFT:
-		proc = win_mv_left;
+		ret = win_mv_left(ed->win, ed_repeat_times(ed));
 		break;
 	}
-	/* Process */
-	ret = proc(ed->win, repeat_times);
 	return ret;
 }
 
-static void
+static int
 ed_proc_ins_key(struct Ed *const ed, const char key)
 {
+	int ret = 0;
+
 	switch (key) {
 	case CFG_KEY_DEL_CHAR:
-		ed_del_char(ed);
+		ret = ed_del_char(ed);
 		break;
 	case CFG_KEY_INS_LINE_BREAK:
-		ed_break_line(ed);
+		ret = ed_break_line(ed);
 		break;
 	case CFG_KEY_MODE_INS_TO_NORM:
-		ed->mode = MODE_NORM;
+		ed_switch_mode(ed, MODE_NORM);
 		break;
 	default:
-		ed_ins_char(ed, key);
+		ret = ed_ins_char(ed, key);
 		break;
 	}
+	return ret;
 }
 
 static int
@@ -559,51 +596,48 @@ ed_proc_mouse_wh_key(
 ) {
 	int ret;
 	enum MouseWhKey key;
-	const size_t repeat_times = ed_repeat_times(ed);
-	int (*proc)(Win *, size_t);
 
 	/* Try to extract mouse wheel key */
 	ret = esc_extr_mouse_wh_key(seq, len, &key);
 	if (-1 == ret) {
 		return 0;
 	}
-	/* Get processor */
+
+	/* Process */
 	switch (key) {
 	case MOUSE_WH_KEY_UP:
-		proc = win_mv_up;
+		ret = win_mv_up(ed->win, ed_repeat_times(ed));
 		break;
 	case MOUSE_WH_KEY_DOWN:
-		proc = win_mv_down;
+		ret = win_mv_down(ed->win, ed_repeat_times(ed));
 		break;
 	}
-	/* Process */
-	ret = proc(ed->win, repeat_times);
 	return ret;
 }
 
-static void
+static int
 ed_proc_norm_key(struct Ed *const ed, const char key)
 {
-	int ret;
+	int ret = 0;
 
 	switch (key) {
 	case CFG_KEY_DEL_LINE:
-		ed_del_line(ed);
+		ret = ed_del_line(ed);
 		break;
 	case CFG_KEY_INS_LINE_BELOW:
-		ed_ins_empty_line_below(ed);
-		return;
+		ret = ed_ins_empty_line_below(ed);
+		break;
 	case CFG_KEY_INS_LINE_ON_TOP:
-		ed_ins_empty_line_on_top(ed);
-		return;
+		ret = ed_ins_empty_line_on_top(ed);
+		break;
 	case CFG_KEY_MODE_NORM_TO_INS:
-		ed->mode = MODE_INS;
+		ed_switch_mode(ed, MODE_INS);
 		break;
 	case CFG_KEY_MODE_NORM_TO_SEARCH:
 		ed_switch_mode(ed, MODE_SEARCH);
 		break;
 	case CFG_KEY_QUIT:
-		ed_on_quit_press(ed);
+		ret = ed_on_quit_press(ed);
 		break;
 	case CFG_KEY_SAVE:
 		ed_save_file(ed);
@@ -612,16 +646,16 @@ ed_proc_norm_key(struct Ed *const ed, const char key)
 		ed_save_file_to_spare_dir(ed);
 		break;
 	case CFG_KEY_MV_DOWN:
-		win_mv_down(ed->win, ed_repeat_times(ed));
+		ret = win_mv_down(ed->win, ed_repeat_times(ed));
 		break;
 	case CFG_KEY_MV_LEFT:
-		win_mv_left(ed->win, ed_repeat_times(ed));
+		ret = win_mv_left(ed->win, ed_repeat_times(ed));
 		break;
 	case CFG_KEY_MV_RIGHT:
-		win_mv_right(ed->win, ed_repeat_times(ed));
+		ret = win_mv_right(ed->win, ed_repeat_times(ed));
 		break;
 	case CFG_KEY_MV_UP:
-		win_mv_up(ed->win, ed_repeat_times(ed));
+		ret = win_mv_up(ed->win, ed_repeat_times(ed));
 		break;
 	case CFG_KEY_MV_TO_BEGIN_OF_FILE:
 		win_mv_to_begin_of_file(ed->win);
@@ -633,19 +667,19 @@ ed_proc_norm_key(struct Ed *const ed, const char key)
 		win_mv_to_end_of_file(ed->win);
 		break;
 	case CFG_KEY_MV_TO_END_OF_LINE:
-		win_mv_to_end_of_line(ed->win);
+		ret = win_mv_to_end_of_line(ed->win);
 		break;
 	case CFG_KEY_MV_TO_NEXT_WORD:
-		win_mv_to_next_word(ed->win, ed_repeat_times(ed));
+		ret = win_mv_to_next_word(ed->win, ed_repeat_times(ed));
 		break;
 	case CFG_KEY_MV_TO_PREV_WORD:
-		win_mv_to_prev_word(ed->win, ed_repeat_times(ed));
+		ret = win_mv_to_prev_word(ed->win, ed_repeat_times(ed));
 		break;
 	case CFG_KEY_SEARCH_BWD:
-		win_search(ed->win, ed->search_input, DIR_BWD);
+		ret = win_search(ed->win, ed->search_input, DIR_BWD);
 		break;
 	case CFG_KEY_SEARCH_FWD:
-		win_search(ed->win, ed->search_input, DIR_FWD);
+		ret = win_search(ed->win, ed->search_input, DIR_FWD);
 		break;
 	}
 
@@ -654,18 +688,22 @@ ed_proc_norm_key(struct Ed *const ed, const char key)
 	if (-1 == ret) {
 		/* Clear input if pressed key is not a digit */
 		errno = 0;
-		ed_num_input_clr();
+		ed_num_input_clr(ed);
 	}
+
+	return ret;
 }
 
-static void
+static int
 ed_proc_search_key(struct Ed *const ed, const char key)
 {
-	int ret;
+	int ret = 0;
 
 	switch (key) {
 	case CFG_KEY_MODE_SEARCH_TO_NORM:
-		win_search(ed->win, ed->search_input, DIR_FWD);
+		ret = win_search(ed->win, ed->search_input, DIR_FWD);
+		if (-1 == ret)
+			return -1;
 		/* FALLTHROUGH */
 	case CFG_KEY_MODE_SEARCH_TO_NORM_CANCEL:
 		ed_switch_mode(ed, MODE_NORM);
@@ -675,18 +713,19 @@ ed_proc_search_key(struct Ed *const ed, const char key)
 		break;
 	default:
 		ret = ed_search_input(ed, key);
+		/* Ignore invalid key */
 		if (-1 == ret)
 			errno = 0;
 		break;
 	}
+
+	return ret;
 }
 
 static int
 ed_proc_seq_key(struct Ed *const ed, const char *const seq, const size_t len)
 {
 	int ret;
-	enum ArrowKey arrow_key;
-	enum MouseWhKey mouse_wh_key;
 
 	/* Try to process arrow key */
 	ret = ed_proc_arrow_key(ed, seq, len);
@@ -698,23 +737,35 @@ ed_proc_seq_key(struct Ed *const ed, const char *const seq, const size_t len)
 	return ret;
 }
 
-void
+int
 ed_quit(struct Ed *const ed)
 {
 	/* Disable alternate screen */
-	esc_alt_scr_off(ed->buf);
+	int ret = esc_alt_scr_off(ed->buf);
+	if (-1 == ret)
+		return -1;
+
 	/* Disable mouse wheel tracking */
-	esc_mouse_wh_track_off(ed->buf);
+	ret = esc_mouse_wh_track_off(ed->buf);
+	if (-1 == ret)
+		return -1;
+
 	/* Flush settings disabling */
-	ed_flush_buf(ed);
+	ret = ed_flush_buf(ed);
+	if (-1 == ret)
+		return -1;
 
 	/* Free content buffer */
 	vec_free(ed->buf);
+
 	/* Close the window */
-	win_close(ed->win);
+	ret = win_close(ed->win);
+	if (-1 == ret)
+		return -1;
 
 	/* Free opaque struct */
 	free(ed);
+	return 0;
 }
 
 static size_t
@@ -739,7 +790,7 @@ ed_save_file(struct Ed *const ed)
 	}
 }
 
-static int
+static void
 ed_save_file_to_spare_dir(struct Ed *const ed)
 {
 	char path[CFG_SPARE_PATH_MAX_LEN + 1];
@@ -749,15 +800,14 @@ ed_save_file_to_spare_dir(struct Ed *const ed)
 	if (0 == len) {
 		/* Assert that path buffer has enough size */
 		assert(ENOBUFS != errno);
-		return -1;
+		ed_set_msg(ed, "Failed to save: %s.", strerror(errno));
+	} else {
+		/* Set message */
+		ed_set_msg(ed, "%zu bytes saved to %s.", len, path);
+
+		/* Update quit presses */
+		ed->quit_presses_rem = 1;
 	}
-
-	/* Set message */
-	ed_set_msg(ed, "%zu bytes saved to %s.", len, path);
-
-	/* Update quit presses */
-	ed->quit_presses_rem = 1;
-	return 0;
 }
 
 static int
@@ -804,7 +854,7 @@ ed_set_msg(struct Ed *const ed, const char *const fmt, ...)
 
 	/* Format message string */
 	ret = vsnprintf(ed->msg, sizeof(ed->msg), fmt, args);
-	if (ret < 0 || ret >= sizeof(ed->msg))
+	if (ret < 0 || (size_t)ret >= sizeof(ed->msg))
 		return -1;
 
 	/* Free collected arguments */
@@ -824,28 +874,35 @@ ed_switch_mode(struct Ed *const ed, const enum Mode mode)
 	}
 }
 
-void
+int
 ed_wait_and_proc_key(struct Ed *const ed)
 {
+	int ret = 0;
 	char seq[4];
-	/* Wait key press */
 	size_t seq_len = term_wait_key(seq, sizeof(seq));
 
+	/* Check key waiting error */
+	if (0 == seq_len)
+		return -1;
+
+	/* Process key sequence if more than one characters readed */
 	if (seq_len > 1) {
-		/* Process key sequence if more than one characters readed */
-		ed_proc_seq_key(ed, seq, seq_len);
-	} else {
-		/* Process single character keys in different input modes */
-		switch (ed->mode) {
-		case MODE_NORM:
-			ed_proc_norm_key(ed, seq[0]);
-			break;
-		case MODE_INS:
-			ed_proc_ins_key(ed, seq[0]);
-			break;
-		case MODE_SEARCH:
-			ed_proc_search_key(ed, seq[0]);
-			break;
-		}
+		ret = ed_proc_seq_key(ed, seq, seq_len);
+		return ret;
+
 	}
+
+	/* Process single character keys in different input modes */
+	switch (ed->mode) {
+	case MODE_NORM:
+		ret = ed_proc_norm_key(ed, seq[0]);
+		break;
+	case MODE_INS:
+		ret = ed_proc_ins_key(ed, seq[0]);
+		break;
+	case MODE_SEARCH:
+		ret = ed_proc_search_key(ed, seq[0]);
+		break;
+	}
+	return ret;
 }

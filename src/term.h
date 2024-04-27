@@ -32,9 +32,9 @@ Waits for a key press.
 Key press sometimes consists of several characters. Therefore, the pressed
 key's characters is written to the passed buffer up to the passed length.
 
-Returns readed characters count on success and -1 on error.
+Returns readed characters count on success and 0 on error.
 */
-ssize_t term_wait_key(char *, size_t);
+size_t term_wait_key(char *, size_t);
 
 /*
 Writes passed data to the terminal in one system call.

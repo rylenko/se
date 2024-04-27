@@ -109,7 +109,7 @@ $ make gen-readme
 |Path|Line|Description|
 |-|-|-|
 |**src/win.c**|**732**|**can we shift here only by offset?**|
-|**src/ed.c**|**255**|**split into smaller functions.**|
+|**src/ed.c**|**287**|**split into smaller functions.**|
 |**src/main.c**|**1**|**v0.3: Rename ed_proc_*_key to ed_try_proc_*_key?**|
 |**src/main.c**|**2**|**v0.3: Check using valgrind and eyes that all memory is freed on errors.**|
 |**src/main.c**|**3**|**v0.3: Split functions into smaller functions, which "do one thing and do it well".**|
@@ -126,3 +126,4 @@ $ make gen-readme
 |**src/main.c**|**14**|**v0.6: Add tests.**|
 |**src/main.c**|**15**|**v0.7: Make code patching easier.**|
 |**src/main.c**|**16**|**v0.7: Add more error codes in docs.**|
+|**src/main.c**|**17**|**v0.7: Save to spare dir on error.**|

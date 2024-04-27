@@ -74,7 +74,7 @@ term_set_raw_mode_params(struct termios *const params)
 	params->c_cc[VMIN] = 1;
 }
 
-ssize_t
+size_t
 term_wait_key(char *const seq, const size_t len)
 {
 	/* Read input up to specified length */
@@ -84,7 +84,9 @@ term_wait_key(char *const seq, const size_t len)
 	changed, for example, in xterm.
 	*/
 	if (-1 == readed && errno != EINTR)
-		return -1;
+		return 0;
+
+	/* It's ok to return signed because of error check before */
 	return readed;
 }
 
