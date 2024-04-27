@@ -72,7 +72,7 @@ You can set up convenient key bindings and convenient colors in `src/cfg.h`. Not
 
 # Build and install
 
-You can set up convenient building flags in `cfg.mk`. For example, if you want to debug, you need to add `-g` to flags. Or, if you want to build editor for OpenBSD, you need to uncomment some lines in `cfg.mk`.
+You can set up convenient building flags in `cfg.mk`. For example, if you want to debug, you need to add `-g` to flags and remove optimizations. Or, if you want to build editor for OpenBSD, you need to uncomment some lines in `cfg.mk`.
 
 Build binary:
 

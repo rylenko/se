@@ -239,8 +239,10 @@ ed_del_line(struct Ed *const ed)
 int
 ed_draw(struct Ed *const ed)
 {
+	int ret;
+
 	/* Go to start of window and clear the window */
-	int ret = esc_go_home(ed->buf);
+	ret = esc_go_home(ed->buf);
 	if (-1 == ret)
 		return -1;
 	ret = esc_clr_win(ed->buf);
@@ -279,9 +281,7 @@ ed_draw(struct Ed *const ed)
 		return -1;
 	/* Flush the buffer to terminal */
 	ret = ed_flush_buf(ed);
-	if (-1 == ret)
-		return -1;
-	return 0;
+	return ret;
 }
 
 /* TODO: split into smaller functions. */
@@ -740,8 +740,10 @@ ed_proc_seq_key(struct Ed *const ed, const char *const seq, const size_t len)
 int
 ed_quit(struct Ed *const ed)
 {
+	int ret;
+
 	/* Disable alternate screen */
-	int ret = esc_alt_scr_off(ed->buf);
+	ret = esc_alt_scr_off(ed->buf);
 	if (-1 == ret)
 		return -1;
 

@@ -1,4 +1,5 @@
 /* TODO: v0.3: Rename ed_proc_*_key to ed_try_proc_*_key? */
+/* TODO: v0.3: Create single file_line, which returns something like PubLine struct? */
 /* TODO: v0.3: Check using valgrind and eyes that all memory is freed on errors. */
 /* TODO: v0.3: Split functions into smaller functions, which "do one thing and do it well". */
 /* TODO: v0.3: Don’t say in comments what can be clearly stated in code. */
@@ -18,6 +19,7 @@
 
 #include <err.h>
 #include <signal.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
@@ -26,8 +28,12 @@
 static const char *const usage = "Usage:\n\t$ se <filename>";
 
 /* Handle editor signals. */
-static void handle_signal(int signal, siginfo_t *info, void *ctx);
+static void handle_signal(int, siginfo_t *, void *);
 
+/* Setups signal handler for the editor. */
+static int setup_signal_handler(void);
+
+/* Global editor variable, which used all the time */
 static Ed *ed;
 
 static void
@@ -42,6 +48,7 @@ static int
 setup_signal_handler(void)
 {
 	int ret;
+
 	/* Initialize action */
 	struct sigaction action;
 	memset(&action, 0, sizeof(action));
@@ -57,15 +64,14 @@ setup_signal_handler(void)
 
 	/* Register signals */
 	ret = sigaction(SIGWINCH, &action, NULL);
-	if (-1 == ret)
-		return -1;
-	return 0;
+	return ret;
 }
 
 int
 main(const int argc, const char *const *const argv)
 {
 	int ret;
+
 	/* Check filename in arguments */
 	if (argc != 2)
 		errx(EXIT_FAILURE, usage);

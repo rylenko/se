@@ -76,11 +76,11 @@ char file_is_dirty(const File *);
 /*
 Finds line by passed index and returns its raw chars.
 
-Returns pointer to characters on success and `NULL` on error.
+Returns 0 on success and -1 on error.
 
 Sets `EINVAL` if index is invalid.
 */
-const char *file_line_chars(const File *, size_t);
+int file_line_chars(const File *, size_t, const char **);
 
 /*
 Finds line by passed index and writes its length to passed pointer.
@@ -94,11 +94,11 @@ int file_line_len(const File *, size_t, size_t *);
 /*
 Finds line by passed index and returns its render.
 
-Returns pointer to characters on success and `NULL` on error.
+Returns 0 on success and -1 on error.
 
 Sets `EINVAL` if index is invalid.
 */
-const char *file_line_render(const File *, size_t);
+int file_line_render(const File *, size_t, const char **);
 
 /*
 Finds line by passed index and returns its render len.

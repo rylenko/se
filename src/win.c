@@ -181,8 +181,8 @@ win_draw_cur(const struct Win *const win, Vec *const vec)
 	size_t exp_col;
 
 	/* Get line characters */
-	chars = file_line_chars(win->file, win_curr_line_idx(win));
-	if (NULL == chars)
+	ret = file_line_chars(win->file, win_curr_line_idx(win), &chars);
+	if (-1 == ret)
 		return -1;
 
 	/* Get line length */
@@ -192,10 +192,11 @@ win_draw_cur(const struct Win *const win, Vec *const vec)
 
 	/* Expand offset and file columns */
 	exp_offset_col = win_exp_col(chars, len, win->offset.cols);
-	exp_f_col = win_exp_col(chars, len, win->offset.cols + win->cur.col);
+	exp_col = win_exp_col(chars, len, win->offset.cols + win->cur.col);
 
 	/* Sub expanded columns to get real column in the window and set cursor */
 	esc_cur_set(vec, win->cur.row, exp_col - exp_offset_col);
+	return 0;
 }
 
 static int
@@ -219,11 +220,25 @@ win_draw_line(
 		if (-1 == ret)
 			return -1;
 	} else {
-		/* Get current line details */
-		chars = file_line_chars(win->file, win->offset.rows + row);
-		len = file_line_len(win->file, win->offset.rows + row);
-		render = file_line_render(win->file, win->offset.rows + row);
-		render_len = file_line_render_len(win->file, win->offset.rows + row);
+		/* Get line's characters */
+		ret = file_line_chars(win->file, win->offset.rows + row, &chars);
+		if (-1 == ret)
+			return -1;
+
+		/* Get line's length */
+		ret = file_line_len(win->file, win->offset.rows + row, &len);
+		if (-1 == ret)
+			return -1;
+
+		/* Get line's render */
+		ret = file_line_render(win->file, win->offset.rows + row, &render);
+		if (-1 == ret)
+			return -1;
+
+		/* Get line render's length */
+		ret = file_line_render_len(win->file, win->offset.rows + row, &render_len);
+		if (-1 == ret)
+			return -1;
 
 		/* Get expanded with tabs offset's column */
 		exp_offset_col = win_exp_col(chars, len, win->offset.cols);
@@ -319,7 +334,7 @@ win_ins_char(struct Win *const win, const char ch)
 }
 
 int
-win_ins_empty_line_below(struct Win *const win, const size_t times)
+win_ins_empty_line_below(struct Win *const win, size_t times)
 {
 	int ret;
 
@@ -330,7 +345,7 @@ win_ins_empty_line_below(struct Win *const win, const size_t times)
 	win_mv_to_begin_of_line(win);
 
 	/* Insert empty lines */
-	while (times-- > 0)
+	while (times-- > 0) {
 		ret = file_ins_empty_line(win->file, win_curr_line_idx(win) + 1);
 		if (-1 == ret)
 			return -1;
@@ -423,6 +438,7 @@ win_mv_left(struct Win *const win, size_t times)
 int
 win_mv_right(struct Win *const win, size_t times)
 {
+	int ret;
 	const size_t lines_cnt = file_lines_cnt(win->file);
 	size_t line_len;
 
@@ -431,13 +447,13 @@ win_mv_right(struct Win *const win, size_t times)
 
 	while (times-- > 0) {
 		/* Get line length */
-		int ret = file_line_len(win->file, win_curr_line_idx(win), &line_len);
+		ret = file_line_len(win->file, win_curr_line_idx(win), &line_len);
 		if (-1 == ret)
 			return -1;
 
-		if (win_curr_line_char_idx() >= line_len) {
+		if (win_curr_line_char_idx(win) >= line_len) {
 			/* Check there is no next line */
-			if (win_curr_line_idx() + 1 == lines_cnt)
+			if (win_curr_line_idx(win) + 1 == lines_cnt)
 				break;
 
 			/* Move to the beginning of next line if no space to move right */
@@ -499,9 +515,10 @@ win_mv_to_end_of_line(struct Win *const win)
 {
 	const size_t line_idx = win_curr_line_idx(win);
 	size_t render_len;
-	int ret = file_line_render_len(win->file, line_idx, &render_len);
+	int ret;
 
 	/* Check line's render len getting error */
+	ret = file_line_render_len(win->file, line_idx, &render_len);
 	if (-1 == ret)
 		return -1;
 
@@ -521,17 +538,19 @@ win_mv_to_end_of_line(struct Win *const win)
 int
 win_mv_to_next_word(struct Win *const win, size_t times)
 {
+	int ret;
 	size_t char_idx;
 	size_t word_idx;
-	const char *const chars = file_line_chars(win->file, win_curr_line_idx(win));
+	const char *chars;
 	size_t len;
-	int ret = file_line_len(win->file, win_curr_line_idx(win), &len);
 
-	/* Check current line's chars getting error */
-	if (NULL == chars)
+	/* Get current line's characters */
+	ret = file_line_chars(win->file, win_curr_line_idx(win), &chars);
+	if (-1 == ret)
 		return -1;
 
-	/* Check current line's length getting error */
+	/* Get current line's length */
+	ret = file_line_len(win->file, win_curr_line_idx(win), &len);
 	if (-1 == ret)
 		return -1;
 
@@ -563,13 +582,14 @@ win_mv_to_prev_word(struct Win *const win, size_t times)
 {
 	int ret;
 	size_t word_i;
-	const char *const chars = file_line_chars(win->file, win_curr_line_idx(win));
+	const char *chars;
 
 	if (0 == times)
 		return 0;
 
 	/* Check current line's chars getting error */
-	if (NULL == chars)
+	ret = file_line_chars(win->file, win_curr_line_idx(win), &chars);
+	if (-1 == ret)
 		return -1;
 
 	while (times-- > 0) {
@@ -668,8 +688,8 @@ win_save_file(struct Win *const win)
 size_t
 win_save_file_to_spare_dir(struct Win *const win, char *const path, size_t len)
 {
-	const size_t len = file_save_to_spare_dir(win->file, path, len);
-	return len;
+	const size_t bytes = file_save_to_spare_dir(win->file, path, len);
+	return bytes;
 }
 
 static int
@@ -699,9 +719,10 @@ win_scroll(struct Win *const win)
 	ret = file_line_len(win->file, line_idx, &line_len);
 	if (-1 == ret)
 		return -1;
+
 	/* Get current line's chars */
-	chars = file_line_chars(win->file, line_idx);
-	if (NULL == chars)
+	ret = file_line_chars(win->file, line_idx, &chars);
+	if (-1 == ret)
 		return -1;
 
 	/* Check that cursor out of the line. Useful after move down and up */
@@ -721,7 +742,7 @@ win_scroll(struct Win *const win)
 	*/
 	while (1) {
 		/* Get expanded hidden column and expanded viewed column */
-		exp_col = win_exp_col(chars, line_len, win->offset.cols + win->cur.col)
+		exp_col = win_exp_col(chars, line_len, win->offset.cols + win->cur.col);
 		exp_offset_col = win_exp_col(chars, line_len, win->offset.cols);
 
 		/* Check that diff between expansion is not greater than window's width */
@@ -755,7 +776,7 @@ win_search(struct Win *const win, const char *const query, const enum Dir dir)
 	pos = win_curr_line_char_idx(win);
 
 	/* Search with accepted query */
-	ret = file_search(win->file, &idx, &pos, query, dir)
+	ret = file_search(win->file, &idx, &pos, query, dir);
 	if (-1 == ret)
 		return -1;
 	if (1 == ret) {
@@ -800,6 +821,6 @@ win_upd_size(struct Win *const win)
 		return -1;
 
 	/* Scroll after resize */
-	eet = win_scroll(win);
+	ret = win_scroll(win);
 	return ret;
 }

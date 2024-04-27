@@ -350,13 +350,17 @@ file_is_dirty(const struct File *const file)
 	return file->is_dirty;
 }
 
-const char*
-file_line_chars(const struct File *const file, const size_t idx)
-{
+int
+file_line_chars(
+	const struct File *const file,
+	const size_t idx,
+	const char **const chars
+) {
 	const struct Line *const line = vec_get(file->lines, idx);
 	if (NULL == line)
-		return NULL;
-	return vec_items(line->chars);
+		return -1;
+	*chars = vec_items(line->chars);
+	return 0;
 }
 
 int
@@ -369,11 +373,17 @@ file_line_len(const struct File *const file, const size_t i, size_t *const len)
 	return 0;
 }
 
-const char*
-file_line_render(const struct File *const file, const size_t idx)
-{
+int
+file_line_render(
+	const struct File *const file,
+	const size_t idx,
+	const char **const render
+) {
 	const struct Line *const line = vec_get(file->lines, idx);
-	return NULL == line ? NULL : line->render;
+	if (NULL == line)
+		return -1;
+	*render = line->render;
+	return 0;
 }
 
 int
@@ -600,8 +610,10 @@ file_write(const struct File *const file, FILE *const f)
 static int
 line_append(struct Line *const line, const char *const chars, const size_t len)
 {
+	int ret;
+
 	/* Copy chars to line */
-	int ret = vec_append(line->chars, chars, len);
+	ret = vec_append(line->chars, chars, len);
 	if (-1 == ret)
 		return -1;
 
@@ -613,8 +625,10 @@ line_append(struct Line *const line, const char *const chars, const size_t len)
 static int
 line_cut(struct Line *const line, const size_t len)
 {
+	int ret;
+
 	/* Update broken line's length */
-	int ret = vec_set_len(line->chars, len);
+	ret = vec_set_len(line->chars, len);
 	if (-1 == ret)
 		return -1;
 

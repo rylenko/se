@@ -66,7 +66,7 @@ esc_cur_hide(Vec *const buf)
 int
 esc_cur_set(Vec *const buf, const unsigned short row, const unsigned short col)
 {
-	int ret = vec_append_fmt(buf, "\x1b[%hu;%huH", row + 1, col + 1);
+	const int ret = vec_append_fmt(buf, "\x1b[%hu;%huH", row + 1, col + 1);
 	return ret;
 }
 

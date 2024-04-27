@@ -18,7 +18,7 @@ int
 term_deinit(void)
 {
 	/* Restore original termios parameters to disable raw mode */
-	int ret = tcsetattr(term.ifd, TCSANOW, &term.orig_termios);
+	const int ret = tcsetattr(term.ifd, TCSANOW, &term.orig_termios);
 	return ret;
 }
 
@@ -26,7 +26,7 @@ int
 term_get_win_size(struct winsize *const win_size)
 {
 	/* Get window size using file descriptor. Ignore several success values */
-	int ret = ioctl(term.ofd, TIOCGWINSZ, win_size);
+	const int ret = ioctl(term.ofd, TIOCGWINSZ, win_size);
 	/* Remember that `ioctl` can return non-zero on success */
 	if (-1 == ret)
 		return -1;
