@@ -114,11 +114,7 @@ file_absorb_next_line(struct File *const file, const size_t idx)
 {
 	int ret;
 	struct Line next;
-	struct Line *const curr = vec_get(file->lines, idx);
-
-	/* Current line not found */
-	if (NULL == curr)
-		return -1;
+	struct Line *curr;
 
 	/* Remove next line */
 	ret = vec_remove(file->lines, idx + 1, &next);
@@ -127,6 +123,11 @@ file_absorb_next_line(struct File *const file, const size_t idx)
 
 	/* Append current line with next line's chars if next line is not empty */
 	if (vec_len(next.chars) > 0) {
+		/* Get current line here because vector may realloc after removing */
+		curr = vec_get(file->lines, idx);
+		if (NULL == curr)
+			goto ret_free;
+
 		ret = line_append(curr, vec_items(next.chars), vec_len(next.chars));
 		if (-1 == ret)
 			goto ret_free;
@@ -786,7 +787,7 @@ line_search(
 		fwd_start = vec_get(line->chars, *idx);
 		if (NULL == fwd_start)
 			return -1;
-		res = strstr(fwd_start, query);
+		res = strnstr(fwd_start, query, vec_len(line->chars) - *idx);
 		break;
 	}
 

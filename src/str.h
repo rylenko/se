@@ -11,7 +11,16 @@ Sets `ENOMEM` if no memory to allocate a copy of the string.
 */
 char *str_copy(const char *, size_t);
 
-/* Like `strstr`, but starts from right. */
+/*
+Searches needle in the passed haystack. Passed position specifies end of
+haystack.
+*/
+char *strnstr(const char *, const char *, size_t);
+
+/*
+Searches needle in the passed haystack from right. Passed position specifies
+end of haystack.
+*/
 char *strrstr(const char *, const char *, size_t);
 
 #endif /* _STR_H */

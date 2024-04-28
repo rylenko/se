@@ -110,13 +110,15 @@ int
 win_del_char(struct Win *const win)
 {
 	int ret;
-	const size_t line_idx = win_curr_line_idx(win);
-	const size_t char_idx = win_curr_line_char_idx(win);
 
 	/* Check that we are not at the beginning of the line */
-	if (char_idx > 0) {
+	if (win_curr_line_char_idx(win) > 0) {
 		/* Delete character */
-		ret = file_del_char(win->file, line_idx, char_idx - 1);
+		ret = file_del_char(
+			win->file,
+			win_curr_line_idx(win),
+			win_curr_line_char_idx(win) - 1
+		);
 		if (-1 == ret)
 			return -1;
 
@@ -124,14 +126,14 @@ win_del_char(struct Win *const win)
 		ret = win_mv_left(win, 1);
 		if (-1 == ret)
 			return -1;
-	} else if (line_idx > 0) {
+	} else if (win_curr_line_idx(win) > 0) {
 		/* We are at the beginning of not first line. Move to end of previous line */
 		ret = win_mv_left(win, 1);
 		if (-1 == ret)
 			return -1;
 
 		/* Absorb current line to previous line */
-		ret = file_absorb_next_line(win->file, line_idx);
+		ret = file_absorb_next_line(win->file, win_curr_line_idx(win));
 		if (-1 == ret)
 			return -1;
 	}
@@ -334,9 +336,10 @@ win_ins_char(struct Win *const win, const char ch)
 }
 
 int
-win_ins_empty_line_below(struct Win *const win, size_t times)
+win_ins_empty_line_below(struct Win *const win, const size_t times)
 {
 	int ret;
+	size_t times_i = times;
 
 	if (0 == times)
 		return 0;
@@ -345,7 +348,7 @@ win_ins_empty_line_below(struct Win *const win, size_t times)
 	win_mv_to_begin_of_line(win);
 
 	/* Insert empty lines */
-	while (times-- > 0) {
+	while (times_i-- > 0) {
 		ret = file_ins_empty_line(win->file, win_curr_line_idx(win) + 1);
 		if (-1 == ret)
 			return -1;
@@ -623,7 +626,7 @@ win_mv_up(struct Win *const win, size_t times)
 		return 0;
 
 	while (times-- > 0) {
-		/* Break if there is no more space to move down */
+		/* Break if there is no more space to move up */
 		if (win->offset.rows + win->cur.row == 0)
 			break;
 
@@ -698,7 +701,6 @@ win_scroll(struct Win *const win)
 	int ret;
 	const char *chars;
 	size_t line_len;
-	size_t line_idx;
 	size_t exp_offset_col;
 	size_t exp_col;
 
@@ -712,19 +714,12 @@ win_scroll(struct Win *const win)
 		win->cur.col = win->size.ws_col - 1;
 	}
 
-	/* Get current line index */
-	line_idx = win_curr_line_idx(win);
-
 	/* Get current line length */
-	ret = file_line_len(win->file, line_idx, &line_len);
+	ret = file_line_len(win->file, win_curr_line_idx(win), &line_len);
 	if (-1 == ret)
 		return -1;
 
-	/* Get current line's chars */
-	ret = file_line_chars(win->file, line_idx, &chars);
-	if (-1 == ret)
-		return -1;
-
+	/* TODO: fix it */
 	/* Check that cursor out of the line. Useful after move down and up */
 	if (win->offset.cols + win->cur.col > line_len) {
 		/* Check that line not in the window */
@@ -735,6 +730,11 @@ win_scroll(struct Win *const win)
 			win->cur.col = line_len - win->offset.cols;
 		}
 	}
+
+	/* Get current line's chars */
+	ret = file_line_chars(win->file, win_curr_line_idx(win), &chars);
+	if (-1 == ret)
+		return -1;
 
 	/*
 	Shift column offset until we see expanded cursor. Useful after moving between

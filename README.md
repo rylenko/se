@@ -108,6 +108,7 @@ $ make gen-readme
 
 |Path|Line|Description|
 |-|-|-|
+|**src/win.c**|**722**|**fix it**|
 |**src/win.c**|**752**|**can we shift here only by offset?**|
 |**src/ed.c**|**287**|**split into smaller functions.**|
 |**src/main.c**|**1**|**v0.3: Rename ed_proc_*_key to ed_try_proc_*_key?**|

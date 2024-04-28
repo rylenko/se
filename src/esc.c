@@ -42,7 +42,7 @@ esc_color_begin(
 
 	/* Write background if set */
 	if (bg != NULL) {
-		ret = vec_append_fmt(buf, "\x1b[48;2;%hhu;%hhu;%hhum", fg->r, fg->g, fg->b);
+		ret = vec_append_fmt(buf, "\x1b[48;2;%hhu;%hhu;%hhum", bg->r, bg->g, bg->b);
 		if (-1 == ret)
 			return -1;
 	}

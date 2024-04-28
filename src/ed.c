@@ -500,7 +500,7 @@ ed_open(const char *const path, const int ifd, const int ofd)
 
 	/* Open window with accepted file and descriptors */
 	ed->win = win_open(path, ifd, ofd);
-	if (NULL == ed->buf)
+	if (NULL == ed->win)
 		goto err_free_opaque_and_buf;
 
 	/* Set default editting mode */
@@ -683,6 +683,10 @@ ed_proc_norm_key(struct Ed *const ed, const char key)
 		break;
 	}
 
+	/* Check key processor error */
+	if (-1 == ret)
+		return -1;
+
 	/* Process number input */
 	ret = ed_num_input(ed, key - '0');
 	if (-1 == ret) {
@@ -691,7 +695,7 @@ ed_proc_norm_key(struct Ed *const ed, const char key)
 		ed_num_input_clr(ed);
 	}
 
-	return ret;
+	return 0;
 }
 
 static int
@@ -889,9 +893,15 @@ ed_wait_and_proc_key(struct Ed *const ed)
 
 	/* Process key sequence if more than one characters readed */
 	if (seq_len > 1) {
+		/*
+		When switching to other modes, the number input will be cleared in the
+		normal mode key processing function. This is not done here, so we need this
+		line
+		*/
+		ed_num_input_clr(ed);
+
 		ret = ed_proc_seq_key(ed, seq, seq_len);
 		return ret;
-
 	}
 
 	/* Process single character keys in different input modes */
@@ -901,9 +911,11 @@ ed_wait_and_proc_key(struct Ed *const ed)
 		break;
 	case MODE_INS:
 		ret = ed_proc_ins_key(ed, seq[0]);
+		ed_num_input_clr(ed);
 		break;
 	case MODE_SEARCH:
 		ret = ed_proc_search_key(ed, seq[0]);
+		ed_num_input_clr(ed);
 		break;
 	}
 	return ret;

@@ -20,23 +20,22 @@ word_next(const char *const str, const size_t len)
 }
 
 size_t
-word_rnext(const char *const str, const size_t pos)
+word_rnext(const char *const str, size_t pos)
 {
-	size_t i;
 	char space_visited = 0;
 	char prev_word_visited = 0;
 
-	for (i = pos; i > 0; i--) {
+	while (pos-- > 0) {
 		/* First appearance of non space after spaces */
-		if (!isspace(str[i]) && space_visited)
+		if (!isspace(str[pos]) && space_visited)
 			prev_word_visited = 1;
 		/* First appearance of space */
-		else if (isspace(str[i]) && !space_visited)
+		else if (isspace(str[pos]) && !space_visited)
 			space_visited = 1;
 		/* Second appearance of spaces after word */
-		else if (isspace(str[i]) && prev_word_visited)
+		else if (isspace(str[pos]) && prev_word_visited)
 			/* Start of word before second spaces */
-			return i + 1;
+			return pos + 1;
 	}
 	return 0;
 }

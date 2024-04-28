@@ -16,8 +16,29 @@ str_copy(const char *const str, const size_t len)
 }
 
 char*
-strrstr(const char *haystack, const char *const needle, const size_t len)
+strnstr(const char *haystack, const char *const needle, const size_t len)
 {
+	int ret;
+	const char *const end = haystack + len;
+	const size_t needle_len = strlen(needle);
+
+	/* Check needle is empty */
+	if (0 == *needle)
+		return (char *)haystack;
+
+	for (; haystack < end; haystack++) {
+		/* Compare current shifted part with needle */
+		ret = strncmp(haystack, needle, needle_len);
+		if (0 == ret)
+			return (char *)haystack;
+	}
+	return NULL;
+}
+
+char*
+strrstr(const char *const haystack, const char *const needle, const size_t len)
+{
+	int ret;
 	const char *ptr = haystack + len;
 	const size_t needle_len = strlen(needle);
 
@@ -27,8 +48,10 @@ strrstr(const char *haystack, const char *const needle, const size_t len)
 
 	do {
 		ptr--;
+
 		/* Compare current shifted part with needle */
-		if (strncmp(ptr, needle, needle_len) == 0)
+		ret = strncmp(ptr, needle, needle_len);
+		if (0 == ret)
 			return (char *)ptr;
 	} while (ptr > haystack);
 	return NULL;
