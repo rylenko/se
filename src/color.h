@@ -2,7 +2,7 @@
 #define _COLOR_H
 
 /* RGB color. */
-struct Color {
+struct color {
 	unsigned char r;
 	unsigned char g;
 	unsigned char b;

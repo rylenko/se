@@ -2,7 +2,7 @@
 #define _ED_H
 
 /* Opaque struct with editor options. */
-typedef struct Ed Ed;
+typedef struct ed Ed;
 
 /*
 Draws all window's content.

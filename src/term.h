@@ -5,7 +5,7 @@
 #include <sys/ioctl.h>
 
 /*
-Deinitializes terminal and disables raw mode.
+Deinitializes initialized terminal.
 
 Returns 0 on success and -1 on error.
 */

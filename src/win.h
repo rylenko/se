@@ -6,7 +6,7 @@
 #include "vec.h"
 
 /* Alias for opaque struct with window parameters. */
-typedef struct Win Win;
+typedef struct win Win;
 
 /*
 Closes the window.
@@ -100,7 +100,7 @@ passed buffer.
 size_t win_save_file_to_spare_dir(Win *, char *, size_t);
 
 /* Searches with passed query in passed direction. */
-int win_search(Win *, const char *, enum Dir);
+int win_search(Win *, const char *, enum dir);
 
 /* Gets size of window. */
 struct winsize win_size(const Win *);

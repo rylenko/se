@@ -4,7 +4,7 @@
 #include <stddef.h>
 
 /* Opaque vector structure. */
-typedef struct Vec Vec;
+typedef struct vec Vec;
 
 /*
 Allocates new vector. Do not forget to free it.

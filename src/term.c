@@ -8,7 +8,7 @@
 struct {
 	int ifd; /* Input file descriptor. Usually stdin */
 	int ofd; /* Output file descriptor. Usually stdout */
-	struct termios orig_termios; /* Original termios without our changes */
+	struct termios orig_termios; /* Original termios before raw mode enabling */
 } term;
 
 /* Sets raw mode parameters to termios instance. */
@@ -17,17 +17,23 @@ static void term_set_raw_mode_params(struct termios *);
 int
 term_deinit(void)
 {
+	int ret;
+
 	/* Restore original termios parameters to disable raw mode */
-	const int ret = tcsetattr(term.ifd, TCSANOW, &term.orig_termios);
+	ret = tcsetattr(term.ifd, TCSANOW, &term.orig_termios);
 	return ret;
 }
 
 int
 term_get_win_size(struct winsize *const win_size)
 {
-	/* Get window size using file descriptor. Ignore several success values */
-	const int ret = ioctl(term.ofd, TIOCGWINSZ, win_size);
-	/* Remember that `ioctl` can return non-zero on success */
+	int ret;
+
+	/*
+	Get window size using file descriptor. Remember that `ioctl` can return
+	non-zero on success
+	*/
+	ret = ioctl(term.ofd, TIOCGWINSZ, win_size);
 	if (-1 == ret)
 		return -1;
 	return 0;
@@ -53,7 +59,7 @@ term_init(const int ifd, const int ofd)
 	if (0 != ret)
 		return -1;
 
-	/* Set raw mode parameters to termios */
+	/* Set raw mode parameters */
 	raw_termios = term.orig_termios;
 	term_set_raw_mode_params(&raw_termios);
 
@@ -77,8 +83,10 @@ term_set_raw_mode_params(struct termios *const params)
 size_t
 term_wait_key(char *const seq, const size_t len)
 {
+	ssize_t readed;
+
 	/* Read input up to specified length */
-	ssize_t readed = read(term.ifd, seq, len);
+	readed = read(term.ifd, seq, len);
 	/*
 	We ignore the system call interruption that can occur when the window size is
 	changed, for example, in xterm.
@@ -92,7 +100,9 @@ term_wait_key(char *const seq, const size_t len)
 ssize_t
 term_write(const char *const buf, const size_t len)
 {
+	ssize_t written;
+
 	/* Write buffer with accepted length */
-	ssize_t ret = write(term.ofd, buf, len);
-	return ret;
+	written = write(term.ofd, buf, len);
+	return written;
 }

@@ -4,19 +4,19 @@
 #include <stddef.h>
 
 /* File traversal direction. Used, for example, in search. */
-enum Dir {
+enum dir {
 	DIR_BWD,
 	DIR_FWD,
 };
 
 /* Alias for opaque struct of opened file. */
-typedef struct File File;
+typedef struct file File;
 
 /*
 Read only line data. Use functions to modify a string instead of modifying this
 structure.
 */
-struct PubLine {
+struct pub_line {
 	const char *chars;
 	size_t len;
 	const char *render;
@@ -61,7 +61,7 @@ Returns 0 on success and -1 on error.
 Sets `EINVAL` if index is invalid or `ENOSYS` if there is one last line left
 that cannot be deleted.
 */
-int file_del_line(File *, size_t idx);
+int file_del_line(File *, size_t);
 
 /*
 Inserts character to the file's line at passed position.
@@ -91,7 +91,7 @@ Returns 0 on success and -1 on error.
 
 Sets `EINVAL` if index is invalid.
 */
-int file_line(const File *, size_t, struct PubLine *);
+int file_line(const File *, size_t, struct pub_line *);
 
 /* Returns lines count of opened file. */
 size_t file_lines_cnt(const File *);
@@ -134,6 +134,6 @@ Returns 1 if result found, 0 if no result and -1 on error.
 
 Sets `EINVAL` if index is invalid.
 */
-int file_search(File *, size_t *, size_t *, const char *, enum Dir);
+int file_search(File *, size_t *, size_t *, const char *, enum dir);
 
 #endif /* _FILE_H */

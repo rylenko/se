@@ -65,8 +65,8 @@ Should not contain '/' at the end
 static const char cfg_spare_save_dir[] = "/tmp";
 
 /* Colors of displayed content */
-static const struct Color cfg_color_lines_fg = COLOR_NEW(192, 233, 233);
-static const struct Color cfg_color_stat_bg = COLOR_NEW(66, 165, 245);
-static const struct Color cfg_color_stat_fg = COLOR_NEW(245, 245, 245);
+static const struct color cfg_color_lines_fg = COLOR_NEW(192, 233, 233);
+static const struct color cfg_color_stat_bg = COLOR_NEW(66, 165, 245);
+static const struct color cfg_color_stat_fg = COLOR_NEW(245, 245, 245);
 
 #endif /* _CFG_H */

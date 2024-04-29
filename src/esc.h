@@ -4,14 +4,14 @@
 #include "color.h"
 #include "vec.h"
 
-enum ArrowKey {
+enum arrow_key {
 	ARROW_KEY_UP = 'A',
 	ARROW_KEY_DOWN = 'B',
 	ARROW_KEY_RIGHT = 'C',
 	ARROW_KEY_LEFT = 'D',
 };
 
-enum MouseWhKey {
+enum mouse_wh_key {
 	MOUSE_WH_KEY_DOWN = 'a',
 	MOUSE_WH_KEY_UP = '`',
 };
@@ -39,11 +39,18 @@ Returns 0 on success and -1 on error.
 int esc_clr_win(Vec *);
 
 /*
-Sets colored foreground and background. `NULL` if no color.
+Begins colored background.
 
 Returns 0 on success and -1 on error.
 */
-int esc_color_begin(Vec *, const struct Color *, const struct Color *);
+int esc_color_bg(Vec *, struct color);
+
+/*
+Begins colored foreground.
+
+Returns 0 on success and -1 on error.
+*/
+int esc_color_fg(Vec *, struct color);
 
 /*
 Ends colored output.
@@ -80,7 +87,7 @@ Returns 0 on success and -1 on error.
 
 Sets no errors.
 */
-int esc_extr_arrow_key(const char *, size_t, enum ArrowKey *);
+int esc_extr_arrow_key(const char *, size_t, enum arrow_key *);
 
 /*
 Extracts mouse wheel key from sequence.
@@ -89,7 +96,7 @@ Returns 0 on success and -1 on error.
 
 Sets no errors.
 */
-int esc_extr_mouse_wh_key(const char *, size_t, enum MouseWhKey *);
+int esc_extr_mouse_wh_key(const char *, size_t, enum mouse_wh_key *);
 
 /*
 Moves the current writing pointer to the beginning of the window.

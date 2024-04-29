@@ -103,3 +103,7 @@ Regenerate README.md. Requires awk to collect todos:
 ```
 $ make gen-readme
 ```
+
+# Codying style
+
+Trying to follow a combination of [OpenBSD](https://man.openbsd.org/style) and [Linux](https://www.kernel.org/doc/html/v4.10/process/coding-style.html) styles with priority given to the [OpenBSD](https://man.openbsd.org/style) style.

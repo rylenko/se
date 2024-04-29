@@ -7,7 +7,7 @@
 #include "math.h"
 #include "vec.h"
 
-struct Vec {
+struct vec {
 	char *items; /* Pointer to the beginning of dynamic array with items  */
 	size_t item_size; /* Size of item in dynamic array */
 	size_t len; /* Length of dynamic array */
@@ -20,14 +20,14 @@ Grows vector's capacity for new length if needed.
 
 Returns 0 on success and -1 on error.
 */
-static int vec_grow_if_needed(struct Vec *, size_t);
+static int vec_grow_if_needed(struct vec *, size_t);
 
 /*
 Reallocates vector with new capacity.
 
 Returns 0 on success and -1 on error.
 */
-static int vec_realloc(struct Vec *, size_t);
+static int vec_realloc(struct vec *, size_t);
 
 /*
 Like default inserting function, but with formatting using variadic list.
@@ -36,13 +36,15 @@ Returns 0 on success and -1 on error.
 
 Sets `ENOSUP` if vector does not stores characters.
 */
-static int vec_ins_fmt_va(struct Vec *, size_t, const char *, va_list);
+static int vec_ins_fmt_va(struct vec *, size_t, const char *, va_list);
 
-struct Vec*
+struct vec*
 vec_alloc(const size_t item_size, const size_t cap_step)
 {
+	struct vec *vec;
+
 	/* Allocate opaque struct */
-	struct Vec *const vec = calloc(1, sizeof(*vec));
+	vec = calloc(1, sizeof(*vec));
 	if (NULL == vec)
 		return NULL;
 
@@ -53,19 +55,22 @@ vec_alloc(const size_t item_size, const size_t cap_step)
 }
 
 int
-vec_append(struct Vec *const vec, const void *const items, const size_t len)
+vec_append(struct vec *const vec, const void *const items, const size_t len)
 {
-	int ret = vec_ins(vec, vec->len, items, len);
+	int ret;
+
+	/* Insert to the end of vector */
+	ret = vec_ins(vec, vec->len, items, len);
 	return ret;
 }
 
 int
-vec_append_fmt(struct Vec *const vec, const char *const fmt, ...)
+vec_append_fmt(struct vec *const vec, const char *const fmt, ...)
 {
 	int ret;
 	va_list args;
 
-	/* Collect arguments and use inner function */
+	/* Collect arguments and insert to the end of vector */
 	va_start(args, fmt);
 	ret = vec_ins_fmt_va(vec, vec->len, fmt, args);
 	va_end(args);
@@ -73,13 +78,13 @@ vec_append_fmt(struct Vec *const vec, const char *const fmt, ...)
 }
 
 size_t
-vec_cap(const struct Vec *const vec)
+vec_cap(const struct vec *const vec)
 {
 	return vec->cap;
 }
 
 void*
-vec_get(const struct Vec *const vec, const size_t idx)
+vec_get(const struct vec *const vec, const size_t idx)
 {
 	/* Validate index */
 	if (idx >= vec->len) {
@@ -90,7 +95,7 @@ vec_get(const struct Vec *const vec, const size_t idx)
 }
 
 static int
-vec_grow_if_needed(struct Vec *const vec, const size_t new_len)
+vec_grow_if_needed(struct vec *const vec, const size_t new_len)
 {
 	int ret;
 	size_t new_cap;
@@ -109,7 +114,7 @@ vec_grow_if_needed(struct Vec *const vec, const size_t new_len)
 
 int
 vec_ins(
-	struct Vec *const vec,
+	struct vec *const vec,
 	const size_t idx,
 	const void *const items,
 	const size_t len
@@ -142,7 +147,7 @@ vec_ins(
 
 int
 vec_ins_fmt(
-	struct Vec *const vec,
+	struct vec *const vec,
 	const size_t idx,
 	const char *const fmt,
 	...
@@ -159,7 +164,7 @@ vec_ins_fmt(
 
 static int
 vec_ins_fmt_va(
-	struct Vec *const vec,
+	struct vec *const vec,
 	const size_t idx,
 	const char *const fmt,
 	va_list args
@@ -179,7 +184,7 @@ vec_ins_fmt_va(
 	if (len < 0 || (size_t)len >= sizeof(buf))
 		return -1;
 
-	/* Insert formatted data to vector */
+	/* Insert formatted data to the vector */
 	ret = vec_ins(vec, idx, buf, len);
 	if (-1 == ret)
 		return -1;
@@ -187,26 +192,26 @@ vec_ins_fmt_va(
 }
 
 void
-vec_free(struct Vec *const vec)
+vec_free(struct vec *const vec)
 {
 	free(vec->items);
 	free(vec);
 }
 
 void*
-vec_items(const struct Vec *const vec)
+vec_items(const struct vec *const vec)
 {
 	return vec->items;
 }
 
 size_t
-vec_len(const struct Vec *const vec)
+vec_len(const struct vec *const vec)
 {
 	return vec->len;
 }
 
 static int
-vec_realloc(struct Vec *const vec, const size_t new_cap)
+vec_realloc(struct vec *const vec, const size_t new_cap)
 {
 	/* Reallocate items and update the capacity */
 	vec->cap = new_cap;
@@ -215,7 +220,7 @@ vec_realloc(struct Vec *const vec, const size_t new_cap)
 }
 
 int
-vec_remove(struct Vec *const vec, const size_t idx, void *const item)
+vec_remove(struct vec *const vec, const size_t idx, void *const item)
 {
 	int ret;
 
@@ -242,9 +247,9 @@ vec_remove(struct Vec *const vec, const size_t idx, void *const item)
 }
 
 int
-vec_set_len(struct Vec *const vec, const size_t len)
+vec_set_len(struct vec *const vec, const size_t len)
 {
-	/* Validate and set new length */
+	/* Validate new length */
 	if (len > vec->cap) {
 		errno = EINVAL;
 		return -1;
@@ -254,7 +259,7 @@ vec_set_len(struct Vec *const vec, const size_t len)
 }
 
 int
-vec_shrink(struct Vec *const vec, const char to_fit)
+vec_shrink(struct vec *const vec, const char to_fit)
 {
 	int ret;
 

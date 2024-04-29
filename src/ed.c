@@ -19,10 +19,10 @@
 #include "win.h"
 
 /* Editor options. */
-struct Ed {
+struct ed {
 	Vec *buf; /* Buffer for all drawn content. */
 	Win *win; /* Info about terminal's view. This is what the user sees */
-	enum Mode mode; /* Input mode */
+	enum mode mode; /* Input mode */
 	char msg[64]; /* Message for the user */
 	size_t num_input; /* Number input. 0 if not set */
 	char search_input[64]; /* Search input */
@@ -36,56 +36,56 @@ Breaks current line at the current cursor's position.
 
 Returns 0 on success and -1 on error.
 */
-static int ed_break_line(struct Ed *);
+static int ed_break_line(struct ed *);
 
 /*
 Deletes character before the cursor.
 
 Returns 0 on success and -1 on error.
 */
-static int ed_del_char(struct Ed *);
+static int ed_del_char(struct ed *);
 
 /*
 Deletes the inputed number of lines from file.
 
 Returns 0 on success and -1 on error.
 */
-static int ed_del_line(struct Ed *);
+static int ed_del_line(struct ed *);
 
 /*
 Draws status on last row.
 
 Returns 0 on success and -1 on error.
 */
-static int ed_draw_stat(struct Ed *);
+static int ed_draw_stat(struct ed *);
 
 /*
 Flush editor's drawing buffer.
 
 Returns 0 on success and -1 on error.
 */
-static int ed_flush_buf(struct Ed *);
+static int ed_flush_buf(struct ed *);
 
 /*
 Inserts character to editor.
 
 Returns 0 on success and -1 on error.
 */
-static int ed_ins_char(struct Ed *, char);
+static int ed_ins_char(struct ed *, char);
 
 /*
 Inserts below several empty lines.
 
 Returns 0 on success and -1 on error.
 */
-static int ed_ins_empty_line_below(struct Ed *);
+static int ed_ins_empty_line_below(struct ed *);
 
 /*
 Inserts on top several empty lines.
 
 Returns 0 on success and -1 on error.
 */
-static int ed_ins_empty_line_on_top(struct Ed *);
+static int ed_ins_empty_line_on_top(struct ed *);
 
 /*
 Writes digit to the number input. Clears if overflows.
@@ -94,76 +94,76 @@ Returns 0 on success and -1 on error.
 
 Sets `EINVAL` if argument is invalid.
 */
-static int ed_num_input(struct Ed *, char);
+static int ed_num_input(struct ed *, char);
 
 /* Clears number input. */
-static void ed_num_input_clr(struct Ed *);
+static void ed_num_input_clr(struct ed *);
 
 /*
 Use it when user presses quit key. Interacts with the remaining counter.
 
 Returns 0 on success and -1 on error.
 */
-static int ed_on_quit_press(struct Ed *);
+static int ed_on_quit_press(struct ed *);
 
 /*
 Processes arrow key.
 
 Returns 0 on success or invalid key and -1 on error.
 */
-static int ed_proc_arrow_key(struct Ed *, const char *, size_t);
+static int ed_proc_arrow_key(struct ed *, const char *, size_t);
 
 /*
 Process key in insertion mode.
 
 Returns 0 on success or invalid key and -1 on error.
 */
-static int ed_proc_ins_key(struct Ed *, char);
+static int ed_proc_ins_key(struct ed *, char);
 
 /*
 Processes mouse wheel key.
 
 Returns 0 on success or invalid key and -1 on error.
 */
-static int ed_proc_mouse_wh_key(struct Ed *, const char *, size_t);
+static int ed_proc_mouse_wh_key(struct ed *, const char *, size_t);
 
 /*
 Process key in normal mode.
 
 Returns 0 on success or invalid key and -1 on error.
 */
-static int ed_proc_norm_key(struct Ed *, char);
+static int ed_proc_norm_key(struct ed *, char);
 
 /*
 Process key in search mode.
 
 Returns 0 on success or invalid key and -1 on error.
 */
-static int ed_proc_search_key(struct Ed *, char);
+static int ed_proc_search_key(struct ed *, char);
 
 /*
 Processes key sequence. Useful if single key press is several characters.
 
 Returns 0 on success or invalid key and -1 on error.
 */
-static int ed_proc_seq_key(struct Ed *, const char *, size_t);
+static int ed_proc_seq_key(struct ed *, const char *, size_t);
 
 /* Determines how many times the next action needs to be repeated. */
-static size_t ed_repeat_times(const struct Ed *);
+static size_t ed_repeat_times(const struct ed *);
 
 /*
 Saves opened file.
 
 Sets error message in the editor instead of exit with not saved content.
 */
-static void ed_save_file(struct Ed *);
+static void ed_save_file(struct ed *);
 
 /*
 Saves opened file to spare dir. Useful if no privileges.
 
 Sets error message in the editor instead of exit with not saved content.
 */
-static void ed_save_file_to_spare_dir(struct Ed *);
+static void ed_save_file_to_spare_dir(struct ed *);
 
 /*
 Writes character to the search input.
@@ -172,29 +172,31 @@ Returns 0 on success and -1 on error.
 
 Sets `EINVAL` if character is invalid.
 */
-static int ed_search_input(struct Ed *, char);
+static int ed_search_input(struct ed *, char);
 
 /* Clears search input. */
-static void ed_search_input_clr(struct Ed *);
+static void ed_search_input_clr(struct ed *);
 
 /* Deletes last character from the input if exists. */
-static void ed_search_input_del_char(struct Ed *);
+static void ed_search_input_del_char(struct ed *);
 
 /*
 Sets formatted message to the user.
 
 Returns 0 on success and -1 on error.
 */
-static int ed_set_msg(struct Ed *, const char *, ...);
+static int ed_set_msg(struct ed *, const char *, ...);
 
 /* Switches editor to passed mode. */
-static void ed_switch_mode(struct Ed *, enum Mode);
+static void ed_switch_mode(struct ed *, enum mode);
 
 static int
-ed_break_line(struct Ed *const ed)
+ed_break_line(struct ed *const ed)
 {
+	int ret;
+
 	/* Break line */
-	int ret = win_break_line(ed->win);
+	ret = win_break_line(ed->win);
 	if (-1 == ret)
 		return -1;
 
@@ -204,10 +206,12 @@ ed_break_line(struct Ed *const ed)
 }
 
 static int
-ed_del_char(struct Ed *const ed)
+ed_del_char(struct ed *const ed)
 {
+	int ret;
+
 	/* Delete character */
-	int ret = win_del_char(ed->win);
+	ret = win_del_char(ed->win);
 	if (-1 == ret)
 		return -1;
 
@@ -217,10 +221,12 @@ ed_del_char(struct Ed *const ed)
 }
 
 static int
-ed_del_line(struct Ed *const ed)
+ed_del_line(struct ed *const ed)
 {
+	int ret;
+
 	/* Try to delete lines or set error message */
-	int ret = win_del_line(ed->win, ed_repeat_times(ed));
+	ret = win_del_line(ed->win, ed_repeat_times(ed));
 	if (0 == ret) {
 		/* Set quit presses count after file change */
 		ed->quit_presses_rem = CFG_DIRTY_FILE_QUIT_PRESSES_CNT;
@@ -237,7 +243,7 @@ ed_del_line(struct Ed *const ed)
 }
 
 int
-ed_draw(struct Ed *const ed)
+ed_draw(struct ed *const ed)
 {
 	int ret;
 
@@ -285,24 +291,30 @@ ed_draw(struct Ed *const ed)
 }
 
 static int
-ed_draw_stat(struct Ed *const ed)
+ed_draw_stat(struct ed *const ed)
 {
 	int ret;
 	size_t i;
 	size_t l_len = 0;
 	size_t r_len;
-	struct winsize winsize = win_size(ed->win);
-	const char *const fname = path_get_fname(win_file_path(ed->win));
-	const size_t y = win_curr_line_idx(ed->win);
-	const size_t x = win_curr_line_char_idx(ed->win);
+	struct winsize winsize;
+	const char *fname;
+	size_t y;
+	size_t x;
 	char r[128];
 
-	/* Begin colored output */
-	ret = esc_color_begin(ed->buf, &cfg_color_stat_fg, &cfg_color_stat_bg);
+	/* Begin colored background output */
+	ret = esc_color_bg(ed->buf, cfg_color_stat_bg);
+	if (-1 == ret)
+		return -1;
+
+	/* Begin colored foreground output */
+	ret = esc_color_fg(ed->buf, cfg_color_stat_fg);
 	if (-1 == ret)
 		return -1;
 
 	/* Draw mode and filename */
+	fname = path_get_fname(win_file_path(ed->win));
 	ret = vec_append_fmt(ed->buf, " %s > %s", mode_str(ed->mode), fname);
 	if (-1 == ret)
 		return -1;
@@ -329,6 +341,8 @@ ed_draw_stat(struct Ed *const ed)
 	}
 
 	/* Prepare length and formatted string for the right part */
+	y = win_curr_line_idx(ed->win);
+	x = win_curr_line_char_idx(ed->win);
 	switch (ed->mode) {
 	case MODE_NORM:
 		ret = snprintf(r, sizeof(r), "%zu < %zu, %zu ", ed->num_input, y, x);
@@ -346,6 +360,8 @@ ed_draw_stat(struct Ed *const ed)
 		return -1;
 	r_len = (size_t)ret;
 
+	/* Get window size */
+	winsize = win_size(ed->win);
 
 	/* Draw colored empty space */
 	for (i = l_len + r_len; i < winsize.ws_col; i++) {
@@ -365,7 +381,7 @@ ed_draw_stat(struct Ed *const ed)
 }
 
 void
-ed_handle_signal(struct Ed *const ed, const int signal)
+ed_handle_signal(struct ed *const ed, const int signal)
 {
 	/*
 	Set sigwinch flag to resize later in not async-signal-safe function. See
@@ -376,12 +392,13 @@ ed_handle_signal(struct Ed *const ed, const int signal)
 }
 
 static int
-ed_flush_buf(struct Ed *const ed)
+ed_flush_buf(struct ed *const ed)
 {
 	int ret;
+	ssize_t len;
 
 	/* Write buffer to terminal */
-	ssize_t len = term_write(vec_items(ed->buf), vec_len(ed->buf));
+	len = term_write(vec_items(ed->buf), vec_len(ed->buf));
 	if (-1 == len)
 		return -1;
 
@@ -391,7 +408,7 @@ ed_flush_buf(struct Ed *const ed)
 }
 
 static int
-ed_num_input(struct Ed *const ed, const char digit)
+ed_num_input(struct ed *const ed, const char digit)
 {
 	/* Validate digit */
 	if (digit < 0 || digit > 9) {
@@ -408,13 +425,13 @@ ed_num_input(struct Ed *const ed, const char digit)
 }
 
 static void
-ed_num_input_clr(struct Ed *const ed)
+ed_num_input_clr(struct ed *const ed)
 {
 	ed->num_input = 0;
 }
 
 static int
-ed_ins_char(struct Ed *const ed, const char ch)
+ed_ins_char(struct ed *const ed, const char ch)
 {
 	int ret;
 
@@ -432,9 +449,12 @@ ed_ins_char(struct Ed *const ed, const char ch)
 }
 
 static int
-ed_ins_empty_line_below(struct Ed *const ed)
+ed_ins_empty_line_below(struct ed *const ed)
 {
-	const int ret = win_ins_empty_line_below(ed->win, ed_repeat_times(ed));
+	int ret;
+
+	/* Insert empty lines */
+	ret = win_ins_empty_line_below(ed->win, ed_repeat_times(ed));
 	if (-1 == ret)
 		return -1;
 
@@ -446,9 +466,12 @@ ed_ins_empty_line_below(struct Ed *const ed)
 }
 
 static int
-ed_ins_empty_line_on_top(struct Ed *const ed)
+ed_ins_empty_line_on_top(struct ed *const ed)
 {
-	const int ret = win_ins_empty_line_on_top(ed->win, ed_repeat_times(ed));
+	int ret;
+
+	/* Insert empty lines */
+	ret = win_ins_empty_line_on_top(ed->win, ed_repeat_times(ed));
 	if (-1 == ret)
 		return -1;
 
@@ -460,13 +483,13 @@ ed_ins_empty_line_on_top(struct Ed *const ed)
 }
 
 char
-ed_need_to_quit(const struct Ed *const ed)
+ed_need_to_quit(const struct ed *const ed)
 {
 	return 0 == ed->quit_presses_rem;
 }
 
 static int
-ed_on_quit_press(struct Ed *const ed)
+ed_on_quit_press(struct ed *const ed)
 {
 	int ret;
 
@@ -482,13 +505,14 @@ ed_on_quit_press(struct Ed *const ed)
 	return ret;
 }
 
-struct Ed*
+struct ed*
 ed_open(const char *const path, const int ifd, const int ofd)
 {
 	int ret;
+	struct ed *ed;
 
 	/* Allocate opaque struct */
-	struct Ed *const ed = malloc(sizeof(*ed));
+	ed = malloc(sizeof(*ed));
 	if (NULL == ed)
 		return NULL;
 
@@ -536,10 +560,10 @@ err_free_opaque:
 }
 
 static int
-ed_proc_arrow_key(struct Ed *const ed, const char *const seq, const size_t len)
+ed_proc_arrow_key(struct ed *const ed, const char *const seq, const size_t len)
 {
 	int ret;
-	enum ArrowKey key;
+	enum arrow_key key;
 
 	/* Try to extract arrow key */
 	ret = esc_extr_arrow_key(seq, len, &key);
@@ -566,7 +590,7 @@ ed_proc_arrow_key(struct Ed *const ed, const char *const seq, const size_t len)
 }
 
 static int
-ed_proc_ins_key(struct Ed *const ed, const char key)
+ed_proc_ins_key(struct ed *const ed, const char key)
 {
 	int ret = 0;
 
@@ -589,12 +613,12 @@ ed_proc_ins_key(struct Ed *const ed, const char key)
 
 static int
 ed_proc_mouse_wh_key(
-	struct Ed *const ed,
+	struct ed *const ed,
 	const char *const seq,
 	const size_t len
 ) {
 	int ret;
-	enum MouseWhKey key;
+	enum mouse_wh_key key;
 
 	/* Try to extract mouse wheel key */
 	ret = esc_extr_mouse_wh_key(seq, len, &key);
@@ -615,7 +639,7 @@ ed_proc_mouse_wh_key(
 }
 
 static int
-ed_proc_norm_key(struct Ed *const ed, const char key)
+ed_proc_norm_key(struct ed *const ed, const char key)
 {
 	int ret = 0;
 
@@ -698,7 +722,7 @@ ed_proc_norm_key(struct Ed *const ed, const char key)
 }
 
 static int
-ed_proc_search_key(struct Ed *const ed, const char key)
+ed_proc_search_key(struct ed *const ed, const char key)
 {
 	int ret = 0;
 
@@ -726,7 +750,7 @@ ed_proc_search_key(struct Ed *const ed, const char key)
 }
 
 static int
-ed_proc_seq_key(struct Ed *const ed, const char *const seq, const size_t len)
+ed_proc_seq_key(struct ed *const ed, const char *const seq, const size_t len)
 {
 	int ret;
 
@@ -741,7 +765,7 @@ ed_proc_seq_key(struct Ed *const ed, const char *const seq, const size_t len)
 }
 
 int
-ed_quit(struct Ed *const ed)
+ed_quit(struct ed *const ed)
 {
 	int ret;
 
@@ -774,16 +798,18 @@ ed_quit(struct Ed *const ed)
 }
 
 static size_t
-ed_repeat_times(const struct Ed *const ed)
+ed_repeat_times(const struct ed *const ed)
 {
 	return 0 == ed->num_input ? 1 : ed->num_input;
 }
 
 static void
-ed_save_file(struct Ed *const ed)
+ed_save_file(struct ed *const ed)
 {
-	/* Save file to current file path */
-	size_t len = win_save_file(ed->win);
+	size_t len;
+
+	/* Save file */
+	len = win_save_file(ed->win);
 
 	/* Check save failed */
 	if (0 == len) {
@@ -796,12 +822,13 @@ ed_save_file(struct Ed *const ed)
 }
 
 static void
-ed_save_file_to_spare_dir(struct Ed *const ed)
+ed_save_file_to_spare_dir(struct ed *const ed)
 {
 	char path[CFG_SPARE_PATH_MAX_LEN + 1];
+	size_t len;
 
 	/* Save file to the spare dir */
-	size_t len = win_save_file_to_spare_dir(ed->win, path, sizeof(path));
+	len = win_save_file_to_spare_dir(ed->win, path, sizeof(path));
 	if (0 == len) {
 		/* Assert that path buffer has enough size */
 		assert(ENOBUFS != errno);
@@ -816,7 +843,7 @@ ed_save_file_to_spare_dir(struct Ed *const ed)
 }
 
 static int
-ed_search_input(struct Ed *const ed, const char ch)
+ed_search_input(struct ed *const ed, const char ch)
 {
 	/* Validate character */
 	if (!isprint(ch)) {
@@ -833,7 +860,7 @@ ed_search_input(struct Ed *const ed, const char ch)
 }
 
 static void
-ed_search_input_clr(struct Ed *const ed)
+ed_search_input_clr(struct ed *const ed)
 {
 	/* Reset search input */
 	ed->search_input_len = 0;
@@ -841,7 +868,7 @@ ed_search_input_clr(struct Ed *const ed)
 }
 
 static void
-ed_search_input_del_char(struct Ed *const ed)
+ed_search_input_del_char(struct ed *const ed)
 {
 	/* Delete last character in the input if exists */
 	if (ed->search_input_len > 0)
@@ -849,7 +876,7 @@ ed_search_input_del_char(struct Ed *const ed)
 }
 
 static int
-ed_set_msg(struct Ed *const ed, const char *const fmt, ...)
+ed_set_msg(struct ed *const ed, const char *const fmt, ...)
 {
 	int ret;
 
@@ -868,7 +895,7 @@ ed_set_msg(struct Ed *const ed, const char *const fmt, ...)
 }
 
 static void
-ed_switch_mode(struct Ed *const ed, const enum Mode mode)
+ed_switch_mode(struct ed *const ed, const enum mode mode)
 {
 	switch (mode) {
 	case MODE_SEARCH:
@@ -880,13 +907,14 @@ ed_switch_mode(struct Ed *const ed, const enum Mode mode)
 }
 
 int
-ed_wait_and_proc_key(struct Ed *const ed)
+ed_wait_and_proc_key(struct ed *const ed)
 {
 	int ret = 0;
 	char seq[4];
-	size_t seq_len = term_wait_key(seq, sizeof(seq));
+	size_t seq_len;
 
 	/* Check key waiting error */
+	seq_len = term_wait_key(seq, sizeof(seq));
 	if (0 == seq_len)
 		return -1;
 

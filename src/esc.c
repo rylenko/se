@@ -7,73 +7,81 @@
 int
 esc_alt_scr_on(Vec *const buf)
 {
-	const int ret = vec_append(buf, "\x1b[?1049h", 8);
+	int ret;
+
+	ret = vec_append(buf, "\x1b[?1049h", 8);
 	return ret;
 }
 
 int
 esc_alt_scr_off(Vec *const buf)
 {
-	const int ret = vec_append(buf, "\x1b[?1049l", 8);
+	int ret;
+
+	ret = vec_append(buf, "\x1b[?1049l", 8);
 	return ret;
 }
 
 int
 esc_clr_win(Vec *const buf)
 {
-	const int ret = vec_append(buf, "\x1b[2J", 4);
+	int ret;
+
+	ret = vec_append(buf, "\x1b[2J", 4);
 	return ret;
 }
 
 int
-esc_color_begin(
-	Vec *const buf,
-	const struct Color *const fg,
-	const struct Color *const bg
-) {
+esc_color_bg(Vec *const buf, const struct color c)
+{
 	int ret;
 
-	/* Write foreground if set */
-	if (fg != NULL) {
-		ret = vec_append_fmt(buf, "\x1b[38;2;%hhu;%hhu;%hhum", fg->r, fg->g, fg->b);
-		if (-1 == ret)
-			return -1;
-	}
+	ret = vec_append_fmt(buf, "\x1b[48;2;%hhu;%hhu;%hhum", c.r, c.g, c.b);
+	return ret;
+}
 
-	/* Write background if set */
-	if (bg != NULL) {
-		ret = vec_append_fmt(buf, "\x1b[48;2;%hhu;%hhu;%hhum", bg->r, bg->g, bg->b);
-		if (-1 == ret)
-			return -1;
-	}
-	return 0;
+int
+esc_color_fg(Vec *const buf, const struct color c)
+{
+	int ret;
+
+	ret = vec_append_fmt(buf, "\x1b[38;2;%hhu;%hhu;%hhum", c.r, c.g, c.b);
+	return ret;
 }
 
 int
 esc_color_end(Vec *const buf)
 {
-	const int ret = vec_append(buf, "\x1b[0m", 4);
+	int ret;
+
+	ret = vec_append(buf, "\x1b[0m", 4);
 	return ret;
 }
 
 int
 esc_cur_hide(Vec *const buf)
 {
-	const int ret = vec_append(buf, "\x1b[?25l", 6);
+	int ret;
+
+	ret = vec_append(buf, "\x1b[?25l", 6);
 	return ret;
 }
 
 int
 esc_cur_set(Vec *const buf, const unsigned short row, const unsigned short col)
 {
-	const int ret = vec_append_fmt(buf, "\x1b[%hu;%huH", row + 1, col + 1);
+	int ret;
+
+	ret = vec_append_fmt(buf, "\x1b[%hu;%huH", row + 1, col + 1);
 	return ret;
 }
 
 int
 esc_cur_show(Vec *const buf)
 {
-	const int ret = vec_append(buf, "\x1b[?25h", 6);
+	int ret;
+
+	ret = vec_append(buf, "\x1b[?25h", 6);
 	return ret;
 }
 
@@ -81,7 +89,7 @@ int
 esc_extr_arrow_key(
 	const char *const seq,
 	const size_t len,
-	enum ArrowKey *const key
+	enum arrow_key *const key
 ) {
 	int cmp;
 
@@ -102,7 +110,7 @@ int
 esc_extr_mouse_wh_key(
 	const char *const seq,
 	const size_t len,
-	enum MouseWhKey *const key
+	enum mouse_wh_key *const key
 ) {
 	int cmp;
 
@@ -122,20 +130,26 @@ esc_extr_mouse_wh_key(
 int
 esc_go_home(Vec *const buf)
 {
-	const int ret = vec_append(buf, "\x1b[H", 3);
+	int ret;
+
+	ret = vec_append(buf, "\x1b[H", 3);
 	return ret;
 }
 
 int
 esc_mouse_wh_track_off(Vec *const buf)
 {
-	const int ret = vec_append(buf, "\x1b[?1000l", 8);
+	int ret;
+
+	ret = vec_append(buf, "\x1b[?1000l", 8);
 	return ret;
 }
 
 int
 esc_mouse_wh_track_on(Vec *const buf)
 {
-	const int ret = vec_append(buf, "\x1b[?1000h", 8);
+	int ret;
+
+	ret = vec_append(buf, "\x1b[?1000h", 8);
 	return ret;
 }

@@ -1,6 +1,8 @@
+/* TODO: v0.3: Test all functional. */
 /* TODO: v0.3: Check using valgrind and eyes that all memory is freed on errors. */
 /* TODO: v0.3: Split functions into smaller functions, which "do one thing and do it well". */
 /* TODO: v0.3: Don't say in comments what can be clearly stated in code. */
+/* TODO: Use data types with fixed size (int8_t, etc.) */
 /* TODO: v0.4: Create Cell struct to handle all symbols including UTF-8. Create structs Win->Renders->Render->Cells->Cell. Rerender lines on window side */
 /* TODO: v0.4: Use linked list for lines array and line's content parts. */
 /* TODO: v0.4: Remember last position per line. */
@@ -46,9 +48,9 @@ static int
 setup_signal_handler(void)
 {
 	int ret;
+	struct sigaction action;
 
 	/* Initialize action */
-	struct sigaction action;
 	memset(&action, 0, sizeof(action));
 
 	/* Fill with all signals */
@@ -84,6 +86,7 @@ main(const int argc, const char *const *const argv)
 	if (NULL == ed)
 		err(EXIT_FAILURE, "Failed to open the editor");
 
+	/* Main event loop */
 	while (!ed_need_to_quit(ed)) {
 		/* Draws editor's content on the screen */
 		ret = ed_draw(ed);

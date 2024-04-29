@@ -15,27 +15,27 @@ enum {
 	STAT_ROWS_CNT = 1, /* Count of rows reserved for status */
 };
 
-/* Cursor's poisition in the window. */
-struct Cur {
+/* cursor's poisition in the window. */
+struct cur {
 	unsigned short row;
 	unsigned short col;
 };
 
-/* Offset in the file for current view. */
-struct Offset {
+/* offset in the file for current view. */
+struct offset {
 	size_t rows;
 	size_t cols;
 };
 
 /*
-Window parameters.
+window parameters.
 
 Position parameters may differ from real ones due to tabs expansion.
 */
-struct Win {
+struct win {
 	File *file; /* Opened file */
-	struct Offset offset; /* Offset of view/file. Tab's width is 1 */
-	struct Cur cur; /* Pointer to the viewed char. Tab's width is 1 */
+	struct offset offset; /* offset of view/file. Tab's width is 1 */
+	struct cur cur; /* Pointer to the viewed char. Tab's width is 1 */
 	struct winsize size; /* Terminal window size */
 };
 
@@ -44,23 +44,23 @@ Draws row on the window if exists or special config string.
 
 Returns 0 on success and -1 on error.
 */
-static int win_draw_line(const struct Win *, Vec *, unsigned short);
+static int win_draw_line(const struct win *, Vec *, unsigned short);
 
 /*
 Gets the count of characters by which the part of line is expanded using tabs.
 The part of the line from the beginning to the passed column is considered.
 */
-static size_t win_exp_col(const struct PubLine *, size_t);
+static size_t win_exp_col(const struct pub_line *, size_t);
 
 /*
 Collection of methods to scroll and fix cursor.
 
 Returns 0 on success and -1 on error.
 */
-static int win_scroll(struct Win *);
+static int win_scroll(struct win *);
 
 int
-win_close(struct Win *const win)
+win_close(struct win *const win)
 {
 	int ret;
 
@@ -77,26 +77,28 @@ win_close(struct Win *const win)
 }
 
 size_t
-win_curr_line_idx(const struct Win *const win)
+win_curr_line_idx(const struct win *const win)
 {
 	return win->offset.rows + win->cur.row;
 }
 
 size_t
-win_curr_line_char_idx(const struct Win *const win)
+win_curr_line_char_idx(const struct win *const win)
 {
 	return win->offset.cols + win->cur.col;
 }
 
 int
-win_break_line(struct Win *const win)
+win_break_line(struct win *const win)
 {
 	int ret;
-	const size_t idx = win_curr_line_idx(win);
-	const size_t pos = win_curr_line_char_idx(win);
 
 	/* Break current line at current cursor's position */
-	ret = file_break_line(win->file, idx, pos);
+	ret = file_break_line(
+		win->file,
+		win_curr_line_idx(win),
+		win_curr_line_char_idx(win)
+	);
 	if (-1 == ret)
 		return -1;
 
@@ -107,7 +109,7 @@ win_break_line(struct Win *const win)
 }
 
 int
-win_del_char(struct Win *const win)
+win_del_char(struct win *const win)
 {
 	int ret;
 
@@ -144,7 +146,7 @@ win_del_char(struct Win *const win)
 }
 
 int
-win_del_line(struct Win *const win, size_t times)
+win_del_line(struct win *const win, size_t times)
 {
 	int ret;
 
@@ -174,10 +176,10 @@ win_del_line(struct Win *const win, size_t times)
 }
 
 int
-win_draw_cur(const struct Win *const win, Vec *const buf)
+win_draw_cur(const struct win *const win, Vec *const buf)
 {
 	int ret;
-	struct PubLine line;
+	struct pub_line line;
 	size_t exp_offset_col;
 	size_t exp_col;
 
@@ -197,15 +199,18 @@ win_draw_cur(const struct Win *const win, Vec *const buf)
 
 static int
 win_draw_line(
-	const struct Win *const win,
+	const struct win *const win,
 	Vec *const buf,
 	const unsigned short row
 ) {
 	int ret;
-	struct PubLine line;
+	struct pub_line line;
 	size_t exp_offset_col;
 	size_t len_to_draw;
-	const size_t lines_cnt = file_lines_cnt(win->file);
+	size_t lines_cnt;
+
+	/* Get lines count */
+	lines_cnt = file_lines_cnt(win->file);
 
 	/* Checking if there is a line to draw at this row */
 	if (win->offset.rows + row >= lines_cnt) {
@@ -234,13 +239,13 @@ win_draw_line(
 }
 
 int
-win_draw_lines(const struct Win *const win, Vec *const buf)
+win_draw_lines(const struct win *const win, Vec *const buf)
 {
 	int ret;
 	unsigned short row;
 
 	/* Set colors */
-	ret = esc_color_begin(buf, &cfg_color_lines_fg, NULL);
+	ret = esc_color_fg(buf, cfg_color_lines_fg);
 	if (-1 == ret)
 		return -1;
 
@@ -262,7 +267,7 @@ win_draw_lines(const struct Win *const win, Vec *const buf)
 }
 
 static size_t
-win_exp_col(const struct PubLine *const line, const size_t col)
+win_exp_col(const struct pub_line *const line, const size_t col)
 {
 	size_t i;
 	size_t ret;
@@ -278,26 +283,29 @@ win_exp_col(const struct PubLine *const line, const size_t col)
 }
 
 char
-win_file_is_dirty(const struct Win *const win)
+win_file_is_dirty(const struct win *const win)
 {
 	return file_is_dirty(win->file);
 }
 
 const char*
-win_file_path(const struct Win *const win)
+win_file_path(const struct win *const win)
 {
 	return file_path(win->file);
 }
 
 int
-win_ins_char(struct Win *const win, const char ch)
+win_ins_char(struct win *const win, const char ch)
 {
 	int ret;
-	const size_t line_idx = win_curr_line_idx(win);
-	const size_t char_idx = win_curr_line_char_idx(win);
 
 	/* Insert character */
-	ret = file_ins_char(win->file, line_idx, char_idx, ch);
+	ret = file_ins_char(
+		win->file,
+		win_curr_line_idx(win),
+		win_curr_line_char_idx(win),
+		ch
+	);
 	if (-1 == ret)
 		return -1;
 
@@ -312,7 +320,7 @@ win_ins_char(struct Win *const win, const char ch)
 }
 
 int
-win_ins_empty_line_below(struct Win *const win, const size_t times)
+win_ins_empty_line_below(struct win *const win, const size_t times)
 {
 	int ret;
 	size_t times_i = times;
@@ -336,7 +344,7 @@ win_ins_empty_line_below(struct Win *const win, const size_t times)
 }
 
 int
-win_ins_empty_line_on_top(struct Win *const win, size_t times)
+win_ins_empty_line_on_top(struct win *const win, size_t times)
 {
 	int ret;
 
@@ -356,17 +364,16 @@ win_ins_empty_line_on_top(struct Win *const win, size_t times)
 }
 
 int
-win_mv_down(struct Win *const win, size_t times)
+win_mv_down(struct win *const win, size_t times)
 {
 	int ret;
-	size_t lines_cnt = file_lines_cnt(win->file);
 
 	if (0 == times)
 		return 0;
 
 	while (times-- > 0) {
 		/* Return if there is no more space to move down */
-		if (win->offset.rows + win->cur.row + 1 >= lines_cnt)
+		if (win->offset.rows + win->cur.row + 1 >= file_lines_cnt(win->file))
 			return 0;
 
 		/* Check that there is no space in current window */
@@ -382,7 +389,7 @@ win_mv_down(struct Win *const win, size_t times)
 }
 
 int
-win_mv_left(struct Win *const win, size_t times)
+win_mv_left(struct win *const win, size_t times)
 {
 	int ret;
 
@@ -415,11 +422,10 @@ win_mv_left(struct Win *const win, size_t times)
 }
 
 int
-win_mv_right(struct Win *const win, size_t times)
+win_mv_right(struct win *const win, size_t times)
 {
 	int ret;
-	const size_t lines_cnt = file_lines_cnt(win->file);
-	struct PubLine line;
+	struct pub_line line;
 
 	if (0 == times)
 		return 0;
@@ -432,7 +438,7 @@ win_mv_right(struct Win *const win, size_t times)
 	while (times-- > 0) {
 		if (win_curr_line_char_idx(win) >= line.len) {
 			/* Check there is no next line */
-			if (win_curr_line_idx(win) + 1 == lines_cnt)
+			if (win_curr_line_idx(win) + 1 == file_lines_cnt(win->file))
 				break;
 
 			/* Move to the beginning of next line because of end of line */
@@ -460,7 +466,7 @@ win_mv_right(struct Win *const win, size_t times)
 }
 
 void
-win_mv_to_begin_of_file(struct Win *const win)
+win_mv_to_begin_of_file(struct win *const win)
 {
 	/* Move to begin of first line */
 	win_mv_to_begin_of_line(win);
@@ -469,7 +475,7 @@ win_mv_to_begin_of_file(struct Win *const win)
 }
 
 void
-win_mv_to_begin_of_line(struct Win *const win)
+win_mv_to_begin_of_line(struct win *const win)
 {
 	/* Zeroize column positions */
 	win->offset.cols = 0;
@@ -477,9 +483,12 @@ win_mv_to_begin_of_line(struct Win *const win)
 }
 
 void
-win_mv_to_end_of_file(struct Win *const win)
+win_mv_to_end_of_file(struct win *const win)
 {
-	const size_t lines_cnt = file_lines_cnt(win->file);
+	size_t lines_cnt;
+
+	/* Get lines count */
+	lines_cnt = file_lines_cnt(win->file);
 
 	/* Move to begin of last line */
 	win_mv_to_begin_of_line(win);
@@ -495,10 +504,10 @@ win_mv_to_end_of_file(struct Win *const win)
 }
 
 int
-win_mv_to_end_of_line(struct Win *const win)
+win_mv_to_end_of_line(struct win *const win)
 {
 	int ret;
-	struct PubLine line;
+	struct pub_line line;
 
 	/* Get line */
 	ret = file_line(win->file, win_curr_line_idx(win), &line);
@@ -519,12 +528,12 @@ win_mv_to_end_of_line(struct Win *const win)
 }
 
 int
-win_mv_to_next_word(struct Win *const win, size_t times)
+win_mv_to_next_word(struct win *const win, size_t times)
 {
 	int ret;
 	size_t char_idx;
 	size_t word_idx;
-	struct PubLine line;
+	struct pub_line line;
 
 	/* Get line */
 	ret = file_line(win->file, win_curr_line_idx(win), &line);
@@ -555,11 +564,11 @@ win_mv_to_next_word(struct Win *const win, size_t times)
 }
 
 int
-win_mv_to_prev_word(struct Win *const win, size_t times)
+win_mv_to_prev_word(struct win *const win, size_t times)
 {
 	int ret;
 	size_t word_i;
-	struct PubLine line;
+	struct pub_line line;
 
 	if (0 == times)
 		return 0;
@@ -592,7 +601,7 @@ win_mv_to_prev_word(struct Win *const win, size_t times)
 }
 
 int
-win_mv_up(struct Win *const win, size_t times)
+win_mv_up(struct win *const win, size_t times)
 {
 	int ret;
 
@@ -616,13 +625,14 @@ win_mv_up(struct Win *const win, size_t times)
 	return ret;
 }
 
-struct Win*
+struct win*
 win_open(const char *const path, const int ifd, const int ofd)
 {
 	int ret;
-	struct Win *const win = malloc(sizeof(*win));
+	struct win *win;
 
 	/* Check opaque struct allocation error */
+	win = malloc(sizeof(*win));
 	if (NULL == win)
 		return NULL;
 
@@ -656,24 +666,28 @@ err_free_opaque:
 }
 
 size_t
-win_save_file(struct Win *const win)
+win_save_file(struct win *const win)
 {
-	const size_t len = file_save(win->file, NULL);
+	size_t len;
+
+	len = file_save(win->file, NULL);
 	return len;
 }
 
 size_t
-win_save_file_to_spare_dir(struct Win *const win, char *const path, size_t len)
+win_save_file_to_spare_dir(struct win *const win, char *const path, size_t len)
 {
-	const size_t bytes = file_save_to_spare_dir(win->file, path, len);
+	size_t bytes;
+
+	bytes = file_save_to_spare_dir(win->file, path, len);
 	return bytes;
 }
 
 static int
-win_scroll(struct Win *const win)
+win_scroll(struct win *const win)
 {
 	int ret;
-	struct PubLine line;
+	struct pub_line line;
 	size_t exp_offset_col;
 	size_t exp_col;
 
@@ -724,7 +738,7 @@ win_scroll(struct Win *const win)
 }
 
 int
-win_search(struct Win *const win, const char *const query, const enum Dir dir)
+win_search(struct win *const win, const char *const query, const enum dir dir)
 {
 	int ret;
 	size_t idx;
@@ -771,13 +785,13 @@ win_search(struct Win *const win, const char *const query, const enum Dir dir)
 }
 
 struct winsize
-win_size(const struct Win *const win)
+win_size(const struct win *const win)
 {
 	return win->size;
 }
 
 int
-win_upd_size(struct Win *const win)
+win_upd_size(struct win *const win)
 {
 	int ret;
 

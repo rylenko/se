@@ -5,8 +5,10 @@
 char*
 str_copy(const char *const str, const size_t len)
 {
+	char *copy;
+
 	/* Allocate memory. Do not forget about null byte */
-	char *const copy = malloc(len + 1);
+	copy = malloc(len + 1);
 	if (NULL == copy)
 		return NULL;
 
@@ -20,11 +22,12 @@ strnstr(const char *haystack, const char *const needle, const size_t len)
 {
 	int ret;
 	const char *const end = haystack + len;
-	const size_t needle_len = strlen(needle);
+	size_t needle_len;
 
 	/* Check needle is empty */
 	if (0 == *needle)
 		return (char *)haystack;
+	needle_len = strlen(needle);
 
 	for (; haystack < end; haystack++) {
 		/* Compare current shifted part with needle */
