@@ -3,8 +3,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <time.h>
 #include "cfg.h"
+#include "dt.h"
 #include "file.h"
 #include "math.h"
 #include "str.h"
@@ -62,6 +62,11 @@ Returns 0 on success and -1 on error.
 static int line_append(struct line *, const char *, size_t);
 
 /*
+Calculates render's length using characters. Useful after characters update.
+*/
+static size_t line_calc_render_len(struct line *);
+
+/*
 Cuts a line. The argument specifies how many first chars will remain.
 
 Returns 0 on success and -1 on error.
@@ -87,11 +92,17 @@ if error.
 static int line_read(struct line *, FILE *);
 
 /*
-Renders line chars how it look in the window.
+Renders line characters how it look in the window.
 
 Returns 0 on success and -1 on error.
 */
 static int line_render(struct line *);
+
+/*
+Renders line characters how it look in the window. Make sure that render buffer
+capacity is big enough.
+*/
+static void line_render_no_alloc(struct line *);
 
 /*
 Searches substring in the line.
@@ -501,28 +512,16 @@ size_t
 file_save_to_spare_dir(struct file *const file, char *const path, size_t len)
 {
 	int ret;
-	char date[15];
+	char date[20];
 	const char *fname;
-	const struct tm *local;
-	time_t utc;
+
+	/* Get date and time string */
+	ret = dt_str(date, sizeof(date));
+	if (-1 == ret)
+		return 0;
 
 	/* Get filename */
 	fname = basename(file->path);
-
-	/* Get timestamp */
-	utc = time(NULL);
-	if ((time_t) - 1 == utc)
-		return 0;
-
-	/* Get local time from timestamp */
-	local = localtime(&utc);
-	if (NULL == local)
-		return 0;
-
-	/* Format local time to string */
-	ret = strftime(date, sizeof(date), "%m-%d_%H-%M-%S", local);
-	if (0 == ret)
-		return 0;
 
 	/* Build full spare path */
 	ret = snprintf(path, len, "%s/%s_%s", cfg_spare_save_dir, fname, date);
@@ -609,6 +608,23 @@ line_append(struct line *const line, const char *const chars, const size_t len)
 	/* Render line with new chars */
 	ret = line_render(line);
 	return ret;
+}
+
+static size_t
+line_calc_render_len(struct line *const line)
+{
+	size_t i;
+	size_t len = 0;
+	const char *chars;
+
+	chars = vec_items(line->chars);
+	for (i = 0; i < vec_len(line->chars); i++) {
+		if ('\t' == chars[i])
+			len += CFG_TAB_SIZE - len % CFG_TAB_SIZE;
+		else
+			len++;
+	}
+	return len;
 }
 
 static int
@@ -706,34 +722,36 @@ err:
 static int
 line_render(struct line *const line)
 {
-	size_t i;
-	size_t tabs = 0;
-	const char *chars;
-
-	/* Get characters */
-	chars = vec_items(line->chars);
+	size_t render_len;
 
 	/* Free old render */
 	free(line->render);
 	line->render = NULL;
 	line->render_len = 0;
 
-	/* No chars to render */
-	if (vec_len(line->chars) == 0)
+	/* Get new render's length */
+	render_len = line_calc_render_len(line);
+	if (0 == render_len)
 		return 0;
 
-	/* Calculate tabs count */
-	for (i = 0; i < vec_len(line->chars); i++) {
-		if ('\t' == chars[i])
-			tabs++;
-	}
-
 	/* Allocate render buffer */
-	line->render = malloc(vec_len(line->chars) + (CFG_TAB_SIZE - 1) * tabs);
+	line->render = malloc(render_len);
 	if (NULL == line->render)
 		return -1;
 
-	/* Render chars */
+	/* Render line after buffer allocation */
+	line_render_no_alloc(line);
+	return 0;
+}
+
+static void
+line_render_no_alloc(struct line *const line)
+{
+	size_t i;
+	const char *chars;
+	chars = vec_items(line->chars);
+
+	line->render_len = 0;
 	for (i = 0; i < vec_len(line->chars); i++) {
 		if ('\t' == chars[i]) {
 			/* Expand tab with spaces */
@@ -745,7 +763,6 @@ line_render(struct line *const line)
 			line->render[line->render_len++] = chars[i];
 		}
 	}
-	return 0;
 }
 
 static int

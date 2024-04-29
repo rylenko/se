@@ -3,7 +3,7 @@
 include cfg.mk
 
 # Code files
-SRC = src/ed.c src/esc.c src/file.c src/main.c src/mode.c src/path.c \
+SRC = src/dt.c src/ed.c src/esc.c src/file.c src/main.c src/mode.c src/path.c \
 	src/str.c src/term.c src/vec.c src/win.c src/word.c
 OBJ = $(SRC:.c=.o)
 
