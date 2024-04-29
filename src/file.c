@@ -92,7 +92,7 @@ if error.
 static int line_read(struct line *, FILE *);
 
 /*
-Renders line characters how it look in the window.
+Allocates big enough buffer and renders characters to it how it look in the window.
 
 Returns 0 on success and -1 on error.
 */
