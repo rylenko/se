@@ -13,6 +13,17 @@ enum Dir {
 typedef struct File File;
 
 /*
+Read only line data. Use functions to modify a string instead of modifying this
+structure.
+*/
+struct PubLine {
+	const char *chars;
+	size_t len;
+	const char *render;
+	size_t render_len;
+};
+
+/*
 Finds line by passed index and absorbs next line.
 
 Returns 0 on success and -1 on error.
@@ -74,40 +85,13 @@ int file_ins_empty_line(File *, size_t);
 char file_is_dirty(const File *);
 
 /*
-Finds line by passed index and returns its raw chars.
+Finds line by passed index and returns its data.
 
 Returns 0 on success and -1 on error.
 
 Sets `EINVAL` if index is invalid.
 */
-int file_line_chars(const File *, size_t, const char **);
-
-/*
-Finds line by passed index and writes its length to passed pointer.
-
-Returns 0 on success and -1 on error.
-
-Sets `EINVAL` if index is invalid.
-*/
-int file_line_len(const File *, size_t, size_t *);
-
-/*
-Finds line by passed index and returns its render.
-
-Returns 0 on success and -1 on error.
-
-Sets `EINVAL` if index is invalid.
-*/
-int file_line_render(const File *, size_t, const char **);
-
-/*
-Finds line by passed index and returns its render len.
-
-Returns 0 on success and -1 on error.
-
-Sets `EINVAL` if index is invalid.
-*/
-int file_line_render_len(const File *, size_t, size_t *);
+int file_line(const File *, size_t, struct PubLine *);
 
 /* Returns lines count of opened file. */
 size_t file_lines_cnt(const File *);

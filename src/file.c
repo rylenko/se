@@ -352,51 +352,21 @@ file_is_dirty(const struct File *const file)
 }
 
 int
-file_line_chars(
+file_line(
 	const struct File *const file,
 	const size_t idx,
-	const char **const chars
+	struct PubLine *const line
 ) {
-	const struct Line *const line = vec_get(file->lines, idx);
+	/* Get internal line struct */
+	const struct Line *const internal = vec_get(file->lines, idx);
 	if (NULL == line)
 		return -1;
-	*chars = vec_items(line->chars);
-	return 0;
-}
 
-int
-file_line_len(const struct File *const file, const size_t i, size_t *const len)
-{
-	const struct Line *const line = vec_get(file->lines, i);
-	if (NULL == line)
-		return -1;
-	*len = vec_len(line->chars);
-	return 0;
-}
-
-int
-file_line_render(
-	const struct File *const file,
-	const size_t idx,
-	const char **const render
-) {
-	const struct Line *const line = vec_get(file->lines, idx);
-	if (NULL == line)
-		return -1;
-	*render = line->render;
-	return 0;
-}
-
-int
-file_line_render_len(
-	const struct File *const file,
-	const size_t idx,
-	size_t *const len
-) {
-	const struct Line *const line = vec_get(file->lines, idx);
-	if (NULL == line)
-		return -1;
-	*len = line->render_len;
+	/* Copy pointers and values to public line */
+	line->chars = vec_items(internal->chars);
+	line->len = vec_len(internal->chars);
+	line->render = internal->render;
+	line->render_len = internal->render_len;
 	return 0;
 }
 
