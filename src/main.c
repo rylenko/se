@@ -1,4 +1,3 @@
-/* TODO: v0.3: Test all functional. */
 /* TODO: v0.3: Check using valgrind and eyes that all memory is freed on errors. */
 /* TODO: v0.3: Split functions into smaller functions, which "do one thing and do it well". */
 /* TODO: v0.3: Don't say in comments what can be clearly stated in code. */
