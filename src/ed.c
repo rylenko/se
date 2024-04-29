@@ -284,7 +284,6 @@ ed_draw(struct Ed *const ed)
 	return ret;
 }
 
-/* TODO: split into smaller functions. */
 static int
 ed_draw_stat(struct Ed *const ed)
 {

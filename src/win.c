@@ -692,7 +692,6 @@ win_scroll(struct Win *const win)
 	if (-1 == ret)
 		return -1;
 
-	/* TODO: fix it */
 	/* Check that cursor out of the line. Useful after move down and up */
 	if (win->offset.cols + win->cur.col > line.len) {
 		/* Check that line not in the window */
@@ -717,7 +716,6 @@ win_scroll(struct Win *const win)
 		if (exp_col - exp_offset_col < win->size.ws_col)
 			break;
 
-		/* TODO: can we shift here only by offset? */
 		/* Shift to view pointed content */
 		win->offset.cols++;
 		win->cur.col--;

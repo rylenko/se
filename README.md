@@ -108,24 +108,19 @@ $ make gen-readme
 
 |Path|Line|Description|
 |-|-|-|
-|**src/win.c**|**264**|**use PubLine here?**|
-|**src/win.c**|**696**|**fix it**|
-|**src/win.c**|**721**|**can we shift here only by offset?**|
-|**src/ed.c**|**287**|**split into smaller functions.**|
-|**src/main.c**|**1**|**v0.3: Rename ed_proc_*_key to ed_try_proc_*_key?**|
-|**src/main.c**|**2**|**v0.3: Check using valgrind and eyes that all memory is freed on errors.**|
-|**src/main.c**|**3**|**v0.3: Split functions into smaller functions, which "do one thing and do it well".**|
-|**src/main.c**|**4**|**v0.3: Don't say in comments what can be clearly stated in code.**|
-|**src/main.c**|**5**|**v0.4: Create Cell struct to handle all symbols including UTF-8. Create structs Win->Renders->Render->Cells->Cell. Rerender lines on window side**|
-|**src/main.c**|**6**|**v0.4: Use linked list for lines array and line's content parts.**|
-|**src/main.c**|**7**|**v0.4: Remember last position per line.**|
-|**src/main.c**|**8**|**v0.4: Rewrite moving functions with more unambiguous behavior and minimal scrolling.**|
-|**src/main.c**|**9**|**v0.5: Undo operations. Also rename "del" to "remove" where needed.**|
-|**src/main.c**|**10**|**v0.5: Add key settings for escape sequences. For example, CFG_KEY_MV_UP_2 = "..."**|
-|**src/main.c**|**11**|**v0.5: Add local clipboard. Use it in functions.**|
-|**src/main.c**|**12**|**v0.5: Xclip patch to use with local clipboard.**|
-|**src/main.c**|**13**|**v0.6: Support huge files: read chunks or try mmap**|
-|**src/main.c**|**14**|**v0.6: Add tests.**|
-|**src/main.c**|**15**|**v0.7: Make code patching easier.**|
-|**src/main.c**|**16**|**v0.7: Add more error codes in docs.**|
-|**src/main.c**|**17**|**v0.7: Save to spare dir on error.**|
+|**src/main.c**|**1**|**v0.3: Check using valgrind and eyes that all memory is freed on errors.**|
+|**src/main.c**|**2**|**v0.3: Split functions into smaller functions, which "do one thing and do it well".**|
+|**src/main.c**|**3**|**v0.3: Don't say in comments what can be clearly stated in code.**|
+|**src/main.c**|**4**|**v0.4: Create Cell struct to handle all symbols including UTF-8. Create structs Win->Renders->Render->Cells->Cell. Rerender lines on window side**|
+|**src/main.c**|**5**|**v0.4: Use linked list for lines array and line's content parts.**|
+|**src/main.c**|**6**|**v0.4: Remember last position per line.**|
+|**src/main.c**|**7**|**v0.4: Rewrite moving functions with more unambiguous behavior and minimal scrolling.**|
+|**src/main.c**|**8**|**v0.5: Undo operations. Also rename "del" to "remove" where needed.**|
+|**src/main.c**|**9**|**v0.5: Add key settings for escape sequences. For example, CFG_KEY_MV_UP_2 = "..."**|
+|**src/main.c**|**10**|**v0.5: Add local clipboard. Use it in functions.**|
+|**src/main.c**|**11**|**v0.5: Xclip patch to use with local clipboard.**|
+|**src/main.c**|**12**|**v0.6: Support huge files: read chunks or try mmap**|
+|**src/main.c**|**13**|**v0.6: Add tests.**|
+|**src/main.c**|**14**|**v0.7: Make code patching easier.**|
+|**src/main.c**|**15**|**v0.7: Add more error codes in docs.**|
+|**src/main.c**|**16**|**v0.7: Save to spare dir on error.**|
