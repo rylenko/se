@@ -6,6 +6,7 @@
 #include "esc.h"
 #include "file.h"
 #include "math.h"
+#include "str.h"
 #include "term.h"
 #include "vec.h"
 #include "win.h"
@@ -270,16 +271,13 @@ static size_t
 win_exp_col(const struct pub_line *const line, const size_t col)
 {
 	size_t i;
-	size_t ret;
+	size_t exp = 0;
 	const size_t end = MIN(col, line->len);
 
-	/* Iterate over every character in the visible part of line */
-	for (i = 0, ret = 0; i < end; i++, ret++) {
-		/* Expand tabs */
-		if ('\t' == line->chars[i])
-			ret += CFG_TAB_SIZE - ret % CFG_TAB_SIZE - 1;
-	}
-	return ret;
+	/* Iterate over every character in the selected area */
+	for (i = 0; i < end; i++)
+		exp += str_exp(line->chars[i], exp);
+	return exp;
 }
 
 char

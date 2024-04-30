@@ -174,7 +174,12 @@ file_absorb_next_line(struct file *const file, const size_t idx)
 
 	/* Mark file as dirty */
 	file->is_dirty = 1;
+
+	/* Free removed line */
+	line_free(&next);
+	return 0;
 ret_free:
+	/* Free removed line */
 	line_free(&next);
 	return -1;
 }
@@ -651,12 +656,8 @@ line_calc_render_cap(struct line *const line)
 	const char *chars;
 
 	chars = vec_items(line->chars);
-	for (i = 0; i < vec_len(line->chars); i++) {
-		if ('\t' == chars[i])
-			len += CFG_TAB_SIZE - len % CFG_TAB_SIZE;
-		else
-			len++;
-	}
+	for (i = 0; i < vec_len(line->chars); i++)
+		len += str_exp(chars[i], len);
 	return len;
 }
 
@@ -847,14 +848,14 @@ line_search(
 	/* Search backward or forward */
 	switch (dir) {
 	case DIR_BWD:
-		res = strrstr(vec_items(line->chars), query, *idx);
+		res = str_rsearch(vec_items(line->chars), query, *idx);
 		break;
 	case DIR_FWD:
 		/* Get start of searching and search */
 		fwd_start = vec_get(line->chars, *idx);
 		if (NULL == fwd_start)
 			return -1;
-		res = strnstr(fwd_start, query, vec_len(line->chars) - *idx);
+		res = str_search(fwd_start, query, vec_len(line->chars) - *idx);
 		break;
 	}
 

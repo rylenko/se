@@ -1,6 +1,18 @@
 #include <string.h>
 #include <stdlib.h>
+#include "cfg.h"
 #include "str.h"
+
+size_t
+str_exp(const char ch, const size_t pos)
+{
+	switch (ch) {
+	case '\t':
+		return CFG_TAB_SIZE - pos % CFG_TAB_SIZE;
+	default:
+		return 1;
+	}
+}
 
 char*
 str_copy(const char *const str, const size_t len)
@@ -18,44 +30,45 @@ str_copy(const char *const str, const size_t len)
 }
 
 char*
-strnstr(const char *haystack, const char *const needle, const size_t len)
+str_rsearch(const char *const str, const char *const query, const size_t len)
 {
 	int ret;
-	const char *const end = haystack + len;
-	size_t needle_len;
+	const char *ptr = str + len;
+	size_t query_len;
 
 	/* Check needle is empty */
-	if (0 == *needle)
-		return (char *)haystack;
-	needle_len = strlen(needle);
-
-	for (; haystack < end; haystack++) {
-		/* Compare current shifted part with needle */
-		ret = strncmp(haystack, needle, needle_len);
-		if (0 == ret)
-			return (char *)haystack;
-	}
-	return NULL;
-}
-
-char*
-strrstr(const char *const haystack, const char *const needle, const size_t len)
-{
-	int ret;
-	const char *ptr = haystack + len;
-	const size_t needle_len = strlen(needle);
-
-	/* Check needle is empty */
-	if (0 == *needle)
-		return (char *)haystack;
+	if (0 == *query)
+		return (char *)str;
+	query_len = strlen(query);
 
 	do {
 		ptr--;
 
 		/* Compare current shifted part with needle */
-		ret = strncmp(ptr, needle, needle_len);
+		ret = strncmp(ptr, query, query_len);
 		if (0 == ret)
 			return (char *)ptr;
-	} while (ptr > haystack);
+	} while (ptr > str);
+	return NULL;
+}
+
+char*
+str_search(const char *str, const char *const query, const size_t len)
+{
+	int ret;
+	const char *const end = str + len;
+	size_t query_len;
+
+	/* Check needle is empty */
+	if (0 == *query)
+		return (char *)str;
+	query_len = strlen(query);
+
+	for (; str < end; str++) {
+		/* Compare current shifted part with needle */
+		ret = strncmp(str, query, query_len);
+		if (0 == ret)
+			return (char *)str;
+	}
 	return NULL;
 }
