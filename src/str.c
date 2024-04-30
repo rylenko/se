@@ -33,22 +33,20 @@ char*
 str_rsearch(const char *const str, const char *const query, const size_t len)
 {
 	int ret;
-	const char *ptr = str + len;
+	const char *ptr;
 	size_t query_len;
 
-	/* Check needle is empty */
+	/* Check query is empty */
 	if (0 == *query)
 		return (char *)str;
 	query_len = strlen(query);
 
-	do {
-		ptr--;
-
+	for (ptr = str + len - query_len; ptr >= str; ptr--) {
 		/* Compare current shifted part with needle */
 		ret = strncmp(ptr, query, query_len);
 		if (0 == ret)
 			return (char *)ptr;
-	} while (ptr > str);
+	}
 	return NULL;
 }
 
@@ -56,7 +54,7 @@ char*
 str_search(const char *str, const char *const query, const size_t len)
 {
 	int ret;
-	const char *const end = str + len;
+	const char *ptr;
 	size_t query_len;
 
 	/* Check needle is empty */
@@ -64,11 +62,15 @@ str_search(const char *str, const char *const query, const size_t len)
 		return (char *)str;
 	query_len = strlen(query);
 
-	for (; str < end; str++) {
+	/* Check searching has the meaning */
+	if (len < query_len)
+		return NULL;
+
+	for (ptr = str; ptr < str + len; ptr++) {
 		/* Compare current shifted part with needle */
-		ret = strncmp(str, query, query_len);
+		ret = strncmp(ptr, query, query_len);
 		if (0 == ret)
-			return (char *)str;
+			return (char *)ptr;
 	}
 	return NULL;
 }
