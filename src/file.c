@@ -62,16 +62,24 @@ Returns 0 on success and -1 on error.
 static int line_append(struct line *, const char *, size_t);
 
 /*
-Calculates render's length using characters. Useful after characters update.
+Calculates render's capacity using characters. Useful after characters update.
 */
-static size_t line_calc_render_len(struct line *);
+static size_t line_calc_render_cap(struct line *);
 
 /*
-Cuts a line. The argument specifies how many first chars will remain.
+Cuts a line, shrinks its capacity and rerenders it. The argument specifies how
+many first characters will remain.
 
 Returns 0 on success and -1 on error.
 */
 static int line_cut(struct line *, size_t);
+
+/*
+Deletes character from line at passed index and after rerenders the line.
+
+Returns 0 on success and -1 on error.
+*/
+int line_del_char(struct line *, size_t);
 
 /* Frees allocated line's buffer. */
 static void line_free(struct line *);
@@ -84,7 +92,14 @@ Returns 0 on success and -1 on error.
 static int line_init(struct line *);
 
 /*
-Reads a line from a file without `'\n'`. Returns `NULL` if `EOF` is reached.
+Inserts character to line at passed index and after rerenders the line.
+
+Returns 0 on success and -1 on error.
+*/
+int line_ins_char(struct line *, size_t, char);
+
+/*
+Reads line characters from a file without `'\n'`.
 
 Returns 1 if line readed, 0 if EOF reached and there is no line to read and -1
 if error.
@@ -92,15 +107,16 @@ if error.
 static int line_read(struct line *, FILE *);
 
 /*
-Allocates big enough buffer and renders characters to it how it look in the window.
+Allocates big enough buffer and renders characters to it how it look in the
+window.
 
 Returns 0 on success and -1 on error.
 */
 static int line_render(struct line *);
 
 /*
-Renders line characters how it look in the window. Make sure that render buffer
-capacity is big enough.
+Renders line characters in existing buffer how it look in the window. Make sure
+that render buffer capacity is big enough.
 */
 static void line_render_no_alloc(struct line *);
 
@@ -251,13 +267,8 @@ file_del_char(struct file *const file, const size_t idx, const size_t pos)
 	if (NULL == line)
 		return -1;
 
-	/* Remove character */
-	ret = vec_remove(line->chars, pos, NULL);
-	if (-1 == ret)
-		return -1;
-
-	/* Rerender updated line */
-	ret = line_render(line);
+	/* Delete character in line */
+	ret = line_del_char(line, pos);
 	if (-1 == ret)
 		return -1;
 
@@ -322,18 +333,13 @@ file_ins_char(
 	int ret;
 	struct line *line;
 
-	/* Check line not found */
+	/* Get line */
 	line = vec_get(file->lines, idx);
 	if (NULL == line)
 		return -1;
 
-	/* Insert character to line */
-	ret = vec_ins(line->chars, pos, &ch, 1);
-	if (-1 == ret)
-		return -1;
-
-	/* Rerender line after character insertion */
-	ret = line_render(line);
+	/* Insert new character */
+	ret = line_ins_char(line, pos, ch);
 	if (-1 == ret)
 		return -1;
 
@@ -611,7 +617,7 @@ line_append(struct line *const line, const char *const chars, const size_t len)
 }
 
 static size_t
-line_calc_render_len(struct line *const line)
+line_calc_render_cap(struct line *const line)
 {
 	size_t i;
 	size_t len = 0;
@@ -638,11 +644,26 @@ line_cut(struct line *const line, const size_t len)
 		return -1;
 
 	/* Shrink broken line's capacity if needed */
-	ret = vec_shrink(line->chars, 0);
+	ret = vec_shrink_if_needed(line->chars);
 	if (-1 == ret)
 		return -1;
 
 	/* Render line with new length */
+	ret = line_render(line);
+	return ret;
+}
+
+int
+line_del_char(struct line *const line, const size_t idx)
+{
+	int ret;
+
+	/* Remove character */
+	ret = vec_remove(line->chars, idx, NULL);
+	if (-1 == ret)
+		return -1;
+
+	/* Rerender updated line */
 	ret = line_render(line);
 	return ret;
 }
@@ -668,6 +689,22 @@ line_init(struct line *const line)
 	line->render_len = 0;
 	return 0;
 }
+
+int
+line_ins_char(struct line *const line, const size_t idx, const char ch)
+{
+	int ret;
+
+	/* Insert character to line */
+	ret = vec_ins(line->chars, idx, &ch, 1);
+	if (-1 == ret)
+		return -1;
+
+	/* Rerender line after character insertion */
+	ret = line_render(line);
+	return ret;
+}
+
 
 static int
 line_read(struct line *const line, FILE *const f)
@@ -704,11 +741,6 @@ line_read(struct line *const line, FILE *const f)
 			goto err;
 	}
 
-	/* Shrink chars capacity to fit */
-	ret = vec_shrink(line->chars, 1);
-	if (-1 == ret)
-		goto err;
-
 	/* Render readed line */
 	ret = line_render(line);
 	if (-1 == ret)
@@ -722,20 +754,20 @@ err:
 static int
 line_render(struct line *const line)
 {
-	size_t render_len;
+	size_t render_cap;
 
 	/* Free old render */
 	free(line->render);
 	line->render = NULL;
 	line->render_len = 0;
 
-	/* Get new render's length */
-	render_len = line_calc_render_len(line);
-	if (0 == render_len)
+	/* Get new render's capacity */
+	render_cap = line_calc_render_cap(line);
+	if (0 == render_cap)
 		return 0;
 
 	/* Allocate render buffer */
-	line->render = malloc(render_len);
+	line->render = malloc(render_cap);
 	if (NULL == line->render)
 		return -1;
 

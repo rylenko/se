@@ -242,7 +242,7 @@ vec_remove(struct vec *const vec, const size_t idx, void *const item)
 	);
 
 	/* Shrink vector if there is too much free space */
-	ret = vec_shrink(vec, 0);
+	ret = vec_shrink_if_needed(vec);
 	return ret;
 }
 
@@ -254,12 +254,13 @@ vec_set_len(struct vec *const vec, const size_t len)
 		errno = EINVAL;
 		return -1;
 	}
+
 	vec->len = len;
 	return 0;
 }
 
 int
-vec_shrink(struct vec *const vec, const char to_fit)
+vec_shrink_if_needed(struct vec *const vec)
 {
 	int ret;
 
@@ -271,11 +272,10 @@ vec_shrink(struct vec *const vec, const char to_fit)
 		return 0;
 	}
 
-	/* Realloc to equate capacity to length or if there is much unused space */
-	if ((to_fit && vec->len < vec->cap) || vec->len + vec->cap_step <= vec->cap) {
-		ret = vec_realloc(vec, vec->len);
-		if (-1 == ret)
-			return -1;
-	}
-	return 0;
+	/* Check there is not enough unused space to shrink */
+	if (vec->len + vec->cap_step > vec->cap)
+		return 0;
+
+	ret = vec_realloc(vec, vec->len);
+	return ret;
 }

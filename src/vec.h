@@ -14,14 +14,16 @@ Returns pointer to opaque vector on success and `NULL` on error.
 Vec *vec_alloc(size_t, size_t);
 
 /*
-Copies items to the end of vector.
+Copies items to the end of vector. Grows capacity if there is not enough space
+to append.
 
 Returns 0 on success and -1 on error.
 */
 int vec_append(Vec *, const void *, size_t);
 
 /*
-Like default appending function, but with string formatting.
+Like default appending function, but with string formatting. Grows capacity if
+there is not enough space to append.
 
 Returns formatted length on success and -1 on error.
 
@@ -48,7 +50,8 @@ void *vec_items(const Vec *);
 void vec_free(Vec *);
 
 /*
-Copies items to vector by passed index.
+Copies items to vector by passed index. Grows capacity if there is not enough
+space to insert.
 
 Returns 0 on success and -1 on error.
 
@@ -57,7 +60,8 @@ Sets `EINVAL` if index is invalid.
 int vec_ins(Vec *, size_t, const void *, size_t);
 
 /*
-Like default inserting function, but with string formatting.
+Like default inserting function, but with string formatting. Grows capacity if
+there is not enough space to insert.
 
 Returns formatted length on success and -1 on error.
 
@@ -69,7 +73,8 @@ int vec_ins_fmt(Vec *, size_t, const char *, ...);
 size_t vec_len(const Vec *);
 
 /*
-Finds and removes item by its index.
+Finds and removes item by its index. Shrinks capacity if too much space is
+unused.
 
 Returns 0 on success and -1 on error.
 
@@ -81,20 +86,20 @@ the passed pointer if it's not `NULL`.
 int vec_remove(Vec *, size_t, void *);
 
 /*
-Sets new length. Must not be greater than capacity. Capacity remains the same.
+Sets length and leaves the capacity unchanged, so shrink the capacity if
+needed.
 
 Returns 0 on success and -1 on error.
 
-Sets `EINVAL` if index is invalid.
+Sets `EINVAL` if length is greater than capacity.
 */
 int vec_set_len(Vec *, size_t);
 
 /*
-Shrinks vector's capacity. Determines whether the shrink is beneficial if flag
-was not set.
+Shrinks capacity if too much space is unused.
 
 Returns 0 on success and -1 on error.
 */
-int vec_shrink(Vec *, char);
+int vec_shrink_if_needed(Vec *);
 
 #endif /* _VEC_H */
