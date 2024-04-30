@@ -129,3 +129,4 @@ Trying to follow a combination of [OpenBSD](https://man.openbsd.org/style) and [
 |**src/main.c**|**15**|**v0.7: Make code patching easier.**|
 |**src/main.c**|**16**|**v0.7: Add more error codes in docs.**|
 |**src/main.c**|**17**|**v0.7: Save to spare dir on error.**|
+|**src/vec.h**|**75**|**Undo copying on error to prevent user from memory releasing.**|

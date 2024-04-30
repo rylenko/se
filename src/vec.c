@@ -7,6 +7,7 @@
 #include "math.h"
 #include "vec.h"
 
+/* Dynamic vector with capacity reallocation step. */
 struct vec {
 	char *items; /* Pointer to the beginning of dynamic array with items  */
 	size_t item_size; /* Size of item in dynamic array */

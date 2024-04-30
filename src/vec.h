@@ -72,6 +72,7 @@ int vec_ins_fmt(Vec *, size_t, const char *, ...);
 /* Returns length of the vector. */
 size_t vec_len(const Vec *);
 
+/* TODO: Undo copying on error to prevent user from memory releasing. */
 /*
 Finds and removes item by its index. Shrinks capacity if too much space is
 unused.

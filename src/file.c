@@ -61,6 +61,14 @@ Returns 0 on success and -1 on error.
 */
 static int line_append(struct line *, const char *, size_t);
 
+
+/*
+Breaks the line at passed index. Writes broken right part to the passed line.
+
+Returns 0 on success an -1 on error.
+*/
+int line_break(struct line *, size_t, struct line *);
+
 /*
 Calculates render's capacity using characters. Useful after characters update.
 */
@@ -145,8 +153,12 @@ file_absorb_next_line(struct file *const file, const size_t idx)
 
 	/* Remove next line */
 	ret = vec_remove(file->lines, idx + 1, &next);
-	if (-1 == ret)
+	/* See removing function docs. line removed if argument is valid */
+	if (-1 == ret) {
+		if (errno != EINVAL)
+			goto ret_free;
 		return -1;
+	}
 
 	/* Append current line with next line's chars if next line is not empty */
 	if (vec_len(next.chars) > 0) {
@@ -164,7 +176,7 @@ file_absorb_next_line(struct file *const file, const size_t idx)
 	file->is_dirty = 1;
 ret_free:
 	line_free(&next);
-	return ret;
+	return -1;
 }
 
 static struct file*
@@ -201,41 +213,18 @@ int
 file_break_line(struct file *const file, const size_t idx, const size_t pos)
 {
 	int ret;
-	size_t new_len;
-	const char *new_chars;
 	struct line new_line;
 	struct line *line;
 
-	/* Check current line not found */
+	/* Get line */
 	line = vec_get(file->lines, idx);
 	if (NULL == line)
 		return -1;
 
-	/* Initialize new line */
-	ret = line_init(&new_line);
+	/* Break line */
+	ret = line_break(line, pos, &new_line);
 	if (-1 == ret)
 		return -1;
-
-	/* Get new line length */
-	new_len = vec_len(line->chars) - pos;
-
-	/* Copy characters from broken line to new line if its length is not zero */
-	if (new_len > 0) {
-		/* Get start of part which we need to move to new line */
-		new_chars = vec_get(line->chars, pos);
-		if (NULL == new_chars)
-			goto err_free;
-
-		/* Append broken chars to new line */
-		ret = line_append(&new_line, new_chars, new_len);
-		if (-1 == ret)
-			goto err_free;
-
-		/* Cut broken line */
-		ret = line_cut(line, pos);
-		if (-1 == ret)
-			goto err_free;
-	}
 
 	/* Insert new line */
 	ret = vec_ins(file->lines, idx + 1, &new_line, 1);
@@ -554,7 +543,7 @@ file_search(
 	if (NULL == line)
 		return -1;
 
-	do {
+	while (1) {
 		/* Try to search on line */
 		ret = line_search(line, pos, query, dir);
 		/* Return if result found or error happened */
@@ -564,7 +553,7 @@ file_search(
 		/* Break if the end of search reached */
 		if (
 			(DIR_BWD == dir && 0 == *idx)
-			|| (DIR_FWD == dir && vec_len(file->lines) - 1 <= *idx)
+			|| (DIR_FWD == dir && *idx + 1 >= vec_len(file->lines))
 		)
 			break;
 
@@ -576,7 +565,7 @@ file_search(
 
 		/* Choose position using direction */
 		*pos = DIR_FWD == dir ? 0 : vec_len(line->chars);
-	} while (*idx < vec_len(file->lines));
+	}
 	return 0;
 }
 
@@ -614,6 +603,44 @@ line_append(struct line *const line, const char *const chars, const size_t len)
 	/* Render line with new chars */
 	ret = line_render(line);
 	return ret;
+}
+
+int
+line_break(struct line *const line, const size_t idx, struct line *const new)
+{
+	int ret;
+	size_t new_len;
+	const char *new_chars;
+
+	/* Initialize new line */
+	ret = line_init(new);
+	if (-1 == ret)
+		return -1;
+
+	/* Get new line length */
+	new_len = vec_len(line->chars) - idx;
+
+	/* Copy characters from broken line to new line if its length is not zero */
+	if (new_len > 0) {
+		/* Get start of part which we need to move to new line */
+		new_chars = vec_get(line->chars, idx);
+		if (NULL == new_chars)
+			goto err_free;
+
+		/* Append broken chars to new line */
+		ret = line_append(new, new_chars, new_len);
+		if (-1 == ret)
+			goto err_free;
+
+		/* Cut broken line */
+		ret = line_cut(line, idx);
+		if (-1 == ret)
+			goto err_free;
+	}
+	return 0;
+err_free:
+	line_free(new);
+	return -1;
 }
 
 static size_t
