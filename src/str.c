@@ -3,17 +3,6 @@
 #include "cfg.h"
 #include "str.h"
 
-size_t
-str_exp(const char ch, const size_t pos)
-{
-	switch (ch) {
-	case '\t':
-		return CFG_TAB_SIZE - pos % CFG_TAB_SIZE;
-	default:
-		return 1;
-	}
-}
-
 char*
 str_copy(const char *const str, const size_t len)
 {
@@ -27,4 +16,15 @@ str_copy(const char *const str, const size_t len)
 	/* Copy memory. Do not forget about null byte */
 	copy[len] = 0;
 	return memcpy(copy, str, len);
+}
+
+size_t
+str_exp(const char ch, const size_t pos)
+{
+	switch (ch) {
+	case '\t':
+		return CFG_TAB_SIZE - pos % CFG_TAB_SIZE;
+	default:
+		return 1;
+	}
 }
