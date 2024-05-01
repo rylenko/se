@@ -99,8 +99,19 @@ passed buffer.
 */
 size_t win_save_file_to_spare_dir(Win *, char *, size_t);
 
-/* Searches with passed query in passed direction. */
-int win_search(Win *, const char *, enum dir);
+/*
+Searches backward from current position to end of file using passed query.
+
+Returns 0 on success and -1 on error.
+*/
+int win_search_bwd(Win *, const char *);
+
+/*
+Searches forward from current position to end of file using passed query.
+
+Returns 0 on success and -1 on error.
+*/
+int win_search_fwd(Win *, const char *);
 
 /* Gets size of window. */
 struct winsize win_size(const Win *);

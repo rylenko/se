@@ -18,16 +18,4 @@ Passed number specifies current position in the text.
 */
 size_t str_exp(const char, size_t);
 
-/*
-Searches needle in the passed haystack from right. Passed number specifies a
-length of haystack to search.
-*/
-char *str_rsearch(const char *, const char *, size_t);
-
-/*
-Searches needle in the passed haystack. Passed number specifies a length of
-haystack to search.
-*/
-char *str_search(const char *, const char *, size_t);
-
 #endif /* _STR_H */

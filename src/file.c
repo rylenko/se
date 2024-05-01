@@ -129,13 +129,22 @@ that render buffer capacity is big enough.
 static void line_render_no_alloc(struct line *);
 
 /*
-Searches substring in the line.
+Searches query backward.
 
-Temporarily changes the string if there is backward searching.
+Returns 1 if result found, 0 if no result and -1 if starting index is invalid.
 
-Returns 1 if result found, 0 if no result and -1 on error.
+Sets `EINVAL` if index is invalid.
 */
-static int line_search(struct line *, size_t *, const char *, enum dir);
+static int line_search_bwd(const struct line *, size_t *, const char *);
+
+/*
+Searches query forward.
+
+Returns 1 if result found, 0 if no result and -1 if starting index is invalid.
+
+Sets `EINVAL` if index is invalid.
+*/
+static int line_search_fwd(const struct line *, size_t *, const char *);
 
 /*
 Writes a line to the file with `'\n'` at the end.
@@ -533,12 +542,11 @@ file_save_to_spare_dir(struct file *const file, char *const path, size_t len)
 }
 
 int
-file_search(
-	struct file *const file,
+file_search_bwd(
+	const struct file *const file,
 	size_t *const idx,
 	size_t *const pos,
-	const char *const query,
-	const enum dir dir
+	const char *const query
 ) {
 	int ret;
 	struct line *line;
@@ -549,27 +557,63 @@ file_search(
 		return -1;
 
 	while (1) {
-		/* Try to search on line */
-		ret = line_search(line, pos, query, dir);
-		/* Return if result found or error happened */
-		if (ret != 0)
-			return ret;
+		/* Try to search on line if not empty */
+		if (vec_len(line->chars) > 0) {
+			/* Try to search on line */
+			ret = line_search_bwd(line, pos, query);
+			/* Return if result found or error happened */
+			if (ret != 0)
+				return ret;
+		}
 
-		/* Break if the end of search reached */
-		if (
-			(DIR_BWD == dir && 0 == *idx)
-			|| (DIR_FWD == dir && *idx + 1 >= vec_len(file->lines))
-		)
+		/* Break if the start of file reached */
+		if (0 == *idx)
 			break;
 
-		/* Move to another line */
-		*idx += DIR_FWD == dir ? 1 : -1;
-		line = vec_get(file->lines, *idx);
+		/* Move to previous line */
+		line = vec_get(file->lines, --*idx);
 		if (NULL == line)
 			return -1;
+		/* Continue from the end of previous line */
+		*pos = vec_len(line->chars);
+	}
+	return 0;
+}
 
-		/* Choose position using direction */
-		*pos = DIR_FWD == dir ? 0 : vec_len(line->chars);
+int
+file_search_fwd(
+	const struct file *const file,
+	size_t *const idx,
+	size_t *const pos,
+	const char *const query
+) {
+	int ret;
+	struct line *line;
+
+	/* Try to get initial line */
+	line = vec_get(file->lines, *idx);
+	if (NULL == line)
+		return -1;
+
+	while (1) {
+		/* Try to search on line if not empty */
+		if (vec_len(line->chars) > 0) {
+			ret = line_search_fwd(line, pos, query);
+			/* Return if result found or error happened */
+			if (ret != 0)
+				return ret;
+		}
+
+		/* Break if the end of file reached */
+		if (*idx + 1 >= vec_len(file->lines))
+			break;
+
+		/* Move to next line */
+		line = vec_get(file->lines, ++*idx);
+		if (NULL == line)
+			return -1;
+		/* Continue from the beginning of the next line */
+		*pos = 0;
 	}
 	return 0;
 }
@@ -826,14 +870,15 @@ line_render_no_alloc(struct line *const line)
 }
 
 static int
-line_search(
-	struct line *const line,
+line_search_bwd(
+	const struct line *const line,
 	size_t *const idx,
-	const char *const query,
-	const enum dir dir
+	const char *const query
 ) {
-	const char *fwd_start;
-	const char *res = NULL;
+	int ret;
+	const char *start;
+	const char *ptr;
+	size_t query_len;
 
 	/* Validate accepted index */
 	if (*idx > vec_len(line->chars)) {
@@ -841,30 +886,62 @@ line_search(
 		return -1;
 	}
 
-	/* Check line is empty */
-	if (vec_len(line->chars) == 0)
+	/* Validate query length */
+	query_len = strlen(query);
+	if (0 == query_len)
 		return 0;
 
-	/* Search backward or forward */
-	switch (dir) {
-	case DIR_BWD:
-		res = str_rsearch(vec_items(line->chars), query, *idx);
-		break;
-	case DIR_FWD:
-		/* Get start of searching and search */
-		fwd_start = vec_get(line->chars, *idx);
-		if (NULL == fwd_start)
-			return -1;
-		res = str_search(fwd_start, query, vec_len(line->chars) - *idx);
-		break;
+	start = vec_items(line->chars);
+
+	for (ptr = start + *idx - query_len; ptr >= start; ptr--) {
+		/* Compare current shifted part with needle */
+		ret = strncmp(ptr, query, query_len);
+		if (0 == ret) {
+			/* Set result */
+			*idx = ptr - start;
+			return 1;
+		}
 	}
+	return 0;
+}
 
-	/* Check if no results */
-	if (NULL == res)
+static int
+line_search_fwd(
+	const struct line *const line,
+	size_t *const idx,
+	const char *const query
+) {
+	int ret;
+	size_t search_len;
+	const char *start;
+	const char *ptr;
+	size_t query_len;
+
+	/* Get start of search */
+	start = vec_get(line->chars, *idx);
+	if (NULL == start)
+		return -1;
+
+	/* Get length of substring */
+	search_len = vec_len(line->chars) - *idx;
+
+	/* Validate query length */
+	query_len = strlen(query);
+	if (search_len < query_len)
 		return 0;
-	/* Set result index and return success code */
-	*idx = res - (char *)vec_items(line->chars);
-	return 1;
+	if (0 == query_len)
+		return 0;
+
+	for (ptr = start; ptr < start + search_len; ptr++) {
+		/* Compare current shifted part with query */
+		ret = strncmp(ptr, query, query_len);
+		if (0 == ret) {
+			/* Set result */
+			*idx = ptr - start;
+			return 1;
+		}
+	}
+	return 0;
 }
 
 static size_t

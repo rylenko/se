@@ -10,7 +10,6 @@
 #include "cfg.h"
 #include "ed.h"
 #include "esc.h"
-#include "file.h"
 #include "math.h"
 #include "mode.h"
 #include "path.h"
@@ -699,10 +698,10 @@ ed_proc_norm_key(struct ed *const ed, const char key)
 		ret = win_mv_to_prev_word(ed->win, ed_repeat_times(ed));
 		break;
 	case CFG_KEY_SEARCH_BWD:
-		ret = win_search(ed->win, ed->search_input, DIR_BWD);
+		ret = win_search_bwd(ed->win, ed->search_input);
 		break;
 	case CFG_KEY_SEARCH_FWD:
-		ret = win_search(ed->win, ed->search_input, DIR_FWD);
+		ret = win_search_fwd(ed->win, ed->search_input);
 		break;
 	}
 
@@ -712,7 +711,7 @@ ed_proc_norm_key(struct ed *const ed, const char key)
 
 	/* Process number input */
 	ret = ed_num_input(ed, key - '0');
-	if (-1 == ret) {
+	if (-1 == ret && EINVAL == errno) {
 		/* Clear input if pressed key is not a digit */
 		errno = 0;
 		ed_num_input_clr(ed);
@@ -727,12 +726,10 @@ ed_proc_search_key(struct ed *const ed, const char key)
 	int ret = 0;
 
 	switch (key) {
-	case CFG_KEY_MODE_SEARCH_TO_NORM:
-		ret = win_search(ed->win, ed->search_input, DIR_FWD);
-		if (-1 == ret)
-			return -1;
-		/* FALLTHROUGH */
 	case CFG_KEY_MODE_SEARCH_TO_NORM_CANCEL:
+		ed_search_input_clr(ed);
+		/* FALLTHROUGH */
+	case CFG_KEY_MODE_SEARCH_TO_NORM:
 		ed_switch_mode(ed, MODE_NORM);
 		break;
 	case CFG_KEY_SEARCH_DEL_CHAR:
@@ -741,8 +738,10 @@ ed_proc_search_key(struct ed *const ed, const char key)
 	default:
 		ret = ed_search_input(ed, key);
 		/* Ignore invalid key */
-		if (-1 == ret)
+		if (-1 == ret && EINVAL == errno)  {
+			ret = 0;
 			errno = 0;
+		}
 		break;
 	}
 

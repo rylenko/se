@@ -736,50 +736,74 @@ win_scroll(struct win *const win)
 }
 
 int
-win_search(struct win *const win, const char *const query, const enum dir dir)
+win_search_bwd(struct win *const win, const char *const query)
 {
 	int ret;
 	size_t idx;
 	size_t pos;
-
-	if (DIR_FWD == dir) {
-		/* Move forward to not collide with previous result */
-		ret = win_mv_right(win, 1);
-		if (-1 == ret)
-			return -1;
-	}
 
 	/* Prepare indexes */
 	idx = win_curr_line_idx(win);
 	pos = win_curr_line_char_idx(win);
 
 	/* Search with accepted query */
-	ret = file_search(win->file, &idx, &pos, query, dir);
+	ret = file_search_bwd(win->file, &idx, &pos, query);
 	if (-1 == ret)
 		return -1;
-	if (1 == ret) {
-		/* Move to begin of line to easily move right to result later */
-		win_mv_to_begin_of_line(win);
+	if (0 == ret)
+		return 0;
 
-		/* Move to result's line */
-		if (DIR_BWD == dir)
-			ret = win_mv_up(win, win_curr_line_idx(win) - idx);
-		else if (DIR_FWD == dir)
-			ret = win_mv_down(win, idx - win_curr_line_idx(win));
-		if (-1 == ret)
-			return -1;
+	/* Move to begin of line to easily move right to result later */
+	win_mv_to_begin_of_line(win);
 
-		/* Move to result on current line */
-		ret = win_mv_right(win, pos);
-		if (-1 == ret)
-			return -1;
-	} else if (DIR_FWD == dir) {
+	/* Move to result's line */
+	ret = win_mv_up(win, win_curr_line_idx(win) - idx);
+	if (-1 == ret)
+		return -1;
+
+	/* Move to result on current line */
+	ret = win_mv_right(win, pos);
+	return ret;
+}
+
+int
+win_search_fwd(struct win *const win, const char *const query)
+{
+	int ret;
+	size_t idx;
+	size_t pos;
+
+	/* Move forward to not collide with previous result */
+	ret = win_mv_right(win, 1);
+	if (-1 == ret)
+		return -1;
+
+	/* Prepare indexes */
+	idx = win_curr_line_idx(win);
+	pos = win_curr_line_char_idx(win);
+
+	/* Search with accepted query */
+	ret = file_search_fwd(win->file, &idx, &pos, query);
+	if (-1 == ret)
+		return -1;
+	if (0 == ret) {
 		/* Move back to start position if no results during forward searching */
 		ret = win_mv_left(win, 1);
-		if (-1 == ret)
-			return -1;
+		return ret;
 	}
-	return 0;
+
+	if (win_curr_line_idx(win) != idx)
+		/* Move to begin of line to easily move right to result on the next line */
+		win_mv_to_begin_of_line(win);
+
+	/* Move to result's line */
+	ret = win_mv_down(win, idx - win_curr_line_idx(win));
+	if (-1 == ret)
+		return -1;
+
+	/* Move to result on current line */
+	ret = win_mv_right(win, pos);
+	return ret;
 }
 
 struct winsize
