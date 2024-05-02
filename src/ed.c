@@ -52,6 +52,20 @@ Returns 0 on success and -1 on error.
 static int ed_del_line(struct ed *);
 
 /*
+Ends drawing area. For example, shows hidden cursor.
+
+Returns 0 on success and -1 on error.
+*/
+int ed_draw_end(struct ed *);
+
+/*
+Starts drawing area. For example, hides the cursor and clears the screen.
+
+Returns 0 on success and -1 on error.
+*/
+int ed_draw_start(struct ed *);
+
+/*
 Draws status on last row.
 
 Returns 0 on success and -1 on error.
@@ -147,6 +161,13 @@ Returns 0 on success or invalid key and -1 on error.
 */
 static int ed_proc_seq_key(struct ed *, const char *, size_t);
 
+/*
+Processes registered signals stored in editor's struct.
+
+Returns 0 on success and -1 on error.
+*/
+static int ed_proc_sig(struct ed *);
+
 /* Determines how many times the next action needs to be repeated. */
 static size_t ed_repeat_times(const struct ed *);
 
@@ -209,12 +230,10 @@ ed_del_char(struct ed *const ed)
 {
 	int ret;
 
-	/* Delete character */
 	ret = win_del_char(ed->win);
 	if (-1 == ret)
 		return -1;
 
-	/* Set quit presses count after file change */
 	ed->quit_presses_rem = CFG_DIRTY_FILE_QUIT_PRESSES_CNT;
 	return 0;
 }
@@ -224,19 +243,15 @@ ed_del_line(struct ed *const ed)
 {
 	int ret;
 
-	/* Try to delete lines or set error message */
 	ret = win_del_line(ed->win, ed_repeat_times(ed));
 	if (0 == ret) {
-		/* Set quit presses count after file change */
 		ed->quit_presses_rem = CFG_DIRTY_FILE_QUIT_PRESSES_CNT;
 		return 0;
 	}
-
-	/* Check if tried to delete last line */
+	/* Check if tried to delete not last line */
 	if (ENOSYS != errno)
 		return -1;
 
-	/* Print message if tried to delete last line */
 	ret = ed_set_msg(ed, "A single line in a file cannot be deleted.");
 	return ret;
 }
@@ -246,46 +261,57 @@ ed_draw(struct ed *const ed)
 {
 	int ret;
 
+	ret = ed_proc_sig(ed);
+	if (-1 == ret)
+		return -1;
+
+	ret = ed_draw_start(ed);
+	if (-1 == ret)
+		return -1;
+	ret = win_draw_lines(ed->win, ed->buf);
+	if (-1 == ret)
+		return -1;
+	ret = ed_draw_stat(ed);
+	if (-1 == ret)
+		return -1;
+	ret = win_draw_cur(ed->win, ed->buf);
+	if (-1 == ret)
+		return -1;
+	ret = ed_draw_end(ed);
+	if (-1 == ret)
+		return -1;
+
+	ret = ed_flush_buf(ed);
+	return ret;
+}
+
+int
+ed_draw_end(struct ed *const ed)
+{
+	int ret;
+
+	/* Show hidden cursor */
+	ret = esc_cur_show(ed->buf);
+	return ret;
+}
+
+int
+ed_draw_start(struct ed *const ed)
+{
+	int ret;
+
 	/* Go to start of window and clear the window */
 	ret = esc_go_home(ed->buf);
 	if (-1 == ret)
 		return -1;
+
+	/* Clears all window for new content */
 	ret = esc_clr_win(ed->buf);
 	if (-1 == ret)
 		return -1;
 
-	/* Check flag to update window size. See signal-safety(7) for more */
-	if (ed->sigwinch) {
-		ed->sigwinch = 0;
-
-		/* Update window size */
-		ret = win_upd_size(ed->win);
-		if (-1 == ret)
-			return ret;
-	}
-
 	/* Hide cursor to not flicker */
 	ret = esc_cur_hide(ed->buf);
-	if (-1 == ret)
-		return -1;
-	/* Draw lines of file */
-	ret = win_draw_lines(ed->win, ed->buf);
-	if (-1 == ret)
-		return -1;
-	/* Draw status */
-	ret = ed_draw_stat(ed);
-	if (-1 == ret)
-		return -1;
-	/* Draw expanded cursor */
-	ret = win_draw_cur(ed->win, ed->buf);
-	if (-1 == ret)
-		return -1;
-	/* Show hidden cursor */
-	ret = esc_cur_show(ed->buf);
-	if (-1 == ret)
-		return -1;
-	/* Flush the buffer to terminal */
-	ret = ed_flush_buf(ed);
 	return ret;
 }
 
@@ -377,17 +403,6 @@ ed_draw_stat(struct ed *const ed)
 	/* End colored output */
 	ret = esc_color_end(ed->buf);
 	return ret;
-}
-
-void
-ed_handle_signal(struct ed *const ed, const int signal)
-{
-	/*
-	Set sigwinch flag to resize later in not async-signal-safe function. See
-	signal-safety(7) for more
-	*/
-	if (SIGWINCH == signal)
-		ed->sigwinch = 1;
 }
 
 static int
@@ -763,6 +778,23 @@ ed_proc_seq_key(struct ed *const ed, const char *const seq, const size_t len)
 	return ret;
 }
 
+static int
+ed_proc_sig(struct ed *const ed)
+{
+	int ret;
+
+	/* Check flag to update window size. See signal-safety(7) for more */
+	if (ed->sigwinch) {
+		ed->sigwinch = 0;
+
+		/* Update window size */
+		ret = win_upd_size(ed->win);
+		if (-1 == ret)
+			return ret;
+	}
+	return 0;
+}
+
 int
 ed_quit(struct ed *const ed)
 {
@@ -794,6 +826,17 @@ ed_quit(struct ed *const ed)
 	/* Free opaque struct */
 	free(ed);
 	return 0;
+}
+
+void
+ed_reg_sig(struct ed *const ed, const int sig)
+{
+	/*
+	Set sigwinch flag to resize later in not async-signal-safe function. See
+	signal-safety(7) for more
+	*/
+	if (SIGWINCH == sig)
+		ed->sigwinch = 1;
 }
 
 static size_t

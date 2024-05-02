@@ -11,9 +11,6 @@ Returns 0 on success and -1 on error.
 */
 int ed_draw(Ed *);
 
-/* Handles signal for editor. */
-void ed_handle_signal(Ed *, int);
-
 /* Determines that we need to quit. */
 char ed_need_to_quit(const Ed *);
 
@@ -31,6 +28,9 @@ Quits opened editor.
 Returns 0 on success and -1 on error.
 */
 int ed_quit(Ed *);
+
+/* Registers passed signal for future processing. */
+void ed_reg_sig(Ed *, int);
 
 /*
 Waits key press and processes it.

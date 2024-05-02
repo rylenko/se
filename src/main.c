@@ -39,7 +39,7 @@ handle_signal(int signal, siginfo_t *info, void *ctx)
 {
 	(void)info;
 	(void)ctx;
-	ed_handle_signal(ed, signal);
+	ed_reg_sig(ed, signal);
 }
 
 static int
@@ -50,12 +50,10 @@ setup_signal_handler(void)
 
 	/* Initialize action */
 	memset(&action, 0, sizeof(action));
-
 	/* Fill with all signals */
 	ret = sigfillset(&action.sa_mask);
 	if (-1 == ret)
 		return -1;
-
 	/* Set handler */
 	action.sa_flags = SA_SIGINFO;
 	action.sa_sigaction = handle_signal;
