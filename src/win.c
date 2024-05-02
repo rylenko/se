@@ -636,7 +636,7 @@ win_open(const char *const path, const int ifd, const int ofd)
 	int ret;
 	struct win *win;
 
-	/* Check opaque struct allocation error. */
+	/* Allocate opaque struct. */
 	win = malloc(sizeof(*win));
 	if (NULL == win)
 		return NULL;

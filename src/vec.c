@@ -51,7 +51,7 @@ vec_alloc(const size_t item_size, const size_t cap_step)
 	if (NULL == vec)
 		return NULL;
 
-	/* Initialize some fields. */
+	/* Initialize the vector. */
 	vec->item_size = item_size;
 	vec->cap_step = cap_step;
 	return vec;
@@ -73,7 +73,7 @@ vec_append_fmt(struct vec *const vec, const char *const fmt, ...)
 	int ret;
 	va_list args;
 
-	/* Collect arguments and insert to the end of vector. */
+	/* Collect and insert arguments to the end of vector. */
 	va_start(args, fmt);
 	ret = vec_ins_fmt_va(vec, vec->len, fmt, args);
 	va_end(args);

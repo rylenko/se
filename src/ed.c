@@ -557,7 +557,7 @@ ed_open(const char *const path, const int ifd, const int ofd)
 		goto err_free_opaque_and_buf;
 
 	/* Set default editting mode. */
-	ed_switch_mode(ed, MODE_NORM);
+	ed->mode = MODE_NORM;
 	/* Set zero length to message. */
 	ed->msg[0] = 0;
 	/* Clear number input. */
