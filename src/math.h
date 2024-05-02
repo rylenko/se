@@ -6,7 +6,10 @@
 #define MIN(x, y) ((x) < (y) ? (x) : (y))
 #define MAX(x, y) ((x) > (y) ? (x) : (y))
 
-/* Max value of `size_t` */
+/*
+ * Max value of `size_t`. Note that unsigned integer overflow is defined
+ * behavior.
+ */
 #define SIZE_MAX ((size_t)(-1))
 
 #endif /* _MATH_H */

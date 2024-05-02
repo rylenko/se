@@ -93,12 +93,12 @@ esc_extr_arrow_key(
 ) {
 	int cmp;
 
-	/* Check length */
+	/* Validate length. */
 	if (3 != len)
 		return -1;
 
 	cmp = strncmp("\x1b[", seq, 2);
-	/* Check prefix and arrow key */
+	/* Validate prefix and arrow key. */
 	if (0 == cmp && ARROW_KEY_UP <= seq[2] && seq[2] <= ARROW_KEY_LEFT) {
 		*key = seq[2];
 		return 0;
@@ -114,12 +114,12 @@ esc_extr_mouse_wh_key(
 ) {
 	int cmp;
 
-	/* Check length */
+	/* Validate length. */
 	if (4 != len)
 		return -1;
 
 	cmp = strncmp("\x1b[M", seq, 3);
-	/* Check prefix and wheel key */
+	/* Validate prefix and wheel key. */
 	if (0 == cmp && MOUSE_WH_KEY_UP <= seq[3] && seq[3] <= MOUSE_WH_KEY_DOWN) {
 		*key = seq[3];
 		return 0;

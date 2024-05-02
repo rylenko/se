@@ -25,13 +25,17 @@
 
 static const char *const usage = "Usage:\n\t$ se <filename>";
 
-/* Handle editor signals. */
+/*
+ * Editor signals handler.
+ */
 static void handle_signal(int, siginfo_t *, void *);
 
-/* Setups signal handler for the editor. */
+/*
+ * Setups signal handler for the editor.
+ */
 static int setup_signal_handler(void);
 
-/* Global editor variable, which used all the time */
+/* Global editor variable, which used all the time. */
 static Ed *ed;
 
 static void
@@ -48,17 +52,17 @@ setup_signal_handler(void)
 	int ret;
 	struct sigaction action;
 
-	/* Initialize action */
+	/* Initialize action. */
 	memset(&action, 0, sizeof(action));
-	/* Fill with all signals */
+	/* Fill with all signals. */
 	ret = sigfillset(&action.sa_mask);
 	if (-1 == ret)
 		return -1;
-	/* Set handler */
+	/* Set handler. */
 	action.sa_flags = SA_SIGINFO;
 	action.sa_sigaction = handle_signal;
 
-	/* Register signals */
+	/* Register signals. */
 	ret = sigaction(SIGWINCH, &action, NULL);
 	return ret;
 }
@@ -68,34 +72,34 @@ main(const int argc, const char *const *const argv)
 {
 	int ret;
 
-	/* Check filename in arguments */
+	/* Check filename in arguments. */
 	if (argc != 2)
 		errx(EXIT_FAILURE, usage);
 
-	/* Setup signal handler */
+	/* Setup signal handler. */
 	ret = setup_signal_handler();
 	if (-1 == ret)
 		err(EXIT_FAILURE, "Failed to setup signal handler");
 
-	/* Opens file in the editor */
+	/* Opens file in the editor. */
 	ed = ed_open(argv[1], STDIN_FILENO, STDOUT_FILENO);
 	if (NULL == ed)
 		err(EXIT_FAILURE, "Failed to open the editor");
 
-	/* Main event loop */
+	/* Main event loop. */
 	while (!ed_need_to_quit(ed)) {
-		/* Draws editor's content on the screen */
+		/* Draws editor's content on the screen. */
 		ret = ed_draw(ed);
 		if (-1 == ret)
 			err(EXIT_FAILURE, "Failed to draw");
 
-		/* Wait and process key presses */
+		/* Wait and process key presses. */
 		ret = ed_wait_and_proc_key(ed);
 		if (-1 == ret)
 			err(EXIT_FAILURE, "Failed to wait and process key");
 	}
 
-	/* Quit the editor */
+	/* Quit the editor. */
 	ret = ed_quit(ed);
 	if (-1 == ret)
 		err(EXIT_FAILURE, "Failed to quit the editor");

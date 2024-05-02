@@ -4,14 +4,18 @@
 #include <unistd.h>
 #include "term.h"
 
-/* Structure for controlling input and output */
+/*
+ * Structure for controlling input and output.
+ */
 struct {
-	int ifd; /* Input file descriptor. Usually stdin */
-	int ofd; /* Output file descriptor. Usually stdout */
-	struct termios orig_termios; /* Original termios before raw mode enabling */
+	int ifd; /* Input file descriptor. Usually stdin. */
+	int ofd; /* Output file descriptor. Usually stdout. */
+	struct termios orig_termios; /* Original termios before raw mode enabling. */
 } term;
 
-/* Sets raw mode parameters to termios instance. */
+/*
+ * Sets raw mode parameters to termios instance.
+ */
 static void term_set_raw_mode_params(struct termios *);
 
 int
@@ -19,7 +23,7 @@ term_deinit(void)
 {
 	int ret;
 
-	/* Restore original termios parameters to disable raw mode */
+	/* Restore original termios parameters to disable raw mode. */
 	ret = tcsetattr(term.ifd, TCSANOW, &term.orig_termios);
 	return ret;
 }
@@ -30,9 +34,9 @@ term_get_win_size(struct winsize *const win_size)
 	int ret;
 
 	/*
-	Get window size using file descriptor. Remember that `ioctl` can return
-	non-zero on success
-	*/
+	 * Get window size using file descriptor. Remember that `ioctl` can return
+	 * non-zero on success.
+	 */
 	ret = ioctl(term.ofd, TIOCGWINSZ, win_size);
 	if (-1 == ret)
 		return -1;
@@ -45,25 +49,25 @@ term_init(const int ifd, const int ofd)
 	int ret;
 	struct termios raw_termios;
 
-	/* Set file descriptors */
+	/* Set file descriptors. */
 	term.ifd = ifd;
 	term.ofd = ofd;
 
-	/* Save the original termios parameters */
+	/* Save the original termios parameters. */
 	ret = tcgetattr(ifd, &term.orig_termios);
 	if (-1 == ret)
 		return -1;
 
-	/* Set terminal deinitializer on exit */
+	/* Set terminal deinitializer on exit. */
 	ret = atexit((void (*)(void))term_deinit);
 	if (0 != ret)
 		return -1;
 
-	/* Set raw mode parameters */
+	/* Set raw mode parameters. */
 	raw_termios = term.orig_termios;
 	term_set_raw_mode_params(&raw_termios);
 
-	/* Enable raw mode with new parameters */
+	/* Enable raw mode with new parameters. */
 	ret = tcsetattr(term.ifd, TCSANOW, &raw_termios);
 	return ret;
 }
@@ -85,15 +89,15 @@ term_wait_key(char *const seq, const size_t len)
 {
 	ssize_t readed;
 
-	/* Read input up to specified length */
+	/* Read input up to specified length. */
 	readed = read(term.ifd, seq, len);
 	/*
-	We ignore the system call interruption that can occur when the window size is
-	changed, for example, in xterm.
-	*/
+	 * We ignore the system call interruption that can occur when the window size
+	 * is changed, for example, in xterm.
+	 */
 	if (-1 == readed && errno != EINTR)
 		return 0;
-	/* It's ok to return signed because of error check before */
+	/* It's ok to return signed because of error check before. */
 	return readed;
 }
 
@@ -102,7 +106,7 @@ term_write(const char *const buf, const size_t len)
 {
 	ssize_t written;
 
-	/* Write buffer with accepted length */
+	/* Write buffer with accepted length. */
 	written = write(term.ofd, buf, len);
 	return written;
 }

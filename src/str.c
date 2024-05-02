@@ -8,12 +8,12 @@ str_copy(const char *const str, const size_t len)
 {
 	char *copy;
 
-	/* Allocate memory. Do not forget about null byte */
+	/* Allocate memory. Do not forget about null byte. */
 	copy = malloc(len + 1);
 	if (NULL == copy)
 		return NULL;
 
-	/* Copy memory. Do not forget about null byte */
+	/* Copy memory. Do not forget about null byte. */
 	copy[len] = 0;
 	return memcpy(copy, str, len);
 }

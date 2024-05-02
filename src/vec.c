@@ -7,36 +7,38 @@
 #include "math.h"
 #include "vec.h"
 
-/* Dynamic vector with capacity reallocation step. */
+/*
+ * Dynamic vector with capacity reallocation step.
+ */
 struct vec {
-	char *items; /* Pointer to the beginning of dynamic array with items  */
-	size_t item_size; /* Size of item in dynamic array */
-	size_t len; /* Length of dynamic array */
-	size_t cap; /* Capacity of dynamic array */
-	size_t cap_step; /* Step of growing and shrinking of dynamic array */
+	char *items; /* Pointer to the beginning of dynamic array with items . */
+	size_t item_size; /* Size of item in dynamic array. */
+	size_t len; /* Length of dynamic array. */
+	size_t cap; /* Capacity of dynamic array. */
+	size_t cap_step; /* Step of growing and shrinking of dynamic array. */
 };
 
 /*
-Grows vector's capacity for new length if needed.
-
-Returns 0 on success and -1 on error.
-*/
+ * Grows vector's capacity for new length if needed.
+ *
+ * Returns 0 on success and -1 on error.
+ */
 static int vec_grow_if_needed(struct vec *, size_t);
 
 /*
-Reallocates vector with new capacity.
-
-Returns 0 on success and -1 on error.
-*/
+ * Reallocates vector with new capacity.
+ *
+ * Returns 0 on success and -1 on error.
+ */
 static int vec_realloc(struct vec *, size_t);
 
 /*
-Like default inserting function, but with formatting using variadic list.
-
-Returns 0 on success and -1 on error.
-
-Sets `ENOSUP` if vector does not stores characters.
-*/
+ * Like default inserting function, but with formatting using variadic list.
+ *
+ * Returns 0 on success and -1 on error.
+ *
+ * Sets `ENOSUP` if vector does not stores characters.
+ */
 static int vec_ins_fmt_va(struct vec *, size_t, const char *, va_list);
 
 struct vec*
@@ -44,12 +46,12 @@ vec_alloc(const size_t item_size, const size_t cap_step)
 {
 	struct vec *vec;
 
-	/* Allocate opaque struct */
+	/* Allocate opaque struct. */
 	vec = calloc(1, sizeof(*vec));
 	if (NULL == vec)
 		return NULL;
 
-	/* Initialize some fields */
+	/* Initialize some fields. */
 	vec->item_size = item_size;
 	vec->cap_step = cap_step;
 	return vec;
@@ -60,7 +62,7 @@ vec_append(struct vec *const vec, const void *const items, const size_t len)
 {
 	int ret;
 
-	/* Insert to the end of vector */
+	/* Insert to the end of vector. */
 	ret = vec_ins(vec, vec->len, items, len);
 	return ret;
 }
@@ -71,7 +73,7 @@ vec_append_fmt(struct vec *const vec, const char *const fmt, ...)
 	int ret;
 	va_list args;
 
-	/* Collect arguments and insert to the end of vector */
+	/* Collect arguments and insert to the end of vector. */
 	va_start(args, fmt);
 	ret = vec_ins_fmt_va(vec, vec->len, fmt, args);
 	va_end(args);
@@ -87,7 +89,7 @@ vec_cap(const struct vec *const vec)
 void*
 vec_get(const struct vec *const vec, const size_t idx)
 {
-	/* Validate index */
+	/* Validate index. */
 	if (idx >= vec->len) {
 		errno = EINVAL;
 		return NULL;
@@ -101,14 +103,14 @@ vec_grow_if_needed(struct vec *const vec, const size_t new_len)
 	int ret;
 	size_t new_cap;
 
-	/* No need to grow */
+	/* No need to grow. */
 	if (new_len <= vec->cap)
 		return 0;
 
-	/* Get optimal new capacity */
+	/* Get optimal new capacity. */
 	new_cap = MAX(vec->cap + vec->cap_step, new_len);
 
-	/* Grow with new capacity */
+	/* Grow with new capacity. */
 	ret = vec_realloc(vec, new_cap);
 	return ret;
 }
@@ -122,18 +124,18 @@ vec_ins(
 ) {
 	int ret;
 
-	/* Validate index */
+	/* Validate index. */
 	if (idx > vec->len) {
 		errno = EINVAL;
 		return -1;
 	}
 
-	/* Grow if there is no space for new items */
+	/* Grow if there is no space for new items. */
 	ret = vec_grow_if_needed(vec, vec->len + len);
 	if (-1 == ret)
 		return -1;
 
-	/* Reserve space for new items */
+	/* Reserve space for new items. */
 	memmove(
 		&vec->items[(idx + len) * vec->item_size],
 		&vec->items[idx * vec->item_size],
@@ -141,7 +143,7 @@ vec_ins(
 	);
 	vec->len += len;
 
-	/* Copy new item to memory */
+	/* Copy new item to memory. */
 	memcpy(&vec->items[idx * vec->item_size], items, len * vec->item_size);
 	return 0;
 }
@@ -156,7 +158,7 @@ vec_ins_fmt(
 	int ret;
 	va_list args;
 
-	/* Collect arguments and use inner function */
+	/* Collect arguments and use inner function. */
 	va_start(args, fmt);
 	ret = vec_ins_fmt_va(vec, idx, fmt, args);
 	va_end(args);
@@ -174,18 +176,18 @@ vec_ins_fmt_va(
 	int ret;
 	char buf[256];
 
-	/* Check that vector stores characters */
+	/* Check that vector stores characters. */
 	if (sizeof(char) != vec->item_size) {
 		errno = ENOTSUP;
 		return -1;
 	}
 
-	/* Format arguments */
+	/* Format arguments. */
 	len = vsnprintf(buf, sizeof(buf), fmt, args);
 	if (len < 0 || (size_t)len >= sizeof(buf))
 		return -1;
 
-	/* Insert formatted data to the vector */
+	/* Insert formatted data to the vector. */
 	ret = vec_ins(vec, idx, buf, len);
 	if (-1 == ret)
 		return -1;
@@ -214,7 +216,7 @@ vec_len(const struct vec *const vec)
 static int
 vec_realloc(struct vec *const vec, const size_t new_cap)
 {
-	/* Reallocate items and update the capacity */
+	/* Reallocate items and update the capacity. */
 	vec->cap = new_cap;
 	vec->items = realloc(vec->items, new_cap * vec->item_size);
 	return NULL == vec->items ? -1 : 0;
@@ -225,24 +227,24 @@ vec_remove(struct vec *const vec, const size_t idx, void *const item)
 {
 	int ret;
 
-	/* Validate index */
+	/* Validate index. */
 	if (idx >= vec->len) {
 		errno = EINVAL;
 		return -1;
 	}
 
-	/* Write removed item to accepted pointer */
+	/* Write removed item to accepted pointer. */
 	if (NULL != item)
 		memcpy(item, &vec->items[idx * vec->item_size], vec->item_size);
 
-	/* Move items left to overlap bytes */
+	/* Move items left to overlap bytes. */
 	memmove(
 		&vec->items[idx * vec->item_size],
 		&vec->items[(idx + 1) * vec->item_size],
 		(--vec->len - idx) * vec->item_size
 	);
 
-	/* Shrink vector if there is too much free space */
+	/* Shrink vector if there is too much free space. */
 	ret = vec_shrink_if_needed(vec);
 	return ret;
 }
@@ -250,7 +252,7 @@ vec_remove(struct vec *const vec, const size_t idx, void *const item)
 int
 vec_set_len(struct vec *const vec, const size_t len)
 {
-	/* Validate new length */
+	/* Validate new length. */
 	if (len > vec->cap) {
 		errno = EINVAL;
 		return -1;
@@ -265,7 +267,7 @@ vec_shrink_if_needed(struct vec *const vec)
 {
 	int ret;
 
-	/* Free allocated items if vector is empty */
+	/* Free allocated items if vector is empty. */
 	if (0 == vec->len && vec->cap > 0) {
 		free(vec->items);
 		vec->items = NULL;
@@ -273,7 +275,7 @@ vec_shrink_if_needed(struct vec *const vec)
 		return 0;
 	}
 
-	/* Check there is not enough unused space to shrink */
+	/* Check there is not enough unused space to shrink. */
 	if (vec->len + vec->cap_step > vec->cap)
 		return 0;
 
