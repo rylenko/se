@@ -226,12 +226,10 @@ ed_break_line(struct ed *const ed)
 {
 	int ret;
 
-	/* Break line. */
 	ret = win_break_line(ed->win);
 	if (-1 == ret)
 		return -1;
 
-	/* Set quit presses count after file change. */
 	ed->quit_presses_rem = CFG_DIRTY_FILE_QUIT_PRESSES_CNT;
 	return 0;
 }
@@ -468,12 +466,10 @@ ed_ins_char(struct ed *const ed, const char ch)
 	if (!isprint(ch) && '\t' != ch)
 		return 0;
 
-	/* Insert character to window. */
 	ret = win_ins_char(ed->win, ch);
 	if (-1 == ret)
 		return -1;
 
-	/* Set quit presses count after file change. */
 	ed->quit_presses_rem = CFG_DIRTY_FILE_QUIT_PRESSES_CNT;
 	return 0;
 }
@@ -483,15 +479,12 @@ ed_ins_empty_line_below(struct ed *const ed)
 {
 	int ret;
 
-	/* Insert empty lines. */
 	ret = win_ins_empty_line_below(ed->win, ed_repeat_times(ed));
 	if (-1 == ret)
 		return -1;
 
-	/* Set quit presses count after file change. */
-	ed->quit_presses_rem = CFG_DIRTY_FILE_QUIT_PRESSES_CNT;
-	/* Switch mode for comfort. */
 	ed_switch_mode(ed, MODE_INS);
+	ed->quit_presses_rem = CFG_DIRTY_FILE_QUIT_PRESSES_CNT;
 	return 0;
 }
 
@@ -500,15 +493,12 @@ ed_ins_empty_line_on_top(struct ed *const ed)
 {
 	int ret;
 
-	/* Insert empty lines. */
 	ret = win_ins_empty_line_on_top(ed->win, ed_repeat_times(ed));
 	if (-1 == ret)
 		return -1;
 
-	/* Set quit presses count after file change. */
-	ed->quit_presses_rem = CFG_DIRTY_FILE_QUIT_PRESSES_CNT;
-	/* Switch mode for comfort. */
 	ed_switch_mode(ed, MODE_INS);
+	ed->quit_presses_rem = CFG_DIRTY_FILE_QUIT_PRESSES_CNT;
 	return 0;
 }
 
@@ -529,8 +519,6 @@ ed_on_quit_press(struct ed *const ed)
 
 	/* Decrease remaining quit presses. */
 	ed->quit_presses_rem--;
-
-	/* Set message with remaining count. */
 	ret = ed_set_msg(ed, "Not saved. Presses: %hhu.", ed->quit_presses_rem);
 	return ret;
 }
@@ -556,17 +544,12 @@ ed_open(const char *const path, const int ifd, const int ofd)
 	if (NULL == ed->win)
 		goto err_free_opaque_and_buf;
 
-	/* Set default editting mode. */
+	/* Initialize other values */
 	ed->mode = MODE_NORM;
-	/* Set zero length to message. */
 	ed->msg[0] = 0;
-	/* Clear number input. */
 	ed_num_input_clr(ed);
-	/* Clear search input. */
 	ed_search_input_clr(ed);
-	/* File is not dirty by default so we may quit using one key press. */
 	ed->quit_presses_rem = 1;
-	/* Set signal default values. */
 	ed->sigwinch = 0;
 
 	/* Enable alternate screen. It will be set during first drawing. */
@@ -656,7 +639,7 @@ ed_proc_mouse_wh_key(
 		return 0;
 	}
 
-	/* Process. */
+	/* Process key. */
 	switch (key) {
 	case MOUSE_WH_KEY_UP:
 		ret = win_mv_up(ed->win, ed_repeat_times(ed));
@@ -868,13 +851,10 @@ ed_save_file(struct ed *const ed)
 
 	/* Save file. */
 	len = win_save_file(ed->win);
-
-	/* Check save failed. */
 	if (0 == len) {
 		ed_set_msg(ed, "Failed to save: %s.", strerror(errno));
 	} else {
 		ed_set_msg(ed, "%zu bytes saved.", len);
-		/* Update quit presses. */
 		ed->quit_presses_rem = 1;
 	}
 }
@@ -893,7 +873,6 @@ ed_save_file_to_spare_dir(struct ed *const ed)
 	}
 
 	ed_set_msg(ed, "%zu bytes saved to %s.", len, path);
-	/* Update quit presses. */
 	ed->quit_presses_rem = 1;
 }
 
@@ -934,9 +913,9 @@ static int
 ed_set_msg(struct ed *const ed, const char *const fmt, ...)
 {
 	int ret;
+	va_list args;
 
 	/* Collect arguments. */
-	va_list args;
 	va_start(args, fmt);
 
 	/* Format message string. */

@@ -6,7 +6,7 @@
 #include "vec.h"
 
 /*
- * Alias for opaque struct with window parameters.
+ * Opaque struct with window parameters.
  */
 typedef struct win Win;
 

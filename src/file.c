@@ -425,7 +425,7 @@ file_open(const char *const path)
 	FILE *inner_file;
 	struct file *file;
 
-	/* Check opaque struct allocation error. */
+	/* Allodate opaque struct. */
 	file = file_alloc(path);
 	if (NULL == file)
 		return NULL;

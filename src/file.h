@@ -3,7 +3,7 @@
 
 #include <stddef.h>
 
-/* Alias for opaque struct of opened file. */
+/* Opaque struct of opened file. */
 typedef struct file File;
 
 /*
