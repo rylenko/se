@@ -38,7 +38,7 @@ struct offset {
  * Position parameters may differ from real ones due to tabs expansion.
  */
 struct win {
-	File *file; /* Opened file. */
+	struct file *file; /* Opened file. */
 	struct offset offset; /* offset of view/file. Tab's width is 1. */
 	struct cur cur; /* Pointer to the viewed char. Tab's width is 1. */
 	struct winsize size; /* Terminal window size. */
@@ -49,7 +49,7 @@ struct win {
  *
  * Returns 0 on success and -1 on error.
  */
-static int win_draw_line(const struct win *, Vec *, unsigned short);
+static int win_draw_line(const struct win *, struct vec *, unsigned short);
 
 /*
  * Gets the count of characters by which the part of line is expanded using
@@ -184,7 +184,7 @@ win_del_line(struct win *const win, size_t times)
 }
 
 int
-win_draw_cur(const struct win *const win, Vec *const buf)
+win_draw_cur(const struct win *const win, struct vec *const buf)
 {
 	int ret;
 	struct pub_line line;
@@ -208,7 +208,7 @@ win_draw_cur(const struct win *const win, Vec *const buf)
 static int
 win_draw_line(
 	const struct win *const win,
-	Vec *const buf,
+	struct vec *const buf,
 	const unsigned short row
 ) {
 	int ret;
@@ -247,7 +247,7 @@ win_draw_line(
 }
 
 int
-win_draw_lines(const struct win *const win, Vec *const buf)
+win_draw_lines(const struct win *const win, struct vec *const buf)
 {
 	int ret;
 	unsigned short row;

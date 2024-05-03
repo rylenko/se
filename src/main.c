@@ -35,7 +35,7 @@ static void handle_signal(int, siginfo_t *, void *);
 static int setup_signal_handler(void);
 
 /* Global editor variable, which used all the time. */
-static Ed *ed;
+static struct ed *ed;
 
 static void
 handle_signal(int signal, siginfo_t *info, void *ctx)

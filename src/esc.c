@@ -5,7 +5,7 @@
 #include "vec.h"
 
 int
-esc_alt_scr_on(Vec *const buf)
+esc_alt_scr_on(struct vec *const buf)
 {
 	int ret;
 
@@ -14,7 +14,7 @@ esc_alt_scr_on(Vec *const buf)
 }
 
 int
-esc_alt_scr_off(Vec *const buf)
+esc_alt_scr_off(struct vec *const buf)
 {
 	int ret;
 
@@ -23,7 +23,7 @@ esc_alt_scr_off(Vec *const buf)
 }
 
 int
-esc_clr_win(Vec *const buf)
+esc_clr_win(struct vec *const buf)
 {
 	int ret;
 
@@ -32,7 +32,7 @@ esc_clr_win(Vec *const buf)
 }
 
 int
-esc_color_bg(Vec *const buf, const struct color c)
+esc_color_bg(struct vec *const buf, const struct color c)
 {
 	int ret;
 
@@ -41,7 +41,7 @@ esc_color_bg(Vec *const buf, const struct color c)
 }
 
 int
-esc_color_fg(Vec *const buf, const struct color c)
+esc_color_fg(struct vec *const buf, const struct color c)
 {
 	int ret;
 
@@ -50,7 +50,7 @@ esc_color_fg(Vec *const buf, const struct color c)
 }
 
 int
-esc_color_end(Vec *const buf)
+esc_color_end(struct vec *const buf)
 {
 	int ret;
 
@@ -59,7 +59,7 @@ esc_color_end(Vec *const buf)
 }
 
 int
-esc_cur_hide(Vec *const buf)
+esc_cur_hide(struct vec *const buf)
 {
 	int ret;
 
@@ -68,7 +68,7 @@ esc_cur_hide(Vec *const buf)
 }
 
 int
-esc_cur_set(Vec *const buf, const unsigned short row, const unsigned short col)
+esc_cur_set(struct vec *const buf, const unsigned short row, const unsigned short col)
 {
 	int ret;
 
@@ -77,7 +77,7 @@ esc_cur_set(Vec *const buf, const unsigned short row, const unsigned short col)
 }
 
 int
-esc_cur_show(Vec *const buf)
+esc_cur_show(struct vec *const buf)
 {
 	int ret;
 
@@ -128,7 +128,7 @@ esc_extr_mouse_wh_key(
 }
 
 int
-esc_go_home(Vec *const buf)
+esc_go_home(struct vec *const buf)
 {
 	int ret;
 
@@ -137,7 +137,7 @@ esc_go_home(Vec *const buf)
 }
 
 int
-esc_mouse_wh_track_off(Vec *const buf)
+esc_mouse_wh_track_off(struct vec *const buf)
 {
 	int ret;
 
@@ -146,7 +146,7 @@ esc_mouse_wh_track_off(Vec *const buf)
 }
 
 int
-esc_mouse_wh_track_on(Vec *const buf)
+esc_mouse_wh_track_on(struct vec *const buf)
 {
 	int ret;
 

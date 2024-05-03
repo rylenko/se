@@ -19,7 +19,7 @@ enum {
  * Line of the opened file.
  */
 struct line {
-	Vec *chars; /* Raw content of the line. Does not contain '\n' or '\0'. */
+	struct vec *chars; /* Raw content. Does not contain '\n' or '\0'. */
 	char *render; /* Rendered version of the content. */
 	size_t render_len; /* Length of rendered content. */
 };
@@ -30,7 +30,7 @@ struct line {
 struct file {
 	char *path; /* Path of readed file. This is where the default save occurs. */
 	char is_dirty; /* If set, then the file has unsaved changes. */
-	Vec *lines; /* lines of file. There is always at least one line. */
+	struct vec *lines; /* lines of file. There is always at least one line. */
 };
 
 /*

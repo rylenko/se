@@ -20,8 +20,8 @@
  * Editor options.
  */
 struct ed {
-	Vec *buf; /* Buffer for all drawn content. */
-	Win *win; /* Info about terminal's view. This is what the user sees. */
+	struct vec *buf; /* Buffer for all drawn content. */
+	struct win *win; /* Info about terminal's view. This is what the user sees. */
 	enum mode mode; /* Input mode. */
 	char msg[64]; /* Message for the user. */
 	size_t num_input; /* Number input. 0 if not set. */
@@ -100,6 +100,23 @@ static int ed_ins_empty_line_below(struct ed *);
  * Returns 0 on success and -1 on error.
  */
 static int ed_ins_empty_line_on_top(struct ed *);
+
+/*
+ * Clears the message.
+ */
+static void ed_msg_clr(struct ed *);
+
+/*
+ * Checks that the message is empty.
+ */
+static char ed_msg_is_empty(const struct ed *);
+
+/*
+ * Sets formatted message to the user.
+ *
+ * Returns 0 on success and -1 on error.
+ */
+static int ed_msg_set(struct ed *, const char *, ...);
 
 /*
  * Writes digit to the number input. Clears if overflows.
@@ -210,13 +227,6 @@ static void ed_search_input_clr(struct ed *);
 static void ed_search_input_del_char(struct ed *);
 
 /*
- * Sets formatted message to the user.
- *
- * Returns 0 on success and -1 on error.
- */
-static int ed_set_msg(struct ed *, const char *, ...);
-
-/*
  * Switches editor to passed mode.
  */
 static void ed_switch_mode(struct ed *, enum mode);
@@ -261,7 +271,7 @@ ed_del_line(struct ed *const ed)
 	if (ENOSYS != errno)
 		return -1;
 
-	ret = ed_set_msg(ed, "A single line in a file cannot be deleted.");
+	ret = ed_msg_set(ed, "A single line in a file cannot be deleted.");
 	return ret;
 }
 
@@ -366,7 +376,7 @@ ed_draw_stat(struct ed *const ed)
 	}
 
 	/* Draw message if set. */
-	if (ed->msg[0] != 0) {
+	if (!ed_msg_is_empty(ed)) {
 		/* Draw message. */
 		ret = vec_append_fmt(ed->buf, ": %s", ed->msg);
 		if (-1 == ret)
@@ -374,7 +384,7 @@ ed_draw_stat(struct ed *const ed)
 		l_len += ret;
 
 		/* Reset message to do not draw on the next draw. */
-		ed->msg[0] = 0;
+		ed_msg_clr(ed);
 	}
 
 	/* Prepare length and formatted string for the right part. */
@@ -502,6 +512,37 @@ ed_ins_empty_line_on_top(struct ed *const ed)
 	return 0;
 }
 
+static void
+ed_msg_clr(struct ed *const ed)
+{
+	ed->msg[0] = 0;
+}
+
+static char
+ed_msg_is_empty(const struct ed *const ed)
+{
+	return 0 == ed->msg[0];
+}
+
+static int
+ed_msg_set(struct ed *const ed, const char *const fmt, ...)
+{
+	int ret;
+	va_list args;
+
+	/* Collect arguments. */
+	va_start(args, fmt);
+
+	/* Format message string. */
+	ret = vsnprintf(ed->msg, sizeof(ed->msg), fmt, args);
+	if (ret < 0 || (size_t)ret >= sizeof(ed->msg))
+		return -1;
+
+	/* Free collected arguments. */
+	va_end(args);
+	return 0;
+}
+
 char
 ed_need_to_quit(const struct ed *const ed)
 {
@@ -519,7 +560,7 @@ ed_on_quit_press(struct ed *const ed)
 
 	/* Decrease remaining quit presses. */
 	ed->quit_presses_rem--;
-	ret = ed_set_msg(ed, "Not saved. Presses: %hhu.", ed->quit_presses_rem);
+	ret = ed_msg_set(ed, "Not saved. Presses: %hhu.", ed->quit_presses_rem);
 	return ret;
 }
 
@@ -546,7 +587,7 @@ ed_open(const char *const path, const int ifd, const int ofd)
 
 	/* Initialize other values */
 	ed->mode = MODE_NORM;
-	ed->msg[0] = 0;
+	ed_msg_clr(ed);
 	ed_num_input_clr(ed);
 	ed_search_input_clr(ed);
 	ed->quit_presses_rem = 1;
@@ -852,9 +893,9 @@ ed_save_file(struct ed *const ed)
 	/* Save file. */
 	len = win_save_file(ed->win);
 	if (0 == len) {
-		ed_set_msg(ed, "Failed to save: %s.", strerror(errno));
+		ed_msg_set(ed, "Failed to save: %s.", strerror(errno));
 	} else {
-		ed_set_msg(ed, "%zu bytes saved.", len);
+		ed_msg_set(ed, "%zu bytes saved.", len);
 		ed->quit_presses_rem = 1;
 	}
 }
@@ -868,11 +909,11 @@ ed_save_file_to_spare_dir(struct ed *const ed)
 	/* Save file to the spare dir. */
 	len = win_save_file_to_spare_dir(ed->win, path, sizeof(path));
 	if (0 == len) {
-		ed_set_msg(ed, "Failed to save: %s.", strerror(errno));
+		ed_msg_set(ed, "Failed to save: %s.", strerror(errno));
 		return;
 	}
 
-	ed_set_msg(ed, "%zu bytes saved to %s.", len, path);
+	ed_msg_set(ed, "%zu bytes saved to %s.", len, path);
 	ed->quit_presses_rem = 1;
 }
 
@@ -907,25 +948,6 @@ ed_search_input_del_char(struct ed *const ed)
 	/* Delete last character in the input if exists. */
 	if (ed->search_input_len > 0)
 		ed->search_input[--ed->search_input_len] = 0;
-}
-
-static int
-ed_set_msg(struct ed *const ed, const char *const fmt, ...)
-{
-	int ret;
-	va_list args;
-
-	/* Collect arguments. */
-	va_start(args, fmt);
-
-	/* Format message string. */
-	ret = vsnprintf(ed->msg, sizeof(ed->msg), fmt, args);
-	if (ret < 0 || (size_t)ret >= sizeof(ed->msg))
-		return -1;
-
-	/* Free collected arguments. */
-	va_end(args);
-	return 0;
 }
 
 static void

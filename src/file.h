@@ -4,7 +4,7 @@
 #include <stddef.h>
 
 /* Opaque struct of opened file. */
-typedef struct file File;
+struct file;
 
 /*
  * Read only line data. Use functions to modify a string instead of modifying
@@ -24,7 +24,7 @@ struct pub_line {
  *
  * Sets `EINVAL` if current or next lines not found.
  */
-int file_absorb_next_line(File *, size_t);
+int file_absorb_next_line(struct file *, size_t);
 
 /*
  * Finds line by its index and breaks it at passed position.
@@ -33,12 +33,12 @@ int file_absorb_next_line(File *, size_t);
  *
  * Sets `EINVAL` if line not found.
  */
-int file_break_line(File *, size_t, size_t);
+int file_break_line(struct file *, size_t, size_t);
 
 /*
  * Closes file and frees memory.
  */
-void file_close(File *);
+void file_close(struct file *);
 
 /*
  * Deletes character in file's line at passed position.
@@ -47,7 +47,7 @@ void file_close(File *);
  *
  * Sets `EINVAL` if line or character not found.
  */
-int file_del_char(File *, size_t, size_t);
+int file_del_char(struct file *, size_t, size_t);
 
 /*
  * Deletes line by its index.
@@ -57,7 +57,7 @@ int file_del_char(File *, size_t, size_t);
  * Sets `EINVAL` if index is invalid or `ENOSYS` if there is one last line left
  * that cannot be deleted.
  */
-int file_del_line(File *, size_t);
+int file_del_line(struct file *, size_t);
 
 /*
  * Inserts character to the file's line at passed position.
@@ -66,7 +66,7 @@ int file_del_line(File *, size_t);
  *
  * Sets `EINVAL` if line not found or insertion position is invalid.
  */
-int file_ins_char(File *, size_t, size_t, char);
+int file_ins_char(struct file *, size_t, size_t, char);
 
 /*
  * Inserts empty line at index.
@@ -75,12 +75,12 @@ int file_ins_char(File *, size_t, size_t, char);
  *
  * Sets `EINVAL` if passed index is invalid.
  */
-int file_ins_empty_line(File *, size_t);
+int file_ins_empty_line(struct file *, size_t);
 
 /*
  * Checks that file is dirty.
  */
-char file_is_dirty(const File *);
+char file_is_dirty(const struct file *);
 
 /*
  * Finds line by passed index and returns its data.
@@ -89,12 +89,12 @@ char file_is_dirty(const File *);
  *
  * Sets `EINVAL` if index is invalid.
  */
-int file_line(const File *, size_t, struct pub_line *);
+int file_line(const struct file *, size_t, struct pub_line *);
 
 /*
  * Returns lines count of opened file.
  */
-size_t file_lines_cnt(const File *);
+size_t file_lines_cnt(const struct file *);
 
 /*
  * Reads the contents of file. Adds an empty line if there are no lines in the
@@ -102,12 +102,12 @@ size_t file_lines_cnt(const File *);
  *
  * Returns pointer to opaque struct on success or `NULL` on error.
  */
-File *file_open(const char *);
+struct file *file_open(const char *);
 
 /*
  * Gets path of opened file.
  */
-const char *file_path(const File *);
+const char *file_path(const struct file *);
 
 /*
  * Saves file to passed path. Saves to opened file's path if argument is
@@ -115,7 +115,7 @@ const char *file_path(const File *);
  *
  * Returns written bytes count and 0 on error.
  */
-size_t file_save(File *, const char *);
+size_t file_save(struct file *, const char *);
 
 /*
  * Saves file to spare directory with generated path. Useful if no privileges.
@@ -125,7 +125,7 @@ size_t file_save(File *, const char *);
  *
  * Returns written bytes count on success and 0 on error.
  */
-size_t file_save_to_spare_dir(File *, char *, size_t);
+size_t file_save_to_spare_dir(struct file *, char *, size_t);
 
 /*
  * Searches backward from passed position to start of file.
@@ -134,7 +134,7 @@ size_t file_save_to_spare_dir(File *, char *, size_t);
  *
  * Sets `EINVAL` if index or position is invalid.
  */
-int file_search_bwd(const File *, size_t *, size_t *, const char *);
+int file_search_bwd(const struct file *, size_t *, size_t *, const char *);
 
 /*
  * Searches forward from passed position to end of file.
@@ -143,6 +143,6 @@ int file_search_bwd(const File *, size_t *, size_t *, const char *);
  *
  * Sets `EINVAL` if index or position is invalid.
  */
-int file_search_fwd(const File *, size_t *, size_t *, const char *);
+int file_search_fwd(const struct file *, size_t *, size_t *, const char *);
 
 #endif /* _FILE_H */
