@@ -57,14 +57,14 @@ static int ed_del_line(struct ed *);
  *
  * Returns 0 on success and -1 on error.
  */
-int ed_draw_end(struct ed *);
+static int ed_draw_end(struct ed *);
 
 /*
  * Starts drawing area. For example, hides the cursor and clears the screen.
  *
  * Returns 0 on success and -1 on error.
  */
-int ed_draw_start(struct ed *);
+static int ed_draw_start(struct ed *);
 
 /*
  * Draws status on last row.
@@ -196,16 +196,20 @@ static size_t ed_repeat_times(const struct ed *);
 /*
  * Saves opened file.
  *
- * Sets error message in the editor instead of exit with not saved content.
+ * Writes message in the editor if save failed instead of returning -1.
+ *
+ * Returns 0 on success and -1 on error.
  */
-static void ed_save_file(struct ed *);
+static int ed_save_file(struct ed *);
 
 /*
  * Saves opened file to spare dir. Useful if no privileges.
  *
- * Sets error message in the editor instead of exit with not saved content.
+ * Writes message in the editor if save failed instead of returning -1.
+ *
+ * Returns 0 on success and -1 on error.
  */
-static void ed_save_file_to_spare_dir(struct ed *);
+static int ed_save_file_to_spare_dir(struct ed *);
 
 /*
  * Writes character to the search input.
@@ -236,6 +240,7 @@ ed_break_line(struct ed *const ed)
 {
 	int ret;
 
+	/* Break line using window. */
 	ret = win_break_line(ed->win);
 	if (-1 == ret)
 		return -1;
@@ -249,6 +254,7 @@ ed_del_char(struct ed *const ed)
 {
 	int ret;
 
+	/* Delete character using window. */
 	ret = win_del_char(ed->win);
 	if (-1 == ret)
 		return -1;
@@ -262,6 +268,7 @@ ed_del_line(struct ed *const ed)
 {
 	int ret;
 
+	/* Delete line using window. */
 	ret = win_del_line(ed->win, ed_repeat_times(ed));
 	if (0 == ret) {
 		ed->quit_presses_rem = CFG_DIRTY_FILE_QUIT_PRESSES_CNT;
@@ -307,7 +314,7 @@ ed_draw(struct ed *const ed)
 	return ret;
 }
 
-int
+static int
 ed_draw_end(struct ed *const ed)
 {
 	int ret;
@@ -317,7 +324,7 @@ ed_draw_end(struct ed *const ed)
 	return ret;
 }
 
-int
+static int
 ed_draw_start(struct ed *const ed)
 {
 	int ret;
@@ -454,6 +461,7 @@ ed_num_input(struct ed *const ed, const char digit)
 		return -1;
 	}
 
+
 	/* Zeroize input if current digit overflows or need to reset. */
 	if ((SIZE_MAX - digit) / 10 < ed->num_input)
 		ed_num_input_clr(ed);
@@ -473,9 +481,11 @@ ed_ins_char(struct ed *const ed, const char ch)
 {
 	int ret;
 
+	/* Validate character. */
 	if (!isprint(ch) && '\t' != ch)
 		return 0;
 
+	/* Insert character using window. */
 	ret = win_ins_char(ed->win, ch);
 	if (-1 == ret)
 		return -1;
@@ -489,6 +499,7 @@ ed_ins_empty_line_below(struct ed *const ed)
 {
 	int ret;
 
+	/* Insert empty line using window. */
 	ret = win_ins_empty_line_below(ed->win, ed_repeat_times(ed));
 	if (-1 == ret)
 		return -1;
@@ -503,6 +514,7 @@ ed_ins_empty_line_on_top(struct ed *const ed)
 {
 	int ret;
 
+	/* Insert empty line using window. */
 	ret = win_ins_empty_line_on_top(ed->win, ed_repeat_times(ed));
 	if (-1 == ret)
 		return -1;
@@ -586,7 +598,7 @@ ed_open(const char *const path, const int ifd, const int ofd)
 		goto err_free_opaque_and_buf;
 
 	/* Initialize other values */
-	ed->mode = MODE_NORM;
+	ed_switch_mode(ed, MODE_NORM);
 	ed_msg_clr(ed);
 	ed_num_input_clr(ed);
 	ed_search_input_clr(ed);
@@ -717,10 +729,10 @@ ed_proc_norm_key(struct ed *const ed, const char key)
 		ret = ed_on_quit_press(ed);
 		break;
 	case CFG_KEY_SAVE:
-		ed_save_file(ed);
+		ret = ed_save_file(ed);
 		break;
 	case CFG_KEY_SAVE_TO_SPARE_DIR:
-		ed_save_file_to_spare_dir(ed);
+		ret = ed_save_file_to_spare_dir(ed);
 		break;
 	case CFG_KEY_MV_DOWN:
 		ret = win_mv_down(ed->win, ed_repeat_times(ed));
@@ -885,36 +897,47 @@ ed_repeat_times(const struct ed *const ed)
 	return 0 == ed->num_input ? 1 : ed->num_input;
 }
 
-static void
+static int
 ed_save_file(struct ed *const ed)
 {
+	int ret;
 	size_t len;
 
 	/* Save file. */
 	len = win_save_file(ed->win);
 	if (0 == len) {
-		ed_msg_set(ed, "Failed to save: %s.", strerror(errno));
-	} else {
-		ed_msg_set(ed, "%zu bytes saved.", len);
-		ed->quit_presses_rem = 1;
+		/* Write error message. */
+		ret = ed_msg_set(ed, "Failed to save: %s.", strerror(errno));
+		return ret;
 	}
+
+	ed->quit_presses_rem = 1;
+
+	/* Write success message. */
+	ret = ed_msg_set(ed, "%zu bytes saved.", len);
+	return ret;
 }
 
-static void
+static int
 ed_save_file_to_spare_dir(struct ed *const ed)
 {
+	int ret;
 	char path[CFG_SPARE_PATH_MAX_LEN + 1];
 	size_t len;
 
 	/* Save file to the spare dir. */
 	len = win_save_file_to_spare_dir(ed->win, path, sizeof(path));
 	if (0 == len) {
-		ed_msg_set(ed, "Failed to save: %s.", strerror(errno));
-		return;
+		/* Write error message. */
+		ret = ed_msg_set(ed, "Failed to save: %s.", strerror(errno));
+		return ret;
 	}
 
-	ed_msg_set(ed, "%zu bytes saved to %s.", len, path);
 	ed->quit_presses_rem = 1;
+
+	/* Write success message. */
+	ret = ed_msg_set(ed, "%zu bytes saved to %s.", len, path);
+	return ret;
 }
 
 static int
