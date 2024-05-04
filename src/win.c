@@ -223,27 +223,24 @@ win_draw_line(
 	/* Checking if there is a line to draw at this row. */
 	if (win->offset.rows + row >= lines_cnt) {
 		ret = vec_append(buf, &cfg_no_line, 1);
-		if (-1 == ret)
-			return -1;
-	} else {
-		/* Get line. */
-		ret = file_line(win->file, win->offset.rows + row, &line);
-		if (-1 == ret)
-			return -1;
-
-		/* Get expanded with tabs offset's column. */
-		exp_offset_col = win_exp_col(&line, win->offset.cols);
-		/* Do nothing if line hidden behind offset or empty. */
-		if (line.render_len <= exp_offset_col)
-			return 0;
-
-		/* Calculate length to draw using expanded length and draw. */
-		len_to_draw = MIN(win->size.ws_col, line.render_len - exp_offset_col);
-		ret = vec_append(buf, &line.render[exp_offset_col], len_to_draw);
-		if (-1 == ret)
-			return -1;
+		return ret;
 	}
-	return 0;
+
+	/* Get line. */
+	ret = file_line(win->file, win->offset.rows + row, &line);
+	if (-1 == ret)
+		return -1;
+
+	/* Get expanded with tabs offset's column. */
+	exp_offset_col = win_exp_col(&line, win->offset.cols);
+	/* Do nothing if line hidden behind offset or empty. */
+	if (line.render_len <= exp_offset_col)
+		return 0;
+
+	/* Calculate length to draw using expanded length and draw. */
+	len_to_draw = MIN(win->size.ws_col, line.render_len - exp_offset_col);
+	ret = vec_append(buf, &line.render[exp_offset_col], len_to_draw);
+	return ret;
 }
 
 int
