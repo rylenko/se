@@ -172,7 +172,7 @@ file_absorb_next_line(struct file *const file, const size_t idx)
 	struct line *curr;
 
 	/* Remove next line. */
-	ret = vec_remove(file->lines, idx + 1, &next);
+	ret = vec_rm(file->lines, idx + 1, &next);
 	/* See removing function docs. line removed if argument is valid. */
 	if (-1 == ret) {
 		if (errno != EINVAL)
@@ -304,7 +304,7 @@ file_del_line(struct file *const file, const size_t idx)
 	}
 
 	/* Remove line using index. */
-	ret = vec_remove(file->lines, idx, &line);
+	ret = vec_rm(file->lines, idx, &line);
 	/* See removing function docs. line removed if argument is valid. */
 	if (errno != EINVAL)
 		line_free(&line);
@@ -742,7 +742,7 @@ line_del_char(struct line *const line, const size_t idx)
 	int ret;
 
 	/* Remove character. */
-	ret = vec_remove(line->chars, idx, NULL);
+	ret = vec_rm(line->chars, idx, NULL);
 	if (-1 == ret)
 		return -1;
 

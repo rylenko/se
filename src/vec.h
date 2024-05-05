@@ -92,7 +92,7 @@ size_t vec_len(const struct vec *);
  * If `errno` is not equal to `EINVAL`, then the item was removed and written
  * to the passed pointer if it's not `NULL`.
  */
-int vec_remove(struct vec *, size_t, void *);
+int vec_rm(struct vec *, size_t, void *);
 
 /*
  * Sets length and leaves the capacity unchanged, so shrink the capacity if

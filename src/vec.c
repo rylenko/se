@@ -223,7 +223,7 @@ vec_realloc(struct vec *const vec, const size_t new_cap)
 }
 
 int
-vec_remove(struct vec *const vec, const size_t idx, void *const item)
+vec_rm(struct vec *const vec, const size_t idx, void *const item)
 {
 	int ret;
 
