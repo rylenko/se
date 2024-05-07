@@ -173,8 +173,8 @@ file_absorb_next_line(struct file *const file, const size_t idx)
 
 	/* Remove next line. */
 	ret = vec_rm(file->lines, idx + 1, &next);
-	/* See removing function docs. line removed if argument is valid. */
 	if (-1 == ret) {
+		/* See removing function docs. line removed if argument is valid. */
 		if (errno != EINVAL)
 			goto ret_free;
 		return -1;
