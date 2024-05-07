@@ -74,6 +74,20 @@ static int ed_draw_start(struct ed *);
 static int ed_draw_stat(struct ed *);
 
 /*
+ * Prepares for status drawing.
+ *
+ * Returns 0 on success and -1 on error.
+ */
+static int ed_draw_stat_begin(struct ed *);
+
+/*
+ * Ends for status drawing.
+ *
+ * Returns 0 on success and -1 on error.
+ */
+static int ed_draw_stat_end(struct ed *);
+
+/*
  * Flush editor's drawing buffer.
  *
  * Returns 0 on success and -1 on error.
@@ -357,13 +371,8 @@ ed_draw_stat(struct ed *const ed)
 	size_t x;
 	char r[128];
 
-	/* Begin colored background output. */
-	ret = esc_color_bg(ed->buf, cfg_color_stat_bg);
-	if (-1 == ret)
-		return -1;
-
-	/* Begin colored foreground output. */
-	ret = esc_color_fg(ed->buf, cfg_color_stat_fg);
+	/* Begin status drawing. */
+	ret = ed_draw_stat_begin(ed);
 	if (-1 == ret)
 		return -1;
 
@@ -428,6 +437,31 @@ ed_draw_stat(struct ed *const ed)
 	ret = vec_append(ed->buf, r, MIN(r_len, winsize.ws_col - l_len));
 	if (-1 == ret)
 		return -1;
+
+	/* End status drawing. */
+	ret = ed_draw_stat_end(ed);
+	return ret;
+}
+
+static int
+ed_draw_stat_begin(struct ed *const ed)
+{
+	int ret;
+
+	/* Begin colored background output. */
+	ret = esc_color_bg(ed->buf, cfg_color_stat_bg);
+	if (-1 == ret)
+		return -1;
+
+	/* Begin colored foreground output. */
+	ret = esc_color_fg(ed->buf, cfg_color_stat_fg);
+	return ret;
+}
+
+static int
+ed_draw_stat_end(struct ed *const ed)
+{
+	int ret;
 
 	/* End colored output. */
 	ret = esc_color_end(ed->buf);
