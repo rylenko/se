@@ -88,6 +88,13 @@ static int ed_draw_stat_begin(struct ed *);
 static int ed_draw_stat_end(struct ed *);
 
 /*
+ * Draws the left part of the status.
+ *
+ * Returns length on success and -1 on error.
+ */
+static int ed_draw_stat_left(struct ed *);
+
+/*
  * Flush editor's drawing buffer.
  *
  * Returns 0 on success and -1 on error.
@@ -363,10 +370,9 @@ ed_draw_stat(struct ed *const ed)
 {
 	int ret;
 	size_t i;
-	size_t l_len = 0;
+	size_t l_len;
 	size_t r_len;
 	struct winsize winsize;
-	const char *fname;
 	size_t y;
 	size_t x;
 	char r[128];
@@ -376,32 +382,11 @@ ed_draw_stat(struct ed *const ed)
 	if (-1 == ret)
 		return -1;
 
-	/* Draw mode and filename. */
-	fname = path_get_fname(win_file_path(ed->win));
-	ret = vec_append_fmt(ed->buf, " %s > %s", mode_str(ed->mode), fname);
+	/* Draw the left part of the status */
+	ret = ed_draw_stat_left(ed);
 	if (-1 == ret)
 		return -1;
-	l_len += ret;
-
-	/* Add mark if file is dirty. */
-	if (win_file_is_dirty(ed->win)) {
-		ret = vec_append(ed->buf, " [+]", 4);
-		if (-1 == ret)
-			return -1;
-		l_len += 4;
-	}
-
-	/* Draw message if set. */
-	if (!ed_msg_is_empty(ed)) {
-		/* Draw message. */
-		ret = vec_append_fmt(ed->buf, ": %s", ed->msg);
-		if (-1 == ret)
-			return -1;
-		l_len += ret;
-
-		/* Reset message to do not draw on the next draw. */
-		ed_msg_clr(ed);
-	}
+	l_len = ret;
 
 	/* Prepare length and formatted string for the right part. */
 	y = win_curr_line_idx(ed->win);
@@ -466,6 +451,42 @@ ed_draw_stat_end(struct ed *const ed)
 	/* End colored output. */
 	ret = esc_color_end(ed->buf);
 	return ret;
+}
+
+static int
+ed_draw_stat_left(struct ed *const ed)
+{
+	int ret;
+	int len = 0;
+	const char *fname;
+
+	/* Draw mode and filename. */
+	fname = path_get_fname(win_file_path(ed->win));
+	ret = vec_append_fmt(ed->buf, " %s > %s", mode_str(ed->mode), fname);
+	if (-1 == ret)
+		return -1;
+	len += ret;
+
+	/* Add mark if file is dirty. */
+	if (win_file_is_dirty(ed->win)) {
+		ret = vec_append(ed->buf, " [+]", 4);
+		if (-1 == ret)
+			return -1;
+		len += 4;
+	}
+
+	/* Draw message if set. */
+	if (!ed_msg_is_empty(ed)) {
+		/* Draw message. */
+		ret = vec_append_fmt(ed->buf, ": %s", ed->msg);
+		if (-1 == ret)
+			return -1;
+		len += ret;
+
+		/* Reset message to do not draw on the next draw. */
+		ed_msg_clr(ed);
+	}
+	return len;
 }
 
 static int
