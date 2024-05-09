@@ -1,4 +1,3 @@
-/* TODO: v0.3: Split functions into smaller functions, which "do one thing and do it well". */
 /* TODO: v0.4: Create Cell struct to handle all symbols including UTF-8. Create structs Win->Renders->Render->Cells->Cell. Rerender lines on window side */
 /* TODO: v0.4: Use linked list for lines array and line's content parts. */
 /* TODO: v0.4: Remember last position per line. */
@@ -47,6 +46,7 @@ static struct ed *ed;
 static int
 edit(const char *const path)
 {
+	const char *err;
 	int ret;
 
 	/* Opens file in the editor. */
@@ -61,13 +61,13 @@ edit(const char *const path)
 		/* Draws editor's content on the screen. */
 		ret = ed_draw(ed);
 		if (-1 == ret) {
-			perror("Failed to draw");
+			err = "Failed to draw";
 			goto err_quit;
 		}
 		/* Wait and process key presses. */
 		ret = ed_wait_and_proc_key(ed);
 		if (-1 == ret) {
-			perror("Failed to wait and process key");
+			err = "Failed to wait and process key";
 			goto err_quit;
 		}
 	}
@@ -82,6 +82,8 @@ edit(const char *const path)
 err_quit:
 	/* Error checking here is useless. */
 	ed_quit(ed);
+	/* Print error after quit to disable raw mode properly. */
+	perror(err);
 	return EXIT_FAILURE;
 }
 
