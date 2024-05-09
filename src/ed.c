@@ -88,11 +88,26 @@ static int ed_draw_stat_begin(struct ed *);
 static int ed_draw_stat_end(struct ed *);
 
 /*
+ * Formats the right part of the status to the passed buffer up to passed
+ * length.
+ *
+ * Returns formatted length on success and -1 on error.
+ */
+static int ed_draw_stat_fmt_right(const struct ed *, char *, size_t);
+
+/*
  * Draws the left part of the status.
  *
  * Returns length on success and -1 on error.
  */
 static int ed_draw_stat_left(struct ed *);
+
+/*
+ * Draws an empty space between left and right parts.
+ *
+ * Returns 0 on success and -1 on error.
+ */
+static int ed_draw_stat_space(struct ed *, size_t, size_t);
 
 /*
  * Flush editor's drawing buffer.
@@ -369,57 +384,33 @@ static int
 ed_draw_stat(struct ed *const ed)
 {
 	int ret;
-	size_t i;
-	size_t l_len;
-	size_t r_len;
+	int left_len;
 	struct winsize winsize;
-	size_t y;
-	size_t x;
-	char r[128];
+	int right_len;
+	char right[128];
 
 	/* Begin status drawing. */
 	ret = ed_draw_stat_begin(ed);
 	if (-1 == ret)
 		return -1;
 
-	/* Draw the left part of the status */
-	ret = ed_draw_stat_left(ed);
-	if (-1 == ret)
+	/* Draw the left part of the status. */
+	left_len = ed_draw_stat_left(ed);
+	if (-1 == left_len)
 		return -1;
-	l_len = ret;
-
-	/* Prepare length and formatted string for the right part. */
-	y = win_curr_line_idx(ed->win);
-	x = win_curr_line_char_idx(ed->win);
-	switch (ed->mode) {
-	case MODE_NORM:
-		ret = snprintf(r, sizeof(r), "%zu < %zu, %zu ", ed->num_input, y, x);
-		break;
-	case MODE_SEARCH:
-		ret = snprintf(r, sizeof(r), "%s < %zu, %zu ", ed->search_input, y, x);
-		break;
-	default:
-		ret = snprintf(r, sizeof(r), "%zu, %zu ", y, x);
-		break;
-	}
-
-	/* Check right part formatting error. */
-	if (ret < 0 || (size_t)ret >= sizeof(r))
+	/* Format the right part to the passed buffer. */
+	right_len = ed_draw_stat_fmt_right(ed, right, sizeof(right));
+	if (-1 == right_len)
 		return -1;
-	r_len = (size_t)ret;
-
-	/* Get window size. */
-	winsize = win_size(ed->win);
 
 	/* Draw colored empty space. */
-	for (i = l_len + r_len; i < winsize.ws_col; i++) {
-		ret = vec_append(ed->buf, " ", 1);
-		if (-1 == ret)
-			return -1;
-	}
+	ret = ed_draw_stat_space(ed, left_len, right_len);
+	if (-1 == ret)
+		return -1;
 
 	/* Draw the right part. */
-	ret = vec_append(ed->buf, r, MIN(r_len, winsize.ws_col - l_len));
+	winsize = win_size(ed->win);
+	ret = vec_append(ed->buf, right, MIN(right_len, winsize.ws_col - left_len));
 	if (-1 == ret)
 		return -1;
 
@@ -450,6 +441,37 @@ ed_draw_stat_end(struct ed *const ed)
 
 	/* End colored output. */
 	ret = esc_color_end(ed->buf);
+	return ret;
+}
+
+static int
+ed_draw_stat_fmt_right(
+	const struct ed *const ed,
+	char *const buf,
+	const size_t len
+) {
+	int ret;
+	size_t y;
+	size_t x;
+
+	/* Prepare length and formatted string for the right part. */
+	y = win_curr_line_idx(ed->win);
+	x = win_curr_line_char_idx(ed->win);
+	switch (ed->mode) {
+	case MODE_NORM:
+		ret = snprintf(buf, len, "%zu < %zu, %zu ", ed->num_input, y, x);
+		break;
+	case MODE_SEARCH:
+		ret = snprintf(buf, len, "%s < %zu, %zu ", ed->search_input, y, x);
+		break;
+	default:
+		ret = snprintf(buf, len, "%zu, %zu ", y, x);
+		break;
+	}
+
+	/* Check right part formatting error. */
+	if (ret < 0 || (size_t)ret >= len)
+		return -1;
 	return ret;
 }
 
@@ -487,6 +509,27 @@ ed_draw_stat_left(struct ed *const ed)
 		ed_msg_clr(ed);
 	}
 	return len;
+}
+
+static int
+ed_draw_stat_space(
+	struct ed *const ed,
+	const size_t left_len,
+	const size_t right_len
+) {
+	int ret;
+	size_t i;
+	struct winsize winsize;
+
+	/* Get window size. */
+	winsize = win_size(ed->win);
+	/* Draw empty space. */
+	for (i = left_len + right_len; i < winsize.ws_col; i++) {
+		ret = vec_append(ed->buf, " ", 1);
+		if (-1 == ret)
+			return -1;
+	}
+	return 0;
 }
 
 static int

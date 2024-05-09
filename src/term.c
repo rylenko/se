@@ -1,5 +1,4 @@
 #include <errno.h>
-#include <stdlib.h>
 #include <termios.h>
 #include <unistd.h>
 #include "term.h"
@@ -56,11 +55,6 @@ term_init(const int ifd, const int ofd)
 	/* Save the original termios parameters. */
 	ret = tcgetattr(ifd, &term.orig_termios);
 	if (-1 == ret)
-		return -1;
-
-	/* Set terminal deinitializer on exit. */
-	ret = atexit((void (*)(void))term_deinit);
-	if (0 != ret)
 		return -1;
 
 	/* Set raw mode parameters. */

@@ -37,7 +37,7 @@ esc_color_bg(struct vec *const buf, const struct color c)
 	int ret;
 
 	ret = vec_append_fmt(buf, "\x1b[48;2;%hhu;%hhu;%hhum", c.r, c.g, c.b);
-	return ret;
+	return -1 == ret ? -1 : 0;
 }
 
 int
@@ -46,7 +46,7 @@ esc_color_fg(struct vec *const buf, const struct color c)
 	int ret;
 
 	ret = vec_append_fmt(buf, "\x1b[38;2;%hhu;%hhu;%hhum", c.r, c.g, c.b);
-	return ret;
+	return -1 == ret ? -1 : 0;
 }
 
 int
@@ -73,7 +73,7 @@ esc_cur_set(struct vec *const buf, const unsigned short row, const unsigned shor
 	int ret;
 
 	ret = vec_append_fmt(buf, "\x1b[%hu;%huH", row + 1, col + 1);
-	return ret;
+	return -1 == ret ? -1 : 0;
 }
 
 int

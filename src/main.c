@@ -13,7 +13,6 @@
 /* TODO: v0.7: Add more error codes in docs. */
 /* TODO: v0.7: Save to spare dir on error. */
 
-#include <err.h>
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -21,7 +20,14 @@
 #include <unistd.h>
 #include "ed.h"
 
-static const char *const usage = "Usage:\n\t$ se <filename>";
+static const char *const usage = "Usage:\n\t$ se <filename>\n";
+
+/*
+ * Main loop of the program. Edits the file by passed filename.
+ *
+ * Returns `EXIT_SUCCESS` on success and `EXIT_FAILURE` on error.
+ */
+static int edit(const char *);
 
 /*
  * Editor signals handler.
@@ -30,11 +36,54 @@ static void handle_signal(int, siginfo_t *, void *);
 
 /*
  * Setups signal handler for the editor.
+ *
+ * Returns 0 on success and -1 on error.
  */
 static int setup_signal_handler(void);
 
 /* Global editor variable, which used all the time. */
 static struct ed *ed;
+
+static int
+edit(const char *const path)
+{
+	int ret;
+
+	/* Opens file in the editor. */
+	ed = ed_open(path, STDIN_FILENO, STDOUT_FILENO);
+	if (NULL == ed) {
+		perror("Failed to open the editor");
+		return EXIT_FAILURE;
+	}
+
+	/* Main event loop. */
+	while (!ed_need_to_quit(ed)) {
+		/* Draws editor's content on the screen. */
+		ret = ed_draw(ed);
+		if (-1 == ret) {
+			perror("Failed to draw");
+			goto err_quit;
+		}
+		/* Wait and process key presses. */
+		ret = ed_wait_and_proc_key(ed);
+		if (-1 == ret) {
+			perror("Failed to wait and process key");
+			goto err_quit;
+		}
+	}
+
+	/* Quit the editor. */
+	ret = ed_quit(ed);
+	if (-1 == ret) {
+		perror("Failed to quit");
+		return EXIT_FAILURE;
+	}
+	return EXIT_SUCCESS;
+err_quit:
+	/* Error checking here is useless. */
+	ed_quit(ed);
+	return EXIT_FAILURE;
+}
 
 static void
 handle_signal(int signal, siginfo_t *info, void *ctx)
@@ -71,35 +120,19 @@ main(const int argc, const char *const *const argv)
 	int ret;
 
 	/* Check filename in arguments. */
-	if (argc != 2)
-		errx(EXIT_FAILURE, usage);
+	if (argc != 2) {
+		fputs(usage, stderr);
+		return EXIT_FAILURE;
+	}
 
 	/* Setup signal handler. */
 	ret = setup_signal_handler();
-	if (-1 == ret)
-		err(EXIT_FAILURE, "Failed to setup signal handler");
-
-	/* Opens file in the editor. */
-	ed = ed_open(argv[1], STDIN_FILENO, STDOUT_FILENO);
-	if (NULL == ed)
-		err(EXIT_FAILURE, "Failed to open the editor");
-
-	/* Main event loop. */
-	while (!ed_need_to_quit(ed)) {
-		/* Draws editor's content on the screen. */
-		ret = ed_draw(ed);
-		if (-1 == ret)
-			err(EXIT_FAILURE, "Failed to draw");
-
-		/* Wait and process key presses. */
-		ret = ed_wait_and_proc_key(ed);
-		if (-1 == ret)
-			err(EXIT_FAILURE, "Failed to wait and process key");
+	if (-1 == ret) {
+		perror("Failed to setup a signal handler");
+		return EXIT_FAILURE;
 	}
 
-	/* Quit the editor. */
-	ret = ed_quit(ed);
-	if (-1 == ret)
-		err(EXIT_FAILURE, "Failed to quit the editor");
-	return EXIT_SUCCESS;
+	/* Edit the file. */
+	ret = edit(argv[1]);
+	return ret;
 }
