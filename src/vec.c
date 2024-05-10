@@ -236,17 +236,28 @@ vec_rm(struct vec *const vec, const size_t idx, void *const item)
 	/* Write removed item to accepted pointer. */
 	if (NULL != item)
 		memcpy(item, &vec->items[idx * vec->item_size], vec->item_size);
-
 	/* Move items left to overlap bytes. */
 	memmove(
 		&vec->items[idx * vec->item_size],
 		&vec->items[(idx + 1) * vec->item_size],
 		(--vec->len - idx) * vec->item_size
 	);
-
 	/* Shrink vector if there is too much free space. */
 	ret = vec_shrink_if_needed(vec);
-	return ret;
+	if (-1 == ret)
+		goto err_undo;
+	return 0;
+err_undo:
+	/* Move items back. */
+	memmove(
+		&vec->items[(idx + 1) * vec->item_size],
+		&vec->items[idx * vec->item_size],
+		(vec->len++ - idx) * vec->item_size
+	);
+	/* Move removed item back. */
+	if (NULL != item)
+		memcpy(&vec->items[idx * vec->item_size], item, vec->item_size);
+	return -1;
 }
 
 int

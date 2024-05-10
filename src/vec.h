@@ -80,17 +80,17 @@ int vec_ins_fmt(struct vec *, size_t, const char *, ...);
  */
 size_t vec_len(const struct vec *);
 
-/* TODO: Undo copying on error to prevent user from memory releasing. */
 /*
  * Finds and removes item by its index. Shrinks capacity if too much space is
  * unused.
  *
+ * If a pointer for the removed item is passed, then after the error the state
+ * does not change. If a pointer for the removed item is not passed, then the
+ * state of the removed item after the error is unknown.
+ *
  * Returns 0 on success and -1 on error.
  *
  * Sets `EINVAL` if index is invalid.
- *
- * If `errno` is not equal to `EINVAL`, then the item was removed and written
- * to the passed pointer if it's not `NULL`.
  */
 int vec_rm(struct vec *, size_t, void *);
 
