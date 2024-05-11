@@ -1,7 +1,6 @@
 /* TODO: v0.4: Create Cell struct to handle all symbols including UTF-8. Create structs Win->Renders->Render->Cells->Cell. Rerender lines on window side */
 /* TODO: v0.4: Use linked list for lines array and line's content parts. */
 /* TODO: v0.4: Remember last position per line. */
-/* TODO: v0.4: Rewrite moving functions with more unambiguous behavior and minimal scrolling. */
 /* TODO: v0.5: Undo operations. Also rename "del" to "remove" where needed. */
 /* TODO: v0.5: Add key settings for escape sequences. For example, CFG_KEY_MV_UP_2 = "..." */
 /* TODO: v0.5: Add local clipboard. Use it in functions. */
