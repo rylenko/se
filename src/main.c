@@ -99,8 +99,7 @@ handle_signal(int signal, siginfo_t *info, void *ctx)
 {
 	(void)info;
 	(void)ctx;
-	if (NULL != ed)
-		ed_reg_sig(ed, signal);
+	ed_reg_sig(ed, signal);
 }
 
 static int
