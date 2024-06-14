@@ -1,3 +1,4 @@
+/* TODO: v0.4: perror errors in goto-cleanups */
 /* TODO: v0.4: Create Cell struct to handle all symbols including UTF-8. Create structs Win->Renders->Render->Cells->Cell. Rerender lines on window side */
 /* TODO: v0.4: Use linked list for lines array and line's content parts. */
 /* TODO: v0.4: Remember last position per line. */
@@ -33,7 +34,7 @@ static int edit(const char *);
 static void handle_signal(int, siginfo_t *, void *);
 
 /*
- * Setups signal handler for the editor.
+ * Setups signal handler for the editor. Must be called after editor opening.
  *
  * Returns 0 on success and -1 on error.
  */
@@ -53,6 +54,13 @@ edit(const char *const path)
 	if (NULL == ed) {
 		perror("Failed to open the editor");
 		return EXIT_FAILURE;
+	}
+
+	/* Setup signal handler. */
+	ret = setup_signal_handler();
+	if (-1 == ret) {
+		err = "Failed to setup a signal handler";
+		goto err_quit;
 	}
 
 	/* Main event loop. */
@@ -91,7 +99,8 @@ handle_signal(int signal, siginfo_t *info, void *ctx)
 {
 	(void)info;
 	(void)ctx;
-	ed_reg_sig(ed, signal);
+	if (NULL != ed)
+		ed_reg_sig(ed, signal);
 }
 
 static int
@@ -123,13 +132,6 @@ main(const int argc, const char *const *const argv)
 	/* Check filename in arguments. */
 	if (argc != 2) {
 		fputs(usage, stderr);
-		return EXIT_FAILURE;
-	}
-
-	/* Setup signal handler. */
-	ret = setup_signal_handler();
-	if (-1 == ret) {
-		perror("Failed to setup a signal handler");
 		return EXIT_FAILURE;
 	}
 
