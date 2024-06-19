@@ -559,7 +559,6 @@ ed_num_input(struct ed *const ed, const char digit)
 		return -1;
 	}
 
-
 	/* Zeroize input if current digit overflows or need to reset. */
 	if ((SIZE_MAX - digit) / 10 < ed->num_input)
 		ed_num_input_clr(ed);
