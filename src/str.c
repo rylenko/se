@@ -14,7 +14,7 @@ str_copy(const char *const str, const size_t len)
 		return NULL;
 
 	/* Copy memory. Do not forget about null byte. */
-	copy[len] = 0;
+	copy[len] = '\0';
 	return memcpy(copy, str, len);
 }
 
