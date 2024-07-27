@@ -890,9 +890,8 @@ ed_proc_search_key(struct ed *const ed, const char key)
 	int ret = 0;
 
 	switch (key) {
-	case CFG_KEY_MODE_SEARCH_TO_NORM_CANCEL:
+	case CFG_KEY_MODE_SEARCH_TO_NORM_CANCEL: /* FALLTHROUGH. */
 		ed_search_input_clr(ed);
-		/* FALLTHROUGH. */
 	case CFG_KEY_MODE_SEARCH_TO_NORM:
 		ed_switch_mode(ed, MODE_NORM);
 		break;
@@ -1074,9 +1073,8 @@ static void
 ed_switch_mode(struct ed *const ed, const enum mode mode)
 {
 	switch (mode) {
-	case MODE_SEARCH:
+	case MODE_SEARCH: /* FALLTHROUGH. */
 		ed_search_input_clr(ed);
-		/* FALLTHROUGH. */
 	default:
 		ed->mode = mode;
 	}
