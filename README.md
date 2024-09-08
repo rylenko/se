@@ -71,7 +71,7 @@ Searching mode keys:
 You can set up convenient key bindings and convenient colors in `src/cfg.h`. Note that after changes you need to build and install again.
 
 Popular changes (I will make separate patches if there are many differences with the default config):
-- In XTerm, **backspace** is encoded as 8. Therefore, you need to replace `CFG_KEY_DEL_CHAR`` with 8.
+- In XTerm, **backspace** is encoded as 8. Therefore, you need to replace `CFG_KEY_DEL_CHAR` with 8.
 
 # Build and install
 
