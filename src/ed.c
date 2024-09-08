@@ -1077,6 +1077,7 @@ ed_switch_mode(struct ed *const ed, const enum mode mode)
 		ed_search_input_clr(ed);
 	default:
 		ed->mode = mode;
+		break;
 	}
 }
 
