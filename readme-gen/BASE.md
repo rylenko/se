@@ -70,6 +70,9 @@ Searching mode keys:
 
 You can set up convenient key bindings and convenient colors in `src/cfg.h`. Note that after changes you need to build and install again.
 
+Popular changes (I will make separate patches if there are many differences with the default config):
+- In XTerm, **backspace** is encoded as 8. Therefore, you need to replace `CFG_KEY_DEL_CHAR` with 8.
+
 # Build and install
 
 You can set up convenient building flags in `cfg.mk`. For example, if you want to debug, you need to add `-g` to flags and remove optimizations. Or, if you want to build editor for OpenBSD, you need to uncomment some lines in `cfg.mk`.
