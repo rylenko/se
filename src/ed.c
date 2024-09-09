@@ -446,10 +446,8 @@ ed_draw_stat_end(struct ed *const ed)
 
 static int
 ed_draw_stat_fmt_right(
-	const struct ed *const ed,
-	char *const buf,
-	const size_t len
-) {
+	const struct ed *const ed, char *const buf, const size_t len)
+{
 	int ret;
 	size_t y;
 	size_t x;
@@ -513,10 +511,8 @@ ed_draw_stat_left(struct ed *const ed)
 
 static int
 ed_draw_stat_space(
-	struct ed *const ed,
-	const size_t left_len,
-	const size_t right_len
-) {
+	struct ed *const ed, const size_t left_len, const size_t right_len)
+{
 	int ret;
 	size_t i;
 	struct winsize winsize;
@@ -776,10 +772,8 @@ ed_proc_ins_key(struct ed *const ed, const char key)
 
 static int
 ed_proc_mouse_wh_key(
-	struct ed *const ed,
-	const char *const seq,
-	const size_t len
-) {
+	struct ed *const ed, const char *const seq, const size_t len)
+{
 	int ret;
 	enum mouse_wh_key key;
 

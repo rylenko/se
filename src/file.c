@@ -333,11 +333,8 @@ file_free(struct file *const file)
 
 int
 file_ins_char(
-	struct file *const file,
-	const size_t idx,
-	const size_t pos,
-	const char ch
-) {
+	struct file *const file, const size_t idx, const size_t pos, const char ch)
+{
 	int ret;
 	struct line *line;
 
@@ -387,10 +384,8 @@ file_is_dirty(const struct file *const file)
 
 int
 file_line(
-	const struct file *const file,
-	const size_t idx,
-	struct pub_line *const line
-) {
+	const struct file *const file, const size_t idx, struct pub_line *const line)
+{
 	const struct line *internal;
 
 	/* Get internal line struct. */
@@ -551,8 +546,8 @@ file_search_bwd(
 	const struct file *const file,
 	size_t *const idx,
 	size_t *const pos,
-	const char *const query
-) {
+	const char *const query)
+{
 	int ret;
 	struct line *line;
 
@@ -590,8 +585,8 @@ file_search_fwd(
 	const struct file *const file,
 	size_t *const idx,
 	size_t *const pos,
-	const char *const query
-) {
+	const char *const query)
+{
 	int ret;
 	struct line *line;
 
@@ -912,10 +907,8 @@ line_search_bwd(
 
 static int
 line_search_fwd(
-	const struct line *const line,
-	size_t *const idx,
-	const char *const query
-) {
+	const struct line *const line, size_t *const idx, const char *const query)
+{
 	int ret;
 	size_t search_len;
 	const char *start;

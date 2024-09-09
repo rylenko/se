@@ -120,8 +120,8 @@ vec_ins(
 	struct vec *const vec,
 	const size_t idx,
 	const void *const items,
-	const size_t len
-) {
+	const size_t len)
+{
 	int ret;
 
 	/* Validate index. */
@@ -150,11 +150,8 @@ vec_ins(
 
 int
 vec_ins_fmt(
-	struct vec *const vec,
-	const size_t idx,
-	const char *const fmt,
-	...
-) {
+	struct vec *const vec, const size_t idx, const char *const fmt, ...)
+{
 	int ret;
 	va_list args;
 
@@ -167,11 +164,8 @@ vec_ins_fmt(
 
 static int
 vec_ins_fmt_va(
-	struct vec *const vec,
-	const size_t idx,
-	const char *const fmt,
-	va_list args
-) {
+	struct vec *const vec, const size_t idx, const char *const fmt, va_list args)
+{
 	int len;
 	int ret;
 	char buf[256];

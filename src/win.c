@@ -224,10 +224,8 @@ win_draw_cur(const struct win *const win, struct vec *const buf)
 
 static int
 win_draw_line(
-	const struct win *const win,
-	struct vec *const buf,
-	const unsigned short row
-) {
+	const struct win *const win, struct vec *const buf, const unsigned short row)
+{
 	int ret;
 	struct pub_line line;
 	size_t exp_offset_col;

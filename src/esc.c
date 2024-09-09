@@ -68,7 +68,8 @@ esc_cur_hide(struct vec *const buf)
 }
 
 int
-esc_cur_set(struct vec *const buf, const unsigned short row, const unsigned short col)
+esc_cur_set(
+	struct vec *const buf, const unsigned short row, const unsigned short col)
 {
 	int ret;
 
@@ -87,10 +88,8 @@ esc_cur_show(struct vec *const buf)
 
 int
 esc_extr_arrow_key(
-	const char *const seq,
-	const size_t len,
-	enum arrow_key *const key
-) {
+	const char *const seq, const size_t len, enum arrow_key *const key)
+{
 	int cmp;
 
 	/* Validate length. */
@@ -108,10 +107,8 @@ esc_extr_arrow_key(
 
 int
 esc_extr_mouse_wh_key(
-	const char *const seq,
-	const size_t len,
-	enum mouse_wh_key *const key
-) {
+	const char *const seq, const size_t len, enum mouse_wh_key *const key)
+{
 	int cmp;
 
 	/* Validate length. */
